@@ -39,4 +39,4 @@ It is a graphics framework I'm developing, to study graphics programming topics.
 
 The source code in this repository is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
 
-The icon image [Sandbox/Asset/Icon/app_icon.ico](Sandbox/Asset/Icon/app_icon.ico) is proprietary and may not be used, copied, modified, or distributed without explicit permission. See the [Sandbox/Asset/Icon/LICENSE](Sandbox/Asset/Icon/LICENSE) file for more information.
+The icon image [app_icon.ico](Engine/Engine/Asset/Icon/app_icon.ico) is proprietary and may not be used, copied, modified, or distributed without explicit permission. See the [Engine/Engine/Asset/Icon/LICENSE](Engine/Engine/Asset/Icon/LICENSE) file for more information.
