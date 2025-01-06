@@ -56,6 +56,9 @@ namespace Engine::Math
 	template< std::floating_point Value >
 	Value Exp( const Value exponent ) { return std::exp( exponent ); }
 
+	template< Concepts::Arithmetic Value >
+	Value Round( const Value value ) { return std::round( value ); }
+
 	template< typename Value, std::floating_point PercentType >
 	Value Lerp( const Value value_a, const Value value_b, const PercentType t ) { return ( PercentType( 1 ) - t ) * value_a + t * value_b; }
 
