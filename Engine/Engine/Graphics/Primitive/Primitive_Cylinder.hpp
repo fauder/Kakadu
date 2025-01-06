@@ -71,8 +71,7 @@ namespace Engine::Primitive::Indexed::CylinderTemplate
 						positions.begin() + index,
 						[]( Vector3 position )
 		{
-			constexpr Quaternion rotate_around_z_by_180_degrees( Vector3::Forward(), 0 );
-			return rotate_around_z_by_180_degrees.Transform( position.SetY( y_max ) );
+			return Quaternion::RotateAroundZ_By_Pi().Transform( position.SetY( y_max ) );
 		} );
 
 		return positions;
@@ -164,8 +163,7 @@ namespace Engine::Primitive::Indexed::CylinderTemplate
 						uvs.begin() + cap_vertex_count + side_vertex_count,
 						[]( const Vector2 uv )
 		{
-			constexpr Quaternion rotate_around_z_by_180_degrees( Vector3::Forward(), 0 );
-			return rotate_around_z_by_180_degrees.Transform( Vector3( uv.X(), uv.Y(), 0.0f ) ).XY();
+			return Quaternion::RotateAroundZ_By_Pi().Transform( Vector3( uv.X(), uv.Y(), 0.0f ) ).XY();
 		} );
 
 		return uvs;
