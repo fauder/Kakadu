@@ -28,16 +28,6 @@ namespace Engine::Primitive::NonIndexed::Quad
 		{ 0.0f, 1.0f }
 	} );
 
-	constexpr std::array< Vector3, 6 > Tangents
-	( {
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f }
-	} );
-
 	constexpr std::array< Vector3, 6 > Normals
 	( {
 		{  0.0f,  0.0f, -1.0f },
@@ -46,6 +36,16 @@ namespace Engine::Primitive::NonIndexed::Quad
 		{  0.0f,  0.0f, -1.0f },
 		{  0.0f,  0.0f, -1.0f },
 		{  0.0f,  0.0f, -1.0f }
+	} );
+
+	constexpr std::array< Vector3, 6 > Tangents
+	( {
+		{ +1.0f,  0.0f,  0.0f },
+		{ +1.0f,  0.0f,  0.0f },
+		{ +1.0f,  0.0f,  0.0f },
+		{ +1.0f,  0.0f,  0.0f },
+		{ +1.0f,  0.0f,  0.0f },
+		{ +1.0f,  0.0f,  0.0f }
 	} );
 }
 
@@ -73,19 +73,19 @@ namespace Engine::Primitive::Indexed::Quad
 		{ 1.0f, 0.0f }
 	} );
 
-	constexpr std::array< Vector3, 4 > Tangents
-	( {
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f }
-	} );
-
 	constexpr std::array< Vector3, 4 > Normals
 	( {
 		{  0.0f,  0.0f, -1.0f },
 		{  0.0f,  0.0f, -1.0f },
 		{  0.0f,  0.0f, -1.0f },
 		{  0.0f,  0.0f, -1.0f }
+	} );
+
+	constexpr std::array< Vector3, 4 > Tangents
+	( {
+		{ +1.0f,  0.0f,  0.0f },
+		{ +1.0f,  0.0f,  0.0f },
+		{ +1.0f,  0.0f,  0.0f },
+		{ +1.0f,  0.0f,  0.0f }
 	} );
 }
