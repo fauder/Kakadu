@@ -267,6 +267,12 @@
     <ClInclude Include="Engine\Asset\Resource\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\Primitive\Primitive_Cylinder.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\Primitive\Primitive_Cylinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Circle.h">
       <Filter>Header Files</Filter>
     </ClInclude>

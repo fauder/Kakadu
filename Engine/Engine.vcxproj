@@ -179,6 +179,8 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClInclude Include="Engine\Graphics\ID.hpp" />
     <ClInclude Include="Engine\Graphics\InternalShaders.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Circle.h" />
+    <ClInclude Include="Engine\Graphics\Primitive\Primitive_Cylinder.h" />
+    <ClInclude Include="Engine\Graphics\Primitive\Primitive_Cylinder.hpp" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Quad.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Quad_FullScreen.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Circle.hpp" />
