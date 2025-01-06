@@ -91,4 +91,28 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 
 		return uvs;
 	};
+
+	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
+	std::array< Vector3, VertexCount > Normals()
+	{
+		std::array< Vector3, VertexCount > normals;
+		normals.fill( Vector3::Up() );
+		return normals;
+	};
+
+	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
+	std::array< Vector3, VertexCount > Tangents()
+	{
+		std::array< Vector3, VertexCount > tangents;
+		tangents.fill( Vector3::Right() );
+		return tangents;
+	};
+
+	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
+	std::array< Vector3, VertexCount > Bitangents()
+	{
+		std::array< Vector3, VertexCount > bitangents;
+		bitangents.fill( Vector3::Forward() );
+		return bitangents;
+	};
 }
