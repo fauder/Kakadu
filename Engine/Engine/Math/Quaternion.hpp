@@ -90,6 +90,13 @@ namespace Engine::Math
 	/* Other Queries. */
 		static consteval Quaternion Identity() { return {}; }
 
+		static consteval Quaternion RotateAroundX_By_Pi()			{ return Quaternion( Vector< ComponentType, 3 >::Right(),									ComponentType{ 0 } ); }
+		static consteval Quaternion RotateAroundY_By_Pi()			{ return Quaternion( Vector< ComponentType, 3 >::Up(),										ComponentType{ 0 } ); }
+		static consteval Quaternion RotateAroundZ_By_Pi()			{ return Quaternion( Vector< ComponentType, 3 >::Forward(),									ComponentType{ 0 } ); }
+		static consteval Quaternion RotateAroundX_By_PiOverTwo()	{ return Quaternion( Vector< ComponentType, 3 >::Right()	* ComponentType{ 0.70710678 },	ComponentType{ 0.70710678 } ); }
+		static consteval Quaternion RotateAroundY_By_PiOverTwo()	{ return Quaternion( Vector< ComponentType, 3 >::Up()		* ComponentType{ 0.70710678 },	ComponentType{ 0.70710678 } ); }
+		static consteval Quaternion RotateAroundZ_By_PiOverTwo()	{ return Quaternion( Vector< ComponentType, 3 >::Forward()	* ComponentType{ 0.70710678 },	ComponentType{ 0.70710678 } ); }
+
 		constexpr RadiansType HalfAngle() const
 		{
 			ASSERT_DEBUG_ONLY( IsNormalized() && R"(QuaternionBase::HalfAngle(): The quaternion "*this" is not normalized!)" );
