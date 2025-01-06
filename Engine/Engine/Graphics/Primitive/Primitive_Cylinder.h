@@ -28,4 +28,19 @@ namespace Engine::Primitive::Indexed::Cylinder
 
 		return uvs;
 	}
+
+	constexpr auto Normals()
+	{
+		return CylinderTemplate::Normals();
+	}
+
+	constexpr auto Tangents()
+	{
+		return CylinderTemplate::Tangents();
+	}
+
+	constexpr auto Bitangents()
+	{
+		return CylinderTemplate::Bitangents();
+	}
 }

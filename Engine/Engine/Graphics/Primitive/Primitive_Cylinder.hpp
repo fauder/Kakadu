@@ -126,8 +126,6 @@ namespace Engine::Primitive::Indexed::CylinderTemplate
 	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	auto UVs()
 	{
-		using IndexType = std::uint16_t;
-
 		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
 		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
 		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
@@ -167,5 +165,109 @@ namespace Engine::Primitive::Indexed::CylinderTemplate
 		} );
 
 		return uvs;
+	}
+
+	/* Check Positions() for vertex ordering. */
+	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	constexpr auto Normals()
+	{
+		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
+		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+
+		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / LongitudeCount;
+
+		std::array< Vector3, vertex_count > normals;
+
+		/* Top cap: */
+		std::fill_n( normals.begin(), cap_vertex_count, Vector3::Up() );
+
+		/* Side vertices: */
+
+		std::uint8_t index = cap_vertex_count;
+
+		{
+			const std::uint8_t side_vertices_start_index = index;
+
+			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+			{
+				const auto angle = delta_angle * i;
+				/* v0 */ normals[ index++ ] = Vector3( Math::Cos( angle ), 0.0f, Math::Sin( angle ) );
+				/* v1 */ normals[ index++ ] = Vector3( Math::Cos( angle ), 0.0f, Math::Sin( angle ) );
+			}
+
+			/* Duplicate the starting vertices (u=0) to allow u=1. */
+			/* v0 */ normals[ index++ ] = Vector3::Right();
+			/* v1 */ normals[ index++ ] = Vector3::Right();
+		}
+
+		/* Bottom cap: */
+		std::fill_n( normals.begin() + cap_vertex_count + side_vertex_count, cap_vertex_count, Vector3::Down() );
+
+		return normals;
+	}
+
+	/* Check Positions() for vertex ordering. */
+	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	constexpr auto Tangents()
+	{
+		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
+		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+
+		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / LongitudeCount;
+
+		std::array< Vector3, vertex_count > tangents;
+
+		/* Top cap: */
+		std::fill_n( tangents.begin(), cap_vertex_count, Vector3::Right() );
+
+		/* Side vertices: */
+
+		std::uint8_t index = cap_vertex_count;
+
+		{
+			const std::uint8_t side_vertices_start_index = index;
+
+			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+			{
+				const auto angle = delta_angle * i;
+				/* v0 */ tangents[ index++ ] = Vector3( -Math::Sin( angle ), 0.0f, Math::Cos( angle ) );
+				/* v1 */ tangents[ index++ ] = Vector3( -Math::Sin( angle ), 0.0f, Math::Cos( angle ) );
+			}
+
+			/* Duplicate the starting vertices (u=0) to allow u=1. */
+			/* v0 */ tangents[ index++ ] = Vector3::Right();
+			/* v1 */ tangents[ index++ ] = Vector3::Right();
+		}
+
+		/* Bottom cap: */
+		std::fill_n( tangents.begin() + cap_vertex_count + side_vertex_count, cap_vertex_count, Vector3::Left() );
+
+		return tangents;
+	}
+
+	/* Check Positions() for vertex ordering. */
+	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	constexpr auto Bitangents()
+	{
+		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
+		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+
+		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / LongitudeCount;
+
+		std::array< Vector3, vertex_count > bitangents;
+
+		/* Top cap: */
+		std::fill_n( bitangents.begin(), cap_vertex_count, Vector3::Forward() );
+
+		/* Side vertices: */
+		std::fill_n( bitangents.begin() + cap_vertex_count, side_vertex_count, Vector3::Up() );
+
+		/* Bottom cap: */
+		std::fill_n( bitangents.begin() + cap_vertex_count + side_vertex_count, cap_vertex_count, Vector3::Forward() );
+
+		return bitangents;
 	}
 }
