@@ -21,4 +21,11 @@ namespace Engine::Primitive::Indexed::Circle
 
 		return indices;
 	}
+
+	static const auto& UVs()
+	{
+		static auto uvs = CircleTemplate::UVs();
+
+		return uvs;
+	}
 }

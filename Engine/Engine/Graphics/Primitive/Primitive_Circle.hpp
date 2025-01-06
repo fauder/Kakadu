@@ -78,4 +78,17 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 
 		return indices;
 	};
+
+	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
+	std::array< Vector2, VertexCount > UVs()
+	{
+		std::array< Vector2, VertexCount > uvs;
+
+		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / VertexCount;
+
+		for( std::uint8_t i = 0; i < VertexCount; i++ )
+			uvs[ i ] = Vector2( Math::Cos( delta_angle * i ), -Math::Sin( delta_angle * i ) ) * 0.5f + 0.5f; // Remap unit circle to uv range: [-1,+1] => [0,+1].
+
+		return uvs;
+	};
 }
