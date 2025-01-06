@@ -93,7 +93,7 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 	};
 
 	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
-	std::array< Vector3, VertexCount > Normals()
+	constexpr std::array< Vector3, VertexCount > Normals()
 	{
 		std::array< Vector3, VertexCount > normals;
 		normals.fill( Vector3::Up() );
@@ -101,7 +101,7 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 	};
 
 	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
-	std::array< Vector3, VertexCount > Tangents()
+	constexpr std::array< Vector3, VertexCount > Tangents()
 	{
 		std::array< Vector3, VertexCount > tangents;
 		tangents.fill( Vector3::Right() );
@@ -109,7 +109,7 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 	};
 
 	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
-	std::array< Vector3, VertexCount > Bitangents()
+	constexpr std::array< Vector3, VertexCount > Bitangents()
 	{
 		std::array< Vector3, VertexCount > bitangents;
 		bitangents.fill( Vector3::Forward() );

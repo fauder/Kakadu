@@ -29,24 +29,18 @@ namespace Engine::Primitive::Indexed::Circle
 		return uvs;
 	}
 
-	static const auto& Normals()
+	constexpr auto Normals()
 	{
-		static auto normals = CircleTemplate::Normals();
-
-		return normals;
+		return CircleTemplate::Normals();
 	}
 
-	static const auto& Tangents()
+	constexpr auto Tangents()
 	{
-		static auto tangents = CircleTemplate::Tangents();
-
-		return tangents;
+		return CircleTemplate::Tangents();
 	}
 
-	static const auto& Bitangents()
+	constexpr auto Bitangents()
 	{
-		static auto bitangents = CircleTemplate::Bitangents();
-
-		return bitangents;
+		return CircleTemplate::Bitangents();
 	}
 }
