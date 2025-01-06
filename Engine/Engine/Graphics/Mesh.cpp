@@ -9,6 +9,33 @@ namespace Engine
 		primitive_type( PrimitiveType::Triangles )
 	{}
 
+	Mesh::Mesh( const std::span< const Vector3			> positions, 
+				const std::string&						  name, 
+				const std::span< const Vector3			> normals,
+				const std::span< const Vector2			> uvs, 
+				const std::span< const std::uint32_t	> indices, 
+				const std::span< const Vector3			> tangents, 
+				const PrimitiveType						  primitive_type, 
+				const GLenum							  usage )
+		:
+		name( name ),
+		indices( indices.begin(), indices.end() ),
+		positions( positions.begin(), positions.end() ),
+		normals( normals.begin(), normals.end() ),
+		tangents( tangents.begin(), tangents.end() ),
+		uvs( uvs.begin(), uvs.end() ),
+		primitive_type( primitive_type ),
+		instance_count( 1 )
+	{
+		unsigned int vertex_count_interleaved;
+		const auto interleaved_vertices = MeshUtility::Interleave( vertex_count_interleaved, positions, normals, uvs, tangents );
+
+		vertex_buffer = VertexBuffer( vertex_count_interleaved, std::span( interleaved_vertices ), name + " Vertex Buffer", usage );
+		vertex_layout = VertexLayout( GatherAttributes( positions, normals, uvs, tangents ) );
+		index_buffer  = indices.empty() ? std::nullopt : std::optional< IndexBuffer >( std::in_place, std::span( indices ), name + " Index Buffer", usage );
+		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name + " VAO");
+	}
+
 	Mesh::Mesh( std::vector< Vector3 >&&		positions,
 				const std::string&				name,
 				std::vector< Vector3 >&&		normals,
@@ -89,9 +116,10 @@ namespace Engine
 		instance_buffer->Update_Partial( data_span, offset_from_buffer_start );
 	}
 
-	std::array< VertexAttribute, 4 > Mesh::GatherAttributes( const std::vector< Vector3 >& positions, const std::vector< Vector3 >& normals,
-															 const std::vector< Vector2 >& uvs,
-															 const std::vector< Vector3 >& tangents )
+	std::array< VertexAttribute, 4 > Mesh::GatherAttributes( const std::span< const Vector3 >& positions,
+															 const std::span< const Vector3 >& normals,
+															 const std::span< const Vector2 >& uvs,
+															 const std::span< const Vector3 >& tangents )
 	{
 		auto CountOf = []( auto&& attribute_container ) { return attribute_container.empty() ? 0 : int( sizeof( attribute_container.front() ) / sizeof( float ) ); };
 

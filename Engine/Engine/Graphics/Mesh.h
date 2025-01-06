@@ -31,14 +31,23 @@ namespace Engine
 		DELETE_COPY_CONSTRUCTORS( Mesh );
 		DEFAULT_MOVE_CONSTRUCTORS( Mesh );
 
+		Mesh( const std::span< const Vector3		> positions,
+			  const std::string&					  name			 = {},
+			  const std::span< const Vector3		> normals		 = {},
+			  const std::span< const Vector2		> uvs			 = {},
+			  const std::span< const std::uint32_t	> indices		 = {},
+			  const std::span< const Vector3		> tangents		 = {},
+			  const PrimitiveType					  primitive_type = PrimitiveType::Triangles,
+			  const GLenum							  usage			 = GL_STATIC_DRAW );
+
 		Mesh( std::vector< Vector3			>&& positions,
-			  const std::string&				name			= {},
-			  std::vector< Vector3			>&& normals			= {},
-			  std::vector< Vector2			>&& uvs			= {},
-			  std::vector< std::uint32_t	>&& indices		    = {},
-			  std::vector< Vector3			>&& tangents		= {},
-			  const PrimitiveType				primitive_type	= PrimitiveType::Triangles,
-			  const GLenum						usage			= GL_STATIC_DRAW );
+			  const std::string&				name		   = {},
+			  std::vector< Vector3			>&& normals		   = {},
+			  std::vector< Vector2			>&& uvs			   = {},
+			  std::vector< std::uint32_t	>&& indices		   = {},
+			  std::vector< Vector3			>&& tangents	   = {},
+			  const PrimitiveType				primitive_type = PrimitiveType::Triangles,
+			  const GLenum						usage		   = GL_STATIC_DRAW );
 
 		Mesh( const Mesh& other,
 			  const std::initializer_list< VertexInstanceAttribute > instanced_attributes,
@@ -107,10 +116,10 @@ namespace Engine
 		inline const float* Uvs_Raw()			const { return reinterpret_cast< const float* >( uvs.data()			); };
 
 	private:
-		static std::array< VertexAttribute, 4 > GatherAttributes( const std::vector< Vector3 >& positions,
-																  const std::vector< Vector3 >& normals,
-																  const std::vector< Vector2 >& uvs,
-																  const std::vector< Vector3 >& tangents );
+		static std::array< VertexAttribute, 4 > GatherAttributes( const std::span< const Vector3 >& positions,
+																  const std::span< const Vector3 >& normals,
+																  const std::span< const Vector2 >& uvs,
+																  const std::span< const Vector3 >& tangents );
 
  	private:
 		std::string name;
