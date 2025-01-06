@@ -154,7 +154,7 @@ namespace Engine::Math
 		constexpr Quaternion& operator+= ( const Quaternion other )
 		{
 			xyz += other.xyz;
-			w += other.w;
+			w   += other.w;
 
 			return *this;
 		}
@@ -167,7 +167,7 @@ namespace Engine::Math
 
 		constexpr Quaternion& operator*= ( const ComponentType scalar )
 		{
-			w *= scalar;
+			w   *= scalar;
 			xyz *= scalar;
 
 			return *this;
@@ -355,15 +355,15 @@ namespace Engine::Math
 		static constexpr Quaternion< ComponentType > LookRotation_Naive( const Vector< ComponentType, 3 >& to_target_normalized, const Vector< ComponentType, 3 >& world_up_normalized = Vector< ComponentType, 3 >::Up() )
 		{
 			ASSERT_DEBUG_ONLY( to_target_normalized.IsNormalized() && R"(Math::LookRotation(): "to_target_normalized" is not normalized!)" );
-			ASSERT_DEBUG_ONLY( world_up_normalized.IsNormalized() && R"(Math::LookRotation():  "world_up_normalized" is not normalized!)" );
+			ASSERT_DEBUG_ONLY(  world_up_normalized.IsNormalized() && R"(Math::LookRotation():  "world_up_normalized" is not normalized!)" );
 
 			const auto to_right_normalized = Math::Cross( world_up_normalized, to_target_normalized ).Normalized();
-			const auto to_up_normalized = Math::Cross( to_target_normalized, to_right_normalized ).Normalized();
+			const auto to_up_normalized    = Math::Cross( to_target_normalized, to_right_normalized ).Normalized();
 
 			return Quaternion< ComponentType >
 			{
 				Math::Angle( to_target_normalized, Vector< ComponentType, 3 >::Forward() ),				// 1 Dot() + 1 Acos().
-					Math::Cross( to_target_normalized, Vector< ComponentType, 3 >::Forward() ).Normalized() // 1 Cross() + 1 Vector3::Normalized().
+				Math::Cross( to_target_normalized, Vector< ComponentType, 3 >::Forward() ).Normalized() // 1 Cross() + 1 Vector3::Normalized().
 			};
 		}
 
@@ -371,10 +371,10 @@ namespace Engine::Math
 		static constexpr Quaternion< ComponentType > LookRotation( const Vector< ComponentType, 3 >& to_target_normalized, const Vector< ComponentType, 3 >& world_up_normalized = Vector< ComponentType, 3 >::Up() )
 		{
 			ASSERT_DEBUG_ONLY( to_target_normalized.IsNormalized() && R"(Math::LookRotation(): "to_target_normalized" is not normalized!)" );
-			ASSERT_DEBUG_ONLY( world_up_normalized.IsNormalized() && R"(Math::LookRotation():  "world_up_normalized" is not normalized!)" );
+			ASSERT_DEBUG_ONLY(  world_up_normalized.IsNormalized() && R"(Math::LookRotation():  "world_up_normalized" is not normalized!)" );
 
 			const auto to_right_normalized = Math::Cross( world_up_normalized, to_target_normalized ).Normalized();
-			const auto to_up_normalized = Math::Cross( to_target_normalized, to_right_normalized ).Normalized();
+			const auto to_up_normalized    = Math::Cross( to_target_normalized, to_right_normalized ).Normalized();
 
 			return MatrixToQuaternion( Matrix< ComponentType, 3, 3 >( to_right_normalized, to_up_normalized, to_target_normalized ) ).Normalized();
 		}
@@ -469,9 +469,9 @@ namespace Engine::Math
 	{
 		ASSERT_DEBUG_ONLY( quaternion.IsNormalized() && R"(Math::QuaternionToMatrix(): The quaternion is not normalized!)" );
 
-		const auto two_x2 = ComponentType( 2 ) * quaternion.x * quaternion.x;
-		const auto two_y2 = ComponentType( 2 ) * quaternion.y * quaternion.y;
-		const auto two_z2 = ComponentType( 2 ) * quaternion.z * quaternion.z;
+		const auto two_x2  = ComponentType( 2 ) * quaternion.x * quaternion.x;
+		const auto two_y2  = ComponentType( 2 ) * quaternion.y * quaternion.y;
+		const auto two_z2  = ComponentType( 2 ) * quaternion.z * quaternion.z;
 		const auto two_x_y = ComponentType( 2 ) * quaternion.x * quaternion.y;
 		const auto two_x_z = ComponentType( 2 ) * quaternion.x * quaternion.z;
 		const auto two_y_z = ComponentType( 2 ) * quaternion.y * quaternion.z;
@@ -480,13 +480,13 @@ namespace Engine::Math
 		const auto two_w_z = ComponentType( 2 ) * quaternion.w * quaternion.z;
 
 		return Matrix< ComponentType, 4, 4 >
-			(
-				{
-					ComponentType( 1 ) - two_y2 - two_z2,		two_x_y + two_w_z,							two_x_z - two_w_y,							ComponentType( 0 ),
-					two_x_y - two_w_z,							ComponentType( 1 ) - two_x2 - two_z2,		two_y_z + two_w_x,							ComponentType( 0 ),
-					two_x_z + two_w_y,							two_y_z - two_w_x,							ComponentType( 1 ) - two_x2 - two_y2,		ComponentType( 0 ),
-					ComponentType( 0 ),							ComponentType( 0 ),							ComponentType( 0 ),							ComponentType( 1 )
-				}
+		(
+			{
+				ComponentType( 1 ) - two_y2 - two_z2,	two_x_y + two_w_z,						two_x_z - two_w_y,						ComponentType( 0 ),
+				two_x_y - two_w_z,						ComponentType( 1 ) - two_x2 - two_z2,	two_y_z + two_w_x,						ComponentType( 0 ),
+				two_x_z + two_w_y,						two_y_z - two_w_x,						ComponentType( 1 ) - two_x2 - two_y2,	ComponentType( 0 ),
+				ComponentType( 0 ),						ComponentType( 0 ),						ComponentType( 0 ),						ComponentType( 1 )
+			}
 		);
 	}
 
@@ -508,9 +508,9 @@ namespace Engine::Math
 		return Matrix< ComponentType, 3, 3 >
 		(
 			{
-				ComponentType( 1 ) - two_y2 - two_z2,		two_x_y + two_w_z,							two_x_z - two_w_y,					
-				two_x_y - two_w_z,							ComponentType( 1 ) - two_x2 - two_z2,		two_y_z + two_w_x,					
-				two_x_z + two_w_y,							two_y_z - two_w_x,							ComponentType( 1 ) - two_x2 - two_y2
+				ComponentType( 1 ) - two_y2 - two_z2,	two_x_y + two_w_z,						two_x_z - two_w_y,					
+				two_x_y - two_w_z,						ComponentType( 1 ) - two_x2 - two_z2,	two_y_z + two_w_x,					
+				two_x_z + two_w_y,						two_y_z - two_w_x,						ComponentType( 1 ) - two_x2 - two_y2
 			}
 		);
 	}
