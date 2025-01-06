@@ -65,14 +65,15 @@ namespace Engine::Primitive::Indexed::CylinderTemplate
 			/* v1 */ positions[ index++ ] = positions[ side_vertices_start_index + 1 ];
 		}
 
-		using namespace Math::Literals;
-
-		constexpr Quaternion rotate_around_z_by_180_degrees( Vector3::Forward(), 0 );
-
 		/* Bottom cap: */
+
 		std::transform( cap_positions.cbegin(), cap_positions.cend(),
 						positions.begin() + index,
-						[ & ]( Vector3 position ) { return rotate_around_z_by_180_degrees.Transform( position.SetY( y_max ) ); } );
+						[]( Vector3 position )
+		{
+			constexpr Quaternion rotate_around_z_by_180_degrees( Vector3::Forward(), 0 );
+			return rotate_around_z_by_180_degrees.Transform( position.SetY( y_max ) );
+		} );
 
 		return positions;
 	};
@@ -120,5 +121,53 @@ namespace Engine::Primitive::Indexed::CylinderTemplate
 						[]( const unsigned int index ) { return cap_vertex_count + side_vertex_count + index; } );
 
 		return indices;
+	}
+
+	/* Check Positions() for vertex ordering. */
+	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	auto UVs()
+	{
+		using IndexType = std::uint16_t;
+
+		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
+		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+
+		std::array< Vector2, vertex_count > uvs;
+
+		const auto cap_uvs( CircleTemplate::UVs< LongitudeCount >() );
+
+		/* Top cap: */
+		std::copy_n( cap_uvs.cbegin(), cap_vertex_count, uvs.begin() );
+
+		/* Side vertices: */
+
+		std::uint8_t index = cap_vertex_count;
+
+		{
+			constexpr float delta_u = 1.0f / LongitudeCount;
+
+			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+			{
+				/* v0 */ uvs[ index++ ] = Vector2( i * delta_u, 0.0f );
+				/* v1 */ uvs[ index++ ] = Vector2( i * delta_u, 1.0f );
+			}
+
+			/* Duplicate the starting vertices (u=0) to allow u=1. */
+			/* v0 */ uvs[ index++ ] = Vector2( 1.0f, 0.0f );
+			/* v1 */ uvs[ index++ ] = Vector2( 1.0f, 1.0f );
+		}
+
+		/* Bottom cap: */
+
+		std::transform( cap_uvs.cbegin(), cap_uvs.cend(),
+						uvs.begin() + cap_vertex_count + side_vertex_count,
+						[]( const Vector2 uv )
+		{
+			constexpr Quaternion rotate_around_z_by_180_degrees( Vector3::Forward(), 0 );
+			return rotate_around_z_by_180_degrees.Transform( Vector3( uv.X(), uv.Y(), 0.0f ) ).XY();
+		} );
+
+		return uvs;
 	}
 }

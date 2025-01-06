@@ -21,4 +21,11 @@ namespace Engine::Primitive::Indexed::Cylinder
 
 		return indices;
 	}
+
+	static const auto& UVs()
+	{
+		static auto uvs = CylinderTemplate::UVs();
+
+		return uvs;
+	}
 }
