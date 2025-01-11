@@ -3,9 +3,6 @@
 // Project Includes.
 #include "Primitive_Circle.hpp"
 
-// std Includes.
-#include <array>
-
 namespace Engine::Primitive::Indexed::Circle
 {
 	static const auto& Positions()
