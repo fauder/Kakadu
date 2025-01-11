@@ -38,6 +38,13 @@ namespace Engine::Primitive::Indexed::SphereTemplate
 
 		Math::Polar3_Spherical_Game spherical_coordinates( radius, 0.0_rad, -Constants< Radians >::Pi_Over_Two() );
 
+		/* NOTE: Instead of using a Polar3_Spherical_Game here, the individual heading/pitch and their corresponding sin/cos values can be tracked & modified manually. 
+		 * While this would potentially be faster due to caching the sin/cos of the pitch & the xz_projection_of_r values [per ring],
+		 * the performance gains would be minimal for the default longitude/latitude of 20 (nano-micro seconds probably).
+		 * Also, as the returned positions & other attributes are cached as a static variable for the default sphere, this optimization is not necessary,
+		 * and the explicit and longer LOC nature of the code is a negative here. */
+
+		/* Non-pole rings: */
 		for( std::uint8_t ring_index = 0; ring_index < non_pole_ring_count; ring_index++ )
 		{
 			spherical_coordinates.Pitch() += delta_angle;
@@ -48,7 +55,7 @@ namespace Engine::Primitive::Indexed::SphereTemplate
 				positions[ index++ ] = Math::ToVector3( spherical_coordinates );
 			}
 
-			/* Duplicate the starting vertex (u=0) to allow u=1. */
+			/* Duplicate the starting vertex (u=0) of the ring to allow u=1. */
 			spherical_coordinates.Heading() = 0.0_rad; // Reset.
 			positions[ index++ ] = Math::ToVector3( spherical_coordinates );
 		}
