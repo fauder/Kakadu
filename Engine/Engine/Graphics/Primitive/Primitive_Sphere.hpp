@@ -23,8 +23,9 @@ namespace Engine::Primitive::Indexed::SphereTemplate
 		constexpr std::uint16_t vertex_count = non_pole_ring_count * non_pole_ring_vertex_count + 2; // +2 for the poles. u coordinate of the poles do not matter as it is a singularity.
 		std::array< Vector3, vertex_count > positions;
 
-		constexpr float radius        = Diameter / 2.0f;
-		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / LongitudeCount;
+		constexpr float radius          = Diameter / 2.0f;
+		constexpr Radians delta_heading = Constants< Radians >::Two_Pi() / LongitudeCount;
+		constexpr Radians delta_pitch   = Constants< Radians >::Pi() / LongitudeCount;
 
 		std::uint8_t index = 0;
 
@@ -47,11 +48,11 @@ namespace Engine::Primitive::Indexed::SphereTemplate
 		/* Non-pole rings: */
 		for( std::uint8_t ring_index = 0; ring_index < non_pole_ring_count; ring_index++ )
 		{
-			spherical_coordinates.Pitch() += delta_angle;
+			spherical_coordinates.Pitch() += delta_pitch;
 
 			for( std::uint8_t longitude_index = 0; longitude_index < LongitudeCount; longitude_index++ )
 			{
-				spherical_coordinates.Heading() = delta_angle * longitude_index;
+				spherical_coordinates.Heading() = delta_heading * longitude_index;
 				positions[ index++ ] = Math::ToVector3( spherical_coordinates );
 			}
 
