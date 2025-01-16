@@ -16,11 +16,11 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 	template< std::uint8_t LongitudeCount = 20, float Diameter = 1.0f > requires( LongitudeCount >= 3 )
 	auto Positions()
 	{
-		constexpr std::uint8_t latitude_count             = LongitudeCount;
-		constexpr std::uint8_t non_pole_ring_count        = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t non_pole_ring_vertex_count = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr std::uint8_t latitude_count      = LongitudeCount;
+		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
-		constexpr std::uint16_t vertex_count = non_pole_ring_count * non_pole_ring_vertex_count + 2; // +2 for the poles. u coordinate of the poles do not matter as it is a singularity.
+		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 		std::array< Vector3, vertex_count > positions;
 
 		constexpr float radius          = Diameter / 2.0f;
@@ -33,7 +33,8 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 		constexpr Vector3 south_pole = Vector3( 0.0f, -radius, 0.0f );
 
 		/* North pole: */
-		positions[ index++ ] = north_pole;
+		for( std::uint8_t pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
+			positions[ index++ ] = north_pole;
 
 		using namespace Math::Literals;
 
@@ -62,7 +63,8 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 		}
 
 		/* South pole: */
-		positions[ index++ ] = south_pole;
+		for( std::uint8_t pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
+			positions[ index++ ] = south_pole;
 
 		return positions;
 	};
@@ -73,11 +75,11 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 	{
 		using IndexType = std::uint16_t;
 
-		constexpr std::uint8_t latitude_count             = LongitudeCount;
-		constexpr std::uint8_t non_pole_ring_count        = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t non_pole_ring_vertex_count = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr std::uint8_t latitude_count      = LongitudeCount;
+		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
-		constexpr std::uint16_t vertex_count = non_pole_ring_count * non_pole_ring_vertex_count + 2; // +2 for the poles. u coordinate of the poles do not matter as it is a singularity.
+		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 
 		/* There are (N-1) bands for N longitudes (including the poles as longitudes).
 		 * The top and bottom bands are triangular and counted separately.
@@ -97,16 +99,16 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 		/* Top cap: */
 		for( auto i = 0; i < LongitudeCount; i++ )
 		{
-			indices[ array_index++ ] = 0;
-			indices[ array_index++ ] = i + 1;
-			indices[ array_index++ ] = i + 2;
+			indices[ array_index++ ] = i;
+			indices[ array_index++ ] = stride + i;
+			indices[ array_index++ ] = stride + i + 1;
 		}
 
 		/* Side vertices: */
 
 		for( IndexType side_band_index = 0; side_band_index < side_band_count; side_band_index++ )
 		{
-			const unsigned int first_vertex = 1 + ( unsigned int )side_band_index * stride;
+			const unsigned int first_vertex = stride + ( unsigned int )side_band_index * stride;
 			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
 			{
 				indices[ array_index++ ] = first_vertex + i;
@@ -120,12 +122,12 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 
 		/* Bottom cap: */
 		{
-			constexpr unsigned int last_vertex = vertex_count - 1;
-			constexpr unsigned int first_vertex_of_last_band = last_vertex - stride;
+			constexpr unsigned int first_south_pole_vertex = vertex_count - stride;
+			constexpr unsigned int first_vertex_of_last_band = first_south_pole_vertex - stride;
 			for( auto i = 0; i < LongitudeCount; i++ )
 			{
 				indices[ array_index++ ] = first_vertex_of_last_band + i;
-				indices[ array_index++ ] = last_vertex;
+				indices[ array_index++ ] = first_south_pole_vertex + i;
 				indices[ array_index++ ] = first_vertex_of_last_band + i + 1;
 			}
 		}
@@ -137,11 +139,11 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	constexpr auto UVs()
 	{
-		constexpr std::uint8_t latitude_count             = LongitudeCount;
-		constexpr std::uint8_t non_pole_ring_count        = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t non_pole_ring_vertex_count = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr std::uint8_t latitude_count      = LongitudeCount;
+		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
-		constexpr std::uint16_t vertex_count = non_pole_ring_count * non_pole_ring_vertex_count + 2; // +2 for the poles. u coordinate of the poles do not matter as it is a singularity.
+		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 		std::array< Vector2, vertex_count > uvs;
 
 		constexpr float delta_u = 1.0f / LongitudeCount;
@@ -149,14 +151,11 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 
 		std::uint16_t index = 0;
 
-		constexpr Vector2 north_pole = Vector2( 0.0f, 1.0f );
-		constexpr Vector2 south_pole = Vector2( 0.0f, 0.0f );
-
 		/* North pole: */
-		uvs[ index++ ] = north_pole;
+		for( std::uint8_t pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
+			uvs[ index++ ] = Vector2( delta_u * ( 0.5f + ( float )pole_vertices_index ), 1.0f );
 
 		/* NOTE: See the note in Positions(). */
-
 
 		/* Non-pole rings: */
 		for( std::uint8_t ring_index = 0; ring_index < non_pole_ring_count; ring_index++ )
@@ -171,7 +170,8 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 		}
 
 		/* South pole: */
-		uvs[ index++ ] = south_pole;
+		for( std::uint8_t pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
+			uvs[ index++ ] = Vector2( delta_u * ( 0.5f + ( float )pole_vertices_index ), 0.0f );
 
 		return uvs;
 	}
