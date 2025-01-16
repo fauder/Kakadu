@@ -227,36 +227,36 @@ void SandboxApplication::Initialize()
 	window_transform_array[ 4 ].SetTranslation( Vector3(  0.5f,	5.0f, -0.6f  ) );
 
 /* Vertex/Index Data: */
-	cube_mesh = Engine::Mesh( std::vector< Vector3		 >( Engine::Primitive::Indexed::Cube::Positions.cbegin(),	Engine::Primitive::Indexed::Cube::Positions.cend() ),
+	cube_mesh = Engine::Mesh( Engine::Primitive::Indexed::Cube::Positions,
 							  "Cube",
-							  std::vector< Vector3		 >( Engine::Primitive::Indexed::Cube::Normals.cbegin(),		Engine::Primitive::Indexed::Cube::Normals.cend() ),
-							  std::vector< Vector2		 >( Engine::Primitive::Indexed::Cube::UVs.cbegin(),			Engine::Primitive::Indexed::Cube::UVs.cend() ),
-							  std::vector< std::uint32_t >( Engine::Primitive::Indexed::Cube::Indices.cbegin(),		Engine::Primitive::Indexed::Cube::Indices.cend() ),
-							  std::vector< Vector3		 >( Engine::Primitive::Indexed::Cube::Tangents.cbegin(),	Engine::Primitive::Indexed::Cube::Tangents.cend() ) );
+							  Engine::Primitive::Indexed::Cube::Normals,
+							  Engine::Primitive::Indexed::Cube::UVs,
+							  Engine::Primitive::Indexed::Cube::Indices,
+							  Engine::Primitive::Indexed::Cube::Tangents );
 
-	cube_mesh_fullscreen = Engine::Mesh( std::vector< Vector3 >( Engine::Primitive::NonIndexed::Cube_FullScreen::Positions.cbegin(), Engine::Primitive::NonIndexed::Cube_FullScreen::Positions.cend() ),
+	cube_mesh_fullscreen = Engine::Mesh( Engine::Primitive::NonIndexed::Cube_FullScreen::Positions,
 										 "Cube (Fullscreen)",
 										 { /* No normals.	*/ },
 										 { /* No uvs.		*/ },
 										 { /* No indices.	*/ } );
 
-	quad_mesh_uvs_only = Engine::Mesh( std::vector< Vector3 >( Engine::Primitive::Indexed::Quad::Positions.cbegin(), Engine::Primitive::Indexed::Quad::Positions.cend() ),
+	quad_mesh_uvs_only = Engine::Mesh( Engine::Primitive::Indexed::Quad::Positions,
 									   "Quad (UVs Only)",
 									   { /* No normals. */ },
-									   std::vector< Vector2 >( Engine::Primitive::Indexed::Quad::UVs.cbegin(), Engine::Primitive::Indexed::Quad::UVs.cend() ),
-									   std::vector< std::uint32_t >( Engine::Primitive::Indexed::Quad::Indices.cbegin(), Engine::Primitive::Indexed::Quad::Indices.cend() ) );
+									   Engine::Primitive::Indexed::Quad::UVs,
+									   Engine::Primitive::Indexed::Quad::Indices );
 
-	quad_mesh = Engine::Mesh( std::vector< Vector3		 >( Engine::Primitive::Indexed::Quad::Positions.cbegin(),	Engine::Primitive::Indexed::Quad::Positions.cend() ),
+	quad_mesh = Engine::Mesh( Engine::Primitive::Indexed::Quad::Positions,
 							  "Quad",
-							  std::vector< Vector3		 >( Engine::Primitive::Indexed::Quad::Normals.cbegin(),		Engine::Primitive::Indexed::Quad::Normals.cend() ),
-							  std::vector< Vector2		 >( Engine::Primitive::Indexed::Quad::UVs.cbegin(),			Engine::Primitive::Indexed::Quad::UVs.cend() ),
-							  std::vector< std::uint32_t >( Engine::Primitive::Indexed::Quad::Indices.cbegin(),		Engine::Primitive::Indexed::Quad::Indices.cend() ),
-							  std::vector< Vector3		 >( Engine::Primitive::Indexed::Quad::Tangents.cbegin(),	Engine::Primitive::Indexed::Quad::Tangents.cend() ) );
+							  Engine::Primitive::Indexed::Quad::Normals,
+							  Engine::Primitive::Indexed::Quad::UVs,
+							  Engine::Primitive::Indexed::Quad::Indices,
+							  Engine::Primitive::Indexed::Quad::Tangents );
 
-	quad_mesh_fullscreen = Engine::Mesh( std::vector< Vector3 >( Engine::Primitive::NonIndexed::Quad_FullScreen::Positions.cbegin(), Engine::Primitive::NonIndexed::Quad_FullScreen::Positions.cend() ),
+	quad_mesh_fullscreen = Engine::Mesh( Engine::Primitive::NonIndexed::Quad_FullScreen::Positions,
 										 "Quad (FullScreen)",
 										 { /* No normals. */ },
-										 std::vector< Vector2 >( Engine::Primitive::NonIndexed::Quad_FullScreen::UVs.cbegin(), Engine::Primitive::NonIndexed::Quad_FullScreen::UVs.cend() ),
+										 Engine::Primitive::NonIndexed::Quad_FullScreen::UVs,
 										 { /* No indices. */ } );
 
 	cube_mesh_instanced = Engine::Mesh( cube_mesh,
@@ -295,10 +295,10 @@ void SandboxApplication::Initialize()
 		{ -0.425f, 0.35f, -0.01f }  // A little z offset backwards to make sure this is rendered in front & shows.
 	} );
 
-	quad_mesh_mirror = Engine::Mesh( std::vector< Vector3 >( quad_mesh_positions_ndc.cbegin(), quad_mesh_positions_ndc.cend() ),
+	quad_mesh_mirror = Engine::Mesh( quad_mesh_positions_ndc,
 									 "Quad (Rear-view mirror)",
 									 { /* No normals. */ },
-									 std::vector< Vector2 >( Engine::Primitive::NonIndexed::Quad_FullScreen::UVs.cbegin(), Engine::Primitive::NonIndexed::Quad_FullScreen::UVs.cend() ),
+									 Engine::Primitive::NonIndexed::Quad_FullScreen::UVs,
 									 { /* No indices. */ } );
 
 /* Lighting: */
