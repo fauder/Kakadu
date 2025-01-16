@@ -185,7 +185,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Quad_FullScreen.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Circle.hpp" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Sphere.h" />
-    <ClInclude Include="Engine\Graphics\Primitive\Primitive_Sphere.hpp" />
+    <ClInclude Include="Engine\Graphics\Primitive\Primitive_UV_Sphere.hpp" />
     <ClInclude Include="Engine\Graphics\RenderPass.h" />
     <ClInclude Include="Engine\Graphics\ShaderSourcePath.hpp" />
     <ClInclude Include="Engine\Graphics\ShaderType.h" />

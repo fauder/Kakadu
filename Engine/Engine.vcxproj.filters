@@ -279,7 +279,7 @@
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Circle.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\Primitive\Primitive_Sphere.hpp">
+    <ClInclude Include="Engine\Graphics\Primitive\Primitive_UV_Sphere.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Sphere.h">
