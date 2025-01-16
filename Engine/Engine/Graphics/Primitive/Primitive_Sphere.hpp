@@ -25,7 +25,7 @@ namespace Engine::Primitive::Indexed::SphereTemplate
 
 		constexpr float radius          = Diameter / 2.0f;
 		constexpr Radians delta_heading = Constants< Radians >::Two_Pi() / LongitudeCount;
-		constexpr Radians delta_pitch   = Constants< Radians >::Pi()     / LongitudeCount;
+		constexpr Radians delta_pitch   = Constants< Radians >::Pi()     / ( LongitudeCount - 1 );
 
 		std::uint16_t index = 0;
 
