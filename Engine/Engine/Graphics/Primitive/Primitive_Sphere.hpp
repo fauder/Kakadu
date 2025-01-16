@@ -27,7 +27,7 @@ namespace Engine::Primitive::Indexed::SphereTemplate
 		constexpr Radians delta_heading = Constants< Radians >::Two_Pi() / LongitudeCount;
 		constexpr Radians delta_pitch   = Constants< Radians >::Pi() / LongitudeCount;
 
-		std::uint8_t index = 0;
+		std::uint16_t index = 0;
 
 		constexpr Vector3 north_pole = Vector3( 0.0f, +radius, 0.0f );
 		constexpr Vector3 south_pole = Vector3( 0.0f, -radius, 0.0f );
