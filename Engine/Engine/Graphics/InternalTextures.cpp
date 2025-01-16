@@ -66,5 +66,12 @@ namespace Engine
 																							   .wrap_u = Texture::Wrapping::Repeat,
 																							   .wrap_v = Texture::Wrapping::Repeat
 																						   } ) );
+
+		TEXTURE_MAP.try_emplace( "UV Test", AssetDatabase< Texture >::CreateAssetFromFile( "UV Test", FullTexturePath( "uv_test.png" ),
+																						   Texture::ImportSettings
+																						   {
+																							   .wrap_u = Texture::Wrapping::Repeat,
+																							   .wrap_v = Texture::Wrapping::Repeat
+																						   } ) );
 	}
 }
