@@ -23,4 +23,25 @@ namespace Engine::Primitive::Indexed::Sphere
 	{
 		return UVSphereTemplate::UVs();
 	}
+
+	static const auto& Normals()
+	{
+		static auto normals = UVSphereTemplate::Normals();
+
+		return normals;
+	}
+
+	static const auto& Tangents()
+	{
+		static auto tangents = UVSphereTemplate::Tangents();
+
+		return tangents;
+	}
+
+	static const auto& Bitangents()
+	{
+		static auto bitangents = UVSphereTemplate::Bitangents();
+
+		return bitangents;
+	}
 }

@@ -175,4 +175,104 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 
 		return uvs;
 	}
+
+	/* Check Positions() for vertex ordering.
+	 * Normals are smoothed out over the sphere surface. */
+	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	auto Normals()
+	{
+		constexpr std::uint8_t latitude_count      = LongitudeCount;
+		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+
+		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
+		std::array< Vector3, vertex_count > normals;
+
+		const auto positions( Positions< LongitudeCount >() );
+
+		for( std::uint16_t i = 0; i < vertex_count; i++ )
+			normals[ i ] = positions[ i ].Normalized();
+
+		return normals;
+	}
+
+	/* Check Positions() for vertex ordering.
+	 * Tangents are smoothed out over the sphere surface (because normals are smoothed out over the sphere surface). */
+	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+		auto Tangents()
+	{
+		constexpr std::uint8_t latitude_count = LongitudeCount;
+		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr std::uint8_t ring_vertex_count = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+
+		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
+		std::array< Vector3, vertex_count > tangents;
+
+		const auto normals( Normals< LongitudeCount >() );
+
+		/* Think of a meridian/longitude as forming a plane.
+		 * That plane's normal is the tangent.
+		 * Normal of the plane/meridian/longitude is defined by the left-hand rule, with the hand curving from the south pole to the north pole.
+		 *
+		 * An easy way to determine the tangent is to first project the normal to the XZ plane and then cross it with world up vector.
+		 *
+		 * Also, calculating the tangents for a ring (say, the north pole ring, as it comes first) will suffice,
+		 * as each vertex corresponding to the same meridian/longitude has the same tangent.
+		 */
+
+		std::uint16_t index = 0;
+
+		/* Actually calculate the tangents once for the north pole ring: */
+		for( ; index < ring_vertex_count; index++ )
+		{
+			const auto index_of_vertex_in_first_non_pole_ring( ring_vertex_count + index );
+
+			const auto& normal( normals[ index_of_vertex_in_first_non_pole_ring ] );
+			const auto normal_projected_to_xz( Vector3( normal ).SetY( 0.0f ).Normalized() );
+			tangents[ index ] = Math::Cross( normal, normal_projected_to_xz ).Normalized();
+		}
+
+		/* Now copy the tangents to other rings: */
+		for( ; index < vertex_count; index++ )
+			tangents[ index ] = tangents[ index % ring_vertex_count ];
+
+		return tangents;
+	}
+
+	/* Check Positions() for vertex ordering.
+	 * Bitangents are smoothed out over the sphere surface (because normals & tangents are smoothed out over the sphere surface). */
+	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	auto Bitangents()
+	{
+		constexpr std::uint8_t latitude_count      = LongitudeCount;
+		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+
+		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
+		std::array< Vector3, vertex_count > bitangents;
+
+		const auto normals( Normals< LongitudeCount >() );
+		const auto tangents( Tangents< LongitudeCount >() );
+
+		/* Calculating the bitangents for a meridian/longitude (say, the 1st one) will suffice, 
+		 * as each vertex corresponding to the same ring/latitude has the same bitangent.
+		 */
+
+		std::uint16_t index = 0;
+
+		/* Actually calculate the bitangents once for the north pole ring: */
+		for( ; index < ring_vertex_count; index++ )
+		{
+			const auto index_of_vertex_in_first_non_pole_ring( ring_vertex_count + index );
+
+			const auto& normal( normals[ index_of_vertex_in_first_non_pole_ring ] );
+			bitangents[ index ] = Math::Cross( tangents[ index_of_vertex_in_first_non_pole_ring ], normals[ index_of_vertex_in_first_non_pole_ring ] ).Normalized();
+		}
+
+		/* Now copy the bitangents to other rings: */
+		for( ; index < vertex_count; index++ )
+			bitangents[ index ] = bitangents[ index % ring_vertex_count ];
+
+		return bitangents;
+	}
 }
