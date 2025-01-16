@@ -27,6 +27,11 @@ namespace Engine
 		primitive_type( primitive_type ),
 		instance_count( 1 )
 	{
+#ifdef _DEBUG
+		if( normals.size() != tangents.size() )
+			ServiceLocator< GLLogger >::Get().Warning( "Mesh \"" + name + "\": Only one of the Normals & Tangents were provided. This is most likely a mistake." );
+#endif // _DEBUG
+
 		unsigned int vertex_count_interleaved;
 		const auto interleaved_vertices = MeshUtility::Interleave( vertex_count_interleaved, positions, normals, uvs, tangents );
 
