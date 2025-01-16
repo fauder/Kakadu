@@ -11,4 +11,11 @@ namespace Engine::Primitive::Indexed::Sphere
 
 		return positions;
 	}
+
+	static const auto& Indices()
+	{
+		static auto indices = SphereTemplate::Indices();
+
+		return indices;
+	}
 }

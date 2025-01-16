@@ -66,4 +66,70 @@ namespace Engine::Primitive::Indexed::SphereTemplate
 
 		return positions;
 	};
+
+	/* Check Positions() for vertex ordering. */
+	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	auto Indices()
+	{
+		using IndexType = std::uint16_t;
+
+		constexpr std::uint8_t latitude_count             = LongitudeCount;
+		constexpr std::uint8_t non_pole_ring_count        = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr std::uint8_t non_pole_ring_vertex_count = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+
+		constexpr std::uint16_t vertex_count = non_pole_ring_count * non_pole_ring_vertex_count + 2; // +2 for the poles. u coordinate of the poles do not matter as it is a singularity.
+
+		/* There are (N-1) bands for N longitudes (including the poles as longitudes).
+		 * The top and bottom bands are triangular and counted separately.
+		 * Remaining (N-3) bands have quads. We call those the "side" vertices/indices. */
+		constexpr IndexType side_band_triangle_count = 2 * LongitudeCount;
+		constexpr IndexType side_band_index_count    = 3 * side_band_triangle_count;
+		constexpr IndexType side_band_count          = LongitudeCount - 3;
+		constexpr IndexType cap_index_count          = 3 * LongitudeCount;
+		constexpr IndexType total_index_count        = 2 * cap_index_count + side_band_count * side_band_index_count;
+
+		std::array< unsigned int, total_index_count > indices;
+
+		constexpr unsigned int stride = LongitudeCount + 1;
+
+		IndexType array_index = 0;
+
+		/* Top cap: */
+		for( auto i = 0; i < LongitudeCount; i++ )
+		{
+			indices[ array_index++ ] = 0;
+			indices[ array_index++ ] = i + 1;
+			indices[ array_index++ ] = i + 2;
+		}
+
+		/* Side vertices: */
+
+		for( IndexType side_band_index = 0; side_band_index < side_band_count; side_band_index++ )
+		{
+			const unsigned int first_vertex = 1 + ( unsigned int )side_band_index * stride;
+			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+			{
+				indices[ array_index++ ] = first_vertex + i;
+				indices[ array_index++ ] = first_vertex + i + stride;
+				indices[ array_index++ ] = first_vertex + i + 1;
+				indices[ array_index++ ] = first_vertex + i + 1;
+				indices[ array_index++ ] = first_vertex + i + stride;
+				indices[ array_index++ ] = first_vertex + i + 1 + stride;
+			}
+		}
+
+		/* Bottom cap: */
+		{
+			constexpr unsigned int last_vertex = vertex_count - 1;
+			constexpr unsigned int first_vertex_of_last_band = last_vertex - stride;
+			for( auto i = 0; i < LongitudeCount; i++ )
+			{
+				indices[ array_index++ ] = first_vertex_of_last_band + i;
+				indices[ array_index++ ] = last_vertex;
+				indices[ array_index++ ] = first_vertex_of_last_band + i + 1;
+			}
+		}
+
+		return indices;
+	}
 }
