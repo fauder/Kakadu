@@ -18,4 +18,9 @@ namespace Engine::Primitive::Indexed::Sphere
 
 		return indices;
 	}
+
+	constexpr auto UVs()
+	{
+		return SphereTemplate::UVs();
+	}
 }

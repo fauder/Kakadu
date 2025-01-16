@@ -25,7 +25,7 @@ namespace Engine::Primitive::Indexed::SphereTemplate
 
 		constexpr float radius          = Diameter / 2.0f;
 		constexpr Radians delta_heading = Constants< Radians >::Two_Pi() / LongitudeCount;
-		constexpr Radians delta_pitch   = Constants< Radians >::Pi() / LongitudeCount;
+		constexpr Radians delta_pitch   = Constants< Radians >::Pi()     / LongitudeCount;
 
 		std::uint16_t index = 0;
 
@@ -131,5 +131,48 @@ namespace Engine::Primitive::Indexed::SphereTemplate
 		}
 
 		return indices;
+	}
+
+	/* Check Positions() for vertex ordering. */
+	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	constexpr auto UVs()
+	{
+		constexpr std::uint8_t latitude_count             = LongitudeCount;
+		constexpr std::uint8_t non_pole_ring_count        = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr std::uint8_t non_pole_ring_vertex_count = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+
+		constexpr std::uint16_t vertex_count = non_pole_ring_count * non_pole_ring_vertex_count + 2; // +2 for the poles. u coordinate of the poles do not matter as it is a singularity.
+		std::array< Vector2, vertex_count > uvs;
+
+		constexpr float delta_u = 1.0f / LongitudeCount;
+		constexpr float delta_v = 1.0f / ( LongitudeCount - 1 );
+
+		std::uint16_t index = 0;
+
+		constexpr Vector2 north_pole = Vector2( 0.0f, 1.0f );
+		constexpr Vector2 south_pole = Vector2( 0.0f, 0.0f );
+
+		/* North pole: */
+		uvs[ index++ ] = north_pole;
+
+		/* NOTE: See the note in Positions(). */
+
+
+		/* Non-pole rings: */
+		for( std::uint8_t ring_index = 0; ring_index < non_pole_ring_count; ring_index++ )
+		{
+			const float v = 1.0f - ( ( 1 + ring_index ) * delta_v );
+
+			for( std::uint8_t longitude_index = 0; longitude_index < LongitudeCount; longitude_index++ )
+				uvs[ index++ ] = Vector2( longitude_index * delta_u, v );
+
+			/* Duplicate the starting vertex (u=0) of the ring to allow u=1. */
+			uvs[ index++ ] = Vector2( 1.0f, v );
+		}
+
+		/* South pole: */
+		uvs[ index++ ] = south_pole;
+
+		return uvs;
 	}
 }
