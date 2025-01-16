@@ -29,6 +29,7 @@ It is a graphics framework I'm developing, to study graphics programming topics.
 - [fastgltf](https://github.com/spnda/fastgltf) is used to load .gltf models.
 - [RenderDoc](https://renderdoc.org/) is used for analyzing/debugging graphics bugs.
 - [kenney](https://kenney.nl/)'s awesome assets are used (currently for prototype textures)
+- [Jasper Flick](https://catlikecoding.com/jasper-flick/)'s awesome textures are used (currently for prototype textures)
 - [glslang](https://github.com/KhronosGroup/glslang) is used for offline validation of GLSL shaders as a Visual Studio post-build step.
 - [JetBrains Mono](https://www.jetbrains.com/lp/mono/) is used as the font for ImGui.
 - [Font Awesome](https://github.com/FortAwesome/Font-Awesome) is used as the icon font for ImGui.
