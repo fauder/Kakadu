@@ -90,6 +90,8 @@ private:
 	Engine::Renderable cube_renderable;
 	Engine::Renderable cube_renderable_outline;
 
+	Engine::Renderable sphere_renderable;
+
 	Engine::Renderable cube_parallax_renderable;
 
 	Engine::Renderable cube_reflected_renderable;
@@ -134,6 +136,7 @@ private:
 	Engine::Mesh cube_mesh_instanced;
 	Engine::Mesh cube_reflected_mesh_instanced;
 	Engine::Mesh cube_mesh_instanced_with_color; // For light sources.
+	Engine::Mesh sphere_mesh;
 
 /* Shaders: */
 	Engine::Shader* shader_skybox;
@@ -184,6 +187,8 @@ private:
 	Engine::Material offscreen_quad_material;
 	Engine::Material mirror_quad_material;
 
+	Engine::Material sphere_material;
+
 /* Instancing Data: */
 
 	struct LightInstanceData
@@ -214,6 +219,8 @@ private:
 	Engine::Transform wall_left_transform;
 	Engine::Transform wall_right_transform;
 	Engine::Transform wall_back_transform;
+
+	Engine::Transform sphere_transform;
 
 	std::array< Engine::Transform, WINDOW_COUNT > window_transform_array;
 

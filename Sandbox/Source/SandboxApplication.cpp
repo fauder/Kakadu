@@ -12,9 +12,11 @@
 #include "Engine/Core/ServiceLocator.h"
 #include "Engine/Graphics/GLLogger.h"
 #include "Engine/Graphics/InternalShaders.h"
+#include "Engine/Graphics/InternalTextures.h"
 #include "Engine/Graphics/MeshUtility.hpp"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube_FullScreen.h"
+#include "Engine/Graphics/Primitive/Primitive_Sphere.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad_FullScreen.h"
 #include "Engine/Math/Math.hpp"
@@ -177,6 +179,9 @@ void SandboxApplication::Initialize()
 
 	cube_parallax_transform.SetTranslation( -1.0f, 0.5f, -2.0f );
 
+	sphere_transform.SetTranslation( cube_parallax_transform.GetTranslation() );
+	sphere_transform.OffsetTranslation( Vector3::Right() * 4.0f );
+
 	/* Keep the first 10 the same as the ones from LOGL: */
 	for( auto cube_index = 0; cube_index < CUBE_REFLECTED_COUNT; cube_index++ )
 	{
@@ -301,6 +306,13 @@ void SandboxApplication::Initialize()
 									 Engine::Primitive::NonIndexed::Quad_FullScreen::UVs,
 									 { /* No indices. */ } );
 
+	sphere_mesh = Engine::Mesh( Engine::Primitive::Indexed::Sphere::Positions(),
+								"Sphere",
+								Engine::Primitive::Indexed::Sphere::Normals(),
+								Engine::Primitive::Indexed::Sphere::UVs(),
+								Engine::Primitive::Indexed::Sphere::Indices(),
+								Engine::Primitive::Indexed::Sphere::Tangents() );
+
 /* Lighting: */
 	ResetLightingData();
 
@@ -350,6 +362,9 @@ void SandboxApplication::Initialize()
 	renderer.AddRenderable( &wall_left_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
 	renderer.AddRenderable( &wall_right_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
 	renderer.AddRenderable( &wall_back_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
+
+	sphere_renderable = Engine::Renderable( &sphere_mesh, &sphere_material, &sphere_transform, true /* => has shadows. */ );
+	renderer.AddRenderable( &sphere_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
 
 	for( auto i = 0; i < WINDOW_COUNT; i++ )
 	{
@@ -482,6 +497,9 @@ void SandboxApplication::Update()
 		Engine::Math::QuaternionToEuler( cube_parallax_transform.GetRotation(), old_heading, old_pitch, old_bank );
 		cube_parallax_transform.SetRotation( old_heading + angle_increment * time_delta, old_pitch, old_bank );
 	}
+
+	/* Sphere's transform; Same as the parallax cube: */
+	sphere_transform.SetRotation( cube_parallax_transform.GetRotation() );
 
 	/* Camera transform: */
 	if( camera_animation_is_enabled )
@@ -664,6 +682,7 @@ void SandboxApplication::RenderImGui()
 	Engine::ImGuiDrawer::Draw( light_source_material, renderer );
 	Engine::ImGuiDrawer::Draw( ground_material, renderer );
 	Engine::ImGuiDrawer::Draw( wall_material, renderer );
+	Engine::ImGuiDrawer::Draw( sphere_material, renderer );
 	Engine::ImGuiDrawer::Draw( window_material, renderer );
 	Engine::ImGuiDrawer::Draw( cube_material, renderer );
 	Engine::ImGuiDrawer::Draw( cube_reflected_material, renderer );
@@ -1091,6 +1110,13 @@ void SandboxApplication::ResetMaterialData()
 	wall_material.Set( "uniform_parallax_height_scale", 0.1f );
 	wall_material.Set( "uniform_parallax_depth_layer_count_min_max", Vector2U( 8u, 32u ) );
 
+	sphere_material = Engine::Material( "Sphere", shader_blinn_phong_skybox_reflection );
+	sphere_material.SetTexture( "uniform_diffuse_map_slot", Engine::ServiceLocator< Engine::InternalTextures >::Get().Get( "UV Test" ) );
+	//sphere_material.SetTexture( "uniform_reflection_map_slot", container_texture_specular_map );
+	sphere_material.SetTexture( "uniform_texture_skybox_slot", skybox_texture );
+	sphere_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
+	sphere_material.Set( "uniform_reflectivity", 0.9f );
+
 	window_material = Engine::Material( "Transparent Window", shader_basic_textured );
 	window_material.SetTexture( "uniform_texture_slot", transparent_window_texture );
 	window_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
@@ -1121,6 +1147,7 @@ void SandboxApplication::ResetMaterialData()
 	wall_material.Set( "BlinnPhongMaterialData", wall_surface_data );
 	cube_material.Set( "BlinnPhongMaterialData", cube_surface_data );
 	cube_reflected_material.Set( "BlinnPhongMaterialData", cube_surface_data );
+	sphere_material.Set( "BlinnPhongMaterialData", cube_surface_data );
 
 	outline_material.Set( "uniform_color", Engine::Color4::Orange() );
 	outline_material.Set( "uniform_outline_thickness", 0.1f );
