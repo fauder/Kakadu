@@ -130,7 +130,7 @@ namespace Engine
 								"Normal Visualization",
 								FullShaderPath( "VisualizeNormals.vert"_vert ),
 								FullShaderPath( "VisualizeNormals.geom"_geom ),
-								FullShaderPath( "Color.frag"_frag ) );
+								FullShaderPath( "VisualizeNormals.frag"_frag ) );
 		SHADER_MAP.try_emplace( "Shadow-map Write",
 								"Shadow-map Write",
 								FullShaderPath( "PassThrough_Transform.vert"_vert ),

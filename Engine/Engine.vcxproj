@@ -311,6 +311,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <None Include="Engine\Asset\Shader\Skybox.frag" />
     <None Include="Engine\Asset\Shader\Skybox.vert" />
     <None Include="Engine\Asset\Shader\VisualizeDepth.frag" />
+    <None Include="Engine\Asset\Shader\VisualizeNormals.frag" />
     <None Include="Engine\Asset\Shader\VisualizeNormals.geom" />
     <None Include="Engine\Asset\Shader\VisualizeNormals.vert" />
     <None Include="Engine\Asset\Shader\_Attributes.glsl" />
