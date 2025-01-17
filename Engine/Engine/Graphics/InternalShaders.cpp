@@ -2,10 +2,10 @@
 #include "InternalShaders.h"
 #include "Renderer.h"
 #include "Core/Utility.hpp"
-#include "Asset/Shader/InternalShaderDirectoryPath.h"
+#include "Asset/AssetDirectoryPath.h"
 
-#define FullShaderPath( file_path ) Utility::String::ConstexprConcatenate( Engine::SHADER_SOURCE_DIRECTORY_WITH_SEPARATOR_AS_ARRAY,\
-																		   Utility::String::StringViewToArray< std::string_view( file_path ).size() >( std::string_view( file_path ) ) )
+#define FullShaderPath( file_path ) Utility::String::ConstexprConcatenate( Engine::ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR_AS_ARRAY,\
+																		   Utility::String::StringViewToArray< std::string_view( R"(Shader\)" file_path ).size() >( std::string_view( R"(Shader\)" file_path ) ) )
 
 namespace Engine
 {

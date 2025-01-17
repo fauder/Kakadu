@@ -5,7 +5,7 @@
 #endif // _WIN32
 
 // Engince Includes.
-#include "Asset/Shader/InternalShaderDirectoryPath.h"
+#include "Asset/AssetDirectoryPath.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Utility.hpp"
 #include "GLLogger.h"
@@ -445,7 +445,7 @@ namespace Engine
 			{
 				const auto& match = matches[ 1 ]; /* First match is the pattern itself. */
 				if( match.length() != 0 && match.matched )
-					includes.emplace_back( std::string( Engine::SHADER_SOURCE_DIRECTORY_WITH_SEPARATOR ) + ( std::string )match );
+					includes.emplace_back( std::string( Engine::ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR ) + R"(Shader\)" + ( std::string )match);
 
 				shader_source = matches.suffix();
 			}

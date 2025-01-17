@@ -240,9 +240,6 @@
     <ClInclude Include="Engine\Graphics\ShaderType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Asset\Shader\InternalShaderDirectoryPath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Graphics\RenderQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -259,9 +256,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\InternalTextures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Asset\Texture\InternalTextureDirectoryPath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Asset\Resource\Resource.h">
@@ -286,6 +280,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Asset\Font\InternalFontDirectoryPath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Asset\AssetDirectoryPath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
