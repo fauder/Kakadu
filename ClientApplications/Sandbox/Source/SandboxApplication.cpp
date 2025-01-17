@@ -4,6 +4,7 @@
 #include "SandboxApplication.h"
 
 // Engine Includes.
+#include "Engine/Asset/Shader/_Attributes.glsl"
 #include "Engine/Core/AssetDatabase.hpp"
 #include "Engine/Core/ImGuiDrawer.hpp"
 #include "Engine/Core/ImGuiSetup.h"
@@ -24,14 +25,14 @@
 #include "Engine/Math/Random.hpp"
 #include "Engine/Math/VectorConversion.hpp"
 
-#include "Engine/Asset/Shader/_Attributes.glsl"
-
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
 // std Includes.
 #include <execution>
 #include <fstream>
+
+#define AssetDir "../Common/Asset/Texture/"
 
 using namespace Engine::Math::Literals;
 
@@ -78,12 +79,12 @@ void SandboxApplication::Initialize()
 /* Textures: */
 	skybox_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Skybox", 
 																					{
-																						R"(Asset/Texture/Skybox/right.jpg)",
-																						R"(Asset/Texture/Skybox/left.jpg)",
-																						R"(Asset/Texture/Skybox/top.jpg)",
-																						R"(Asset/Texture/Skybox/bottom.jpg)",
-																						R"(Asset/Texture/Skybox/front.jpg)",
-																						R"(Asset/Texture/Skybox/back.jpg)"
+																						AssetDir R"(Skybox/right.jpg)",
+																						AssetDir R"(Skybox/left.jpg)",
+																						AssetDir R"(Skybox/top.jpg)",
+																						AssetDir R"(Skybox/bottom.jpg)",
+																						AssetDir R"(Skybox/front.jpg)",
+																						AssetDir R"(Skybox/back.jpg)"
 																					},
 																					Engine::Texture::ImportSettings
 																					{
@@ -91,16 +92,16 @@ void SandboxApplication::Initialize()
 																						.flip_vertically = false,
 																					} );
 		
-	container_texture_diffuse_map  = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Container (Diffuse) Map",	R"(Asset/Texture/container2.png)" );
-	container_texture_specular_map = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Container (Specular) Map", R"(Asset/Texture/container2_specular.png)" );
+	container_texture_diffuse_map  = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Container (Diffuse) Map",	AssetDir R"(container2.png)" );
+	container_texture_specular_map = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Container (Specular) Map", AssetDir R"(container2_specular.png)" );
 
-	brickwall_diffuse_map  = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Diffuse) Map", R"(Asset/Texture/bricks2.jpg)",
+	brickwall_diffuse_map  = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Diffuse) Map", AssetDir R"(bricks2.jpg)",
 																							Engine::Texture::ImportSettings
 																							{
 																								.wrap_u = Engine::Texture::Wrapping::Repeat,
 																								.wrap_v = Engine::Texture::Wrapping::Repeat
 																							} );
-	brickwall_normal_map   = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Normal) Map",  R"(Asset/Texture/bricks2_normal.jpg)",
+	brickwall_normal_map   = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Normal) Map",  AssetDir R"(bricks2_normal.jpg)",
 																							Engine::Texture::ImportSettings
 																							{
 																								.wrap_u  = Engine::Texture::Wrapping::Repeat,
@@ -108,22 +109,22 @@ void SandboxApplication::Initialize()
 																								.is_sRGB = false,
 																							} );
 
-	brickwall_displacement_map = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Displacement) Map", R"(Asset/Texture/bricks2_disp.jpg)",
+	brickwall_displacement_map = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Displacement) Map", AssetDir R"(bricks2_disp.jpg)",
 																								Engine::Texture::ImportSettings
 																								{
 																									.is_sRGB = false,
 																								} );
 
-	transparent_window_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Transparent Window", R"(Asset/Texture/blending_transparent_window.png)" );
+	transparent_window_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Transparent Window", AssetDir R"(blending_transparent_window.png)" );
 	
-	checker_pattern_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Checkerboard Pattern 09", R"(Asset/Texture/kenney_prototype/texture_09.png)", 
+	checker_pattern_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Checkerboard Pattern 09", AssetDir R"(kenney_prototype/texture_09.png)", 
 																							 Engine::Texture::ImportSettings
 																							 {
 																								 .wrap_u = Engine::Texture::Wrapping::Repeat,
 																								 .wrap_v = Engine::Texture::Wrapping::Repeat
 																							 } );
 
-	half_gray_srgb_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "%50 Gray", R"(Asset/Texture/half_gray.png)",
+	half_gray_srgb_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "%50 Gray", AssetDir R"(half_gray.png)",
 																							Engine::Texture::ImportSettings
 																							{
 																								.wrap_u = Engine::Texture::Wrapping::Repeat,
