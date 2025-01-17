@@ -199,11 +199,11 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 	/* Check Positions() for vertex ordering.
 	 * Tangents are smoothed out over the sphere surface (because normals are smoothed out over the sphere surface). */
 	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
-		auto Tangents()
+	auto Tangents()
 	{
-		constexpr std::uint8_t latitude_count = LongitudeCount;
+		constexpr std::uint8_t latitude_count      = LongitudeCount;
 		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t ring_vertex_count = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
 		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 		std::array< Vector3, vertex_count > tangents;
@@ -229,7 +229,7 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 
 			const auto& normal( normals[ index_of_vertex_in_first_non_pole_ring ] );
 			const auto normal_projected_to_xz( Vector3( normal ).SetY( 0.0f ).Normalized() );
-			tangents[ index ] = Math::Cross( normal, normal_projected_to_xz ).Normalized();
+			tangents[ index ] = Math::Cross( normal_projected_to_xz, normal ).Normalized();
 		}
 
 		/* Now copy the tangents to other rings: */
