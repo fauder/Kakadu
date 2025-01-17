@@ -83,7 +83,7 @@
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(ProjectDir)PostBuild_ValidateShaders.py</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -111,7 +111,7 @@
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(ProjectDir)PostBuild_ValidateShaders.py</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -123,7 +123,7 @@
     <ClCompile Include="Source\SandboxApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Engine\Engine.vcxproj">
+    <ProjectReference Include="..\..\Engine\Engine.vcxproj">
       <Project>{35612cbb-e2e9-4a89-a930-90f11a8b584d}</Project>
     </ProjectReference>
   </ItemGroup>
