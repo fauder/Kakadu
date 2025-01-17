@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vendor", "Vendor\Vendor.vcxproj", "{26C05E65-89CA-4B25-9FB4-04D445372431}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HDR-Demo", "ClientApplications\HDR-Demo\HDR-Demo.vcxproj", "{C994F29D-2E3D-430D-B148-A3D555FD9AE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +29,10 @@ Global
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Debug|x64.Build.0 = Debug|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Release|x64.ActiveCfg = Release|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Release|x64.Build.0 = Release|x64
+		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Debug|x64.ActiveCfg = Debug|x64
+		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Debug|x64.Build.0 = Debug|x64
+		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Release|x64.ActiveCfg = Release|x64
+		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
