@@ -2,11 +2,15 @@
 #include "ImGuiSetup.h"
 #include "Platform.h"
 #include "Math/VectorConversion.hpp"
+#include "../Asset/Font/InternalFontDirectoryPath.h"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
-namespace ImGuiSetup
+#define FullFontPath( file_path ) Utility::String::ConstexprConcatenate( Engine::FONT_SOURCE_DIRECTORY_WITH_SEPARATOR_AS_ARRAY,\
+																		 Utility::String::StringViewToArray< std::string_view( file_path ).size() >( std::string_view( file_path ) ) )
+
+namespace Engine::ImGuiSetup
 {
 	void Initialize()
 	{
@@ -69,9 +73,9 @@ namespace ImGuiSetup
         font_glyph_ranges_builder.BuildRanges( &glyph_ranges );
 
         io.Fonts->Clear();
-        io.Fonts->AddFontFromFileTTF( "Asset/Font/JetBrainsMono-Regular.ttf", 18, nullptr, glyph_ranges.Data );
+        io.Fonts->AddFontFromFileTTF( FullFontPath( "JetBrainsMono-Regular.ttf" ).data(), 18, nullptr, glyph_ranges.Data );
         /* Merge in icons from icon font(s): */
-        io.Fonts->AddFontFromFileTTF( "Asset/Font/Font-Awesome/" FONT_ICON_FILE_NAME_FAS, icon_font_size, &icons_config, icons_ranges ); // Merge into JetBrainsMono-Regular (18).
+        io.Fonts->AddFontFromFileTTF( FullFontPath( "Font-Awesome/" FONT_ICON_FILE_NAME_FAS ).data(), icon_font_size, &icons_config, icons_ranges ); // Merge into JetBrainsMono-Regular (18).
 
         io.Fonts->Build();
     }
