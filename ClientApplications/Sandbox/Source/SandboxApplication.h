@@ -233,8 +233,6 @@ private:
 	bool camera_animation_is_enabled;
 	float camera_animation_orbit_radius;
 
-	Matrix4x4 view_transformation;
-
 /* Lighting: */
 	const static constexpr int LIGHT_POINT_COUNT = 15;
 
