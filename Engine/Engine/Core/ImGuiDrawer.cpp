@@ -1067,7 +1067,7 @@ namespace Engine::ImGuiDrawer
 
 		ImGui::PopID();
 
-		ImGuiUtility::EndGroupPanel( &point_light.is_enabled);
+		ImGuiUtility::EndGroupPanel( &point_light.is_enabled );
 		
 		return is_modified || was_enabled != point_light.is_enabled;
 	}

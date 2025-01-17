@@ -1076,6 +1076,9 @@ namespace Engine
 
 	void Renderer::CalculateShadowMappingInformation()
 	{
+		if( light_directional == nullptr )
+			return;
+
 		Transform light_transform_copy( *light_directional->transform );
 
 		const auto& light_direction( light_transform_copy.Forward() );
