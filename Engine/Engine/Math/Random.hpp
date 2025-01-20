@@ -48,7 +48,7 @@ namespace Engine::Math
 		{
 			auto& instance = Instance();
 
-			std::uniform_real_distribution< AngleType::UnderlyingType > uniform_dist( min.Value(), max.Value() );
+			std::uniform_real_distribution< typename AngleType::UnderlyingType > uniform_dist( min.Value(), max.Value() );
 			return AngleType( uniform_dist( instance.engine ) );
 		}
 
