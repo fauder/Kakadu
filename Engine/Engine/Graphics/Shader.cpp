@@ -439,17 +439,15 @@ namespace Engine
 
 		std::vector< std::string > includes;
 
-		if( std::regex_search( shader_source, matches, pattern ) )
-		{
-			do
-			{
-				const auto& match = matches[ 1 ]; /* First match is the pattern itself. */
-				if( match.length() != 0 && match.matched )
-					includes.emplace_back( std::string( Engine::ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR ) + R"(Shader\)" + ( std::string )match);
+		std::string_view shader_source_view( shader_source );
 
-				shader_source = matches.suffix();
-			}
-			while( std::regex_search( shader_source, matches, pattern ) );
+		auto pos = shader_source_view.find( "#include" );
+
+		for( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" );
+			 maybe_next_token.has_value();
+			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" ) )
+		{
+			includes.emplace_back( std::string( Engine::ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR ) + R"(Shader\)" + std::string( *maybe_next_token ) );
 		}
 
 		return includes;
@@ -483,7 +481,6 @@ namespace Engine
 
 			if( std::regex_search( shader_source, matches, pattern ) )
 			{
-
 				do
 				{
 					const auto& match_feature_name = matches[ 1 ]; /* First match is the pattern itself. */
