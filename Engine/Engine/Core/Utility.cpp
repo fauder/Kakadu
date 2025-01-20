@@ -104,6 +104,47 @@ namespace Engine
 				return source; // Contains only white-space.
 			}
 
+			std::optional< std::string_view > ParseNextTokenAndAdvance( std::string_view& source, 
+																		const std::string_view opening_delimiter, const std::string_view closing_delimiter )
+			{
+				if( auto opening_delimiter_pos = source.find( opening_delimiter );
+					opening_delimiter_pos != std::string_view::npos )
+				{
+					if( auto closing_delimiter_pos = source.find( closing_delimiter, opening_delimiter_pos + 1 );
+						closing_delimiter_pos != std::string_view::npos )
+					{
+						std::string_view parsed_token = source.substr( opening_delimiter_pos + 1, closing_delimiter_pos - ( opening_delimiter_pos + 1 ) );
+						source.remove_prefix( closing_delimiter_pos + 1 );
+						return parsed_token;
+					}
+				}
+
+				return std::nullopt;
+			}
+
+			std::optional< std::string_view > ParseNextTokenAndAdvance_WithPrefix( std::string_view& source,
+																				   const std::string_view preceding_token,
+																				   const std::string_view opening_delimiter, const std::string_view closing_delimiter )
+			{
+				if( auto preceding_token_pos = source.find( preceding_token );
+					preceding_token_pos != std::string_view::npos )
+				{
+					if( auto opening_delimiter_pos = source.find( opening_delimiter, preceding_token_pos + 1 );
+						opening_delimiter_pos != std::string_view::npos )
+					{
+						if( auto closing_delimiter_pos = source.find( closing_delimiter, opening_delimiter_pos + 1 );
+							closing_delimiter_pos != std::string_view::npos )
+						{
+							std::string_view parsed_token = source.substr( opening_delimiter_pos + 1, closing_delimiter_pos - ( opening_delimiter_pos + 1 ) );
+							source.remove_prefix( closing_delimiter_pos + 1 );
+							return parsed_token;
+						}
+					}
+				}
+
+				return std::nullopt;
+			}
+
 #ifdef _WIN32
 			std::wstring ToWideString( const std::string& string )
 			{
