@@ -153,9 +153,9 @@ namespace Engine
 																				 std::initializer_list< const std::string_view > preceding_tokens,
 																				 const std::string_view opening_delimiters, const std::string_view closing_delimiters )
 			{
-				std::size_t preceding_token_pos = std::string_view::npos;
+				std::size_t preceding_token_pos = 0;
 				for( auto& preceding_token : preceding_tokens )
-					if( preceding_token_pos = source.find( preceding_token );
+					if( preceding_token_pos = source.find( preceding_token, preceding_token_pos );
 						preceding_token_pos == std::string_view::npos )
 						return std::nullopt;
 
