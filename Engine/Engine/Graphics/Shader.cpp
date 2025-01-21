@@ -15,7 +15,7 @@
 
 // std Includes.
 #include <numeric> // std::iota.
-#include <regex>
+#include <charconv>
 
 // Vendor Includes.
 #include <stb/stb_include.h>
@@ -434,14 +434,9 @@ namespace Engine
 
 	std::vector< std::string > Shader::PreprocessShaderStage_GetIncludeFilePaths( std::string shader_source ) const
 	{
-		std::regex pattern( R"(#include\s+"\s*(\S+)\s*")" );
-		std::smatch matches;
-
 		std::vector< std::string > includes;
 
 		std::string_view shader_source_view( shader_source );
-
-		auto pos = shader_source_view.find( "#include" );
 
 		for( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" );
 			 maybe_next_token.has_value();
@@ -455,18 +450,35 @@ namespace Engine
 
 	void Shader::PreprocessShaderStage_StripDefinesToBeSet( std::string& shader_source_to_modify, const std::vector< std::string >& features_to_set )
 	{
-		std::regex pattern( R"(#define\s+([_[:alnum:]]+)\s*(\S+)?\s*?\r?\n)" ); // ([_[:alnum:]]+) is to FAIL the Regex for non alnum & non-underscore characters, to exclude macros mostly.
-		std::smatch matches;
+		std::size_t hashtag_define_pos = 0;
 
-		std::string shader_source_copy( shader_source_to_modify );
-
-		while( std::regex_search( shader_source_copy, matches, pattern ) )
+		for( hashtag_define_pos = shader_source_to_modify.find( "#define", hashtag_define_pos );
+			 hashtag_define_pos != std::string::npos;
+			 hashtag_define_pos = shader_source_to_modify.find( "#define", hashtag_define_pos ) )
 		{
-			if( std::find_if( features_to_set.begin(), features_to_set.end(), [ & ]( const std::string& feature )
-				{ return feature.find( matches[ 1 ] ) != std::string::npos; } ) != features_to_set.end() )
-				shader_source_to_modify = std::string( matches.prefix() ) + std::string( matches.suffix() );
+			std::string_view shader_source_view( shader_source_to_modify );
 
-			shader_source_copy = matches.suffix();
+			shader_source_view.remove_prefix( hashtag_define_pos );
+			if( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t", " \t\r\n" );
+				maybe_next_token.has_value() &&
+				/* Exclude macros; they must have parentheses at the end of the token => */ maybe_next_token->back() != ')' &&
+				std::find_if( features_to_set.begin(), features_to_set.end(), [ & ]( const std::string& feature )
+				{ return feature.find( *maybe_next_token ) != std::string::npos; } ) != features_to_set.end() )
+			{
+				if( *( shader_source_view.data() - 1 ) == '\n' )
+				{
+					shader_source_to_modify.erase( hashtag_define_pos,
+												   shader_source_view.data() - shader_source_to_modify.data() - hashtag_define_pos );
+				}
+				else
+				{
+					const auto debug = shader_source_to_modify.find( '\n', hashtag_define_pos + 1 );
+					shader_source_to_modify.erase( hashtag_define_pos,
+												   shader_source_to_modify.find( '\n', hashtag_define_pos + 1 ) - hashtag_define_pos );
+				}
+			}
+			else
+				hashtag_define_pos++;
 		}
 	}
 
@@ -474,50 +486,38 @@ namespace Engine
 	{
 		std::unordered_map< std::string, Feature > features;
 
+		std::string_view shader_source_view( shader_source );
+
 		/* Parse declarations via "#pragma feature <feature_name>" syntax: */
+		for( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" );
+			 maybe_next_token.has_value();
+			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" ) )
 		{
-			std::regex pattern( R"(#pragma\s+feature\s*(\S+))" );
-			std::smatch matches;
-
-			if( std::regex_search( shader_source, matches, pattern ) )
-			{
-				do
-				{
-					const auto& match_feature_name = matches[ 1 ]; /* First match is the pattern itself. */
-					if( match_feature_name.length() != 0 && match_feature_name.matched )
-						features.try_emplace( match_feature_name, std::nullopt, false );
-
-					shader_source = matches.suffix();
-				}
-				while( std::regex_search( shader_source, matches, pattern ) );
-			}
+			features.try_emplace( std::string( *maybe_next_token ), std::nullopt, false );
 		}
 
 		/* Parse definitions via "#define <feature_name> <optional_value>" syntax: */
+		for( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" );
+			 maybe_next_token.has_value();
+			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" ) )
 		{
-			std::regex pattern( R"(#define\s+([_[:alnum:]]+)\s*(\S+)?\s*\r?\n)" ); // ([_[:alnum:]]+) is to FAIL the Regex for non alnum & non-underscore characters, to exclude macros mostly.
-			std::smatch matches;
+			// TODO: The optional value may be another macro. That also needs to be replaced with the final value.
+			// TODO: Maybe it is best to prohibit declaring #define features directly:
+			/* If we always require #pragma feature first, we wouldn't mis-classify #defines that were not meant to be features, but constants not meant to be overridden. */
 
-			if( std::regex_search( shader_source, matches, pattern ) )
+			//const auto token_pos   = shader_source_view.find_first_of( "abcdefghijklmnopqrstuvwxyz" );
+			const auto token_pos   = shader_source_view.find_first_of( "0123456789." ); // Include '.' because the optional value might be ".2f" for example.
+			const auto newline_pos = shader_source_view.find( '\n' );
+
+			if( token_pos < newline_pos )
 			{
-				do
-				{
-					const auto& match_feature_name = matches[ 1 ]; /* First match is the pattern itself. */
-					if( match_feature_name.length() != 0 && match_feature_name.matched )
-					{
-						if( matches.size() > 2 && matches[ 2 ].length() != 0 && matches[ 2 ].matched )
-						{
-							const auto& match_feature_value = matches[ 2 ];
-							features.try_emplace( match_feature_name, match_feature_value, true );
-						}
-						else
-							features.try_emplace( match_feature_name, std::nullopt, true );
-					}
-
-					shader_source = matches.suffix();
-				}
-				while( std::regex_search( shader_source, matches, pattern ) );
+				shader_source_view.remove_prefix( token_pos );
+				features.try_emplace( std::string( *maybe_next_token ),
+									  std::string( *Utility::String::ParseNextTokenAndAdvance( shader_source_view, "", " \t\r\n" ) ),
+									  true );
 			}
+			else
+				features.try_emplace( std::string( *maybe_next_token ), std::nullopt, true );
 		}
 
 		return features;
@@ -779,30 +779,39 @@ namespace Engine
 			layout (location = 1) in vec2 tex_coords;
 			...
 		*/
-
-		/*												  location			   type	   name			*/
-		std::regex pattern( R"(layout\s*\(\s*location\s*=\s*(\d+)\s*\)\s*in\s+(\w+)\s+(\w+)\s*;)" );
-		std::smatch matches;
-
+		
 		std::vector< VertexAttribute > attributes;
 
-		while( std::regex_search( shader_source, matches, pattern ) )
+		std::string_view shader_source_view( shader_source );
+
+		for( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, { "layout", "location", "=" } );
+			 maybe_next_token.has_value();
+			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, { "layout", "location", "=" } ) )
 		{
-			const std::string location_string( matches[ 1 ] );
-			const std::string location_type( matches[ 2 ] );
-			const std::string location_name( matches[ 3 ] );
-
-			if( location_string.length() != 0 && matches[ 1 ].matched && 
-				  location_type.length() != 0 && matches[ 2 ].matched &&
-				  location_name.length() != 0 && matches[ 3 ].matched )
+			const std::string_view location_sv( *maybe_next_token );
+			unsigned int location;
+			if( std::from_chars( location_sv.data(), location_sv.data() + location_sv.size(), location ).ec == std::errc{} )
 			{
-				const GLenum type( GL::Type::TypeOf( location_type.c_str() ) );
-				/* Source attributes */
-				attributes.emplace_back( GL::Type::CountOf( type ), GL::Type::ComponentTypeOf( type ), false /* => instance info does not matter. */,
-										( unsigned int )std::stoi( location_string ) );
-			}
+				maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "in" );
+				if( maybe_next_token.has_value() )
+				{
+					std::string_view type_sv = *maybe_next_token;
 
-			shader_source = matches.suffix();
+					/* Name is not utilized at the moment => Code parsing it is disabled. */
+
+					/*maybe_next_token = Utility::String::ParseNextTokenAndAdvance( shader_source_view, " \t", " \t\r\n" );
+					if( maybe_next_token.has_value() )
+					{
+						std::string name_string( *maybe_next_token );*/
+					std::string type_string( type_sv );
+
+					const GLenum type( GL::Type::TypeOf( type_string.data() ) );
+					/* Source attributes */
+					attributes.emplace_back( GL::Type::CountOf( type ), GL::Type::ComponentTypeOf( type ), false /* => instance info does not matter. */,
+											 location );
+					/*}*/
+				}
+			}
 		}
 
 		if( not attributes.empty() )
