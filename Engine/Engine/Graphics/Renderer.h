@@ -39,7 +39,8 @@ namespace Engine
 		static constexpr std::size_t FRAMEBUFFER_OFFSCREEN_COUNT = 2;
 	
 	public:
-		Renderer( std::array< std::optional< int >, FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values = {} );
+		Renderer( std::array< std::optional< int >, FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values = {},
+				  std::array< Texture::Format,		FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_color_formats = {} );
 
 		DELETE_COPY_AND_MOVE_CONSTRUCTORS( Renderer );
 
@@ -283,6 +284,7 @@ namespace Engine
 		/* Used for lighting etc. Blitted onto the default framebuffer (or the offscreen editor framebuffer when running in editor). */
 		std::array< Framebuffer,			FRAMEBUFFER_OFFSCREEN_COUNT > offscreen_framebuffer_array;
 		std::array< std::optional< int >,	FRAMEBUFFER_OFFSCREEN_COUNT > offscreen_framebuffer_msaa_sample_count_array;
+		std::array< Texture::Format,		FRAMEBUFFER_OFFSCREEN_COUNT > offscreen_framebuffer_color_format_array;
 
 		/*
 		 * Lighting:

@@ -34,6 +34,46 @@ namespace Engine
 		static constexpr CubeMapConstructorTag CUBEMAP_CONSTRUCTOR = {};
 		static constexpr Texture2DMultiSampleConstructorTag TEXTURE_2D_MULTISAMPLE_CONSTRUCTOR = {};
 
+		enum class Format : std::uint8_t
+		{
+			NOT_ASSIGNED,
+
+			R,
+			RG,
+			RGB,
+			RGBA,
+
+			RGBA_16F,
+			RGBA_32F,
+
+			SRGB,
+			SRGBA,
+
+			DEPTH_STENCIL,
+			DEPTH,
+			STENCIL
+		};
+
+		static constexpr const char* FormatName( const Format format )
+		{
+			switch( format )
+			{
+				case Engine::Texture::Format::NOT_ASSIGNED:		return "NOT_ASSIGNED";
+				case Engine::Texture::Format::R:				return "R";
+				case Engine::Texture::Format::RG:				return "RG";
+				case Engine::Texture::Format::RGB:				return "RGB";
+				case Engine::Texture::Format::RGBA:				return "RGBA";
+				case Engine::Texture::Format::RGBA_16F:			return "RGBA_16F";
+				case Engine::Texture::Format::RGBA_32F:			return "RGBA_32F";
+				case Engine::Texture::Format::SRGB:				return "[S]RGB";
+				case Engine::Texture::Format::SRGBA:			return "[S]RGBA";
+				case Engine::Texture::Format::DEPTH_STENCIL:	return "DEPTH_STENCIL";
+				case Engine::Texture::Format::DEPTH:			return "DEPTH";
+				case Engine::Texture::Format::STENCIL:			return "STENCIL";
+				default:										return "UNKNOWN";
+			}
+		}
+
 		enum class Wrapping // Has to be a default enum (4 bytes), because the GLenums are all over the place...
 		{
 			ClampToEdge       = GL_CLAMP_TO_EDGE,
@@ -65,8 +105,9 @@ namespace Engine
 			Filtering mag_filter = Filtering::Linear;
 
 			bool flip_vertically  = true;
-			bool is_sRGB          = true;
 			bool generate_mipmaps = true;
+
+			Format format = Format::SRGBA;
 			
 			/* 1 byte of padding. */
 		};
@@ -83,37 +124,28 @@ namespace Engine
 
 	public:
 		Texture();
-		/* Allocate-only constructor (no data).
-		 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-		 */
+		/* Allocate-only constructor (no data). */
 		Texture( const std::string_view name,
 				 //const std::byte* data, This is omitted from this public constructor.
-				 const int format,
+				 const Format format,
 				 const int width, const int height,
-				 const bool is_sRGB = true,
 				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
 
-		/* Multi-sampled allocate-only constructor (no data).
-		 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-		 */
+		/* Multi-sampled allocate-only constructor (no data). */
 		Texture( const int sample_count,
 				 const std::string_view multi_sample_texture_name,
 				 //const std::byte* data, This is omitted from this public constructor.
-				 const int format,
-				 const int width, const int height,
-				 const bool is_sRGB = true );
+				 const Format format,
+				 const int width, const int height );
 
-		/* Cubemap allocate-only constructor (no data).
-		 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-		 */
+		/* Cubemap allocate-only constructor (no data). */
 		Texture( CubeMapConstructorTag tag,
 				 const std::string_view name,
 				 //const std::byte* data, This is omitted from this public constructor.
-				 const int format,
+				 const Format format,
 				 const int width, const int height,
-				 const bool is_sRGB = true,
 				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge, const Wrapping wrap_w = Wrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
@@ -129,15 +161,16 @@ namespace Engine
 	/* Queries: */
 		bool IsValid() const { return id.Get(); }
 
-		inline ID					Id()				const { return id;				}
-		inline const Vector2I&		Size()				const { return size;			}
-		inline int					Width()				const { return size.X();		}
-		inline int					Height()			const { return size.Y();		}
-		inline TextureType			Type()				const { return type;			}
-		inline const std::string&	Name()				const { return name;			}
-		inline int					SampleCount()		const { return sample_count;	}
-		inline bool					IsMultiSampled()	const { return sample_count;	}
-		inline bool					IssRGB()			const { return is_sRGB;			}
+		inline ID					Id()				const { return id;													}
+		inline const Vector2I&		Size()				const { return size;												}
+		inline int					Width()				const { return size.X();											}
+		inline int					Height()			const { return size.Y();											}
+		inline TextureType			Type()				const { return type;												}
+		inline const std::string&	Name()				const { return name;												}
+		inline int					SampleCount()		const { return sample_count;										}
+		inline bool					IsMultiSampled()	const { return sample_count;										}
+		inline bool					Is_sRGB()			const { return format == Format::SRGB || format == Format::SRGBA;	}
+		inline Format				PixelFormat()		const { return format;												}
 
 	/* Usage: */
 		void SetName( const std::string& new_name );
@@ -145,28 +178,22 @@ namespace Engine
 		void GenerateMipmaps() const;
 
 	private:
-		/* Private regular constructor: Only the AssetDatabase< Texture > should be able to construct a Texture with data.
-		 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-		 */
+		/* Private regular constructor: Only the AssetDatabase< Texture > should be able to construct a Texture with data. */
 		Texture( const std::string_view name,
 				 const std::byte* data,
-				 const int format,
+				 const Format format,
 				 const int width, const int height,
-				 const bool is_sRGB = true,
 				 const bool generate_mipmaps = true,
 				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
 
-		/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data.
-		 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-		 */
+		/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data. */
 		Texture( CubeMapConstructorTag tag, 
 				 const std::string_view name,
 				 const std::array< const std::byte*, 6 >& cubemap_data_array,
-				 const int format,
+				 const Format format,
 				 const int width, const int height,
-				 const bool is_sRGB = true,
 				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge, const Wrapping wrap_w = Wrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
@@ -183,7 +210,8 @@ namespace Engine
 		TextureType type;
 		std::string name;
 		int sample_count;
-		bool is_sRGB;
-		// bool padding[ 3 ];
+		Format format;
+
+		/* 3 bytes of padding. */
 	};
 };

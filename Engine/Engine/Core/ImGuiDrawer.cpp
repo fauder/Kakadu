@@ -452,7 +452,7 @@ namespace Engine::ImGuiDrawer
 				}
 
 				char info_line_buffer[ 255 ];
-				sprintf_s( info_line_buffer, 255, "%dx%d | sRGB:%s", ( int )image_width, ( int )image_height, selected_texture->IssRGB() ? ICON_FA_SQUARE_CHECK : ICON_FA_XMARK );
+				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( int )image_width, ( int )image_height, Texture::FormatName( selected_texture->PixelFormat() ) );
 				ImGui::Indent( ( preview_area_size.x - ImGui::CalcTextSize( info_line_buffer ).x ) / 2.0f );
 				ImGui::TextUnformatted( info_line_buffer );
 			}

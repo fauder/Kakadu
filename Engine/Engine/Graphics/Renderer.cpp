@@ -39,11 +39,13 @@ if( not render_queue_map.contains( queue_id ) )\
 
 namespace Engine
 {
-	Renderer::Renderer( std::array< std::optional< int >, Renderer::FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values )
+	Renderer::Renderer( std::array< std::optional< int >,	FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values,
+						std::array< Texture::Format,		FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_color_formats )
 		:
 		logger( ServiceLocator< GLLogger >::Get() ),
 		framebuffer_current( nullptr ),
 		offscreen_framebuffer_msaa_sample_count_array( std::move( offscreen_framebuffer_msaa_sample_count_values ) ),
+		offscreen_framebuffer_color_format_array( std::move( offscreen_framebuffer_color_formats ) ),
 		lights_point_active_count( 0 ),
 		lights_spot_active_count( 0 ),
 		update_uniform_buffer_lighting( false ),
@@ -296,6 +298,8 @@ namespace Engine
 
 																			/* Default wrapping = clamp to border, with border = Color4{0,0,0,0}. */
 
+																			/* Default color format = RGBA, adequate. */
+
 																			.attachment_bits = Engine::Framebuffer::AttachmentType::Depth
 																		} );
 
@@ -305,7 +309,7 @@ namespace Engine
 													  .width_in_pixels  = new_width_in_pixels,
 													  .height_in_pixels = new_height_in_pixels,
 
-													  .is_sRGB          = true, /* This is the final step, so sRGB encoding should be on. */
+													  .color_format     = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
 													  .attachment_bits  = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
 												  } );
 
@@ -316,6 +320,7 @@ namespace Engine
 																			.width_in_pixels    = new_width_in_pixels,
 																			.height_in_pixels   = new_height_in_pixels,
 
+																			.color_format       = offscreen_framebuffer_color_format_array[ index ],
 																			.multi_sample_count = offscreen_framebuffer_msaa_sample_count_array[ index ],
 																			.attachment_bits    = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
 																		} );

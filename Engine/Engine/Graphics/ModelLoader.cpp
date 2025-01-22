@@ -440,7 +440,7 @@ namespace Engine
 						( material.packedOcclusionRoughnessMetallicTextures->roughnessMetallicOcclusionTexture &&
 						  material.packedOcclusionRoughnessMetallicTextures->roughnessMetallicOcclusionTexture->textureIndex == *gltf_texture.imageIndex ) ) ) )
                 {
-                    import_settings.is_sRGB = false;
+                    import_settings.format = Texture::Format::RGBA;
                 }
             }
 

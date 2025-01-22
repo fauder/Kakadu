@@ -10,18 +10,68 @@ namespace Engine
  * Utility functions:
  */
 
-	int InternalFormat( const int format, const bool is_sRGB )
-	{
-		return ( int )is_sRGB * GL_SRGB_ALPHA + ( 1 - ( int )is_sRGB ) * format;
-	};
-
-	GLenum PixelDataType( const int format )
+	int InternalFormat( const Texture::Format format )
 	{
 		switch( format )
 		{
-			case GL_DEPTH_STENCIL:	return GL_UNSIGNED_INT_24_8;
+			case Texture::Format::R:				return GL_RED;
+			case Texture::Format::RG:				return GL_RG;
+			case Texture::Format::RGB:				return GL_RGB;
+			case Texture::Format::RGBA:				return GL_RGBA;
 
-			default:				return GL_UNSIGNED_BYTE;
+			case Texture::Format::RGBA_16F:			return GL_RGBA;
+			case Texture::Format::RGBA_32F:			return GL_RGBA;
+
+			case Texture::Format::SRGB:				return GL_SRGB;
+			case Texture::Format::SRGBA:			return GL_SRGB_ALPHA;
+
+			case Texture::Format::DEPTH_STENCIL:	return GL_DEPTH24_STENCIL8;
+			case Texture::Format::DEPTH:			return GL_DEPTH_COMPONENT;
+			case Texture::Format::STENCIL:			return GL_STENCIL_INDEX;
+
+			default:
+				throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
+				break;
+		}
+	};
+
+	GLenum PixelDataFormat( const Texture::Format format )
+	{
+		switch( format )
+		{
+			case Texture::Format::R:				return GL_RED;
+			case Texture::Format::RG:				return GL_RG;
+			case Texture::Format::RGB:				return GL_RGB;
+			case Texture::Format::RGBA:				return GL_RGBA;
+
+			case Texture::Format::RGBA_16F:			return GL_RGBA;
+			case Texture::Format::RGBA_32F:			return GL_RGBA;
+			
+			case Texture::Format::SRGB:				return GL_RGB;
+			case Texture::Format::SRGBA:			return GL_RGBA;
+
+			case Texture::Format::DEPTH_STENCIL:	return GL_DEPTH_STENCIL;
+			case Texture::Format::DEPTH:			return GL_DEPTH_COMPONENT;
+			case Texture::Format::STENCIL:			return GL_STENCIL_INDEX;
+
+			default:
+				throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
+				break;
+		}
+	}
+
+	GLenum PixelDataType( const Texture::Format format )
+	{
+		switch( format )
+		{
+			default:								return GL_UNSIGNED_BYTE;
+
+			case Texture::Format::RGBA_16F:			return GL_HALF_FLOAT;
+			case Texture::Format::RGBA_32F:			return GL_FLOAT;
+
+			case Texture::Format::DEPTH_STENCIL:	return GL_UNSIGNED_INT_24_8;
+			case Texture::Format::DEPTH:			return GL_UNSIGNED_INT;
+			case Texture::Format::STENCIL:			return GL_UNSIGNED_BYTE;
 		}
 	}
 
@@ -36,17 +86,14 @@ namespace Engine
 		type( TextureType::None ),
 		name( "<defaulted>" ),
 		sample_count( 0 ),
-		is_sRGB() // Does not matter for default constructed Textures.
+		format( Format::NOT_ASSIGNED )
 	{}
 
-	/* Allocate-only constructor (no data).
-	 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-	 */
+	/* Allocate-only constructor (no data). */
 	Texture::Texture( const std::string_view name,
 					  //const std::byte* data, This is omitted from this public constructor.
-					  const int format,
+					  const Format format,
 					  const int width, const int height,
-					  const bool is_sRGB,
 					  const Wrapping wrap_u, const Wrapping wrap_v,
 					  const Color4 border_color,
 					  const Filtering min_filter, Filtering mag_filter )
@@ -56,7 +103,7 @@ namespace Engine
 		type( TextureType::Texture2D ),
 		name( name ),
 		sample_count( 0 ),
-		is_sRGB( is_sRGB )
+		format( format )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -74,29 +121,26 @@ namespace Engine
 		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder )
 			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color.Data() );
 
-		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format, is_sRGB ), width, height, 0, format, PixelDataType( format ), nullptr );
+		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), nullptr );
 
 		/* No mip-map generation since there is no data yet. */
 
 		Unbind();
 	}
 
-	/* Multi-sampled allocate-only constructor (no data).
-	 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-	 */
+	/* Multi-sampled allocate-only constructor (no data). */
 	Texture::Texture( const int sample_count,
 					  const std::string_view multi_sampled_texture_name,
 					  //const std::byte* data, This is omitted from this public constructor.
-					  const int format,
-					  const int width, const int height,
-					  const bool is_sRGB )
+					  const Format format,
+					  const int width, const int height )
 		:
 		id( {} ),
 		size( width, height ),
 		type( TextureType::Texture2D_MultiSample ),
 		name( multi_sampled_texture_name ),
 		sample_count( sample_count ),
-		is_sRGB( is_sRGB )
+		format( format )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -106,22 +150,19 @@ namespace Engine
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), this->name + " (" + std::to_string( sample_count ) + " samples) " );
 #endif // _DEBUG
 
-		glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, sample_count, InternalFormat( format, is_sRGB ), width, height, GL_TRUE );
+		glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, sample_count, InternalFormat( format ), width, height, GL_TRUE );
 
 		/* Multi-sampled textures do not support setting of any sampler state, including filtering & wrapping modes. */
 
 		Unbind();
 	}
 
-	/* Cubemap allocate-only constructor (no data).
-	 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-	 */
+	/* Cubemap allocate-only constructor (no data). */
 	Texture::Texture( CubeMapConstructorTag tag,
 					  const std::string_view name,
 					  //const std::byte* data, This is omitted from this public constructor.
-					  const int format,
+					  const Format format,
 					  const int width, const int height,
-					  const bool is_sRGB,
 					  const Wrapping wrap_u, const Wrapping wrap_v, const Wrapping wrap_w,
 					  Color4 border_color,
 					  const Filtering min_filter, const Filtering mag_filter )
@@ -131,7 +172,7 @@ namespace Engine
 		type( TextureType::Cubemap ),
 		name( name ),
 		sample_count( 0 ),
-		is_sRGB( is_sRGB )
+		format( format )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -144,7 +185,7 @@ namespace Engine
 
 		for( auto i = 0; i < 6; i++ )
 			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-						  0, InternalFormat( format, is_sRGB ), width, height, 0, format, PixelDataType( format ), nullptr );
+						  0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), nullptr );
 
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );
@@ -168,8 +209,8 @@ namespace Engine
 	#else
 		name( std::move( donor.name ) ),
 #endif // _DEBUG
-		sample_count( std::move( donor.sample_count ) ),
-		is_sRGB( std::move( donor.is_sRGB ) )
+		sample_count( std::exchange( donor.sample_count, 0 ) ),
+		format( std::exchange( donor.format, Format::NOT_ASSIGNED ) )
 	{
 	}
 
@@ -185,8 +226,8 @@ namespace Engine
 	#else
 		name = std::move( donor.name );
 #endif // _DEBUG
-		sample_count = std::move( donor.sample_count );
-		is_sRGB      = std::move( donor.is_sRGB );
+		sample_count = std::exchange( donor.sample_count, 0 );
+		format       = std::exchange( donor.format, Format::NOT_ASSIGNED );
 
 		return *this;
 	}
@@ -219,13 +260,10 @@ namespace Engine
  * TEXTURE PRIVATE API
  */
 
-	/* Private regular constructor: Only the AssetDatabase< Texture > should be able to construct a Texture with data.
-	 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-	 */
+	/* Private regular constructor: Only the AssetDatabase< Texture > should be able to construct a Texture with data. */
 	Texture::Texture( const std::string_view name,
 					  const std::byte* data,
-					  const int format, const int width, const int height,
-					  const bool is_sRGB,
+					  const Format format, const int width, const int height,
 					  const bool generate_mipmaps,
 					  const Wrapping wrap_u, const Wrapping wrap_v,
 					  const Color4 border_color,
@@ -236,7 +274,7 @@ namespace Engine
 		type( TextureType::Texture2D ),
 		name( name ),
 		sample_count( 0 ),
-		is_sRGB( is_sRGB )
+		format( format )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -254,7 +292,23 @@ namespace Engine
 		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder )
 			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color.Data() );
 
-		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format, is_sRGB ), width, height, 0, format, PixelDataType( format ), data );
+		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), data );
+
+#ifdef _DEBUG
+		if( const auto gl_error = glGetError(); gl_error )
+		{
+			switch( gl_error )
+			{
+				case GL_INVALID_ENUM:		std::cerr << "GL_INVALID_ENUM";			break;
+				case GL_INVALID_VALUE:		std::cerr << "GL_INVALID_VALUE";		break;
+				case GL_INVALID_OPERATION:	std::cerr << "GL_INVALID_OPERATION";	break;
+				case GL_OUT_OF_MEMORY:		std::cerr << "GL_OUT_OF_MEMORY";		break;
+
+				default:					std::cerr << "UNKNOWN";					break; // This should not be possible, but won't hurt to guard against.
+			}
+			ASSERT( false ); // Stop the debugger here.
+		}
+#endif // _DEBUG
 
 		if( generate_mipmaps )
 			glGenerateMipmap( GL_TEXTURE_2D );
@@ -262,14 +316,12 @@ namespace Engine
 		Unbind();
 	}
 
-	/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data.
-	 * Parameter 'is_sRGB': Set this to true for albedo/diffuse maps, false for normal maps etc. (for linear color space textures).
-	 */
+	/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data. */
 	Texture::Texture( CubeMapConstructorTag tag,
 					  const std::string_view name,
 					  const std::array< const std::byte*, 6 >& cubemap_data_array,
-					  const int format, const int width, const int height,
-					  const bool is_sRGB,
+					  const Format format, 
+					  const int width, const int height,
 					  const Wrapping wrap_u, const Wrapping wrap_v,	const Wrapping wrap_w,
 					  const Color4 border_color,
 					  const Filtering min_filter, const Filtering mag_filter )
@@ -279,7 +331,7 @@ namespace Engine
 		type( TextureType::Cubemap ),
 		name( name ),
 		sample_count( 0 ),
-		is_sRGB( is_sRGB )
+		format( format )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -291,7 +343,7 @@ namespace Engine
 
 		for( auto i = 0; i < 6; i++ )
 			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-						  0, InternalFormat( format, is_sRGB ), width, height, 0, format, PixelDataType( format ), cubemap_data_array[ i ] );
+						  0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), cubemap_data_array[ i ] );
 
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );

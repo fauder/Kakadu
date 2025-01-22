@@ -12,8 +12,7 @@
 
 namespace Engine
 {
-	constexpr GLenum FORMAT        = GL_RGBA;
-	constexpr int DESIRED_CHANNELS = 4;
+	constexpr int DESIRED_CHANNELS   = 4;
 
 	std::optional< Texture > Texture::Loader::FromFile( const::std::string_view name, const std::string& file_path, const ImportSettings& import_settings )
 	{
@@ -32,9 +31,8 @@ namespace Engine
 			/* Format from import_settings is not used at the moment. */
 			maybe_texture = Texture( name, 
 									 ( std::byte* )image_data, 
-									 FORMAT,
+									 import_settings.format,
 									 width, height, 
-									 import_settings.is_sRGB,
 									 import_settings.generate_mipmaps,
 									 import_settings.wrap_u, import_settings.wrap_v,
 									 import_settings.border_color, 
@@ -85,9 +83,8 @@ namespace Engine
 		maybe_texture = Texture( CUBEMAP_CONSTRUCTOR, 
 								 cubemap_name, 
 								 ( const std::array< const std::byte*, 6 >& )image_data_array, 
-								 FORMAT, 
+								 import_settings.format, 
 								 width, height,
-								 import_settings.is_sRGB,
 								 import_settings.wrap_u, import_settings.wrap_v, import_settings.wrap_w,
 								 import_settings.border_color,
 								 import_settings.min_filter, import_settings.mag_filter );
@@ -116,9 +113,8 @@ namespace Engine
 			/* Format from import_settings is not used at the moment. */
 			maybe_texture = Texture( name,
 									 data,
-									 FORMAT,
+									 import_settings.format,
 									 width_and_height, width_and_height,
-									 import_settings.is_sRGB,
 									 import_settings.generate_mipmaps,
 									 import_settings.wrap_u, import_settings.wrap_v,
 									 import_settings.border_color,
@@ -138,9 +134,8 @@ namespace Engine
 			/* Format from import_settings is not used at the moment. */
 			maybe_texture = Texture( name, 
 									 ( std::byte* )image_data, 
-									 FORMAT, 
+									 import_settings.format, 
 									 width, height, 
-									 import_settings.is_sRGB,
 									 import_settings.generate_mipmaps,
 									 import_settings.wrap_u, import_settings.wrap_v,
 									 import_settings.border_color,

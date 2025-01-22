@@ -45,6 +45,7 @@ namespace Engine
 			int width_in_pixels;
 			int height_in_pixels;
 
+			Texture::Format color_format            = Texture::Format::RGBA;
 			Texture::Filtering minification_filter  = Texture::Filtering::Linear;
 			Texture::Filtering magnification_filter = Texture::Filtering::Linear;
 			Texture::Wrapping  wrap_u               = Texture::Wrapping::ClampToEdge;
@@ -52,10 +53,9 @@ namespace Engine
 			Color4 border_color                     = Color4::Black();
 			std::optional< int > multi_sample_count = std::nullopt;
 			BindPoint bind_point                    = BindPoint::Both;
-			bool is_sRGB                            = false;
 			BitFlags< AttachmentType > attachment_bits;
 
-			// 2 bytes of padding.
+			// 3 bytes of padding.
 		};
 
 	public:
@@ -81,7 +81,7 @@ namespace Engine
 		inline int					SampleCount()		const { return sample_count.value(); }
 		inline bool					IsMultiSampled()	const { return sample_count.has_value(); }
 
-		inline bool					Is_sRGB()			const { return is_sRGB; }
+		inline bool					Is_sRGB()			const { return HasColorAttachment() && color_attachment->Is_sRGB(); }
 
 		inline const std::string&	Name()				const { return name; }
 
@@ -131,8 +131,7 @@ namespace Engine
 
 		std::optional< int > sample_count;
 
-		bool is_sRGB;
-		// bool padding[ 3 ];
+		// 4 bytes of padding.
 
 		BitFlags< ClearTarget > clear_targets;
 		Color4 clear_color;

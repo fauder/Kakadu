@@ -36,8 +36,8 @@ namespace Engine
 																										.min_filter       = Texture::Filtering::Nearest,
 																										.mag_filter       = Texture::Filtering::Nearest,
 																										.flip_vertically  = false,
-																										.is_sRGB          = false,
 																										.generate_mipmaps = false,
+																										.format           = Texture::Format::RGBA
 																									} ) );
 		}
 
@@ -54,8 +54,7 @@ namespace Engine
 																								   .min_filter       = Texture::Filtering::Nearest,
 																								   .mag_filter       = Texture::Filtering::Nearest,
 																								   .flip_vertically  = false,
-																								   .is_sRGB          = true,
-																								   .generate_mipmaps = false,
+																								   .generate_mipmaps = false
 																							   } ) );
 		}
 

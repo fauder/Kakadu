@@ -106,13 +106,13 @@ void SandboxApplication::Initialize()
 																							{
 																								.wrap_u  = Engine::Texture::Wrapping::Repeat,
 																								.wrap_v  = Engine::Texture::Wrapping::Repeat,
-																								.is_sRGB = false,
+																								.format  = Engine::Texture::Format::RGBA,
 																							} );
 
 	brickwall_displacement_map = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Displacement) Map", AssetDir R"(bricks2_disp.jpg)",
 																								Engine::Texture::ImportSettings
 																								{
-																									.is_sRGB = false,
+																									.format = Engine::Texture::Format::RGBA,
 																								} );
 
 	transparent_window_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Transparent Window", AssetDir R"(blending_transparent_window.png)" );

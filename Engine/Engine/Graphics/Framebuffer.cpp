@@ -13,7 +13,6 @@ namespace Engine
 		id( {} ),
 		bind_point( BindPoint::Invalid ),
 		size( ZERO_INITIALIZATION ),
-		is_sRGB( false ),
 		clear_color( Color4::Black() ),
 		clear_depth_value( 0.0f ),
 		clear_stencil_value( 0 ),
@@ -31,7 +30,6 @@ namespace Engine
 		bind_point( description.bind_point ),
 		size( description.width_in_pixels, description.height_in_pixels ),
 		sample_count( description.multi_sample_count ),
-		is_sRGB( description.is_sRGB ),
 		clear_color( Color4::Black() ),
 		clear_depth_value( 0.0f ),
 		clear_stencil_value( 0 ),
@@ -55,8 +53,7 @@ namespace Engine
 		auto CreateTextureAndAttachToFramebuffer = [ & ]( const Texture*& attachment_texture, 
 														  const char* attachment_type_name, 
 														  const GLenum attachment_type_enum,
-														  const GLenum format,
-														  const bool use_sRGB )
+														  const Texture::Format format )
 		{
 			ASSERT_DEBUG_ONLY( ( ( attachment_type_enum >= GL_COLOR_ATTACHMENT0 && attachment_type_enum <= GL_DEPTH_ATTACHMENT ) ||
 								 attachment_type_enum == GL_STENCIL_ATTACHMENT ||
@@ -70,8 +67,7 @@ namespace Engine
 				attachment_texture = Engine::AssetDatabase< Engine::Texture >::AddOrUpdateAsset( Engine::Texture( *sample_count,
 																												  full_name, format,
 																												  size.X() ,
-																												  size.Y(),
-																												  use_sRGB ) );
+																												  size.Y() ) );
 			}
 			else
 			{
@@ -79,7 +75,6 @@ namespace Engine
 				attachment_texture = Engine::AssetDatabase< Engine::Texture >::AddOrUpdateAsset( Engine::Texture( full_name, format,
 																												  size.X() ,
 																												  size.Y(),
-																												  use_sRGB,
 																												  description.wrap_u, description.wrap_v,
 																												  description.border_color,
 																												  description.minification_filter, description.magnification_filter ) );
@@ -90,25 +85,26 @@ namespace Engine
 
 		if( description.attachment_bits.IsSet( AttachmentType::Color ) )
 		{
-			CreateTextureAndAttachToFramebuffer( color_attachment, " Color Tex. ", GL_COLOR_ATTACHMENT0, GL_RGBA, is_sRGB );
+			CreateTextureAndAttachToFramebuffer( color_attachment, " Color Tex. ", GL_COLOR_ATTACHMENT0,
+												 description.color_format == Texture::Format::NOT_ASSIGNED ? Texture::Format::RGBA : description.color_format );
 			clear_targets.Set( ClearTarget::ColorBuffer );
 		}
 
 		if( description.attachment_bits.IsSet( AttachmentType::DepthStencilCombined ) )
 		{
-			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S Tex. ", GL_DEPTH_STENCIL_ATTACHMENT, GL_DEPTH_STENCIL, false /* do not use sRGB. */ );
+			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S Tex. ", GL_DEPTH_STENCIL_ATTACHMENT, Texture::Format::DEPTH_STENCIL );
 			clear_targets.Set( ClearTarget::DepthBuffer, ClearTarget::StencilBuffer );
 		}
 		else
 		{
 			if( description.attachment_bits.IsSet( AttachmentType::Depth ) )
 			{
-				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth Tex. ", GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, false /* do not use sRGB. */ );
+				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth Tex. ", GL_DEPTH_ATTACHMENT, Texture::Format::DEPTH );
 				clear_targets.Set( ClearTarget::DepthBuffer );
 			}
 			if( description.attachment_bits.IsSet( AttachmentType::Stencil ) )
 			{
-				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil Tex. ", GL_STENCIL_ATTACHMENT, GL_STENCIL_INDEX, false /* do not use sRGB. */ );
+				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil Tex. ", GL_STENCIL_ATTACHMENT, Texture::Format::STENCIL );
 				clear_targets.Set( ClearTarget::StencilBuffer );
 			}
 		}
@@ -133,7 +129,6 @@ namespace Engine
 		bind_point( std::exchange( donor.bind_point, BindPoint::Invalid ) ),
 		size( std::exchange( donor.size, ZERO_INITIALIZATION ) ),
 		sample_count( std::exchange( donor.sample_count, std::nullopt ) ),
-		is_sRGB( std::exchange( donor.is_sRGB, {} ) ),
 		clear_targets( std::exchange( donor.clear_targets, {} ) ),
 		clear_color( std::exchange( donor.clear_color, Color4::Black() ) ),
 		clear_depth_value( std::exchange( donor.clear_depth_value, 0.0f ) ),
@@ -154,7 +149,6 @@ namespace Engine
 		bind_point               = std::exchange( donor.bind_point,					BindPoint::Invalid );
 		size                     = std::exchange( donor.size,						ZERO_INITIALIZATION );
 		sample_count             = std::exchange( donor.sample_count,				std::nullopt );
-		is_sRGB                  = std::exchange( donor.is_sRGB,					{} );
 		clear_targets            = std::exchange( donor.clear_targets,				{} );
 		clear_color              = std::exchange( donor.clear_color,				Color4::Black() );
 		clear_depth_value        = std::exchange( donor.clear_depth_value,			0.0f );
