@@ -555,6 +555,8 @@ namespace Engine::ImGuiDrawer
 
 	void Draw( const Shader& shader, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 
+	void Draw( const Framebuffer& framebuffer, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
+
 	bool Draw(		 DirectionalLight&	directional_light,	const char* light_name,											ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 	void Draw( const DirectionalLight&	directional_light,	const char* light_name,											ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 	bool Draw(		 PointLight&		point_light,		const char* light_name,		const bool hide_position = false,	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );

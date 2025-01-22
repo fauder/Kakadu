@@ -1005,6 +1005,72 @@ namespace Engine::ImGuiDrawer
 		ImGui::End();
 	}
 
+	void Draw( const Framebuffer& framebuffer, ImGuiWindowFlags window_flags )
+	{
+		const auto name_cstr = framebuffer.Name().c_str();
+		ImGui::PushID( name_cstr );
+
+		if( ImGui::BeginTable( "FramebufferTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
+		{
+			ImGui::TableNextRow();
+
+			int id = framebuffer.Id().Get();
+			ImGui::TableNextColumn(); ImGui::TextDisabled( "ID" );
+			ImGui::TableNextColumn(); ImGui::InputInt( "##ID", &id, 0, 0, ImGuiInputTextFlags_ReadOnly );
+
+			Vector2I size = framebuffer.Size();
+
+			ImGui::TableNextColumn(); ImGui::TextDisabled( "Width" );
+			ImGui::TableNextColumn(); ImGui::InputInt( "##Width", reinterpret_cast< int* >( &size ), 0, 0, ImGuiInputTextFlags_ReadOnly );
+			ImGui::TableNextColumn(); ImGui::TextDisabled( "Height" );
+			ImGui::TableNextColumn(); ImGui::InputInt( "##Height", reinterpret_cast< int* >( &size ) + 1, 0, 0, ImGuiInputTextFlags_ReadOnly );
+
+
+			ImGui::TableNextColumn(); ImGui::TextDisabled( "MSAA" );
+			ImGui::TableNextColumn();
+
+			if( framebuffer.IsMultiSampled() )
+			{
+				int sample_count = framebuffer.SampleCount();
+				ImGui::InputInt( "##Sample Count", &sample_count, 0, 100, ImGuiInputTextFlags_ReadOnly );
+			}
+			else
+				ImGui::TextUnformatted( ICON_FA_XMARK );
+
+			if( framebuffer.HasColorAttachment() )
+			{
+				ImGui::TableNextColumn(); ImGui::TextDisabled( "Color Texture" );
+				ImGui::TableNextColumn();
+				ImGui::TextUnformatted( framebuffer.ColorAttachment().Name().c_str() );
+			}
+
+			if( framebuffer.HasCombinedDepthStencilAttachment() )
+			{
+				ImGui::TableNextColumn(); ImGui::TextDisabled( "Combined Depth/Stencil Texture" );
+				ImGui::TableNextColumn();
+				ImGui::TextUnformatted( framebuffer.DepthStencilAttachment().Name().c_str() );
+			}
+
+			if( framebuffer.HasSeparateDepthAttachment() )
+			{
+				ImGui::TableNextColumn(); ImGui::TextDisabled( "Separate Depth Texture" );
+				ImGui::TableNextColumn();
+				ImGui::TextUnformatted( framebuffer.DepthAttachment().Name().c_str() );
+			}
+
+			if( framebuffer.HasSeparateStencilAttachment() )
+			{
+				ImGui::TableNextColumn(); ImGui::TextDisabled( "Separate Stencil Texture" );
+				ImGui::TableNextColumn();
+				ImGui::TextUnformatted( framebuffer.StencilAttachment().Name().c_str() );
+			}
+
+			ImGui::EndTable();
+		}
+
+		ImGui::PopID();
+	}
+
 	bool Draw( DirectionalLight& directional_light, const char* light_name, ImGuiWindowFlags window_flags )
 	{
 		bool is_modified = false;
