@@ -1,6 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
-// Sandbox Includes.
+// HDR-Demo Includes.
 #include "HDR_DemoApplication.h"
 
 // Engine Includes.
@@ -64,13 +64,13 @@ HDR_DemoApplication::~HDR_DemoApplication()
 
 void HDR_DemoApplication::Initialize()
 {
-	Platform::ChangeTitle( "Kakadu - Sandbox" );
+	Platform::ChangeTitle( "Kakadu - HDR-Demo" );
 
 	gl_logger.IgnoreID( 131185 );
 
 	//Engine::Math::Random::SeedRandom();
 
-	auto log_group( gl_logger.TemporaryLogGroup( "Sandbox GL Init." ) );
+	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo GL Init." ) );
 
 /* Textures: */
 	wood_diffuse_map  = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)" );
@@ -156,7 +156,7 @@ void HDR_DemoApplication::Shutdown()
 
 void HDR_DemoApplication::Update()
 {
-	auto log_group( gl_logger.TemporaryLogGroup( "Sandbox Update()" ) );
+	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo Update()" ) );
 
 	// TODO: Separate applicationg logs from GL logs.
 
