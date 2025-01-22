@@ -201,6 +201,8 @@ namespace Engine
 	{
 		if( ImGui::Begin( ICON_FA_DRAW_POLYGON " Renderer", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
+			ImGui::SeparatorText( "Passes & Queues" );
+
 			for( auto& [ pass_id, pass ] : render_pass_map )
 			{
 				ImGui::PushID( ( int )pass_id );
@@ -265,13 +267,29 @@ namespace Engine
 					ImGui::TreePop();
 				}
 			}
+
+			/* Framebuffers: */
+			ImGui::SeparatorText( "Framebuffers" );
+			if( ImGui::TreeNodeEx( editor_framebuffer.name.c_str() ) )
+			{
+				ImGuiDrawer::Draw( editor_framebuffer );
+				ImGui::TreePop();
+			}
+			for( auto& offscreen_framebuffer : offscreen_framebuffer_array )
+			{
+				if( ImGui::TreeNodeEx( offscreen_framebuffer.name.c_str() ) )
+				{
+					ImGuiDrawer::Draw( offscreen_framebuffer );
+					ImGui::TreePop();
+				}
+			}
 		}
 
 		ImGui::End();
 
 		/* Shaders: */
 		for( auto& shader : shaders_registered )
-			Engine::ImGuiDrawer::Draw( *shader );
+			ImGuiDrawer::Draw( *shader );
 
 		/* Uniforms (Renderer-scope): */
 		ImGuiDrawer::Draw( uniform_buffer_management_intrinsic, "Shader Intrinsics" );
