@@ -294,22 +294,6 @@ namespace Engine
 
 		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), data );
 
-#ifdef _DEBUG
-		if( const auto gl_error = glGetError(); gl_error )
-		{
-			switch( gl_error )
-			{
-				case GL_INVALID_ENUM:		std::cerr << "GL_INVALID_ENUM";			break;
-				case GL_INVALID_VALUE:		std::cerr << "GL_INVALID_VALUE";		break;
-				case GL_INVALID_OPERATION:	std::cerr << "GL_INVALID_OPERATION";	break;
-				case GL_OUT_OF_MEMORY:		std::cerr << "GL_OUT_OF_MEMORY";		break;
-
-				default:					std::cerr << "UNKNOWN";					break; // This should not be possible, but won't hurt to guard against.
-			}
-			ASSERT( false ); // Stop the debugger here.
-		}
-#endif // _DEBUG
-
 		if( generate_mipmaps )
 			glGenerateMipmap( GL_TEXTURE_2D );
 
