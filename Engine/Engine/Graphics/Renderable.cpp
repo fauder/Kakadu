@@ -1,3 +1,9 @@
+// Platform-specific Debug API includes.
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
+#include <windows.h> // For Visual Studio's OutputDebugString().
+#endif // _WIN32
+
 // Engine Includes.
 #include "Renderable.h"
 
@@ -21,6 +27,17 @@ namespace Engine
 		is_enabled( true ),
 		is_receiving_shadows( receive_shadows )
 	{
+#ifdef _DEBUG
+		if( mesh->VertexCount() == 0 )
+		{
+		#if defined( _WIN32 ) && defined( _DEBUG )
+			if( IsDebuggerPresent() )
+				OutputDebugStringA( "Renderable construction attempt via uninitialized Mesh!" );
+		#endif // _WIN32 && _DEBUG
+
+			ServiceLocator< GLLogger >::Get().Error( "Renderable construction attempt via uninitialized Mesh!" );
+		}
+#endif // _DEBUG
 	}
 
 	Renderable::~Renderable()
