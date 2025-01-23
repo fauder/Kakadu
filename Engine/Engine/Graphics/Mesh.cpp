@@ -29,7 +29,7 @@ namespace Engine
 	{
 #ifdef _DEBUG
 		if( normals.size() != tangents.size() )
-			ServiceLocator< GLLogger >::Get().Warning( "Mesh \"" + name + "\": Only one of the Normals & Tangents were provided. This is most likely a mistake." );
+			ServiceLocator< GLLogger >::Get().Warning( "Mesh \"" + name + "\": Tangent & Normal count does not match (maybe only one of them was provided?)\nThis is most likely a mistake." );
 #endif // _DEBUG
 
 		unsigned int vertex_count_interleaved;
