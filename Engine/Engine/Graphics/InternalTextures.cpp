@@ -61,6 +61,7 @@ namespace Engine
 	void InternalTextures::Initialize()
 	{
 		TEXTURE_MAP.try_emplace( "White",		CreateSingleTexelTexture( Color4::White(),		"White" ) );
+		TEXTURE_MAP.try_emplace( "Gray",		CreateSingleTexelTexture( Color4::Gray( 0.5f ),	"Gray"	) );
 		TEXTURE_MAP.try_emplace( "Black",		CreateSingleTexelTexture( Color4::Black(),		"Black" ) );
 		TEXTURE_MAP.try_emplace( "Normal Map",	CreateSingleTexelTexture( std::array< unsigned char, 4 >{ 127, 127, 255, 255 }, "Default Normal Map",
 																		  Texture::ImportSettings

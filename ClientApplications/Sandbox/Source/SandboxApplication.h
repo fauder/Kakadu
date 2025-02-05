@@ -126,8 +126,6 @@ private:
 	Engine::Texture* brickwall_normal_map;
 	Engine::Texture* brickwall_displacement_map;
 
-	Engine::Texture* half_gray_srgb_texture;
-
 	Engine::Texture* checker_pattern_texture;
 	Engine::Texture* transparent_window_texture;
 

@@ -124,13 +124,6 @@ void SandboxApplication::Initialize()
 																								 .wrap_v = Engine::Texture::Wrapping::Repeat
 																							 } );
 
-	half_gray_srgb_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "%50 Gray", AssetDir R"(half_gray.png)",
-																							Engine::Texture::ImportSettings
-																							{
-																								.wrap_u = Engine::Texture::Wrapping::Repeat,
-																								.wrap_v = Engine::Texture::Wrapping::Repeat
-																							} );
-
 /* Shaders: */
 	shader_skybox                                           = Engine::InternalShaders::Get( "Skybox" );
 	shader_blinn_phong                                      = Engine::InternalShaders::Get( "Blinn-Phong" );
