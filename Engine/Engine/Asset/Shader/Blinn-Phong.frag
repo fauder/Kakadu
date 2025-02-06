@@ -41,6 +41,7 @@ layout ( std140 ) uniform BlinnPhongMaterialData
 uniform sampler2D uniform_diffuse_map_slot;
 uniform sampler2D uniform_specular_map_slot;
 uniform sampler2D uniform_normal_map_slot;
+uniform sampler2D uniform_dither_kernel_slot;
 
 #ifdef SKYBOX_ENVIRONMENT_MAPPING
 uniform samplerCube uniform_texture_skybox_slot;
@@ -299,4 +300,7 @@ void main()
 
 	out_color = mix( out_color, ( 1.0 - reflection_map_sample.r ) * reflection_sample, uniform_reflectivity );
 #endif
+
+	// Apply dithering to prevent color banding:											This 32 should be 64 to be mathematically correct, but 32 looks better.
+	out_color.rgb += vec3( texture2D( uniform_dither_kernel_slot, gl_FragCoord.xy / 8.0 ).r / 32.0 - ( 1.0 / 128.0 ) );
 }
