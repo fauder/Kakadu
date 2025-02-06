@@ -19,8 +19,8 @@ namespace Engine
 			case Texture::Format::RGB:				return GL_RGB;
 			case Texture::Format::RGBA:				return GL_RGBA;
 
-			case Texture::Format::RGBA_16F:			return GL_RGBA;
-			case Texture::Format::RGBA_32F:			return GL_RGBA;
+			case Texture::Format::RGBA_16F:			return GL_RGBA16F;
+			case Texture::Format::RGBA_32F:			return GL_RGBA32F;
 
 			case Texture::Format::SRGB:				return GL_SRGB;
 			case Texture::Format::SRGBA:			return GL_SRGB_ALPHA;
