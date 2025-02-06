@@ -579,7 +579,6 @@ void HDR_DemoApplication::ResetMaterialData()
 	wall_material = Engine::Material( "Wall", shader_blinn_phong );
 	wall_material.SetTexture( "uniform_diffuse_map_slot", wood_diffuse_map );
 	wall_material.SetTexture( "uniform_specular_map_slot", Engine::ServiceLocator< Engine::InternalTextures >::Get().Get( "White" ) );
-	wall_material.SetTexture( "uniform_dither_kernel_slot", Engine::ServiceLocator< Engine::InternalTextures >::Get().Get( "Bayer Dither" ) );
 	wall_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
 	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );
