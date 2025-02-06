@@ -19,7 +19,7 @@ class HDR_DemoApplication : public Engine::Application
 {
 	DEFINE_MATH_TYPES()
 
-		enum class CameraView
+	enum class CameraView
 	{
 		FRONT,
 		BACK,
@@ -52,6 +52,7 @@ public:
 private:
 	void RenderImGui_Viewport();
 
+	void ResetInstanceData();
 	void ResetLightingData();
 	void ResetMaterialData();
 	void ResetCamera();
@@ -67,27 +68,44 @@ private:
 /* Renderer: */
 	Engine::Renderer renderer;
 
-	Engine::Renderable tunnel_renderable;
+	/* Front wall is not included to be able to see inside the tunnel. */
+	Engine::Renderable wall_back_renderable;
+	Engine::Renderable wall_left_renderable;
+	Engine::Renderable wall_right_renderable;
+	Engine::Renderable wall_bottom_renderable;
+	Engine::Renderable wall_top_renderable;
+
+	Engine::Renderable light_sources_renderable;
 
 	Engine::Renderable offscreen_quad_renderable;
 
-	static constexpr Engine::RenderQueue::ID RENDER_QUEUE_ID_GEOMETRY_INVERTED = Engine::RenderQueue::ID( ( unsigned int )Engine::Renderer::QUEUE_ID_GEOMETRY + 1 );
+	Engine::Framebuffer framebuffer_hdr;
 
 /* Textures: */
 	Engine::Texture* wood_diffuse_map;
 
+	Engine::Texture* framebuffer_hdr_color_attachment;
+	Engine::Texture* framebuffer_hdr_depth_attachment;
+
 /* Vertex Info.: */
-	Engine::Mesh cube_mesh, quad_mesh_fullscreen;
+	Engine::Mesh cube_mesh;
+	Engine::Mesh quad_mesh_fullscreen;
+	Engine::Mesh quad_mesh;
+	Engine::Mesh light_source_sphere_mesh;
 
 /* Shaders: */
 	Engine::Shader* shader_blinn_phong;
+
+	Engine::Shader* shader_basic_color_instanced;
 
 	Engine::Shader* shader_texture_blit;
 	Engine::Shader* shader_fullscreen_blit;
 	Engine::Shader* shader_fullscreen_blit_resolve;
 
 /* Materials: */
-	Engine::Material tunnel_material;
+	Engine::Material wall_material;
+
+	Engine::Material light_source_material;
 
 	Engine::Material offscreen_quad_material;
 
@@ -98,7 +116,13 @@ private:
 	std::vector< Engine::Transform > light_point_transform_array;
 
 	/* GameObjects: */
-	Engine::Transform tunnel_transform;
+
+	/* Front wall is not included to be able to see inside the tunnel. */
+	Engine::Transform wall_back_transform;
+	Engine::Transform wall_left_transform;
+	Engine::Transform wall_right_transform;
+	Engine::Transform wall_bottom_transform;
+	Engine::Transform wall_top_transform;
 
 /* Camera: */
 	Engine::Camera camera;
@@ -106,10 +130,19 @@ private:
 	float camera_move_speed;
 	Engine::CameraController_Flight camera_controller;
 
+/* Instancing Data: */
+	struct LightInstanceData
+	{
+		Matrix4x4 transform;
+		Engine::Color4 color;
+	};
+
+	std::vector< LightInstanceData > light_source_instance_data_array;
+
 /* Lighting: */
 	const static constexpr int LIGHT_POINT_COUNT = 4;
 
-	Engine::MaterialData::BlinnPhongMaterialData tunnel_surface_data;
+	Engine::MaterialData::BlinnPhongMaterialData wall_surface_data;
 
 	std::vector< Engine::PointLight > light_point_array;
 
