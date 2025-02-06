@@ -5,7 +5,6 @@
 #include "Graphics/Graphics.h"
 #include "ImGuiDrawer.hpp"
 #include "ImGuiSetup.h"
-#include "ImGuiUtility.h"
 #include "Math/Math.hpp"
 
 // Vendor Includes.
@@ -24,6 +23,7 @@ namespace Engine
 		display_frame_statistics( true ),
 		show_imgui( not flags.IsSet( CreationFlags::OnStart_DisableImGui ) ),
 		show_gl_logger( true ),
+		gamma_correction_is_enabled( not flags.IsSet( CreationFlags::OnStart_DisableGammaCorrection ) ),
 		msaa_sample_count( msaa_sample_count ),
 		time_current( 0.0f ),
 		time_multiplier( 1.0f ),
@@ -51,7 +51,7 @@ namespace Engine
 		const auto version = glGetString( GL_VERSION );
 		std::cout << version << "\n\n";
 
-		ImGuiSetup::Initialize();
+		ImGuiSetup::Initialize( gamma_correction_is_enabled );
 		ImGuiDrawer::Initialize();
 
 		Platform::SetKeyboardEventCallback(

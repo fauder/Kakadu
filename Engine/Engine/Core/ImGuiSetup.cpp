@@ -1,10 +1,12 @@
 // Engine Includes.
 #include "ImGuiSetup.h"
 #include "Platform.h"
-#include "Math/VectorConversion.hpp"
 #include "../Asset/Font/InternalFontDirectoryPath.h"
 
 // Vendor Includes.
+#include <ImGui/imgui.h>
+#include <ImGui/backends/imgui_impl_glfw.h>
+#include <ImGui/backends/imgui_impl_opengl3.h>
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
 #define FullFontPath( file_path ) Utility::String::ConstexprConcatenate( Engine::FONT_SOURCE_DIRECTORY_WITH_SEPARATOR_AS_ARRAY,\
@@ -12,7 +14,7 @@
 
 namespace Engine::ImGuiSetup
 {
-	void Initialize()
+	void Initialize( const bool enable_gamma_correction )
 	{
         ImGui::CreateContext();
 
@@ -27,7 +29,7 @@ namespace Engine::ImGuiSetup
 
         AddFonts();
 
-        SetStyle();
+        SetStyle( enable_gamma_correction );
 	}
 
     void Shutdown()
@@ -80,20 +82,21 @@ namespace Engine::ImGuiSetup
         io.Fonts->Build();
     }
 
-    void SetStyle()
+    void SetStyle( const bool enable_gamma_correction )
     {
         ImGuiStyle& style = ImGui::GetStyle();
 
         using namespace Engine::Math;
 
-        constexpr float gamma = 2.2f;
-
         /*
          * As ImGui is not gamma-aware, we'll just gamma-correct the ImGui style colors here and be done with it.
          */
 
-        auto GammaCorrectedColor = []( const float source_red, const float source_green, const float source_blue, const float source_alpha )
+        auto GammaCorrectedColor = [ & ]( const float source_red, const float source_green, const float source_blue, const float source_alpha )
         {
+            if( not enable_gamma_correction )
+                return ImVec4( source_red, source_green, source_blue, source_alpha );
+
             auto GammaCorrectedColorChannel = []( const float source )
             {
                 // Use the formula from the GL docs instead of naively raising the source to 2.2f: https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml

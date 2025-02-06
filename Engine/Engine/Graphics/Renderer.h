@@ -39,7 +39,8 @@ namespace Engine
 		static constexpr std::size_t FRAMEBUFFER_OFFSCREEN_COUNT = 2;
 	
 	public:
-		Renderer( std::array< std::optional< int >, FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values = {},
+		Renderer( const bool enable_gamma_correction,
+				  std::array< std::optional< int >, FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values = {},
 				  std::array< Texture::Format,		FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_color_formats = {} );
 
 		DELETE_COPY_AND_MOVE_CONSTRUCTORS( Renderer );
@@ -181,8 +182,8 @@ namespace Engine
 		Framebuffer& OffscreenFramebuffer( const unsigned int framebuffer_index = 0 );
 
 		/* Color Space: */
-		void Enable_sRGBEncoding();
-		void Disable_sRGBEncoding();
+		void EnableFramebuffer_sRGBEncoding();
+		void DisableFramebuffer_sRGBEncoding();
 
 		/*
 		 * Other:
@@ -327,8 +328,9 @@ namespace Engine
 		 * Color Space:
 		 */
 
-		bool sRGB_encoding_is_enabled;
+		bool framebuffer_sRGB_encoding_is_enabled;
+		bool gamma_correction_is_enabled;
 		
-		/* 5 bytes of padding. */
+		/* 4 bytes of padding. */
 	};
 }

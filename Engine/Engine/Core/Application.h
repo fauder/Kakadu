@@ -11,8 +11,9 @@ namespace Engine
 {
 	enum class CreationFlags
 	{
-		None                 = 0,
-		OnStart_DisableImGui = 1
+		None                           = 0,
+		OnStart_DisableImGui           = 1,
+		OnStart_DisableGammaCorrection = 2,
 	};
 
 	class Application
@@ -53,7 +54,7 @@ namespace Engine
 		bool display_frame_statistics;
 		bool show_imgui;
 		bool show_gl_logger;
-		// bool padding;
+		bool gamma_correction_is_enabled;
 
 		float time_delta;
 		float time_current;

@@ -44,7 +44,7 @@ Engine::Application* Engine::CreateApplication( const Engine::BitFlags< Engine::
 SandboxApplication::SandboxApplication( const Engine::BitFlags< Engine::CreationFlags > flags )
 	:
 	Engine::Application( flags ),
-	renderer( /* Offscreen framebuffer MSAA sample counts: */ { /* Main: */ 4, /* Rear-view: */ std::nullopt } ),
+	renderer( gamma_correction_is_enabled, /* Offscreen framebuffer MSAA sample counts: */ { /* Main: */ 4, /* Rear-view: */ std::nullopt } ),
 	test_model_info{ .model_instance = {}, .shader = Engine::InternalShaders::Get( "Blinn-Phong" ), .file_path = {} },
 	meteorite_model_info{ .model_instance = {}, .shader = Engine::InternalShaders::Get( "Blinn-Phong (Instanced)" ), .file_path = {} },
 	light_point_transform_array( LIGHT_POINT_COUNT ),

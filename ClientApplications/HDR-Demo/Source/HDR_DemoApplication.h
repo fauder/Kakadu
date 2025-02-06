@@ -4,16 +4,12 @@
 #include "Engine/Graphics/MaterialData/MaterialData.h"
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Mesh.h"
-#include "Engine/Graphics/Model.h"
 #include "Engine/Graphics/Renderer.h"
 #include "Engine/Graphics/Texture.h"
 #include "Engine/Scene/Camera.h"
 #include "Engine/Scene/CameraController_Flight.h"
 
 #include "Engine/DefineMathTypes.h"
-
-// std Includes.
-#include <numeric> // std::accumulate().
 
 class HDR_DemoApplication : public Engine::Application
 {

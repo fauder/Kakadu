@@ -54,23 +54,43 @@ namespace Engine
 			STENCIL
 		};
 
+		static Format DetermineActualFormat( const Format format )
+		{
+			switch( format )
+			{
+				case Format::R:				return Format::R;
+				case Format::RG:			return Format::RG;
+				case Format::RGB:			return Format::RGB;
+				case Format::RGBA:			return Format::RGBA;
+				case Format::RGBA_16F:		return Format::RGBA_16F;
+				case Format::RGBA_32F:		return Format::RGBA_32F;
+				case Format::SRGB:			return GAMMA_CORRECTION_IS_ENABLED ? Format::SRGB  : Format::RGB;
+				case Format::SRGBA:			return GAMMA_CORRECTION_IS_ENABLED ? Format::SRGBA : Format::RGBA;
+				case Format::DEPTH_STENCIL:	return Format::DEPTH_STENCIL;
+				case Format::DEPTH:			return Format::DEPTH;
+				case Format::STENCIL:		return Format::STENCIL;
+
+				default:					return Format::NOT_ASSIGNED;
+			}
+		}
+
 		static constexpr const char* FormatName( const Format format )
 		{
 			switch( format )
 			{
-				case Engine::Texture::Format::NOT_ASSIGNED:		return "NOT_ASSIGNED";
-				case Engine::Texture::Format::R:				return "R";
-				case Engine::Texture::Format::RG:				return "RG";
-				case Engine::Texture::Format::RGB:				return "RGB";
-				case Engine::Texture::Format::RGBA:				return "RGBA";
-				case Engine::Texture::Format::RGBA_16F:			return "RGBA_16F";
-				case Engine::Texture::Format::RGBA_32F:			return "RGBA_32F";
-				case Engine::Texture::Format::SRGB:				return "[S]RGB";
-				case Engine::Texture::Format::SRGBA:			return "[S]RGBA";
-				case Engine::Texture::Format::DEPTH_STENCIL:	return "DEPTH_STENCIL";
-				case Engine::Texture::Format::DEPTH:			return "DEPTH";
-				case Engine::Texture::Format::STENCIL:			return "STENCIL";
-				default:										return "UNKNOWN";
+				case Format::NOT_ASSIGNED:	return "NOT_ASSIGNED";
+				case Format::R:				return "R";
+				case Format::RG:			return "RG";
+				case Format::RGB:			return "RGB";
+				case Format::RGBA:			return "RGBA";
+				case Format::RGBA_16F:		return "RGBA_16F";
+				case Format::RGBA_32F:		return "RGBA_32F";
+				case Format::SRGB:			return "[S]RGB";
+				case Format::SRGBA:			return "[S]RGBA";
+				case Format::DEPTH_STENCIL:	return "DEPTH_STENCIL";
+				case Format::DEPTH:			return "DEPTH";
+				case Format::STENCIL:		return "STENCIL";
+				default:					return "UNKNOWN";
 			}
 		}
 
@@ -177,6 +197,8 @@ namespace Engine
 		void Activate( const int slot ) const;
 		void GenerateMipmaps() const;
 
+		static void ToggleGammaCorrection( const bool enable );
+
 	private:
 		/* Private regular constructor: Only the AssetDatabase< Texture > should be able to construct a Texture with data. */
 		Texture( const std::string_view name,
@@ -204,6 +226,10 @@ namespace Engine
 		void Bind() const;
 		void Unbind() const;
 
+		constexpr static int InternalFormat( const Texture::Format format );
+		constexpr static GLenum PixelDataFormat( const Texture::Format format );
+		constexpr static GLenum PixelDataType( const Texture::Format format );
+
 	private:
 		ID id;
 		Vector2I size;
@@ -211,6 +237,8 @@ namespace Engine
 		std::string name;
 		int sample_count;
 		Format format;
+
+		static bool GAMMA_CORRECTION_IS_ENABLED;
 
 		/* 3 bytes of padding. */
 	};

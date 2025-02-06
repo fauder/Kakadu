@@ -6,28 +6,31 @@
 
 namespace Engine
 {
+/* Static member variable definitions: */
+	bool Texture::GAMMA_CORRECTION_IS_ENABLED = true;
+
 /*
  * Utility functions:
  */
 
-	int InternalFormat( const Texture::Format format )
+	constexpr int Texture::InternalFormat( const Texture::Format format )
 	{
 		switch( format )
 		{
-			case Texture::Format::R:				return GL_RED;
-			case Texture::Format::RG:				return GL_RG;
-			case Texture::Format::RGB:				return GL_RGB;
-			case Texture::Format::RGBA:				return GL_RGBA;
+			case Format::R:				return GL_RED;
+			case Format::RG:			return GL_RG;
+			case Format::RGB:			return GL_RGB;
+			case Format::RGBA:			return GL_RGBA;
 
-			case Texture::Format::RGBA_16F:			return GL_RGBA16F;
-			case Texture::Format::RGBA_32F:			return GL_RGBA32F;
+			case Format::RGBA_16F:		return GL_RGBA16F;
+			case Format::RGBA_32F:		return GL_RGBA32F;
 
-			case Texture::Format::SRGB:				return GL_SRGB;
-			case Texture::Format::SRGBA:			return GL_SRGB_ALPHA;
+			case Format::SRGB:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB			+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGB;
+			case Format::SRGBA:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB_ALPHA	+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGBA;
 
-			case Texture::Format::DEPTH_STENCIL:	return GL_DEPTH24_STENCIL8;
-			case Texture::Format::DEPTH:			return GL_DEPTH_COMPONENT;
-			case Texture::Format::STENCIL:			return GL_STENCIL_INDEX;
+			case Format::DEPTH_STENCIL:	return GL_DEPTH24_STENCIL8;
+			case Format::DEPTH:			return GL_DEPTH_COMPONENT;
+			case Format::STENCIL:		return GL_STENCIL_INDEX;
 
 			default:
 				throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
@@ -35,24 +38,24 @@ namespace Engine
 		}
 	};
 
-	GLenum PixelDataFormat( const Texture::Format format )
+	constexpr GLenum Texture::PixelDataFormat( const Texture::Format format )
 	{
 		switch( format )
 		{
-			case Texture::Format::R:				return GL_RED;
-			case Texture::Format::RG:				return GL_RG;
-			case Texture::Format::RGB:				return GL_RGB;
-			case Texture::Format::RGBA:				return GL_RGBA;
+			case Format::R:				return GL_RED;
+			case Format::RG:			return GL_RG;
+			case Format::RGB:			return GL_RGB;
+			case Format::RGBA:			return GL_RGBA;
 
-			case Texture::Format::RGBA_16F:			return GL_RGBA;
-			case Texture::Format::RGBA_32F:			return GL_RGBA;
+			case Format::RGBA_16F:		return GL_RGBA;
+			case Format::RGBA_32F:		return GL_RGBA;
 			
-			case Texture::Format::SRGB:				return GL_RGB;
-			case Texture::Format::SRGBA:			return GL_RGBA;
+			case Format::SRGB:			return GL_RGB;
+			case Format::SRGBA:			return GL_RGBA;
 
-			case Texture::Format::DEPTH_STENCIL:	return GL_DEPTH_STENCIL;
-			case Texture::Format::DEPTH:			return GL_DEPTH_COMPONENT;
-			case Texture::Format::STENCIL:			return GL_STENCIL_INDEX;
+			case Format::DEPTH_STENCIL:	return GL_DEPTH_STENCIL;
+			case Format::DEPTH:			return GL_DEPTH_COMPONENT;
+			case Format::STENCIL:		return GL_STENCIL_INDEX;
 
 			default:
 				throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
@@ -60,18 +63,18 @@ namespace Engine
 		}
 	}
 
-	GLenum PixelDataType( const Texture::Format format )
+	constexpr GLenum Texture::PixelDataType( const Texture::Format format )
 	{
 		switch( format )
 		{
-			default:								return GL_UNSIGNED_BYTE;
+			default:					return GL_UNSIGNED_BYTE;
 
-			case Texture::Format::RGBA_16F:			return GL_HALF_FLOAT;
-			case Texture::Format::RGBA_32F:			return GL_FLOAT;
+			case Format::RGBA_16F:		return GL_HALF_FLOAT;
+			case Format::RGBA_32F:		return GL_FLOAT;
 
-			case Texture::Format::DEPTH_STENCIL:	return GL_UNSIGNED_INT_24_8;
-			case Texture::Format::DEPTH:			return GL_UNSIGNED_INT;
-			case Texture::Format::STENCIL:			return GL_UNSIGNED_BYTE;
+			case Format::DEPTH_STENCIL:	return GL_UNSIGNED_INT_24_8;
+			case Format::DEPTH:			return GL_UNSIGNED_INT;
+			case Format::STENCIL:		return GL_UNSIGNED_BYTE;
 		}
 	}
 
@@ -103,7 +106,7 @@ namespace Engine
 		type( TextureType::Texture2D ),
 		name( name ),
 		sample_count( 0 ),
-		format( format )
+		format( DetermineActualFormat( format ) )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -140,7 +143,7 @@ namespace Engine
 		type( TextureType::Texture2D_MultiSample ),
 		name( multi_sampled_texture_name ),
 		sample_count( sample_count ),
-		format( format )
+		format( DetermineActualFormat( format ) )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -172,7 +175,7 @@ namespace Engine
 		type( TextureType::Cubemap ),
 		name( name ),
 		sample_count( 0 ),
-		format( format )
+		format( DetermineActualFormat( format ) )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -256,6 +259,11 @@ namespace Engine
 		glGenerateMipmap( ( GLenum )type );
 	}
 
+	void Texture::ToggleGammaCorrection( const bool enable )
+	{
+		GAMMA_CORRECTION_IS_ENABLED = enable;
+	}
+
 /*
  * TEXTURE PRIVATE API
  */
@@ -274,7 +282,7 @@ namespace Engine
 		type( TextureType::Texture2D ),
 		name( name ),
 		sample_count( 0 ),
-		format( format )
+		format( DetermineActualFormat( format ) )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -315,7 +323,7 @@ namespace Engine
 		type( TextureType::Cubemap ),
 		name( name ),
 		sample_count( 0 ),
-		format( format )
+		format( DetermineActualFormat( format ) )
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();

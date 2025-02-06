@@ -37,7 +37,8 @@ Engine::Application* Engine::CreateApplication( const Engine::BitFlags< Engine::
 HDR_DemoApplication::HDR_DemoApplication( const Engine::BitFlags< Engine::CreationFlags > flags )
 	:
 	Engine::Application( flags ),
-	renderer( /* Offscreen framebuffer MSAA sample counts:	*/ { /* Main: */ 4,									/* Rear-view: */ std::nullopt },
+	renderer( gamma_correction_is_enabled,
+			  /* Offscreen framebuffer MSAA sample counts:	*/ { /* Main: */ 4,									/* Rear-view: */ std::nullopt },
 			  /* Offscreen framebuffer color formats:		*/ { /* Main: */ Engine::Texture::Format::RGBA_16F,	/* Rear-view: */ Engine::Texture::Format::RGBA } ),
 	light_point_transform_array( LIGHT_POINT_COUNT ),
 	camera( &camera_transform, Platform::GetAspectRatio(), CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), Platform::GetAspectRatio() ) ),

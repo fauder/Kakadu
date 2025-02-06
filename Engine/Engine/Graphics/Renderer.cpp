@@ -3,7 +3,6 @@
 #include "DefaultFramebuffer.h"
 #include "InternalShaders.h"
 #include "InternalTextures.h"
-#include "UniformBufferManager.h"
 #include "Core/ImGuiDrawer.hpp"
 
 // Vendor Includes.
@@ -39,7 +38,8 @@ if( not render_queue_map.contains( queue_id ) )\
 
 namespace Engine
 {
-	Renderer::Renderer( std::array< std::optional< int >,	FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values,
+	Renderer::Renderer( const bool enable_gamma_correction,
+						std::array< std::optional< int >,	FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values,
 						std::array< Texture::Format,		FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_color_formats )
 		:
 		logger( ServiceLocator< GLLogger >::Get() ),
@@ -50,8 +50,11 @@ namespace Engine
 		lights_spot_active_count( 0 ),
 		update_uniform_buffer_lighting( false ),
 		update_uniform_buffer_other( false ),
-		sRGB_encoding_is_enabled( false )
+		framebuffer_sRGB_encoding_is_enabled( false ),
+		gamma_correction_is_enabled( enable_gamma_correction )
 	{
+		Engine::Texture::ToggleGammaCorrection( gamma_correction_is_enabled );
+
 		DefaultFramebuffer::Instance(); // Initialize.
 		
 		InternalShaders::Initialize( *this );
@@ -201,6 +204,13 @@ namespace Engine
 	{
 		if( ImGui::Begin( ICON_FA_DRAW_POLYGON " Renderer", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
+			ImGui::SeparatorText( "General" );
+
+			bool gamma_enabled = gamma_correction_is_enabled;
+			ImGui::BeginDisabled();
+			ImGui::Checkbox( "Gamma Correction", &gamma_enabled );
+			ImGui::EndDisabled();
+
 			ImGui::SeparatorText( "Passes & Queues" );
 
 			for( auto& [ pass_id, pass ] : render_pass_map )
@@ -791,16 +801,16 @@ namespace Engine
 		return offscreen_framebuffer_array[ framebuffer_index ];
 	}
 
-	void Renderer::Enable_sRGBEncoding()
+	void Renderer::EnableFramebuffer_sRGBEncoding()
 	{
 		glEnable( GL_FRAMEBUFFER_SRGB );
-		sRGB_encoding_is_enabled = true;
+		framebuffer_sRGB_encoding_is_enabled = true;
 	}
 
-	void Renderer::Disable_sRGBEncoding()
+	void Renderer::DisableFramebuffer_sRGBEncoding()
 	{
 		glDisable( GL_FRAMEBUFFER_SRGB );
-		sRGB_encoding_is_enabled = false;
+		framebuffer_sRGB_encoding_is_enabled = false;
 	}
 
 	void Renderer::SetPolygonMode( const PolygonMode mode )
@@ -1195,12 +1205,12 @@ namespace Engine
 			framebuffer_current ? framebuffer_current->Clear() : DefaultFramebuffer::Clear();
 
 		if( auto framebuffer_uses_srgb_encoding = framebuffer_current ? framebuffer_current->Is_sRGB() : true /* Default framebuffer always uses sRGB Encoding. */;
-			framebuffer_uses_srgb_encoding != sRGB_encoding_is_enabled )
+			framebuffer_uses_srgb_encoding != framebuffer_sRGB_encoding_is_enabled )
 		{
 			if( framebuffer_uses_srgb_encoding )
-				Enable_sRGBEncoding();
+				EnableFramebuffer_sRGBEncoding();
 			else
-				Disable_sRGBEncoding();
+				DisableFramebuffer_sRGBEncoding();
 		}
 
 		if( render_state_to_set.face_culling_enable )
