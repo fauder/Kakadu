@@ -92,29 +92,9 @@ void HDR_DemoApplication::Initialize()
 		renderer.AddPointLight( &light_point_array[ index ] );
 
 /* Initial transforms: */
-	wall_back_transform
-		.SetScaling( 5.0f, 5.0f, 1.0f )
-		.SetTranslation( 0.0f, 0.0f, 55.0f / 2.0f + 25.0f );
-
-	wall_left_transform
-		.SetScaling( 5.0f, 55.0f, 1.0f )
-		.SetRotation( Quaternion::RotateAroundX_By_PiOverTwo() * Quaternion::RotateAroundY_By_PiOverTwo().Invert() )
-		.SetTranslation( -5.0f / 2.0f, 0.0f, 25.0f );
-
-	wall_right_transform
-		.SetScaling( 5.0f, 55.0f, 1.0f )
-		.SetRotation( Quaternion::RotateAroundX_By_PiOverTwo().Invert() * Quaternion::RotateAroundY_By_PiOverTwo() )
-		.SetTranslation( +5.0f / 2.0f, 0.0f, 25.0f );
-
-	wall_bottom_transform
-		.SetScaling( 5.0f, 55.0f, 1.0f )
-		.SetRotation( Quaternion::RotateAroundX_By_PiOverTwo() )
-		.SetTranslation( 0.0f, -5.0f / 2.0f, 25.0f );
-
-	wall_top_transform
-		.SetScaling( 5.0f, 55.0f, 1.0f )
-		.SetRotation( Quaternion::RotateAroundX_By_PiOverTwo().Invert() )
-		.SetTranslation( 0.0f, +5.0f / 2.0f, 25.0f );
+	tunnel_transform
+		.SetScaling( 5.0f, 5.0f, 55.0f )
+		.SetTranslation( 0.0f, 0.0f, 25.0f );
 
 	for( auto i = 0; i < LIGHT_POINT_COUNT; i++ )
 	{
@@ -123,25 +103,28 @@ void HDR_DemoApplication::Initialize()
 	}
 
 /* Vertex/Index Data: */
-	cube_mesh = Engine::Mesh( Engine::Primitive::Indexed::Cube::Positions,
-							  "Cube",
-							  Engine::Primitive::Indexed::Cube::Normals,
-							  Engine::Primitive::Indexed::Cube::UVs,
-							  Engine::Primitive::Indexed::Cube::Indices,
-							  Engine::Primitive::Indexed::Cube::Tangents );
+	constexpr auto InvertAttributeArray = []( auto&& attribute_array )
+	{
+		auto copy( attribute_array );
+		std::for_each( copy.begin(), copy.end(), []( auto&& element ) { element *= -1.0f; } );
+		return copy;
+	};
+
+	constexpr auto cube_tangents_inverted = InvertAttributeArray( Engine::Primitive::Indexed::Cube::Tangents );
+	constexpr auto cube_normals_inverted  = InvertAttributeArray( Engine::Primitive::Indexed::Cube::Normals );
+
+	cube_mesh_inverted = Engine::Mesh( Engine::Primitive::Indexed::Cube::Positions,
+									   "Cube (Inverted)",
+									   cube_normals_inverted,
+									   Engine::Primitive::Indexed::Cube::UVs,
+									   Engine::Primitive::Indexed::Cube::Indices,
+									   cube_tangents_inverted );
 
 	quad_mesh_fullscreen = Engine::Mesh( Engine::Primitive::NonIndexed::Quad_FullScreen::Positions,
 										 "Quad (FullScreen)",
 										 { /* No normals. */ },
 										 Engine::Primitive::NonIndexed::Quad_FullScreen::UVs,
 										 { /* No indices. */ } );
-
-	quad_mesh = Engine::Mesh( Engine::Primitive::Indexed::Quad::Positions,
-							  "Quad",
-							  Engine::Primitive::Indexed::Quad::Normals,
-							  Engine::Primitive::Indexed::Quad::UVs,
-							  Engine::Primitive::Indexed::Quad::Indices,
-							  Engine::Primitive::Indexed::Quad::Tangents );
 
 	const auto sphere_mesh = Engine::Mesh( Engine::Primitive::Indexed::Sphere::Positions(),
 										   "Sphere",
@@ -165,16 +148,20 @@ void HDR_DemoApplication::Initialize()
 	ResetMaterialData();
 
 /* Renderer: */
-	wall_back_renderable   = Engine::Renderable( &quad_mesh, &wall_material, &wall_back_transform );
-	wall_left_renderable   = Engine::Renderable( &quad_mesh, &wall_material, &wall_left_transform );
-	wall_right_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_right_transform );
-	wall_bottom_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_bottom_transform );
-	wall_top_renderable    = Engine::Renderable( &quad_mesh, &wall_material, &wall_top_transform );
-	renderer.AddRenderable( &wall_back_renderable,		Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer.AddRenderable( &wall_left_renderable,		Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer.AddRenderable( &wall_right_renderable,		Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer.AddRenderable( &wall_bottom_renderable,	Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer.AddRenderable( &wall_top_renderable,		Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer.AddQueue( QUEUE_ID_CUSTOM,
+					   Engine::RenderQueue
+					   {
+						  .name = "Custom",
+						  .render_state_override = Engine::RenderState
+						  {
+							  .face_culling_face_to_cull = Engine::Face::Front
+						  }
+					   } );
+
+	renderer.AddQueueToPass( QUEUE_ID_CUSTOM, Engine::Renderer::PASS_ID_LIGHTING );
+
+	tunnel_renderable = Engine::Renderable( &cube_mesh_inverted, &wood_material, &tunnel_transform );
+	renderer.AddRenderable( &tunnel_renderable, QUEUE_ID_CUSTOM );
 
 	light_sources_renderable = Engine::Renderable( &light_source_sphere_mesh, &light_source_material, nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
 	renderer.AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
@@ -278,7 +265,7 @@ void HDR_DemoApplication::RenderImGui()
 
 	const auto& style = ImGui::GetStyle();
 
-	Engine::ImGuiDrawer::Draw( wall_material, renderer );
+	Engine::ImGuiDrawer::Draw( wood_material, renderer );
 	Engine::ImGuiDrawer::Draw( light_source_material, renderer );
 	Engine::ImGuiDrawer::Draw( offscreen_quad_material, renderer );
 
@@ -576,10 +563,10 @@ void HDR_DemoApplication::ResetLightingData()
 
 void HDR_DemoApplication::ResetMaterialData()
 {
-	wall_material = Engine::Material( "Wall", shader_blinn_phong );
-	wall_material.SetTexture( "uniform_diffuse_map_slot", wood_diffuse_map );
-	wall_material.SetTexture( "uniform_specular_map_slot", Engine::ServiceLocator< Engine::InternalTextures >::Get().Get( "White" ) );
-	wall_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
+	wood_material = Engine::Material( "Wood", shader_blinn_phong );
+	wood_material.SetTexture( "uniform_diffuse_map_slot", wood_diffuse_map );
+	wood_material.SetTexture( "uniform_specular_map_slot", Engine::ServiceLocator< Engine::InternalTextures >::Get().Get( "White" ) );
+	wood_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
 	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );
 
@@ -594,14 +581,14 @@ void HDR_DemoApplication::ResetMaterialData()
 	/*else
 		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit );*/
 
-	wall_surface_data =
+	tunnel_surface_data =
 	{
 		.color_diffuse       = {},
 		.has_texture_diffuse = 1,
 		.shininess           = 32.0f
 	};
 
-	wall_material.Set( "BlinnPhongMaterialData", wall_surface_data );
+	wood_material.Set( "BlinnPhongMaterialData", tunnel_surface_data );
 }
 
 void HDR_DemoApplication::ResetCamera()

@@ -68,12 +68,9 @@ private:
 /* Renderer: */
 	Engine::Renderer renderer;
 
-	/* Front wall is not included to be able to see inside the tunnel. */
-	Engine::Renderable wall_back_renderable;
-	Engine::Renderable wall_left_renderable;
-	Engine::Renderable wall_right_renderable;
-	Engine::Renderable wall_bottom_renderable;
-	Engine::Renderable wall_top_renderable;
+	static constexpr Engine::RenderQueue::ID QUEUE_ID_CUSTOM = Engine::RenderQueue::ID( ( uint16_t )Engine::Renderer::QUEUE_ID_GEOMETRY + 1u );
+
+	Engine::Renderable tunnel_renderable;
 
 	Engine::Renderable light_sources_renderable;
 
@@ -88,9 +85,8 @@ private:
 	Engine::Texture* framebuffer_hdr_depth_attachment;
 
 /* Vertex Info.: */
-	Engine::Mesh cube_mesh;
+	Engine::Mesh cube_mesh_inverted;
 	Engine::Mesh quad_mesh_fullscreen;
-	Engine::Mesh quad_mesh;
 	Engine::Mesh light_source_sphere_mesh;
 
 /* Shaders: */
@@ -103,7 +99,7 @@ private:
 	Engine::Shader* shader_fullscreen_blit_resolve;
 
 /* Materials: */
-	Engine::Material wall_material;
+	Engine::Material wood_material;
 
 	Engine::Material light_source_material;
 
@@ -117,12 +113,7 @@ private:
 
 	/* GameObjects: */
 
-	/* Front wall is not included to be able to see inside the tunnel. */
-	Engine::Transform wall_back_transform;
-	Engine::Transform wall_left_transform;
-	Engine::Transform wall_right_transform;
-	Engine::Transform wall_bottom_transform;
-	Engine::Transform wall_top_transform;
+	Engine::Transform tunnel_transform;
 
 /* Camera: */
 	Engine::Camera camera;
@@ -142,7 +133,7 @@ private:
 /* Lighting: */
 	const static constexpr int LIGHT_POINT_COUNT = 4;
 
-	Engine::MaterialData::BlinnPhongMaterialData wall_surface_data;
+	Engine::MaterialData::BlinnPhongMaterialData tunnel_surface_data;
 
 	std::vector< Engine::PointLight > light_point_array;
 
