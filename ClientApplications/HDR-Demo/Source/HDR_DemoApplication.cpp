@@ -79,9 +79,9 @@ void HDR_DemoApplication::Initialize()
 	
 	shader_basic_color_instanced   = Engine::InternalShaders::Get( "Color (Instanced)" );
 
-	shader_texture_blit            = Engine::InternalShaders::Get( "Texture Blit" );
-	shader_fullscreen_blit         = Engine::InternalShaders::Get( "Fullscreen Blit" );
-	shader_fullscreen_blit_resolve = Engine::InternalShaders::Get( "Fullscreen Blit Resolve" );
+	shader_texture_blit                        = Engine::InternalShaders::Get( "Texture Blit" );
+	shader_fullscreen_blit_and_tonemap         = Engine::InternalShaders::Get( "Fullscreen Blit (Tone-mapping)" );
+	shader_fullscreen_blit_resolve_and_tonemap = Engine::InternalShaders::Get( "Fullscreen Blit Resolve (Tone-mapping)" );
 
 /* Instance Data: */
 	ResetInstanceData();
@@ -574,10 +574,11 @@ void HDR_DemoApplication::ResetMaterialData()
 	/*if( const auto& main_offscreen_framebuffer = renderer.OffscreenFramebuffer( 0 );
 		main_offscreen_framebuffer.IsMultiSampled() )*/
 	{
-		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit_resolve );
+		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit_resolve_and_tonemap );
 		//offscreen_quad_material.Set( "uniform_sample_count", main_offscreen_framebuffer.SampleCount() );
 		// TODO: Get rid of the hard-coding here.
 		offscreen_quad_material.Set( "uniform_sample_count", 4 );
+		offscreen_quad_material.Set( "uniform_tonemapping_exposure", 1.0f );
 	}
 	/*else
 		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit );*/

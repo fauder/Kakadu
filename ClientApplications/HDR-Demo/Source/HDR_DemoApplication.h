@@ -91,8 +91,8 @@ private:
 	Engine::Shader* shader_basic_color_instanced;
 
 	Engine::Shader* shader_texture_blit;
-	Engine::Shader* shader_fullscreen_blit;
-	Engine::Shader* shader_fullscreen_blit_resolve;
+	Engine::Shader* shader_fullscreen_blit_and_tonemap;
+	Engine::Shader* shader_fullscreen_blit_resolve_and_tonemap;
 
 /* Materials: */
 	Engine::Material wood_material;
