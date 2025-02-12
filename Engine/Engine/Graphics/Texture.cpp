@@ -353,6 +353,10 @@ namespace Engine
 	{
 		if( IsValid() )
 		{
+#ifdef _DEBUG
+			std::cout << "Deleting Texture id #" << id.Get() << ": " << name << ".\n";
+#endif // _DEBUG
+
 			glDeleteTextures( 1, id.Address() );
 			id.Reset(); // OpenGL does not reset the id to zero.
 		}
