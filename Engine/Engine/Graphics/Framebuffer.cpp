@@ -34,6 +34,7 @@ namespace Engine
 		clear_depth_value( 0.0f ),
 		clear_stencil_value( 0 ),
 		name( name ),
+		description( description ),
 		color_attachment( nullptr ),
 		depth_stencil_attachment( nullptr ),
 		depth_attachment( nullptr ),
@@ -50,61 +51,32 @@ namespace Engine
 		}
 	#endif // _DEBUG
 
-		auto CreateTextureAndAttachToFramebuffer = [ & ]( const Texture*& attachment_texture, 
-														  const char* attachment_type_name, 
-														  const GLenum attachment_type_enum,
-														  const Texture::Format format )
-		{
-			ASSERT_DEBUG_ONLY( ( ( attachment_type_enum >= GL_COLOR_ATTACHMENT0 && attachment_type_enum <= GL_DEPTH_ATTACHMENT ) ||
-								 attachment_type_enum == GL_STENCIL_ATTACHMENT ||
-								 attachment_type_enum == GL_DEPTH_STENCIL_ATTACHMENT ) &&
-							   "Invalid attachment type enum passed to CreateTextureAndAttachToFramebuffer() lambda!" );
-
-			if( sample_count )
-			{
-				std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) +
-									   " (" + std::to_string( *sample_count ) + " samples)" );
-				attachment_texture = Engine::AssetDatabase< Engine::Texture >::AddOrUpdateAsset( Engine::Texture( *sample_count,
-																												  full_name, format,
-																												  size.X() ,
-																												  size.Y() ) );
-			}
-			else
-			{
-				std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) );
-				attachment_texture = Engine::AssetDatabase< Engine::Texture >::AddOrUpdateAsset( Engine::Texture( full_name, format,
-																												  size.X() ,
-																												  size.Y(),
-																												  description.wrap_u, description.wrap_v,
-																												  description.border_color,
-																												  description.minification_filter, description.magnification_filter ) );
-			}
-
-			glFramebufferTexture2D( ( GLenum )bind_point, attachment_type_enum, sample_count ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, attachment_texture->Id().Get(), 0 );
-		};
-
 		if( description.attachment_bits.IsSet( AttachmentType::Color ) )
 		{
 			CreateTextureAndAttachToFramebuffer( color_attachment, " Color Tex. ", GL_COLOR_ATTACHMENT0,
-												 description.color_format == Texture::Format::NOT_ASSIGNED ? Texture::Format::RGBA : description.color_format );
+												 description.color_format == Texture::Format::NOT_ASSIGNED ? Texture::Format::RGBA : description.color_format,
+												 description );
 			clear_targets.Set( ClearTarget::ColorBuffer );
 		}
 
 		if( description.attachment_bits.IsSet( AttachmentType::DepthStencilCombined ) )
 		{
-			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S Tex. ", GL_DEPTH_STENCIL_ATTACHMENT, Texture::Format::DEPTH_STENCIL );
+			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S Tex. ", GL_DEPTH_STENCIL_ATTACHMENT, Texture::Format::DEPTH_STENCIL,
+												 description );
 			clear_targets.Set( ClearTarget::DepthBuffer, ClearTarget::StencilBuffer );
 		}
 		else
 		{
 			if( description.attachment_bits.IsSet( AttachmentType::Depth ) )
 			{
-				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth Tex. ", GL_DEPTH_ATTACHMENT, Texture::Format::DEPTH );
+				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth Tex. ", GL_DEPTH_ATTACHMENT, Texture::Format::DEPTH,
+													 description );
 				clear_targets.Set( ClearTarget::DepthBuffer );
 			}
 			if( description.attachment_bits.IsSet( AttachmentType::Stencil ) )
 			{
-				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil Tex. ", GL_STENCIL_ATTACHMENT, Texture::Format::STENCIL );
+				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil Tex. ", GL_STENCIL_ATTACHMENT, Texture::Format::STENCIL,
+													 description );
 				clear_targets.Set( ClearTarget::StencilBuffer );
 			}
 		}
@@ -134,6 +106,7 @@ namespace Engine
 		clear_depth_value( std::exchange( donor.clear_depth_value, 0.0f ) ),
 		clear_stencil_value( std::exchange( donor.clear_stencil_value, 0 ) ),
 		name( std::exchange( donor.name, "<moved-from>" ) ),
+		description( std::move( donor.description ) ),
 		color_attachment( std::exchange( donor.color_attachment, nullptr ) ),
 		depth_stencil_attachment( std::exchange( donor.depth_stencil_attachment, nullptr ) ),
 		depth_attachment( std::exchange( donor.depth_attachment, nullptr ) ),
@@ -154,6 +127,7 @@ namespace Engine
 		clear_depth_value        = std::exchange( donor.clear_depth_value,			0.0f );
 		clear_stencil_value      = std::exchange( donor.clear_stencil_value,		0 );
 		name                     = std::exchange( donor.name,						"<moved-from>" );
+		description              = std::move( donor.description );
 		color_attachment         = std::exchange( donor.color_attachment,			nullptr );
 		depth_stencil_attachment = std::exchange( donor.depth_stencil_attachment,	nullptr );
 		depth_attachment         = std::exchange( donor.depth_attachment,			nullptr );
@@ -165,6 +139,60 @@ namespace Engine
 	Framebuffer::~Framebuffer()
 	{
 		Destroy();
+	}
+
+	void Framebuffer::Resize( const int new_width_in_pixels, const int new_height_in_pixels )
+	{
+		Bind();
+
+		description.width_in_pixels  = new_width_in_pixels;
+		description.height_in_pixels = new_height_in_pixels;
+
+		size = { new_width_in_pixels, new_height_in_pixels };
+
+	#ifdef _DEBUG
+		if( not name.empty() )
+		{
+			const std::string full_name( IsMultiSampled() ? this->name + " (" + std::to_string( *sample_count ) + " samples)" : this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), full_name );
+		}
+	#endif // _DEBUG
+
+		if( description.attachment_bits.IsSet( AttachmentType::Color ) )
+		{
+			Engine::AssetDatabase< Texture >::RemoveAsset( color_attachment->Name() );
+
+			CreateTextureAndAttachToFramebuffer( color_attachment, " Color Tex. ", GL_COLOR_ATTACHMENT0,
+												 description.color_format == Texture::Format::NOT_ASSIGNED ? Texture::Format::RGBA : description.color_format,
+												 description );
+		}
+
+		if( description.attachment_bits.IsSet( AttachmentType::DepthStencilCombined ) )
+		{
+			Engine::AssetDatabase< Texture >::RemoveAsset( depth_stencil_attachment->Name() );
+
+			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S Tex. ", GL_DEPTH_STENCIL_ATTACHMENT, Texture::Format::DEPTH_STENCIL,
+												 description );
+		}
+		else
+		{
+			if( description.attachment_bits.IsSet( AttachmentType::Depth ) )
+			{
+				Engine::AssetDatabase< Texture >::RemoveAsset( depth_attachment->Name() );
+
+				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth Tex. ", GL_DEPTH_ATTACHMENT, Texture::Format::DEPTH,
+													 description );
+			}
+			if( description.attachment_bits.IsSet( AttachmentType::Stencil ) )
+			{
+				Engine::AssetDatabase< Texture >::RemoveAsset( stencil_attachment->Name() );
+
+				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil Tex. ", GL_STENCIL_ATTACHMENT, Texture::Format::STENCIL,
+													 description );
+			}
+		}
+
+		Unbind();
 	}
 
 	void Framebuffer::SetName( const std::string& new_name )
@@ -179,6 +207,40 @@ namespace Engine
 		glBlitFramebuffer( 0, 0, source.Width(), source.Height(),
 						   0, 0, destination.Width(), destination.Height(),
 						   GL_COLOR_BUFFER_BIT, GL_LINEAR );
+	}
+
+	void Framebuffer::CreateTextureAndAttachToFramebuffer( const Texture*& attachment_texture,
+														   const char* attachment_type_name,
+														   const GLenum attachment_type_enum,
+														   const Texture::Format format,
+														   const Description& description )
+	{
+		ASSERT_DEBUG_ONLY( ( ( attachment_type_enum >= GL_COLOR_ATTACHMENT0 && attachment_type_enum <= GL_DEPTH_ATTACHMENT ) ||
+							 attachment_type_enum == GL_STENCIL_ATTACHMENT ||
+							 attachment_type_enum == GL_DEPTH_STENCIL_ATTACHMENT ) &&
+						   "Invalid attachment type enum passed to Texture::CreateTextureAndAttachToFramebuffer()" );
+
+		if( sample_count )
+		{
+			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) +
+								   " (" + std::to_string( *sample_count ) + " samples)" );
+			attachment_texture = Engine::AssetDatabase< Engine::Texture >::AddOrUpdateAsset( Engine::Texture( *sample_count,
+																											  full_name, format,
+																											  size.X(),
+																											  size.Y() ) );
+		}
+		else
+		{
+			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) );
+			attachment_texture = Engine::AssetDatabase< Engine::Texture >::AddOrUpdateAsset( Engine::Texture( full_name, format,
+																											  size.X(),
+																											  size.Y(),
+																											  description.wrap_u, description.wrap_v,
+																											  description.border_color,
+																											  description.minification_filter, description.magnification_filter ) );
+		}
+
+		glFramebufferTexture2D( ( GLenum )bind_point, attachment_type_enum, sample_count ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, attachment_texture->Id().Get(), 0 );
 	}
 
 	void Framebuffer::SetClearColor( const Color3& new_clear_color )

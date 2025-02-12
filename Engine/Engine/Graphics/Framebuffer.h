@@ -69,6 +69,9 @@ namespace Engine
 
 		~Framebuffer();
 
+	/* Usage: */
+		void Resize( const int new_width_in_pixels, const int new_height_in_pixels );
+
 	/* Queries: */
 		bool IsValid() const { return id.IsValid(); }
 
@@ -105,6 +108,12 @@ namespace Engine
 		void SetName( const std::string& new_name );
 		static void Blit( const Framebuffer& source, const Framebuffer& destination );
 
+		void CreateTextureAndAttachToFramebuffer( const Texture*& attachment_texture,
+												  const char* attachment_type_name,
+												  const GLenum attachment_type_enum,
+												  const Texture::Format format,
+												  const Description& description );
+
 	/* Clearing: */
 
 		void SetClearColor( const Color3& new_clear_color );
@@ -139,6 +148,8 @@ namespace Engine
 		int clear_stencil_value;
 
 		std::string name;
+
+		Description description;
 
 		const Texture* color_attachment;
 		const Texture* depth_stencil_attachment;
