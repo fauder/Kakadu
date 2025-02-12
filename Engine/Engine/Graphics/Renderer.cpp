@@ -316,42 +316,62 @@ namespace Engine
 		}
 
 		/* Shadow maps: */
-		light_directional_shadow_map_framebuffer = Engine::Framebuffer( "Shadow Map: Dir. Light", Framebuffer::Description
-																		{
-																			.width_in_pixels  = new_width_in_pixels,
-																			.height_in_pixels = new_height_in_pixels,
-																			
-																			.minification_filter  = Engine::Texture::Filtering::Nearest,
-																			.magnification_filter = Engine::Texture::Filtering::Nearest,
+		if( light_directional_shadow_map_framebuffer.IsValid() )
+			light_directional_shadow_map_framebuffer.Resize( new_width_in_pixels, new_height_in_pixels );
+		else // i.e, the first time the framebuffer is created:
+		{
+			light_directional_shadow_map_framebuffer = Engine::Framebuffer( "Shadow Map: Dir. Light", Framebuffer::Description
+																			{
+																				.width_in_pixels  = new_width_in_pixels,
+																				.height_in_pixels = new_height_in_pixels,
 
-																			/* Default wrapping = clamp to border, with border = Color4{0,0,0,0}. */
+																				.minification_filter  = Engine::Texture::Filtering::Nearest,
+																				.magnification_filter = Engine::Texture::Filtering::Nearest,
 
-																			/* Default color format = RGBA, adequate. */
+																				/* Default wrapping = clamp to border, with border = Color4{0,0,0,0}. */
 
-																			.attachment_bits = Engine::Framebuffer::AttachmentType::Depth
-																		} );
+																				/* Default color format = RGBA, adequate. */
+
+																				.attachment_bits = Engine::Framebuffer::AttachmentType::Depth
+																			} );
+
+		}
+
 
 		/* Main: */
-		editor_framebuffer = Engine::Framebuffer( "Editor FB", Framebuffer::Description
-												  {
-													  .width_in_pixels  = new_width_in_pixels,
-													  .height_in_pixels = new_height_in_pixels,
+		if( editor_framebuffer.IsValid() )
+			editor_framebuffer.Resize( new_width_in_pixels, new_height_in_pixels );
+		else // i.e, the first time the framebuffer is created:
+		{
+			editor_framebuffer = Engine::Framebuffer( "Editor FB", Framebuffer::Description
+													  {
+														  .width_in_pixels  = new_width_in_pixels,
+														  .height_in_pixels = new_height_in_pixels,
 
-													  .color_format     = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
-													  .attachment_bits  = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
-												  } );
+														  .color_format    = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
+														  .attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
+													  } );
+		}
 
 		/* Offscreen: */
 		for( auto index = 0; index < offscreen_framebuffer_msaa_sample_count_array.size(); index++ )
-			offscreen_framebuffer_array[ index ] = Engine::Framebuffer( "Offscreen FB " + std::to_string( index ), Framebuffer::Description
-																		{
-																			.width_in_pixels    = new_width_in_pixels,
-																			.height_in_pixels   = new_height_in_pixels,
+		{
+			if( auto& framebuffer = offscreen_framebuffer_array[ index ];
+				framebuffer.IsValid() )
+				framebuffer.Resize( new_width_in_pixels, new_height_in_pixels );
+			else // i.e, the first time the framebuffer is created:
+			{
+				framebuffer = Engine::Framebuffer( "Offscreen FB " + std::to_string( index ), Framebuffer::Description
+												   {
+													   .width_in_pixels  = new_width_in_pixels,
+													   .height_in_pixels = new_height_in_pixels,
 
-																			.color_format       = offscreen_framebuffer_color_format_array[ index ],
-																			.multi_sample_count = offscreen_framebuffer_msaa_sample_count_array[ index ],
-																			.attachment_bits    = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
-																		} );
+													   .color_format       = offscreen_framebuffer_color_format_array[ index ],
+													   .multi_sample_count = offscreen_framebuffer_msaa_sample_count_array[ index ],
+													   .attachment_bits    = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
+												   } );
+			}
+		}
 
 		// TODO: Keep descriptions for offscreen framebuffers around, so client code can request modification to them and indirectly modify offscreen framebuffers' properties.
 		// This would make offscreen_framebuffer_msaa_sample_count_array etc. redundant.
