@@ -366,8 +366,8 @@ namespace Engine
 													   .width_in_pixels  = new_width_in_pixels,
 													   .height_in_pixels = new_height_in_pixels,
 
-													   .color_format       = offscreen_framebuffer_color_format_array[ index ],
 													   .multi_sample_count = offscreen_framebuffer_msaa_sample_count_array[ index ],
+													   .color_format       = offscreen_framebuffer_color_format_array[ index ],
 													   .attachment_bits    = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
 												   } );
 			}

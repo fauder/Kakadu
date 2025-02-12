@@ -45,7 +45,6 @@ namespace Engine
 			int width_in_pixels;
 			int height_in_pixels;
 
-			Texture::Format color_format            = Texture::Format::RGBA;
 			Texture::Filtering minification_filter  = Texture::Filtering::Linear;
 			Texture::Filtering magnification_filter = Texture::Filtering::Linear;
 			Texture::Wrapping  wrap_u               = Texture::Wrapping::ClampToEdge;
@@ -53,9 +52,11 @@ namespace Engine
 			Color4 border_color                     = Color4::Black();
 			std::optional< int > multi_sample_count = std::nullopt;
 			BindPoint bind_point                    = BindPoint::Both;
+
+			Texture::Format color_format            = Texture::Format::RGBA;
 			BitFlags< AttachmentType > attachment_bits;
 
-			// 3 bytes of padding.
+			// 2 bytes of padding.
 		};
 
 	public:
