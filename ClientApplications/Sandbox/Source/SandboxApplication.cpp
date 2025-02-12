@@ -7,14 +7,12 @@
 #include "Engine/Asset/Shader/_Attributes.glsl"
 #include "Engine/Core/AssetDatabase.hpp"
 #include "Engine/Core/ImGuiDrawer.hpp"
-#include "Engine/Core/ImGuiSetup.h"
 #include "Engine/Core/ImGuiUtility.h"
 #include "Engine/Core/Platform.h"
 #include "Engine/Core/ServiceLocator.h"
 #include "Engine/Graphics/GLLogger.h"
 #include "Engine/Graphics/InternalShaders.h"
 #include "Engine/Graphics/InternalTextures.h"
-#include "Engine/Graphics/MeshUtility.hpp"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube_FullScreen.h"
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
@@ -44,7 +42,9 @@ Engine::Application* Engine::CreateApplication( const Engine::BitFlags< Engine::
 SandboxApplication::SandboxApplication( const Engine::BitFlags< Engine::CreationFlags > flags )
 	:
 	Engine::Application( flags ),
-	renderer( gamma_correction_is_enabled, /* Offscreen framebuffer MSAA sample counts: */ { /* Main: */ 4, /* Rear-view: */ std::nullopt } ),
+	renderer( gamma_correction_is_enabled,
+			  /* Offscreen framebuffer MSAA sample counts:	*/ { /* Main: */ 4,									/* Rear-view: */ std::nullopt },
+			  /* Offscreen framebuffer MSAA formats:		*/ { /* Main: */ Engine::Texture::Format::RGBA_16F,	/* Rear-view: */ Engine::Texture::Format::RGBA } ),
 	test_model_info{ .model_instance = {}, .shader = Engine::InternalShaders::Get( "Blinn-Phong" ), .file_path = {} },
 	meteorite_model_info{ .model_instance = {}, .shader = Engine::InternalShaders::Get( "Blinn-Phong (Instanced)" ), .file_path = {} },
 	light_point_transform_array( LIGHT_POINT_COUNT ),
@@ -142,7 +142,7 @@ void SandboxApplication::Initialize()
 	shader_outline                                          = Engine::InternalShaders::Get( "Outline" );
 	shader_texture_blit                                     = Engine::InternalShaders::Get( "Texture Blit" );
 	shader_fullscreen_blit                                  = Engine::InternalShaders::Get( "Fullscreen Blit" );
-	shader_fullscreen_blit_resolve                          = Engine::InternalShaders::Get( "Fullscreen Blit Resolve" );
+	shader_fullscreen_blit_resolve_tonemapping              = Engine::InternalShaders::Get( "Fullscreen Blit Resolve (Tone-mapping)" );
 	shader_postprocess_grayscale                            = Engine::InternalShaders::Get( "Post-process Grayscale" );
 	shader_postprocess_generic                              = Engine::InternalShaders::Get( "Post-process Generic" );
 	shader_normal_visualization                             = Engine::InternalShaders::Get( "Normal Visualization" );
@@ -1122,10 +1122,11 @@ void SandboxApplication::ResetMaterialData()
 	/*if( const auto& main_offscreen_framebuffer = renderer.OffscreenFramebuffer( 0 );
 		main_offscreen_framebuffer.IsMultiSampled() )*/
 	{
-		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit_resolve );
+		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit_resolve_tonemapping );
 		//offscreen_quad_material.Set( "uniform_sample_count", main_offscreen_framebuffer.SampleCount() );
 		// TODO: Get rid of the hard-coding here.
 		offscreen_quad_material.Set( "uniform_sample_count", 4 );
+		offscreen_quad_material.Set( "uniform_tonemapping_exposure", 1.0f );
 	}
 	/*else
 		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit );*/

@@ -4,7 +4,6 @@
 #include "Engine/Graphics/MaterialData/MaterialData.h"
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Mesh.h"
-#include "Engine/Graphics/Model.h"
 #include "Engine/Graphics/Renderer.h"
 #include "Engine/Graphics/Texture.h"
 #include "Engine/Scene/Camera.h"
@@ -155,7 +154,7 @@ private:
 
 	Engine::Shader* shader_texture_blit;
 	Engine::Shader* shader_fullscreen_blit;
-	Engine::Shader* shader_fullscreen_blit_resolve;
+	Engine::Shader* shader_fullscreen_blit_resolve_tonemapping;
 
 	Engine::Shader* shader_postprocess_grayscale;
 
