@@ -1,5 +1,6 @@
 // Engine Includes.
 #include "GLLogger.h"
+#include "Renderer.h"
 #include "Texture.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Assertion.h"
@@ -8,75 +9,6 @@ namespace Engine
 {
 /* Static member variable definitions: */
 	bool Texture::GAMMA_CORRECTION_IS_ENABLED = true;
-
-/*
- * Utility functions:
- */
-
-	constexpr int Texture::InternalFormat( const Texture::Format format )
-	{
-		switch( format )
-		{
-			case Format::R:				return GL_RED;
-			case Format::RG:			return GL_RG;
-			case Format::RGB:			return GL_RGB;
-			case Format::RGBA:			return GL_RGBA;
-
-			case Format::RGBA_16F:		return GL_RGBA16F;
-			case Format::RGBA_32F:		return GL_RGBA32F;
-
-			case Format::SRGB:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB			+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGB;
-			case Format::SRGBA:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB_ALPHA	+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGBA;
-
-			case Format::DEPTH_STENCIL:	return GL_DEPTH24_STENCIL8;
-			case Format::DEPTH:			return GL_DEPTH_COMPONENT;
-			case Format::STENCIL:		return GL_STENCIL_INDEX;
-
-			default:
-				throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
-				break;
-		}
-	};
-
-	constexpr GLenum Texture::PixelDataFormat( const Texture::Format format )
-	{
-		switch( format )
-		{
-			case Format::R:				return GL_RED;
-			case Format::RG:			return GL_RG;
-			case Format::RGB:			return GL_RGB;
-			case Format::RGBA:			return GL_RGBA;
-
-			case Format::RGBA_16F:		return GL_RGBA;
-			case Format::RGBA_32F:		return GL_RGBA;
-			
-			case Format::SRGB:			return GL_RGB;
-			case Format::SRGBA:			return GL_RGBA;
-
-			case Format::DEPTH_STENCIL:	return GL_DEPTH_STENCIL;
-			case Format::DEPTH:			return GL_DEPTH_COMPONENT;
-			case Format::STENCIL:		return GL_STENCIL_INDEX;
-
-			default:
-				throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
-				break;
-		}
-	}
-
-	constexpr GLenum Texture::PixelDataType( const Texture::Format format )
-	{
-		switch( format )
-		{
-			default:					return GL_UNSIGNED_BYTE;
-
-			case Format::RGBA_16F:		return GL_HALF_FLOAT;
-			case Format::RGBA_32F:		return GL_FLOAT;
-
-			case Format::DEPTH_STENCIL:	return GL_UNSIGNED_INT_24_8;
-			case Format::DEPTH:			return GL_UNSIGNED_INT;
-			case Format::STENCIL:		return GL_UNSIGNED_BYTE;
-		}
-	}
 
 /* 
  * Texture
@@ -88,7 +20,6 @@ namespace Engine
 		size( ZERO_INITIALIZATION ),
 		type( TextureType::None ),
 		name( "<defaulted>" ),
-		sample_count( 0 ),
 		format( Format::NOT_ASSIGNED )
 	{}
 
@@ -105,7 +36,6 @@ namespace Engine
 		size( width, height ),
 		type( TextureType::Texture2D ),
 		name( name ),
-		sample_count( 0 ),
 		format( DetermineActualFormat( format ) )
 	{
 		glGenTextures( 1, id.Address() );
@@ -132,18 +62,18 @@ namespace Engine
 	}
 
 	/* Multi-sampled allocate-only constructor (no data). */
-	Texture::Texture( const int sample_count,
-					  const std::string_view multi_sampled_texture_name,
+	Texture::Texture( const std::string_view multi_sample_texture_name,
 					  //const std::byte* data, This is omitted from this public constructor.
 					  const Format format,
+					  const std::uint8_t sample_count,
 					  const int width, const int height )
 		:
 		id( {} ),
 		size( width, height ),
 		type( TextureType::Texture2D_MultiSample ),
-		name( multi_sampled_texture_name ),
-		sample_count( sample_count ),
-		format( DetermineActualFormat( format ) )
+		name( multi_sample_texture_name ),
+		format( DetermineActualFormat( format ) ),
+		msaa{ Renderer::CheckMSAASupport( format, sample_count ) ? sample_count : 1u }
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -174,7 +104,6 @@ namespace Engine
 		size( width, height ),
 		type( TextureType::Cubemap ),
 		name( name ),
-		sample_count( 0 ),
 		format( DetermineActualFormat( format ) )
 	{
 		glGenTextures( 1, id.Address() );
@@ -212,7 +141,7 @@ namespace Engine
 	#else
 		name( std::move( donor.name ) ),
 #endif // _DEBUG
-		sample_count( std::exchange( donor.sample_count, 0 ) ),
+		msaa( std::exchange( donor.msaa, {} ) ),
 		format( std::exchange( donor.format, Format::NOT_ASSIGNED ) )
 	{
 	}
@@ -229,8 +158,8 @@ namespace Engine
 	#else
 		name = std::move( donor.name );
 #endif // _DEBUG
-		sample_count = std::exchange( donor.sample_count, 0 );
-		format       = std::exchange( donor.format, Format::NOT_ASSIGNED );
+		msaa   = std::exchange( donor.msaa, {} );
+		format = std::exchange( donor.format, Format::NOT_ASSIGNED );
 
 		return *this;
 	}
@@ -264,6 +193,31 @@ namespace Engine
 		GAMMA_CORRECTION_IS_ENABLED = enable;
 	}
 
+	int Texture::InternalFormat( const Texture::Format format )
+	{
+		switch( format )
+		{
+			case Format::R:				return GL_RED;
+			case Format::RG:			return GL_RG;
+			case Format::RGB:			return GL_RGB;
+			case Format::RGBA:			return GL_RGBA;
+
+			case Format::RGBA_16F:		return GL_RGBA16F;
+			case Format::RGBA_32F:		return GL_RGBA32F;
+
+			case Format::SRGB:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB			+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGB;
+			case Format::SRGBA:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB_ALPHA	+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGBA;
+
+			case Format::DEPTH_STENCIL:	return GL_DEPTH24_STENCIL8;
+			case Format::DEPTH:			return GL_DEPTH_COMPONENT;
+			case Format::STENCIL:		return GL_STENCIL_INDEX;
+
+			default:
+				throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
+				break;
+		}
+	};
+
 /*
  * TEXTURE PRIVATE API
  */
@@ -281,7 +235,6 @@ namespace Engine
 		size( width, height ),
 		type( TextureType::Texture2D ),
 		name( name ),
-		sample_count( 0 ),
 		format( DetermineActualFormat( format ) )
 	{
 		glGenTextures( 1, id.Address() );
@@ -322,7 +275,6 @@ namespace Engine
 		size( width, height ),
 		type( TextureType::Cubemap ),
 		name( name ),
-		sample_count( 0 ),
 		format( DetermineActualFormat( format ) )
 	{
 		glGenTextures( 1, id.Address() );

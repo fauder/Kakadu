@@ -14,7 +14,6 @@
 #include "Engine/Graphics/InternalShaders.h"
 #include "Engine/Graphics/InternalTextures.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
-#include "Engine/Graphics/Primitive/Primitive_Quad.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad_FullScreen.h"
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
 #include "Engine/Math/Math.hpp"
@@ -38,8 +37,8 @@ HDR_DemoApplication::HDR_DemoApplication( const Engine::BitFlags< Engine::Creati
 	:
 	Engine::Application( flags ),
 	renderer( gamma_correction_is_enabled,
-			  /* Offscreen framebuffer MSAA sample counts:	*/ { /* Main: */ 4,									/* Rear-view: */ std::nullopt },
-			  /* Offscreen framebuffer color formats:		*/ { /* Main: */ Engine::Texture::Format::RGBA_16F,	/* Rear-view: */ Engine::Texture::Format::RGBA } ),
+			  /* Main framebuffer: */ Engine::Texture::Format::RGBA_16F,
+			  /* Main framebuffer: */ 4 ),
 	light_point_transform_array( LIGHT_POINT_COUNT ),
 	camera( &camera_transform, Platform::GetAspectRatio(), CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), Platform::GetAspectRatio() ) ),
 	camera_rotation_speed( 5.0f ),
@@ -75,13 +74,13 @@ void HDR_DemoApplication::Initialize()
 																					   } );
 
 /* Shaders: */
-	shader_blinn_phong             = Engine::InternalShaders::Get( "Blinn-Phong" );
+	shader_blinn_phong           = Engine::InternalShaders::Get( "Blinn-Phong" );
 	
-	shader_basic_color_instanced   = Engine::InternalShaders::Get( "Color (Instanced)" );
-
-	shader_texture_blit                        = Engine::InternalShaders::Get( "Texture Blit" );
-	shader_fullscreen_blit_and_tonemap         = Engine::InternalShaders::Get( "Fullscreen Blit (Tone-mapping)" );
-	shader_fullscreen_blit_resolve_and_tonemap = Engine::InternalShaders::Get( "Fullscreen Blit Resolve (Tone-mapping)" );
+	shader_basic_color_instanced = Engine::InternalShaders::Get( "Color (Instanced)" );
+	
+	shader_texture_blit          = Engine::InternalShaders::Get( "Texture Blit" );
+	shader_msaa_resolve          = Engine::InternalShaders::Get( "MSAA Resolve" );
+	shader_tone_mapping          = Engine::InternalShaders::Get( "Tone Mapping" );
 
 /* Instance Data: */
 	ResetInstanceData();
@@ -167,8 +166,11 @@ void HDR_DemoApplication::Initialize()
 	light_sources_renderable = Engine::Renderable( &light_source_sphere_mesh, &light_source_material, nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
 	renderer.AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
-	offscreen_quad_renderable = Engine::Renderable( &quad_mesh_fullscreen, &offscreen_quad_material );
-	renderer.AddRenderable( &offscreen_quad_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
+	offscreen_quad_msaa_resolve_renderable = Engine::Renderable( &quad_mesh_fullscreen, &msaa_resolve_material );
+	renderer.AddRenderable( &offscreen_quad_msaa_resolve_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
+
+	offscreen_quad_tone_mapping_renderable = Engine::Renderable( &quad_mesh_fullscreen, &tone_mapping_material );
+	renderer.AddRenderable( &offscreen_quad_tone_mapping_renderable, Engine::Renderer::QUEUE_ID_FINAL );
 
 	// TODO: Do not create an explicit (or rather, Application-visible) Renderable for skybox; Make it Renderer-internal.
 
@@ -238,21 +240,18 @@ void HDR_DemoApplication::Render()
 		renderer.UpdatePerPass( Engine::Renderer::PASS_ID_LIGHTING, camera );
 	}
 
-	// TODO: Outline pass.
-
-	/* Post-processing pass: Blit off-screen framebuffers to quads on the default or the editor framebuffer to actually display them: */
+	/* Post-processing pass: Blit off-screen framebuffers to quads on the default or the final framebuffer to actually display them: */
 	{
 		/* This pass does not utilize camera view/projection => no Renderer::Update() necessary. */
 	}
 
 	renderer.Render();
-
 }
 
 void HDR_DemoApplication::RenderImGui()
 {
 	/* Reminder: The rest of the rendering code (namely, ImGui) will be working in sRGB for the remainder of this frame,
-	 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the editor FBO). */
+	 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the final FBO). */
 
 	/* Need to switch to the default framebuffer, so ImGui can render onto it. */
 	renderer.ResetToDefaultFramebuffer();
@@ -268,7 +267,8 @@ void HDR_DemoApplication::RenderImGui()
 
 	Engine::ImGuiDrawer::Draw( wood_material, renderer );
 	Engine::ImGuiDrawer::Draw( light_source_material, renderer );
-	Engine::ImGuiDrawer::Draw( offscreen_quad_material, renderer );
+	Engine::ImGuiDrawer::Draw( msaa_resolve_material, renderer );
+	Engine::ImGuiDrawer::Draw( tone_mapping_material, renderer );
 
 	if( ImGui::Begin( ICON_FA_LIGHTBULB " Lighting", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
@@ -431,7 +431,7 @@ void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, con
 				show_imgui = !show_imgui;
 				if( show_imgui )
 				{
-					renderer.SetFinalPassToUseEditorFramebuffer();
+					renderer.SetFinalPassToUseFinalFramebuffer();
 				}
 				else
 				{
@@ -453,16 +453,17 @@ void HDR_DemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, 
 {
 	/* Do nothing on minimize: */
 	if( width_new_pixels == 0 || height_new_pixels == 0 ||
-		( renderer.EditorFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
+		( renderer.FinalFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
 		return;
 
 	renderer.OnFramebufferResize( width_new_pixels, height_new_pixels );
 
 	RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
 
-	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
+	// TODO: Check the TODO for these lines of code in Sandbox.
 
-	offscreen_quad_material.SetTexture( "uniform_texture_slot", &renderer.OffscreenFramebuffer( 0 ).ColorAttachment() );
+	msaa_resolve_material.SetTexture( "uniform_texture_slot", &renderer.MainFramebuffer().ColorAttachment() );
+	tone_mapping_material.SetTexture( "uniform_texture_slot", &renderer.PostProcessingFramebuffer().ColorAttachment() );
 }
 
 void HDR_DemoApplication::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
@@ -493,7 +494,7 @@ void HDR_DemoApplication::RenderImGui_Viewport()
 			ImGui::SetNextFrameWantCaptureKeyboard( false );
 		}
 
-		ImGui::Image( ( void* )( intptr_t )renderer.EditorFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
+		ImGui::Image( ( void* )( intptr_t )renderer.FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
 	}
 
 	ImGui::End();
@@ -574,14 +575,16 @@ void HDR_DemoApplication::ResetMaterialData()
 	/*if( const auto& main_offscreen_framebuffer = renderer.OffscreenFramebuffer( 0 );
 		main_offscreen_framebuffer.IsMultiSampled() )*/
 	{
-		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit_resolve_and_tonemap );
-		//offscreen_quad_material.Set( "uniform_sample_count", main_offscreen_framebuffer.SampleCount() );
+		msaa_resolve_material = Engine::Material( "MSAA Resolve", shader_msaa_resolve );
+		//msaa_resolve_material.Set( "uniform_sample_count", main_offscreen_framebuffer.SampleCount() );
 		// TODO: Get rid of the hard-coding here.
-		offscreen_quad_material.Set( "uniform_sample_count", 4 );
-		offscreen_quad_material.Set( "uniform_tonemapping_exposure", 1.0f );
+		msaa_resolve_material.Set( "uniform_sample_count", 4 );
+
+		tone_mapping_material = Engine::Material( "Tone Mapping", shader_tone_mapping );
+		tone_mapping_material.Set( "uniform_exposure", 1.0f );
 	}
 	/*else
-		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit );*/
+		msaa_resolve_material = Engine::Material( "MSAA Resolve", shader_fullscreen_blit );*/
 
 	tunnel_surface_data =
 	{
@@ -667,5 +670,5 @@ void HDR_DemoApplication::RecalculateProjectionParameters( const Vector2I new_si
 
 void HDR_DemoApplication::RecalculateProjectionParameters()
 {
-	RecalculateProjectionParameters( renderer.EditorFramebuffer().Size() );
+	RecalculateProjectionParameters( renderer.FinalFramebuffer().Size() );
 }

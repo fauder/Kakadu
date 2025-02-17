@@ -5,11 +5,13 @@
 #include "Graphics.h"
 #include "GraphicsMacros.h"
 #include "ID.hpp"
+#include "MSAA.h"
 #include "Math/Vector.hpp"
 
 // std Includes.
 #include <string>
 #include <string_view>
+#include <stdexcept>
 
 namespace Engine
 {
@@ -154,10 +156,10 @@ namespace Engine
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
 
 		/* Multi-sampled allocate-only constructor (no data). */
-		Texture( const int sample_count,
-				 const std::string_view multi_sample_texture_name,
+		Texture( const std::string_view multi_sample_texture_name,
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
+				 const std::uint8_t sample_count,
 				 const int width, const int height );
 
 		/* Cubemap allocate-only constructor (no data). */
@@ -187,8 +189,8 @@ namespace Engine
 		inline int					Height()			const { return size.Y();											}
 		inline TextureType			Type()				const { return type;												}
 		inline const std::string&	Name()				const { return name;												}
-		inline int					SampleCount()		const { return sample_count;										}
-		inline bool					IsMultiSampled()	const { return sample_count;										}
+		inline int					SampleCount()		const { return msaa.sample_count;									}
+		inline bool					IsMultiSampled()	const { return msaa.IsEnabled();									}
 		inline bool					Is_sRGB()			const { return format == Format::SRGB || format == Format::SRGBA;	}
 		inline Format				PixelFormat()		const { return format;												}
 
@@ -198,6 +200,48 @@ namespace Engine
 		void GenerateMipmaps() const;
 
 		static void ToggleGammaCorrection( const bool enable );
+
+		static int InternalFormat( const Texture::Format format );
+
+		constexpr static GLenum PixelDataFormat( const Texture::Format format )
+		{
+			switch( format )
+			{
+				case Format::R:				return GL_RED;
+				case Format::RG:			return GL_RG;
+				case Format::RGB:			return GL_RGB;
+				case Format::RGBA:			return GL_RGBA;
+
+				case Format::RGBA_16F:		return GL_RGBA;
+				case Format::RGBA_32F:		return GL_RGBA;
+
+				case Format::SRGB:			return GL_RGB;
+				case Format::SRGBA:			return GL_RGBA;
+
+				case Format::DEPTH_STENCIL:	return GL_DEPTH_STENCIL;
+				case Format::DEPTH:			return GL_DEPTH_COMPONENT;
+				case Format::STENCIL:		return GL_STENCIL_INDEX;
+
+				default:
+					throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
+					break;
+			}
+		}
+
+		constexpr static GLenum PixelDataType( const Texture::Format format )
+		{
+			switch( format )
+			{
+				default:					return GL_UNSIGNED_BYTE;
+
+				case Format::RGBA_16F:		return GL_HALF_FLOAT;
+				case Format::RGBA_32F:		return GL_FLOAT;
+
+				case Format::DEPTH_STENCIL:	return GL_UNSIGNED_INT_24_8;
+				case Format::DEPTH:			return GL_UNSIGNED_INT;
+				case Format::STENCIL:		return GL_UNSIGNED_BYTE;
+			}
+		}
 
 	private:
 		/* Private regular constructor: Only the AssetDatabase< Texture > should be able to construct a Texture with data. */
@@ -226,20 +270,17 @@ namespace Engine
 		void Bind() const;
 		void Unbind() const;
 
-		constexpr static int InternalFormat( const Texture::Format format );
-		constexpr static GLenum PixelDataFormat( const Texture::Format format );
-		constexpr static GLenum PixelDataType( const Texture::Format format );
-
 	private:
 		ID id;
 		Vector2I size;
 		TextureType type;
 		std::string name;
-		int sample_count;
+
 		Format format;
+		MSAA msaa;
+
+		/* 6 bytes of padding. */
 
 		static bool GAMMA_CORRECTION_IS_ENABLED;
-
-		/* 3 bytes of padding. */
 	};
 };

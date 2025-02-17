@@ -3,6 +3,7 @@
 // Engine Includes.
 #include "Color.hpp"
 #include "Enums.h"
+#include "MSAA.h"
 #include "Texture.h"
 #include "Core/BitFlags.hpp"
 
@@ -42,6 +43,8 @@ namespace Engine
 
 		struct Description
 		{
+			std::string name;
+
 			int width_in_pixels;
 			int height_in_pixels;
 
@@ -50,18 +53,18 @@ namespace Engine
 			Texture::Wrapping  wrap_u               = Texture::Wrapping::ClampToEdge;
 			Texture::Wrapping  wrap_v               = Texture::Wrapping::ClampToEdge;
 			Color4 border_color                     = Color4::Black();
-			std::optional< int > multi_sample_count = std::nullopt;
 			BindPoint bind_point                    = BindPoint::Both;
 
 			Texture::Format color_format            = Texture::Format::RGBA;
 			BitFlags< AttachmentType > attachment_bits;
-
-			// 2 bytes of padding.
+			MSAA msaa; // No MSAA by default.
+			// 1 byte of padding.
 		};
 
 	public:
 		Framebuffer();
-		Framebuffer( const std::string& name, Description&& description );
+		Framebuffer( const Description& description );
+		Framebuffer( Description&& description );
 
 		DELETE_COPY_CONSTRUCTORS( Framebuffer );
 
@@ -82,8 +85,8 @@ namespace Engine
 		inline int					Width()				const { return size.X(); }
 		inline int					Height()			const { return size.Y(); }
 
-		inline int					SampleCount()		const { return sample_count.value(); }
-		inline bool					IsMultiSampled()	const { return sample_count.has_value(); }
+		inline int					SampleCount()		const { return msaa.sample_count; }
+		inline bool					IsMultiSampled()	const { return msaa.IsEnabled(); }
 
 		inline bool					Is_sRGB()			const { return HasColorAttachment() && color_attachment->Is_sRGB(); }
 
@@ -109,6 +112,7 @@ namespace Engine
 		void SetName( const std::string& new_name );
 		static void Blit( const Framebuffer& source, const Framebuffer& destination );
 
+		void Create();
 		void CreateTextureAndAttachToFramebuffer( const Texture*& attachment_texture,
 												  const char* attachment_type_name,
 												  const GLenum attachment_type_enum,
@@ -139,9 +143,8 @@ namespace Engine
 
 		Vector2I size;
 
-		std::optional< int > sample_count;
-
-		// 4 bytes of padding.
+		MSAA msaa;
+		// 3 bytes of padding.
 
 		BitFlags< ClearTarget > clear_targets;
 		Color4 clear_color;

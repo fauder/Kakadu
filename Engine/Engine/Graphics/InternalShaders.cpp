@@ -114,20 +114,14 @@ namespace Engine
 								"Fullscreen Blit",
 								FullShaderPath( "PassThrough.vert"_vert ),
 								FullShaderPath( "FullScreenBlit.frag"_frag ) );
-		SHADER_MAP.try_emplace( "Fullscreen Blit (Tone-mapping)",
-								"Fullscreen Blit (Tone-mapping)",
+		SHADER_MAP.try_emplace( "MSAA Resolve",
+								"MSAA Resolve",
 								FullShaderPath( "PassThrough.vert"_vert ),
-								FullShaderPath( "FullScreenBlit.frag"_frag ),
-								Shader::Features{ "TONEMAPPING" } );
-		SHADER_MAP.try_emplace( "Fullscreen Blit Resolve",
-								"Fullscreen Blit Resolve",
+								FullShaderPath( "MSAA_Resolve.frag"_frag ) );
+		SHADER_MAP.try_emplace( "Tone Mapping",
+								"Tone Mapping",
 								FullShaderPath( "PassThrough.vert"_vert ),
-								FullShaderPath( "FullScreenBlit_Resolve.frag"_frag ) );
-		SHADER_MAP.try_emplace( "Fullscreen Blit Resolve (Tone-mapping)",
-								"Fullscreen Blit Resolve (Tone-mapping)",
-								FullShaderPath( "PassThrough.vert"_vert ),
-								FullShaderPath( "FullScreenBlit_Resolve.frag"_frag ),
-								Shader::Features{ "TONEMAPPING" } );
+								FullShaderPath( "Tonemapping.frag"_frag ) );
 		SHADER_MAP.try_emplace( "Post-process Grayscale",
 								"Post-process Grayscale",
 								FullShaderPath( "PassThrough.vert"_vert ),

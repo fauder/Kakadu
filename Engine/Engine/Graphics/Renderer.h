@@ -36,12 +36,13 @@ namespace Engine
 		};
 
 	public:
-		static constexpr std::size_t FRAMEBUFFER_OFFSCREEN_COUNT = 2;
+		static constexpr std::size_t FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT = 4;
 	
 	public:
 		Renderer( const bool enable_gamma_correction,
-				  std::array< std::optional< int >, FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values = {},
-				  std::array< Texture::Format,		FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_color_formats = {} );
+				  Texture::Format main_framebuffer_color_format                                           = Texture::Format::RGBA_16F,
+				  std::uint8_t main_framebuffer_msaa_sample_count                                         = 4,
+				  const std::initializer_list< Framebuffer::Description > custom_framebuffer_descriptions = {} );
 
 		DELETE_COPY_AND_MOVE_CONSTRUCTORS( Renderer );
 
@@ -70,7 +71,7 @@ namespace Engine
 		void AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to );
 		void RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from );
 		void ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable );
-		void SetFinalPassToUseEditorFramebuffer();
+		void SetFinalPassToUseFinalFramebuffer();
 		void SetFinalPassToUseDefaultFramebuffer();
 
 		void AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id = RenderQueue::ID{ 0 } );
@@ -99,7 +100,7 @@ namespace Engine
 		 * Shadow-mapping:
 		 */
 
-		inline const Texture* ShadowMapTexture() const { return &light_directional_shadow_map_framebuffer.DepthAttachment(); }
+		inline const Texture* ShadowMapTexture() const { return &framebuffer_shadow_map_light_directional.DepthAttachment(); }
 
 		/*
 		 * Shaders:
@@ -178,12 +179,23 @@ namespace Engine
 		void ResetToDefaultFramebuffer( const Framebuffer::BindPoint bind_point = Framebuffer::BindPoint::Both );
 		bool DefaultFramebufferIsBound() const;
 		Framebuffer* CurrentFramebuffer();
-		Framebuffer& EditorFramebuffer();
-		Framebuffer& OffscreenFramebuffer( const unsigned int framebuffer_index = 0 );
+		Framebuffer& MainFramebuffer();
+		Framebuffer& PostProcessingFramebuffer();
+		Framebuffer& FinalFramebuffer();
+		Framebuffer& CustomFramebuffer( const unsigned int framebuffer_index = 0 );
 
-		/* Color Space: */
+		/*
+		 * Color Space:
+		 */
 		void EnableFramebuffer_sRGBEncoding();
 		void DisableFramebuffer_sRGBEncoding();
+
+		/*
+		 * Queries:
+		 */
+
+		/* Logs a warning if the sample count in question is not available for the given format. */
+		static bool CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query );
 
 		/*
 		 * Other:
@@ -242,16 +254,18 @@ namespace Engine
 		static constexpr RenderPass::ID PASS_ID_LIGHTING       = RenderPass::ID( 50u );
 		static constexpr RenderPass::ID PASS_ID_OUTLINE		   = RenderPass::ID( 100u );
 		static constexpr RenderPass::ID PASS_ID_POSTPROCESSING = RenderPass::ID( 220u );
+		static constexpr RenderPass::ID PASS_ID_FINAL          = RenderPass::ID( 255u );
 
 		/* Built-in Queue IDs: */
 
 		/* Using Unity defaults: Background is 1000, Geometry is 2000, AlphaTest is 2450, Transparent is 3000 and Overlay is 4000 */
 
-		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY          = RenderQueue::ID( 2000u );
-		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY_OUTLINED = RenderQueue::ID( 2350u );
-		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT       = RenderQueue::ID( 2450u );
-		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX            = RenderQueue::ID( 2900u );
-		static constexpr RenderQueue::ID QUEUE_ID_POSTPROCESSING    = RenderQueue::ID( 3000u );
+		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY          = RenderQueue::ID(  2'000u );
+		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY_OUTLINED = RenderQueue::ID(  2'350u );
+		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT       = RenderQueue::ID(  2'450u );
+		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX            = RenderQueue::ID(  2'900u );
+		static constexpr RenderQueue::ID QUEUE_ID_POSTPROCESSING    = RenderQueue::ID(  3'000u );
+		static constexpr RenderQueue::ID QUEUE_ID_FINAL             = RenderQueue::ID( 10'000u );
 
 	private:
 
@@ -280,12 +294,17 @@ namespace Engine
 		 */
 
 		Framebuffer* framebuffer_current;
-		Framebuffer editor_framebuffer;
-		Framebuffer light_directional_shadow_map_framebuffer;
-		/* Used for lighting etc. Blitted onto the default framebuffer (or the offscreen editor framebuffer when running in editor). */
-		std::array< Framebuffer,			FRAMEBUFFER_OFFSCREEN_COUNT > offscreen_framebuffer_array;
-		std::array< std::optional< int >,	FRAMEBUFFER_OFFSCREEN_COUNT > offscreen_framebuffer_msaa_sample_count_array;
-		std::array< Texture::Format,		FRAMEBUFFER_OFFSCREEN_COUNT > offscreen_framebuffer_color_format_array;
+		Framebuffer framebuffer_shadow_map_light_directional;
+		Framebuffer framebuffer_main;
+		Framebuffer framebuffer_postprocessing;
+		Framebuffer framebuffer_final;
+		std::array< Framebuffer,								FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_array;
+		std::array< std::optional< Framebuffer::Description >,	FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_description_array;
+
+		std::uint8_t framebuffer_main_msaa_sample_count;
+		Texture::Format framebuffer_main_color_format;
+
+		/* 4 bytes of padding. */
 
 		/*
 		 * Lighting:

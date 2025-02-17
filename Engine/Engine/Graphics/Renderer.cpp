@@ -39,13 +39,14 @@ if( not render_queue_map.contains( queue_id ) )\
 namespace Engine
 {
 	Renderer::Renderer( const bool enable_gamma_correction,
-						std::array< std::optional< int >,	FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_msaa_sample_count_values,
-						std::array< Texture::Format,		FRAMEBUFFER_OFFSCREEN_COUNT >&& offscreen_framebuffer_color_formats )
+						Texture::Format main_framebuffer_color_format,
+						std::uint8_t main_framebuffer_msaa_sample_count,
+						const std::initializer_list< Framebuffer::Description > custom_framebuffer_descriptions )
 		:
 		logger( ServiceLocator< GLLogger >::Get() ),
 		framebuffer_current( nullptr ),
-		offscreen_framebuffer_msaa_sample_count_array( std::move( offscreen_framebuffer_msaa_sample_count_values ) ),
-		offscreen_framebuffer_color_format_array( std::move( offscreen_framebuffer_color_formats ) ),
+		framebuffer_main_msaa_sample_count( main_framebuffer_msaa_sample_count ),
+		framebuffer_main_color_format( main_framebuffer_color_format ),
 		lights_point_active_count( 0 ),
 		lights_spot_active_count( 0 ),
 		update_uniform_buffer_lighting( false ),
@@ -53,6 +54,11 @@ namespace Engine
 		framebuffer_sRGB_encoding_is_enabled( false ),
 		gamma_correction_is_enabled( enable_gamma_correction )
 	{
+		if( custom_framebuffer_descriptions.size() <= FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT )
+			std::copy( custom_framebuffer_descriptions.begin(), custom_framebuffer_descriptions.end(), framebuffer_custom_description_array.begin() );
+		else
+			CONSOLE_ERROR( "Renderer: Number of custom framebuffers requested exceeds the max. available limit." );
+
 		Engine::Texture::ToggleGammaCorrection( gamma_correction_is_enabled );
 
 		DefaultFramebuffer::Instance(); // Initialize.
@@ -280,19 +286,23 @@ namespace Engine
 
 			/* Framebuffers: */
 			ImGui::SeparatorText( "Framebuffers" );
-			if( ImGui::TreeNodeEx( editor_framebuffer.name.c_str() ) )
+
+			auto DrawFramebufferImGui = []( const Framebuffer& framebuffer )
 			{
-				ImGuiDrawer::Draw( editor_framebuffer );
-				ImGui::TreePop();
-			}
-			for( auto& offscreen_framebuffer : offscreen_framebuffer_array )
-			{
-				if( ImGui::TreeNodeEx( offscreen_framebuffer.name.c_str() ) )
+				if( ImGui::TreeNodeEx( framebuffer.name.c_str() ) )
 				{
-					ImGuiDrawer::Draw( offscreen_framebuffer );
+					ImGuiDrawer::Draw( framebuffer );
 					ImGui::TreePop();
 				}
-			}
+			};
+
+			DrawFramebufferImGui( framebuffer_shadow_map_light_directional );
+			DrawFramebufferImGui( framebuffer_main );
+			DrawFramebufferImGui( framebuffer_postprocessing );
+			DrawFramebufferImGui( framebuffer_final );
+
+			for( auto& custom_framebuffer : framebuffer_custom_array )
+				DrawFramebufferImGui( custom_framebuffer );
 		}
 
 		ImGui::End();
@@ -316,12 +326,14 @@ namespace Engine
 		}
 
 		/* Shadow maps: */
-		if( light_directional_shadow_map_framebuffer.IsValid() )
-			light_directional_shadow_map_framebuffer.Resize( new_width_in_pixels, new_height_in_pixels );
+		if( framebuffer_shadow_map_light_directional.IsValid() )
+			framebuffer_shadow_map_light_directional.Resize( new_width_in_pixels, new_height_in_pixels );
 		else // i.e, the first time the framebuffer is created:
 		{
-			light_directional_shadow_map_framebuffer = Engine::Framebuffer( "Shadow Map: Dir. Light", Framebuffer::Description
+			framebuffer_shadow_map_light_directional = Engine::Framebuffer( Framebuffer::Description
 																			{
+																				.name = "Shadow Map FB - Dir. Light",
+
 																				.width_in_pixels  = new_width_in_pixels,
 																				.height_in_pixels = new_height_in_pixels,
 
@@ -339,42 +351,75 @@ namespace Engine
 
 
 		/* Main: */
-		if( editor_framebuffer.IsValid() )
-			editor_framebuffer.Resize( new_width_in_pixels, new_height_in_pixels );
+		if( framebuffer_main.IsValid() )
+			framebuffer_main.Resize( new_width_in_pixels, new_height_in_pixels );
 		else // i.e, the first time the framebuffer is created:
 		{
-			editor_framebuffer = Engine::Framebuffer( "Editor FB", Framebuffer::Description
+			framebuffer_main = Engine::Framebuffer( Framebuffer::Description
+													{
+														.name = "Main FB",
+
+														.width_in_pixels  = new_width_in_pixels,
+														.height_in_pixels = new_height_in_pixels,
+
+														.color_format    = framebuffer_main_color_format,
+														.attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined,
+														.msaa            = MSAA( framebuffer_main_msaa_sample_count )
+													} );
+		}
+
+		/* Post-processing: */
+		if( framebuffer_postprocessing.IsValid() )
+			framebuffer_postprocessing.Resize( new_width_in_pixels, new_height_in_pixels );
+		else // i.e, the first time the framebuffer is created:
+		{
+			/* Same parameters as the main FBO. */
+			framebuffer_postprocessing = Engine::Framebuffer( Framebuffer::Description
+															  {
+																  .name = "Post-processing FB",
+
+																  .width_in_pixels  = new_width_in_pixels,
+																  .height_in_pixels = new_height_in_pixels,
+
+																  .color_format    = framebuffer_main_color_format,
+																  .attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
+															  } );
+		}
+
+		/* Editor: */
+		if( framebuffer_final.IsValid() )
+			framebuffer_final.Resize( new_width_in_pixels, new_height_in_pixels );
+		else // i.e, the first time the framebuffer is created:
+		{
+			framebuffer_final = Engine::Framebuffer( Framebuffer::Description
 													  {
+														  .name = "Editor FB",
+
 														  .width_in_pixels  = new_width_in_pixels,
 														  .height_in_pixels = new_height_in_pixels,
 
 														  .color_format    = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
-														  .attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
+														  .attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined // Some post-processing fx may need depth.
 													  } );
 		}
 
-		/* Offscreen: */
-		for( auto index = 0; index < offscreen_framebuffer_msaa_sample_count_array.size(); index++ )
-		{
-			if( auto& framebuffer = offscreen_framebuffer_array[ index ];
-				framebuffer.IsValid() )
-				framebuffer.Resize( new_width_in_pixels, new_height_in_pixels );
-			else // i.e, the first time the framebuffer is created:
-			{
-				framebuffer = Engine::Framebuffer( "Offscreen FB " + std::to_string( index ), Framebuffer::Description
-												   {
-													   .width_in_pixels  = new_width_in_pixels,
-													   .height_in_pixels = new_height_in_pixels,
+		// TODO: Create a SizeInfo struct to store absolute size vs relative sizes (multipliers). For example, a rear-view mirror framebuffer may have half-resolution.
+		// So resizing the main framebuffer should resize this rear-view framebuffer to half the new resolution (size info of this framebuffer will have a relative 0.5 multiplier).
 
-													   .multi_sample_count = offscreen_framebuffer_msaa_sample_count_array[ index ],
-													   .color_format       = offscreen_framebuffer_color_format_array[ index ],
-													   .attachment_bits    = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
-												   } );
+		// TODO: Create APIs for the client code to modify custom framebuffer descriptions.
+
+		/* Custom Framebuffers: */
+		for( auto index = 0; index < framebuffer_custom_array.size(); index++ )
+		{
+			if( const auto description = framebuffer_custom_description_array[ index ]; description )
+			{
+				if( auto& custom_framebuffer = framebuffer_custom_array[ index ];
+					custom_framebuffer.IsValid() )
+					custom_framebuffer.Resize( new_width_in_pixels, new_height_in_pixels );
+				else // i.e, the first time the framebuffer is created:
+					custom_framebuffer = Engine::Framebuffer( *description );
 			}
 		}
-
-		// TODO: Keep descriptions for offscreen framebuffers around, so client code can request modification to them and indirectly modify offscreen framebuffers' properties.
-		// This would make offscreen_framebuffer_msaa_sample_count_array etc. redundant.
 	}
 
 	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
@@ -546,12 +591,12 @@ namespace Engine
 #endif
 	}
 
-	void Renderer::SetFinalPassToUseEditorFramebuffer()
+	void Renderer::SetFinalPassToUseFinalFramebuffer()
 	{
 		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseEditorFramebuffer", PASS_ID_POSTPROCESSING );
 
 		auto& pass = render_pass_map[ PASS_ID_POSTPROCESSING ];
-		pass.target_framebuffer = &editor_framebuffer;
+		pass.target_framebuffer = &framebuffer_final;
 	}
 
 	void Renderer::SetFinalPassToUseDefaultFramebuffer()
@@ -811,14 +856,24 @@ namespace Engine
 		return framebuffer_current;
 	}
 
-	Framebuffer& Renderer::EditorFramebuffer()
+	Framebuffer& Renderer::MainFramebuffer()
 	{
-		return editor_framebuffer;
+		return framebuffer_main;
 	}
 
-	Framebuffer& Renderer::OffscreenFramebuffer( const unsigned int framebuffer_index )
+	Framebuffer& Renderer::PostProcessingFramebuffer()
 	{
-		return offscreen_framebuffer_array[ framebuffer_index ];
+		return framebuffer_postprocessing;
+	}
+
+	Framebuffer& Renderer::FinalFramebuffer()
+	{
+		return framebuffer_final;
+	}
+
+	Framebuffer& Renderer::CustomFramebuffer( const unsigned int framebuffer_index )
+	{
+		return framebuffer_custom_array[ framebuffer_index ];
 	}
 
 	void Renderer::EnableFramebuffer_sRGBEncoding()
@@ -831,6 +886,25 @@ namespace Engine
 	{
 		glDisable( GL_FRAMEBUFFER_SRGB );
 		framebuffer_sRGB_encoding_is_enabled = false;
+	}
+
+	bool Renderer::CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query )
+	{
+		static std::unordered_map< Texture::Format, std::unordered_set< std::uint8_t > > SAMPLE_COUNTS_BY_FORMAT_MAP;
+
+		if( const auto iterator = SAMPLE_COUNTS_BY_FORMAT_MAP.find( format ); iterator != SAMPLE_COUNTS_BY_FORMAT_MAP.cend() )
+			return iterator->second.contains( sample_count_to_query );
+
+		int number_of_sample_counts = 0;
+		glGetInternalformativ( GL_RENDERBUFFER, Texture::InternalFormat( format ), GL_NUM_SAMPLE_COUNTS, 1, &number_of_sample_counts );
+
+		std::vector< int > sample_counts( number_of_sample_counts );
+		glGetInternalformativ( GL_RENDERBUFFER, Texture::InternalFormat( format ), GL_SAMPLES, number_of_sample_counts, sample_counts.data() );
+		auto& set_of_sample_counts_queried = SAMPLE_COUNTS_BY_FORMAT_MAP[ format ];
+		std::transform( sample_counts.begin(), sample_counts.end(), std::inserter( set_of_sample_counts_queried, set_of_sample_counts_queried.begin() ),
+						[]( int sample_count ) { return sample_count; } );
+
+		return set_of_sample_counts_queried.contains( sample_count_to_query );
 	}
 
 	void Renderer::SetPolygonMode( const PolygonMode mode )
@@ -888,7 +962,6 @@ namespace Engine
 					  }
 				  } );
 
-
 		AddQueue( QUEUE_ID_SKYBOX,
 				  RenderQueue
 				  {
@@ -904,6 +977,30 @@ namespace Engine
 				  RenderQueue
 				  {
 					  .name = "Post-processing",
+					  .render_state_override = RenderState
+					  {
+						  .face_culling_enable = false,
+
+				          .depth_test_enable  = false,
+						  .depth_write_enable = false,
+
+						  .sorting_mode = SortingMode::None // Preserve effect insertion order.
+                      }
+				  } );
+
+		AddQueue( QUEUE_ID_FINAL,
+				  RenderQueue
+				  {
+					  .name = "Final",
+					  .render_state_override = RenderState
+					  {
+						  .face_culling_enable = false,
+
+						  .depth_test_enable  = false,
+						  .depth_write_enable = false,
+
+						  .sorting_mode = SortingMode::None // Preserve insertion order.
+					  }
 				  } );
 	}
 
@@ -913,7 +1010,7 @@ namespace Engine
 				 RenderPass
 				 {
 					 .name               = "Shadow Mapping",
-					 .target_framebuffer = &light_directional_shadow_map_framebuffer,
+					 .target_framebuffer = &framebuffer_shadow_map_light_directional,
 					 .queue_id_set       = { QUEUE_ID_GEOMETRY_OUTLINED },
 					 .view_matrix		 = Matrix4x4{},
 					 .projection_matrix  = Matrix4x4{},
@@ -930,7 +1027,7 @@ namespace Engine
 				 RenderPass
 				 {
 					 .name               = "Lighting",
-					 .target_framebuffer = &offscreen_framebuffer_array[ 0 ],
+					 .target_framebuffer = &framebuffer_main,
 					 .queue_id_set       = { QUEUE_ID_GEOMETRY, QUEUE_ID_GEOMETRY_OUTLINED, QUEUE_ID_TRANSPARENT, QUEUE_ID_SKYBOX },
 					 .clear_framebuffer  = true,
 				 } );
@@ -939,7 +1036,7 @@ namespace Engine
 				 RenderPass
 				 {
 					 .name               = "Outline",
-					 .target_framebuffer = &offscreen_framebuffer_array[ 0 ],
+					 .target_framebuffer = &framebuffer_main,
 					 .queue_id_set       = { QUEUE_ID_GEOMETRY },
 					 .render_state       = RenderState
 					 {
@@ -959,8 +1056,16 @@ namespace Engine
 				 RenderPass
 				 {
 					 .name               = "Post-processing",
-					 .target_framebuffer = &editor_framebuffer,
+					 .target_framebuffer = &framebuffer_postprocessing,
 					 .queue_id_set       = { QUEUE_ID_POSTPROCESSING }
+				 } );
+
+		AddPass( PASS_ID_FINAL,
+				 RenderPass
+				 {
+					 .name               = "Final",
+					 .target_framebuffer = &framebuffer_final,
+					 .queue_id_set       = { QUEUE_ID_FINAL }
 				 } );
 	}
 

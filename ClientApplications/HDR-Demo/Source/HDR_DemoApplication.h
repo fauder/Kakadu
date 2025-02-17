@@ -70,7 +70,8 @@ private:
 
 	Engine::Renderable light_sources_renderable;
 
-	Engine::Renderable offscreen_quad_renderable;
+	Engine::Renderable offscreen_quad_msaa_resolve_renderable;
+	Engine::Renderable offscreen_quad_tone_mapping_renderable;
 
 	Engine::Framebuffer framebuffer_hdr;
 
@@ -91,15 +92,16 @@ private:
 	Engine::Shader* shader_basic_color_instanced;
 
 	Engine::Shader* shader_texture_blit;
-	Engine::Shader* shader_fullscreen_blit_and_tonemap;
-	Engine::Shader* shader_fullscreen_blit_resolve_and_tonemap;
+	Engine::Shader* shader_msaa_resolve;
+	Engine::Shader* shader_tone_mapping;
 
 /* Materials: */
 	Engine::Material wood_material;
 
 	Engine::Material light_source_material;
 
-	Engine::Material offscreen_quad_material;
+	Engine::Material msaa_resolve_material;
+	Engine::Material tone_mapping_material;
 
 /* Scene: */
 	Engine::Transform camera_transform;

@@ -285,6 +285,9 @@
     <ClInclude Include="Engine\Asset\AssetDirectoryPath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\MSAA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\Application.cpp">
@@ -401,7 +404,7 @@
     <None Include="Engine\Asset\Shader\Blinn-Phong.frag" />
     <None Include="Engine\Asset\Shader\Blinn-Phong.vert" />
     <None Include="Engine\Asset\Shader\FullScreenBlit.frag" />
-    <None Include="Engine\Asset\Shader\FullScreenBlit_Resolve.frag" />
+    <None Include="Engine\Asset\Shader\MSAA_Resolve.frag" />
     <None Include="Engine\Asset\Shader\GenericPostprocess.frag" />
     <None Include="Engine\Asset\Shader\Grayscale.frag" />
     <None Include="Engine\Asset\Shader\PassThrough_UVs.vert" />
@@ -416,5 +419,6 @@
     <None Include="Engine\Asset\Shader\PassThrough_Transform.vert" />
     <None Include="Engine\Asset\Shader\_Attributes.glsl" />
     <None Include="Engine\Asset\Shader\VisualizeNormals.frag" />
+    <None Include="Engine\Asset\Shader\Tonemapping.frag" />
   </ItemGroup>
 </Project>

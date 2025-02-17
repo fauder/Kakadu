@@ -178,6 +178,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClInclude Include="Engine\Graphics\Framebuffer.h" />
     <ClInclude Include="Engine\Graphics\ID.hpp" />
     <ClInclude Include="Engine\Graphics\InternalShaders.h" />
+    <ClInclude Include="Engine\Graphics\MSAA.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Circle.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Cylinder.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Cylinder.hpp" />
@@ -302,7 +303,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <None Include="Engine\Asset\Shader\Blinn-Phong.frag" />
     <None Include="Engine\Asset\Shader\Blinn-Phong.vert" />
     <None Include="Engine\Asset\Shader\FullScreenBlit.frag" />
-    <None Include="Engine\Asset\Shader\FullScreenBlit_Resolve.frag" />
+    <None Include="Engine\Asset\Shader\MSAA_Resolve.frag" />
     <None Include="Engine\Asset\Shader\GenericPostprocess.frag" />
     <None Include="Engine\Asset\Shader\Grayscale.frag" />
     <None Include="Engine\Asset\Shader\Outline.vert" />
@@ -310,6 +311,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <None Include="Engine\Asset\Shader\PassThrough_UVs.vert" />
     <None Include="Engine\Asset\Shader\Skybox.frag" />
     <None Include="Engine\Asset\Shader\Skybox.vert" />
+    <None Include="Engine\Asset\Shader\Tonemapping.frag" />
     <None Include="Engine\Asset\Shader\VisualizeDepth.frag" />
     <None Include="Engine\Asset\Shader\VisualizeNormals.frag" />
     <None Include="Engine\Asset\Shader\VisualizeNormals.geom" />
