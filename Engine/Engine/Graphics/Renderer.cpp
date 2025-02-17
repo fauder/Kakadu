@@ -593,17 +593,17 @@ namespace Engine
 
 	void Renderer::SetFinalPassToUseFinalFramebuffer()
 	{
-		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseEditorFramebuffer", PASS_ID_POSTPROCESSING );
+		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseEditorFramebuffer", PASS_ID_FINAL );
 
-		auto& pass = render_pass_map[ PASS_ID_POSTPROCESSING ];
+		auto& pass = render_pass_map[ PASS_ID_FINAL ];
 		pass.target_framebuffer = &framebuffer_final;
 	}
 
 	void Renderer::SetFinalPassToUseDefaultFramebuffer()
 	{
-		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseDefaultFramebuffer", PASS_ID_POSTPROCESSING );
+		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseDefaultFramebuffer", PASS_ID_FINAL );
 
-		auto& pass = render_pass_map[ PASS_ID_POSTPROCESSING ];
+		auto& pass = render_pass_map[ PASS_ID_FINAL ];
 		pass.target_framebuffer = nullptr;
 	}
 
