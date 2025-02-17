@@ -43,8 +43,16 @@ SandboxApplication::SandboxApplication( const Engine::BitFlags< Engine::Creation
 	:
 	Engine::Application( flags ),
 	renderer( gamma_correction_is_enabled,
-			  /* Offscreen framebuffer MSAA sample counts:	*/ { /* Main: */ 4,									/* Rear-view: */ std::nullopt },
-			  /* Offscreen framebuffer MSAA formats:		*/ { /* Main: */ Engine::Texture::Format::RGBA_16F,	/* Rear-view: */ Engine::Texture::Format::RGBA } ),
+			  /* Main FB: */ Engine::Texture::Format::RGBA_16F,
+			  /* Main FB: */ 4,
+			  {
+				Engine::Framebuffer::Description
+				{
+					.name            = "Rear-view Mirror FB",
+					.color_format    = Engine::Texture::Format::RGBA,
+					.attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
+				}
+			  } ),
 	test_model_info{ .model_instance = {}, .shader = Engine::InternalShaders::Get( "Blinn-Phong" ), .file_path = {} },
 	meteorite_model_info{ .model_instance = {}, .shader = Engine::InternalShaders::Get( "Blinn-Phong (Instanced)" ), .file_path = {} },
 	light_point_transform_array( LIGHT_POINT_COUNT ),
@@ -141,8 +149,8 @@ void SandboxApplication::Initialize()
 	shader_basic_textured_transparent_discard               = Engine::InternalShaders::Get( "Textured (Discard Transparent)" );
 	shader_outline                                          = Engine::InternalShaders::Get( "Outline" );
 	shader_texture_blit                                     = Engine::InternalShaders::Get( "Texture Blit" );
-	shader_fullscreen_blit                                  = Engine::InternalShaders::Get( "Fullscreen Blit" );
-	shader_fullscreen_blit_resolve_tonemapping              = Engine::InternalShaders::Get( "Fullscreen Blit Resolve (Tone-mapping)" );
+	shader_msaa_resolve                                     = Engine::InternalShaders::Get( "MSAA Resolve" );
+	shader_tone_mapping                                     = Engine::InternalShaders::Get( "Tone Mapping" );
 	shader_postprocess_grayscale                            = Engine::InternalShaders::Get( "Post-process Grayscale" );
 	shader_postprocess_generic                              = Engine::InternalShaders::Get( "Post-process Generic" );
 	shader_normal_visualization                             = Engine::InternalShaders::Get( "Normal Visualization" );
@@ -325,9 +333,13 @@ void SandboxApplication::Initialize()
 	renderer.AddPass( RENDER_PASS_ID_LIGHTING_REAR_VIEW,
 					  Engine::RenderPass
 					  {
-						  .name                             = "Lighting - Rear View",
-						  .target_framebuffer               = &renderer.OffscreenFramebuffer( 1 ),
-						  .queue_id_set                     = { Engine::Renderer::QUEUE_ID_GEOMETRY, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED, Engine::Renderer::QUEUE_ID_TRANSPARENT, Engine::Renderer::QUEUE_ID_SKYBOX },
+						  .name                             = "Lighting - Rear-view",
+						  .target_framebuffer               = &renderer.CustomFramebuffer( 0 ),
+						  .queue_id_set                     = {
+																Engine::Renderer::QUEUE_ID_GEOMETRY,
+																Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED,
+																Engine::Renderer::QUEUE_ID_TRANSPARENT,
+																Engine::Renderer::QUEUE_ID_SKYBOX },
 					      .render_state_override_is_allowed = true
 					  } );
 	
@@ -366,8 +378,11 @@ void SandboxApplication::Initialize()
 		renderer.AddRenderable( &window_renderable_array[ i ], Engine::Renderer::QUEUE_ID_TRANSPARENT );
 	}
 
-	offscreen_quad_renderable = Engine::Renderable( &quad_mesh_fullscreen, &offscreen_quad_material );
-	renderer.AddRenderable( &offscreen_quad_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
+	msaa_resolve_renderable = Engine::Renderable( &quad_mesh_fullscreen, &msaa_resolve_material );
+	renderer.AddRenderable( &msaa_resolve_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
+
+	tone_mapping_renderable = Engine::Renderable( &quad_mesh_fullscreen, &tone_mapping_material );
+	renderer.AddRenderable( &tone_mapping_renderable, Engine::Renderer::QUEUE_ID_FINAL );
 
 	mirror_quad_renderable = Engine::Renderable( &quad_mesh_mirror, &mirror_quad_material );
 	renderer.AddRenderable( &mirror_quad_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
@@ -557,7 +572,6 @@ void SandboxApplication::Render()
 	}
 
 	renderer.Render();
-
 }
 
 void SandboxApplication::RenderImGui()
@@ -587,7 +601,7 @@ void SandboxApplication::RenderImGui()
 			mirror_quad_renderable.ToggleOnOrOff( not render_rear_view_cam_to_imgui );
 
 		if( render_rear_view_cam_to_imgui )
-			ImGui::Image( ( void* )( intptr_t )renderer.OffscreenFramebuffer( 1 ).ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
+			ImGui::Image( ( void* )( intptr_t )renderer.CustomFramebuffer( 0 ).ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
 	}
 
 	ImGui::End();
@@ -685,7 +699,8 @@ void SandboxApplication::RenderImGui()
 	for( auto& test_material : meteorite_model_info.model_instance.Materials() )
 		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), renderer );
 	Engine::ImGuiDrawer::Draw( outline_material, renderer );
-	Engine::ImGuiDrawer::Draw( offscreen_quad_material, renderer );
+	Engine::ImGuiDrawer::Draw( msaa_resolve_material, renderer );
+	Engine::ImGuiDrawer::Draw( tone_mapping_material, renderer );
 	Engine::ImGuiDrawer::Draw( mirror_quad_material, renderer );
 
 	if( ImGui::Begin( "Instance Data" ) )
@@ -928,7 +943,7 @@ void SandboxApplication::OnKeyboardEvent( const Platform::KeyCode key_code, cons
 				show_imgui = !show_imgui;
 				if( show_imgui )
 				{
-					renderer.SetFinalPassToUseEditorFramebuffer();
+					renderer.SetFinalPassToUseFinalFramebuffer();
 				}
 				else
 				{
@@ -950,7 +965,7 @@ void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, c
 {
 	/* Do nothing on minimize: */
 	if( width_new_pixels == 0 || height_new_pixels == 0 || 
-		( renderer.EditorFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
+		( renderer.FinalFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
 		return;
 
 	renderer.OnFramebufferResize( width_new_pixels, height_new_pixels );
@@ -959,8 +974,9 @@ void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, c
 	
 	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
 
-	offscreen_quad_material.SetTexture( "uniform_texture_slot", &renderer.OffscreenFramebuffer( 0 ).ColorAttachment() );
-	mirror_quad_material.SetTexture( "uniform_texture_slot", &renderer.OffscreenFramebuffer( 1 ).ColorAttachment() );
+	msaa_resolve_material.SetTexture( "uniform_texture_slot", &renderer.MainFramebuffer().ColorAttachment() );
+	tone_mapping_material.SetTexture( "uniform_texture_slot", &renderer.PostProcessingFramebuffer().ColorAttachment() );
+	mirror_quad_material.SetTexture( "uniform_texture_slot", &renderer.CustomFramebuffer( 0 ).ColorAttachment() );
 
 	cube_reflected_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
 	cube_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
@@ -996,7 +1012,7 @@ void SandboxApplication::RenderImGui_Viewport()
 			ImGui::SetNextFrameWantCaptureKeyboard( false );
 		}
 
-		ImGui::Image( ( void* )( intptr_t )renderer.EditorFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
+		ImGui::Image( ( void* )( intptr_t )renderer.FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
 	}
 
 	ImGui::End();
@@ -1122,14 +1138,16 @@ void SandboxApplication::ResetMaterialData()
 	/*if( const auto& main_offscreen_framebuffer = renderer.OffscreenFramebuffer( 0 );
 		main_offscreen_framebuffer.IsMultiSampled() )*/
 	{
-		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit_resolve_tonemapping );
-		//offscreen_quad_material.Set( "uniform_sample_count", main_offscreen_framebuffer.SampleCount() );
+		msaa_resolve_material = Engine::Material( "MSAA Resolve", shader_msaa_resolve );
+		msaa_resolve_material.Set( "uniform_sample_count", 4 );
+		//msaa_resolve_material.Set( "uniform_sample_count", main_offscreen_framebuffer.SampleCount() );
 		// TODO: Get rid of the hard-coding here.
-		offscreen_quad_material.Set( "uniform_sample_count", 4 );
-		offscreen_quad_material.Set( "uniform_tonemapping_exposure", 1.0f );
+
+		tone_mapping_material = Engine::Material( "Tone Mapping", shader_tone_mapping );
+		tone_mapping_material.Set( "uniform_exposure", 1.0f );
 	}
 	/*else
-		offscreen_quad_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit );*/
+		msaa_resolve_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit );*/
 
 	ground_quad_surface_data = wall_surface_data = cube_surface_data =
 	{
@@ -1303,5 +1321,5 @@ void SandboxApplication::RecalculateProjectionParameters( const Vector2I new_siz
 
 void SandboxApplication::RecalculateProjectionParameters()
 {
-	RecalculateProjectionParameters( renderer.EditorFramebuffer().Size() );
+	RecalculateProjectionParameters( renderer.FinalFramebuffer().Size() );
 }

@@ -108,7 +108,8 @@ private:
 	const static constexpr int WINDOW_COUNT = 5;
 	std::array< Engine::Renderable, WINDOW_COUNT > window_renderable_array;
 
-	Engine::Renderable offscreen_quad_renderable;
+	Engine::Renderable msaa_resolve_renderable;
+	Engine::Renderable tone_mapping_renderable;
 
 	Engine::Renderable mirror_quad_renderable;
 
@@ -153,8 +154,9 @@ private:
 	Engine::Shader* shader_outline;
 
 	Engine::Shader* shader_texture_blit;
-	Engine::Shader* shader_fullscreen_blit;
-	Engine::Shader* shader_fullscreen_blit_resolve_tonemapping;
+
+	Engine::Shader* shader_msaa_resolve;
+	Engine::Shader* shader_tone_mapping;
 
 	Engine::Shader* shader_postprocess_grayscale;
 
@@ -181,7 +183,9 @@ private:
 
 	Engine::Material outline_material;
 
-	Engine::Material offscreen_quad_material;
+	Engine::Material msaa_resolve_material;
+	Engine::Material tone_mapping_material;
+
 	Engine::Material mirror_quad_material;
 
 	Engine::Material sphere_material;
