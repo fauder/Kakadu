@@ -58,8 +58,6 @@ void HDR_DemoApplication::Initialize()
 {
 	Platform::ChangeTitle( "Kakadu - HDR-Demo" );
 
-	gl_logger.IgnoreID( 131185 );
-
 	//Engine::Math::Random::SeedRandom();
 
 	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo GL Init." ) );

@@ -55,6 +55,8 @@ namespace Engine
 		framebuffer_sRGB_encoding_is_enabled( false ),
 		gamma_correction_is_enabled( enable_gamma_correction )
 	{
+		logger.IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
+
 		if( custom_framebuffer_descriptions.size() <= FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT )
 			std::copy( custom_framebuffer_descriptions.begin(), custom_framebuffer_descriptions.end(), framebuffer_custom_description_array.begin() );
 		else

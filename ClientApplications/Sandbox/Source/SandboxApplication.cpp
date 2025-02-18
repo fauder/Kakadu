@@ -88,8 +88,6 @@ void SandboxApplication::Initialize()
 {
 	Platform::ChangeTitle( "Kakadu - Sandbox" );
 	
-	gl_logger.IgnoreID( 131185 );
-
 	//Engine::Math::Random::SeedRandom();
 
 	auto log_group( gl_logger.TemporaryLogGroup( "Sandbox GL Init." ) );
