@@ -1,5 +1,5 @@
 // Engine Includes.
-#include "InternalTextures.h"
+#include "BuiltinTextures.h"
 #include "Renderer.h"
 #include "Core/AssetDatabase.hpp"
 #include "Core/Utility.hpp"
@@ -11,9 +11,9 @@
 namespace Engine
 {
 	/* Static member variable definitions: */
-	std::unordered_map< std::string, Texture* > InternalTextures::TEXTURE_MAP;
+	std::unordered_map< std::string, Texture* > BuiltinTextures::TEXTURE_MAP;
 
-	Texture* InternalTextures::Get( const std::string& name )
+	Texture* BuiltinTextures::Get( const std::string& name )
 	{
 		// Just to get a better error message.
 		ASSERT_DEBUG_ONLY( TEXTURE_MAP.contains( name ) && ( "Built-in texture with the name \"" + name + "\" was not found!" ).c_str() );
@@ -21,8 +21,8 @@ namespace Engine
 		return TEXTURE_MAP.find( name )->second;
 	}
 
-	Texture* InternalTextures::CreateSingleTexelTexture( const Color4& texel, const std::string& name,
-														 std::optional< Texture::ImportSettings > import_settings )
+	Texture* BuiltinTextures::CreateSingleTexelTexture( const Color4& texel, const std::string& name,
+														std::optional< Texture::ImportSettings > import_settings )
 	{
 		return CreateSingleTexelTexture( std::array< unsigned char, 4 >
 										 {
@@ -35,8 +35,8 @@ namespace Engine
 										 import_settings );
 	}
 
-	Texture* InternalTextures::CreateSingleTexelTexture( const std::array< unsigned char, 4 > texel, const std::string& name, 
-														 std::optional< Texture::ImportSettings > import_settings )
+	Texture* BuiltinTextures::CreateSingleTexelTexture( const std::array< unsigned char, 4 > texel, const std::string& name, 
+														std::optional< Texture::ImportSettings > import_settings )
 	{
 		if( not import_settings.has_value() )
 		{
@@ -58,7 +58,7 @@ namespace Engine
 																*import_settings );
 	}
 
-	void InternalTextures::Initialize()
+	void BuiltinTextures::Initialize()
 	{
 		TEXTURE_MAP.try_emplace( "White",		CreateSingleTexelTexture( Color4::White(),		"White" ) );
 		TEXTURE_MAP.try_emplace( "Gray",		CreateSingleTexelTexture( Color4::Gray( 0.5f ),	"Gray"	) );

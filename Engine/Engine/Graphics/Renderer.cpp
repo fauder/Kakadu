@@ -1,8 +1,8 @@
 // Engine Includes.
 #include "Renderer.h"
 #include "DefaultFramebuffer.h"
-#include "InternalShaders.h"
-#include "InternalTextures.h"
+#include "BuiltinShaders.h"
+#include "BuiltinTextures.h"
 #include "Core/ImGuiDrawer.hpp"
 #include "Primitive/Primitive_Quad_FullScreen.h"
 
@@ -64,8 +64,8 @@ namespace Engine
 
 		DefaultFramebuffer::Instance(); // Initialize.
 		
-		InternalShaders::Initialize( *this );
-		InternalTextures::Initialize();
+		BuiltinShaders::Initialize( *this );
+		BuiltinTextures::Initialize();
 
 		if( update_uniform_buffer_lighting )
 		{
@@ -146,8 +146,8 @@ namespace Engine
 						{
 							case PASS_ID_SHADOW_MAPPING:
 							{
-								static auto& shadow_map_write_shader           = *InternalShaders::Get( "Shadow-map Write" );
-								static auto& shadow_map_write_instanced_shader = *InternalShaders::Get( "Shadow-map Write (Instanced)" );
+								static auto& shadow_map_write_shader           = *BuiltinShaders::Get( "Shadow-map Write" );
+								static auto& shadow_map_write_instanced_shader = *BuiltinShaders::Get( "Shadow-map Write (Instanced)" );
 								
 								shadow_map_write_shader.Bind();
 
@@ -1341,8 +1341,8 @@ namespace Engine
 
 	void Renderer::InitializeInternalShaders()
 	{
-		shader_msaa_resolve = InternalShaders::Get( "MSAA Resolve" );
-		shader_tone_mapping = InternalShaders::Get( "Tone Mapping" );
+		shader_msaa_resolve = BuiltinShaders::Get( "MSAA Resolve" );
+		shader_tone_mapping = BuiltinShaders::Get( "Tone Mapping" );
 	}
 
 	void Renderer::InitializeInternalMaterials()

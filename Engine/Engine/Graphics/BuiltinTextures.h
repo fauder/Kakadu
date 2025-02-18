@@ -12,7 +12,7 @@ namespace Engine
 	class Renderer;
 
 	/* Singleton. */
-	class InternalTextures
+	class BuiltinTextures
 	{
 		friend class Renderer;
 

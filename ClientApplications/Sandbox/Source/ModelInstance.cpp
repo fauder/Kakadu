@@ -1,6 +1,6 @@
 // Project Includes.
 #include "ModelInstance.h"
-#include "Graphics/InternalTextures.h"
+#include "Graphics/BuiltinTextures.h"
 
 ModelInstance::ModelInstance()
 	:
@@ -103,8 +103,8 @@ void ModelInstance::SetMaterialData( Engine::Shader* const shader, const Vector4
 					};
 				}
 
-				static const auto default_normal_map_texture = Engine::InternalTextures::Get( "Normal Map" );
-				static const auto white_texture              = Engine::InternalTextures::Get( "White" );
+				static const auto default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
+				static const auto white_texture              = Engine::BuiltinTextures::Get( "White" );
 
 				material.SetTexture( "uniform_normal_map_slot", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
 				material.SetTexture( "uniform_specular_map_slot", white_texture );

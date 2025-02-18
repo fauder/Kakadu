@@ -4,7 +4,6 @@
 #include "Graphics.h"
 #include "Color.hpp"
 #include "Id.hpp"
-#include "Lighting/Lighting.h"
 #include "ShaderSourcePath.hpp"
 #include "Std140StructTag.h"
 #include "Uniform.h"
@@ -14,7 +13,6 @@
 #include "Math/Vector.hpp"
 
 // std Includes.
-#include <array>
 #include <filesystem>
 #include <optional>
 #include <string>
@@ -23,15 +21,14 @@
 
 namespace Engine
 {
-
 	/* Forward Declarations: */
 	class Renderer;
-	class InternalShaders;
+	class BuiltinShaders;
 
 	class Shader
 	{
 		friend class Renderer;
-		friend class InternalShaders;
+		friend class BuiltinShaders;
 		friend class std::unordered_map< std::string, Shader >;
 
 		using ReferenceCount = unsigned int;

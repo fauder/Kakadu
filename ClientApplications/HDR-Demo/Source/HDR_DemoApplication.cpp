@@ -11,8 +11,8 @@
 #include "Engine/Core/Platform.h"
 #include "Engine/Core/ServiceLocator.h"
 #include "Engine/Graphics/GLLogger.h"
-#include "Engine/Graphics/InternalShaders.h"
-#include "Engine/Graphics/InternalTextures.h"
+#include "Engine/Graphics/BuiltinShaders.h"
+#include "Engine/Graphics/BuiltinTextures.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
 #include "Engine/Math/Math.hpp"
@@ -73,11 +73,9 @@ void HDR_DemoApplication::Initialize()
 																					   } );
 
 /* Shaders: */
-	shader_blinn_phong = Engine::InternalShaders::Get( "Blinn-Phong" );
-	
-	shader_basic_color_instanced = Engine::InternalShaders::Get( "Color (Instanced)" );
-	
-	shader_texture_blit = Engine::InternalShaders::Get( "Texture Blit" );
+	shader_blinn_phong           = Engine::BuiltinShaders::Get( "Blinn-Phong" );
+	shader_basic_color_instanced = Engine::BuiltinShaders::Get( "Color (Instanced)" );
+	shader_texture_blit          = Engine::BuiltinShaders::Get( "Texture Blit" );
 
 /* Instance Data: */
 	ResetInstanceData();
@@ -543,7 +541,7 @@ void HDR_DemoApplication::ResetMaterialData()
 {
 	wood_material = Engine::Material( "Wood", shader_blinn_phong );
 	wood_material.SetTexture( "uniform_diffuse_map_slot", wood_diffuse_map );
-	wood_material.SetTexture( "uniform_specular_map_slot", Engine::ServiceLocator< Engine::InternalTextures >::Get().Get( "White" ) );
+	wood_material.SetTexture( "uniform_specular_map_slot", Engine::ServiceLocator< Engine::BuiltinTextures >::Get().Get( "White" ) );
 	wood_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
 	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );

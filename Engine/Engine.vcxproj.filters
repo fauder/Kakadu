@@ -231,7 +231,7 @@
     <ClInclude Include="Engine\Math\VectorConversion.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\InternalShaders.h">
+    <ClInclude Include="Engine\Graphics\BuiltinShaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\ShaderSourcePath.hpp">
@@ -255,7 +255,7 @@
     <ClInclude Include="Engine\Graphics\DefaultFramebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\InternalTextures.h">
+    <ClInclude Include="Engine\Graphics\BuiltinTextures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Asset\Resource\Resource.h">
@@ -377,13 +377,13 @@
     <ClCompile Include="Engine\Graphics\TextureLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\InternalShaders.cpp">
+    <ClCompile Include="Engine\Graphics\BuiltinShaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\DefaultFramebuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\InternalTextures.cpp">
+    <ClCompile Include="Engine\Graphics\BuiltinTextures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

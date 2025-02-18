@@ -1,5 +1,5 @@
 // Engine Includes.
-#include "InternalShaders.h"
+#include "BuiltinShaders.h"
 #include "Renderer.h"
 #include "Core/Utility.hpp"
 #include "Asset/AssetDirectoryPath.h"
@@ -10,9 +10,9 @@
 namespace Engine
 {
 	/* Static member variable definitions: */
-	std::unordered_map< std::string, Shader > InternalShaders::SHADER_MAP;
+	std::unordered_map< std::string, Shader > BuiltinShaders::SHADER_MAP;
 
-	Shader* InternalShaders::Get( const std::string& name )
+	Shader* BuiltinShaders::Get( const std::string& name )
 	{
 		// Just to get a better error message.
 		ASSERT_DEBUG_ONLY( SHADER_MAP.contains( name ) && ( "Built-in shader with the name \"" + name + "\" was not found!" ).c_str() );
@@ -20,7 +20,7 @@ namespace Engine
 		return &( SHADER_MAP.find( name )->second );
 	}
 
-	void InternalShaders::Initialize( Renderer& renderer )
+	void BuiltinShaders::Initialize( Renderer& renderer )
 	{
 		using namespace Literals;
 

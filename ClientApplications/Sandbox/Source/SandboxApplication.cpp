@@ -11,8 +11,8 @@
 #include "Engine/Core/Platform.h"
 #include "Engine/Core/ServiceLocator.h"
 #include "Engine/Graphics/GLLogger.h"
-#include "Engine/Graphics/InternalShaders.h"
-#include "Engine/Graphics/InternalTextures.h"
+#include "Engine/Graphics/BuiltinShaders.h"
+#include "Engine/Graphics/BuiltinTextures.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube_FullScreen.h"
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
@@ -53,8 +53,18 @@ SandboxApplication::SandboxApplication( const Engine::BitFlags< Engine::Creation
 					.attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
 				}
 			  } ),
-	test_model_info{ .model_instance = {}, .shader = Engine::InternalShaders::Get( "Blinn-Phong" ), .file_path = {} },
-	meteorite_model_info{ .model_instance = {}, .shader = Engine::InternalShaders::Get( "Blinn-Phong (Instanced)" ), .file_path = {} },
+	test_model_info
+	{
+		.model_instance = {},
+		.shader         = Engine::BuiltinShaders::Get( "Blinn-Phong" ),
+		.file_path      = {}
+	},
+	meteorite_model_info
+	{
+		.model_instance = {},
+		.shader         = Engine::BuiltinShaders::Get( "Blinn-Phong (Instanced)" ),
+		.file_path      = {}
+	},
 	light_point_transform_array( LIGHT_POINT_COUNT ),
 	cube_transform_array( CUBE_COUNT ),
 	cube_reflected_transform_array( CUBE_REFLECTED_COUNT ),
@@ -133,22 +143,22 @@ void SandboxApplication::Initialize()
 																							 } );
 
 /* Shaders: */
-	shader_skybox                                           = Engine::InternalShaders::Get( "Skybox" );
-	shader_blinn_phong                                      = Engine::InternalShaders::Get( "Blinn-Phong" );
-	shader_blinn_phong_shadowed                             = Engine::InternalShaders::Get( "Blinn-Phong (Shadowed)" );
-	shader_blinn_phong_shadowed_parallax                    = Engine::InternalShaders::Get( "Blinn-Phong (Shadowed | Parallax)" );
-	shader_blinn_phong_instanced                            = Engine::InternalShaders::Get( "Blinn-Phong (Instanced)" );
-	shader_blinn_phong_shadowed_instanced                   = Engine::InternalShaders::Get( "Blinn-Phong (Shadowed | Instanced)" );
-	shader_blinn_phong_shadowed_parallax_instanced          = Engine::InternalShaders::Get( "Blinn-Phong (Shadowed | Parallax | Instanced)" );
-	shader_blinn_phong_skybox_reflection                    = Engine::InternalShaders::Get( "Blinn-Phong (Skybox Reflection)" );
-	shader_blinn_phong_skybox_reflection_instanced          = Engine::InternalShaders::Get( "Blinn-Phong (Skybox Reflection | Instanced)" );
-	shader_blinn_phong_skybox_reflection_shadowed_instanced = Engine::InternalShaders::Get( "Blinn-Phong (Skybox Reflection | Shadowed | Instanced)" );
-	shader_basic_color                                      = Engine::InternalShaders::Get( "Color" );
-	shader_basic_color_instanced                            = Engine::InternalShaders::Get( "Color (Instanced)" );
-	shader_basic_textured                                   = Engine::InternalShaders::Get( "Textured" );
-	shader_basic_textured_transparent_discard               = Engine::InternalShaders::Get( "Textured (Discard Transparent)" );
-	shader_outline                                          = Engine::InternalShaders::Get( "Outline" );
-	shader_texture_blit                                     = Engine::InternalShaders::Get( "Texture Blit" );
+	shader_skybox                                           = Engine::BuiltinShaders::Get( "Skybox" );
+	shader_blinn_phong                                      = Engine::BuiltinShaders::Get( "Blinn-Phong" );
+	shader_blinn_phong_shadowed                             = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed)" );
+	shader_blinn_phong_shadowed_parallax                    = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Parallax)" );
+	shader_blinn_phong_instanced                            = Engine::BuiltinShaders::Get( "Blinn-Phong (Instanced)" );
+	shader_blinn_phong_shadowed_instanced                   = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Instanced)" );
+	shader_blinn_phong_shadowed_parallax_instanced          = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Parallax | Instanced)" );
+	shader_blinn_phong_skybox_reflection                    = Engine::BuiltinShaders::Get( "Blinn-Phong (Skybox Reflection)" );
+	shader_blinn_phong_skybox_reflection_instanced          = Engine::BuiltinShaders::Get( "Blinn-Phong (Skybox Reflection | Instanced)" );
+	shader_blinn_phong_skybox_reflection_shadowed_instanced = Engine::BuiltinShaders::Get( "Blinn-Phong (Skybox Reflection | Shadowed | Instanced)" );
+	shader_basic_color                                      = Engine::BuiltinShaders::Get( "Color" );
+	shader_basic_color_instanced                            = Engine::BuiltinShaders::Get( "Color (Instanced)" );
+	shader_basic_textured                                   = Engine::BuiltinShaders::Get( "Textured" );
+	shader_basic_textured_transparent_discard               = Engine::BuiltinShaders::Get( "Textured (Discard Transparent)" );
+	shader_outline                                          = Engine::BuiltinShaders::Get( "Outline" );
+	shader_texture_blit                                     = Engine::BuiltinShaders::Get( "Texture Blit" );
 
 /* Instancing Data: */
 	ResetInstanceData();
@@ -1106,7 +1116,7 @@ void SandboxApplication::ResetMaterialData()
 	wall_material.Set( "uniform_parallax_depth_layer_count_min_max", Vector2U( 8u, 32u ) );
 
 	sphere_material = Engine::Material( "Sphere", shader_blinn_phong_skybox_reflection );
-	sphere_material.SetTexture( "uniform_diffuse_map_slot", Engine::ServiceLocator< Engine::InternalTextures >::Get().Get( "UV Test" ) );
+	sphere_material.SetTexture( "uniform_diffuse_map_slot", Engine::ServiceLocator< Engine::BuiltinTextures >::Get().Get( "UV Test" ) );
 	//sphere_material.SetTexture( "uniform_reflection_map_slot", container_texture_specular_map );
 	sphere_material.SetTexture( "uniform_texture_skybox_slot", skybox_texture );
 	sphere_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );

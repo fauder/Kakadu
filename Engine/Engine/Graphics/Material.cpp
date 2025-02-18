@@ -1,6 +1,6 @@
 // Engine Includes.
+#include "BuiltinTextures.h"
 #include "Material.hpp"
-#include "InternalTextures.h"
 
 namespace Engine
 {
@@ -188,11 +188,11 @@ namespace Engine
 			{
 				if( sampler_name.find( "normal_map" ) != std::string::npos )
 				{
-					UploadTexture( sampler_name, *InternalTextures::Get( "Normal Map" ) );
+					UploadTexture( sampler_name, *BuiltinTextures::Get( "Normal Map" ) );
 				}
 				else
 				{
-					UploadTexture( sampler_name, *InternalTextures::Get( "Missing" ) );
+					UploadTexture( sampler_name, *BuiltinTextures::Get( "Missing" ) );
 				}
 			}
 #endif // _DEBUG
