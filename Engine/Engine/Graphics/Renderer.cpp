@@ -315,9 +315,19 @@ namespace Engine
 
 			auto DrawFramebufferImGui = []( const Framebuffer& framebuffer )
 			{
-				if( ImGui::TreeNodeEx( framebuffer.name.c_str() ) )
+				if( framebuffer.IsValid() && ImGui::TreeNodeEx( framebuffer.name.c_str() ) )
 				{
 					ImGuiDrawer::Draw( framebuffer );
+					ImGui::TreePop();
+				}
+			};
+
+			auto DrawCustomFramebufferImGui = []( const Framebuffer& custom_framebuffer )
+			{
+				const auto name = custom_framebuffer.name.c_str();
+				if( custom_framebuffer.IsValid() && ImGui::TreeNodeEx( name, ImGuiTreeNodeFlags_None, "[Custom] %s", name ) )
+				{
+					ImGuiDrawer::Draw( custom_framebuffer );
 					ImGui::TreePop();
 				}
 			};
@@ -328,7 +338,7 @@ namespace Engine
 			DrawFramebufferImGui( framebuffer_final );
 
 			for( auto& custom_framebuffer : framebuffer_custom_array )
-				DrawFramebufferImGui( custom_framebuffer );
+				DrawCustomFramebufferImGui( custom_framebuffer );
 		}
 
 		ImGui::End();
