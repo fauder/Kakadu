@@ -4,6 +4,7 @@
 #include "InternalShaders.h"
 #include "InternalTextures.h"
 #include "Core/ImGuiDrawer.hpp"
+#include "Primitive/Primitive_Quad_FullScreen.h"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -59,7 +60,7 @@ namespace Engine
 		else
 			CONSOLE_ERROR( "Renderer: Number of custom framebuffers requested exceeds the max. available limit." );
 
-		Engine::Texture::ToggleGammaCorrection( gamma_correction_is_enabled );
+		Texture::ToggleGammaCorrection( gamma_correction_is_enabled );
 
 		DefaultFramebuffer::Instance(); // Initialize.
 		
@@ -74,6 +75,11 @@ namespace Engine
 
 		InitializeBuiltinQueues();
 		InitializeBuiltinPasses();
+
+		InitializeInternalMeshes();
+		InitializeInternalShaders();
+		InitializeInternalMaterials();
+		InitializeInternalRenderables();
 	}
 
 	Renderer::~Renderer()
@@ -170,9 +176,10 @@ namespace Engine
 									}
 								}
 							}
-								break;
+							break;
 
 							default: // "Regular" passes:
+							{
 								for( const auto& [ shader, dont_care ] : queue.shaders_in_flight )
 								{
 									shader->Bind();
@@ -198,7 +205,8 @@ namespace Engine
 										}
 									}
 								}
-								break;
+							}
+							break;
 						}
 					}
 				}
@@ -311,6 +319,10 @@ namespace Engine
 		for( auto& shader : shaders_registered )
 			ImGuiDrawer::Draw( *shader );
 
+		/* Materials: */
+		ImGuiDrawer::Draw( msaa_resolve_material, *this );
+		ImGuiDrawer::Draw( tone_mapping_material, *this );
+
 		/* Uniforms (Renderer-scope): */
 		ImGuiDrawer::Draw( uniform_buffer_management_intrinsic, "Shader Intrinsics" );
 		ImGuiDrawer::Draw( uniform_buffer_management_global,	"Shader Globals" );
@@ -330,22 +342,22 @@ namespace Engine
 			framebuffer_shadow_map_light_directional.Resize( new_width_in_pixels, new_height_in_pixels );
 		else // i.e, the first time the framebuffer is created:
 		{
-			framebuffer_shadow_map_light_directional = Engine::Framebuffer( Framebuffer::Description
-																			{
-																				.name = "Shadow Map FB - Dir. Light",
+			framebuffer_shadow_map_light_directional = Framebuffer( Framebuffer::Description
+																	{
+																		.name = "Shadow Map FB - Dir. Light",
 
-																				.width_in_pixels  = new_width_in_pixels,
-																				.height_in_pixels = new_height_in_pixels,
+																		.width_in_pixels  = new_width_in_pixels,
+																		.height_in_pixels = new_height_in_pixels,
 
-																				.minification_filter  = Engine::Texture::Filtering::Nearest,
-																				.magnification_filter = Engine::Texture::Filtering::Nearest,
+																		.minification_filter  = Texture::Filtering::Nearest,
+																		.magnification_filter = Texture::Filtering::Nearest,
 
-																				/* Default wrapping = clamp to border, with border = Color4{0,0,0,0}. */
+																		/* Default wrapping = clamp to border, with border = Color4{0,0,0,0}. */
 
-																				/* Default color format = RGBA, adequate. */
+																		/* Default color format = RGBA, adequate. */
 
-																				.attachment_bits = Engine::Framebuffer::AttachmentType::Depth
-																			} );
+																		.attachment_bits = Framebuffer::AttachmentType::Depth
+																	} );
 
 		}
 
@@ -355,17 +367,17 @@ namespace Engine
 			framebuffer_main.Resize( new_width_in_pixels, new_height_in_pixels );
 		else // i.e, the first time the framebuffer is created:
 		{
-			framebuffer_main = Engine::Framebuffer( Framebuffer::Description
-													{
-														.name = "Main FB",
+			framebuffer_main = Framebuffer( Framebuffer::Description
+											{
+												.name = "Main FB",
 
-														.width_in_pixels  = new_width_in_pixels,
-														.height_in_pixels = new_height_in_pixels,
+												.width_in_pixels  = new_width_in_pixels,
+												.height_in_pixels = new_height_in_pixels,
 
-														.color_format    = framebuffer_main_color_format,
-														.attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined,
-														.msaa            = MSAA( framebuffer_main_msaa_sample_count )
-													} );
+												.color_format    = framebuffer_main_color_format,
+												.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
+												.msaa            = MSAA( framebuffer_main_msaa_sample_count )
+											} );
 		}
 
 		/* Post-processing: */
@@ -374,16 +386,16 @@ namespace Engine
 		else // i.e, the first time the framebuffer is created:
 		{
 			/* Same parameters as the main FBO. */
-			framebuffer_postprocessing = Engine::Framebuffer( Framebuffer::Description
-															  {
-																  .name = "Post-processing FB",
+			framebuffer_postprocessing = Framebuffer( Framebuffer::Description
+													  {
+														  .name = "Post-processing FB",
 
-																  .width_in_pixels  = new_width_in_pixels,
-																  .height_in_pixels = new_height_in_pixels,
+														  .width_in_pixels  = new_width_in_pixels,
+														  .height_in_pixels = new_height_in_pixels,
 
-																  .color_format    = framebuffer_main_color_format,
-																  .attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
-															  } );
+														  .color_format    = framebuffer_main_color_format,
+														  .attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
+													  } );
 		}
 
 		/* Editor: */
@@ -391,16 +403,16 @@ namespace Engine
 			framebuffer_final.Resize( new_width_in_pixels, new_height_in_pixels );
 		else // i.e, the first time the framebuffer is created:
 		{
-			framebuffer_final = Engine::Framebuffer( Framebuffer::Description
-													  {
-														  .name = "Editor FB",
+			framebuffer_final = Framebuffer( Framebuffer::Description
+											 {
+												 .name = "Editor FB",
 
-														  .width_in_pixels  = new_width_in_pixels,
-														  .height_in_pixels = new_height_in_pixels,
+												 .width_in_pixels  = new_width_in_pixels,
+												 .height_in_pixels = new_height_in_pixels,
 
-														  .color_format    = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
-														  .attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined // Some post-processing fx may need depth.
-													  } );
+												 .color_format    = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
+												 .attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined // Some post-processing fx may need depth.
+											 } );
 		}
 
 		// TODO: Create a SizeInfo struct to store absolute size vs relative sizes (multipliers). For example, a rear-view mirror framebuffer may have half-resolution.
@@ -417,9 +429,23 @@ namespace Engine
 					custom_framebuffer.IsValid() )
 					custom_framebuffer.Resize( new_width_in_pixels, new_height_in_pixels );
 				else // i.e, the first time the framebuffer is created:
-					custom_framebuffer = Engine::Framebuffer( *description );
+				{
+					if( description->width_in_pixels == 0 || description->height_in_pixels == 0 )
+					{
+						auto copy             = *description;
+						copy.width_in_pixels  = new_width_in_pixels;
+						copy.height_in_pixels = new_height_in_pixels;
+
+						custom_framebuffer = Engine::Framebuffer( copy );
+					}
+					else
+						custom_framebuffer = Engine::Framebuffer( *description );
+				}
 			}
 		}
+
+		msaa_resolve_material.SetTexture( "uniform_texture_slot", &framebuffer_main.ColorAttachment() );
+		tone_mapping_material.SetTexture( "uniform_texture_slot", &framebuffer_postprocessing.ColorAttachment() );
 	}
 
 	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
@@ -920,7 +946,7 @@ namespace Engine
 					  .name                  = "Geometry",
 					  .render_state_override = RenderState
 					  {
-						  .sorting_mode = Engine::SortingMode::FrontToBack
+						  .sorting_mode = SortingMode::FrontToBack
 					  }
 				  } );
 
@@ -934,14 +960,14 @@ namespace Engine
 
 						  .stencil_test_enable = true,
 
-						  .sorting_mode = Engine::SortingMode::FrontToBack,
+						  .sorting_mode = SortingMode::FrontToBack,
 
 						  .stencil_write_mask                            = 0xFF,
-						  .stencil_comparison_function                   = Engine::ComparisonFunction::Always,
+						  .stencil_comparison_function                   = ComparisonFunction::Always,
 						  .stencil_ref                                   = 0x01,
-						  .stencil_test_response_stencil_fail            = Engine::StencilTestResponse::Keep,
-						  .stencil_test_response_stencil_pass_depth_fail = Engine::StencilTestResponse::Keep,
-						  .stencil_test_response_both_pass               = Engine::StencilTestResponse::Replace
+						  .stencil_test_response_stencil_fail            = StencilTestResponse::Keep,
+						  .stencil_test_response_stencil_pass_depth_fail = StencilTestResponse::Keep,
+						  .stencil_test_response_both_pass               = StencilTestResponse::Replace
 					  }
 				  } );
 
@@ -955,10 +981,10 @@ namespace Engine
 
 						  .sorting_mode = Engine::SortingMode::BackToFront,
 
-						  .blending_source_color_factor      = Engine::BlendingFactor::SourceAlpha,
-						  .blending_destination_color_factor = Engine::BlendingFactor::OneMinusSourceAlpha,
-						  .blending_source_alpha_factor      = Engine::BlendingFactor::SourceAlpha,
-						  .blending_destination_alpha_factor = Engine::BlendingFactor::OneMinusSourceAlpha
+						  .blending_source_color_factor      = BlendingFactor::SourceAlpha,
+						  .blending_destination_color_factor = BlendingFactor::OneMinusSourceAlpha,
+						  .blending_source_alpha_factor      = BlendingFactor::SourceAlpha,
+						  .blending_destination_alpha_factor = BlendingFactor::OneMinusSourceAlpha
 					  }
 				  } );
 
@@ -1016,7 +1042,7 @@ namespace Engine
 					 .projection_matrix  = Matrix4x4{},
 					 .render_state       = RenderState
 					 {
-						 .sorting_mode = Engine::SortingMode::FrontToBack,
+						 .sorting_mode = SortingMode::FrontToBack,
 					 },
 					 .render_state_override_is_allowed = false,
 					 .clear_framebuffer                = true
@@ -1045,7 +1071,7 @@ namespace Engine
 
 
 						 .stencil_write_mask          = 0x00, // Disable writes; This pass only needs to READ the stencil buffer, to figure out where NOT to render.
-						 .stencil_comparison_function = Engine::ComparisonFunction::NotEqual, // Render everywhere that's not the actual mesh, i.e., the border.
+						 .stencil_comparison_function = ComparisonFunction::NotEqual, // Render everywhere that's not the actual mesh, i.e., the border.
 						 .stencil_ref                 = 0x01
 					 },
 					 .render_state_override_is_allowed = false,
@@ -1248,7 +1274,7 @@ namespace Engine
 		// TODO: AABBs.
 		// TODO: Render the projection volume as a wireframe cube. More generally, create a debug-render pass, with wire-frame rendering.
 		// Use ortho. projection for directional light. For now, use big values for the projection volume:
-		const auto projection_matrix = Engine::Matrix::OrthographicProjection( -50.0f, +50.0f, -50.0f, +50.0f, 1.0f, 101.0f );
+		const auto projection_matrix = Matrix::OrthographicProjection( -50.0f, +50.0f, -50.0f, +50.0f, 1.0f, 101.0f );
 
 		auto& shadow_mapping_pass = render_pass_map[ PASS_ID_SHADOW_MAPPING ];
 		
@@ -1302,6 +1328,43 @@ namespace Engine
 			else
 				logger.Error( "\"" + shader->name + "\" shader's source files are modified but it could not be recompiled successfully." );
 		}
+	}
+
+	void Renderer::InitializeInternalMeshes()
+	{
+		full_screen_quad_mesh = Mesh( Primitive::NonIndexed::Quad_FullScreen::Positions,
+									  "[Renderer] Quad (FullScreen)",
+									  { /* No normals. */ },
+									  Primitive::NonIndexed::Quad_FullScreen::UVs,
+									  { /* No indices. */ } );
+	}
+
+	void Renderer::InitializeInternalShaders()
+	{
+		shader_msaa_resolve = InternalShaders::Get( "MSAA Resolve" );
+		shader_tone_mapping = InternalShaders::Get( "Tone Mapping" );
+	}
+
+	void Renderer::InitializeInternalMaterials()
+	{
+		// TODO: Handle No MSAA case.
+
+		msaa_resolve_material = Material( "[Renderer] MSAA Resolve", shader_msaa_resolve );
+		msaa_resolve_material.Set( "uniform_sample_count", ( int )framebuffer_main_msaa_sample_count );
+
+		// TODO: Handle no tone mapping case.
+
+		tone_mapping_material = Material( "[Renderer] Tone Mapping", shader_tone_mapping );
+		tone_mapping_material.Set( "uniform_exposure", 1.0f );
+	}
+
+	void Renderer::InitializeInternalRenderables()
+	{
+		msaa_resolve_renderable = Renderable( &full_screen_quad_mesh, &msaa_resolve_material );
+		AddRenderable( &msaa_resolve_renderable, QUEUE_ID_POSTPROCESSING );
+
+		tone_mapping_renderable = Renderable( &full_screen_quad_mesh, &tone_mapping_material );
+		AddRenderable( &tone_mapping_renderable, QUEUE_ID_FINAL );
 	}
 
 	std::vector< RenderQueue >& Renderer::RenderQueuesContaining( const Renderable* renderable_of_interest )

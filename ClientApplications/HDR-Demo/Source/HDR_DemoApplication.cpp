@@ -14,7 +14,6 @@
 #include "Engine/Graphics/InternalShaders.h"
 #include "Engine/Graphics/InternalTextures.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
-#include "Engine/Graphics/Primitive/Primitive_Quad_FullScreen.h"
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
 #include "Engine/Math/Math.hpp"
 #include "Engine/Math/VectorConversion.hpp"
@@ -74,13 +73,11 @@ void HDR_DemoApplication::Initialize()
 																					   } );
 
 /* Shaders: */
-	shader_blinn_phong           = Engine::InternalShaders::Get( "Blinn-Phong" );
+	shader_blinn_phong = Engine::InternalShaders::Get( "Blinn-Phong" );
 	
 	shader_basic_color_instanced = Engine::InternalShaders::Get( "Color (Instanced)" );
 	
-	shader_texture_blit          = Engine::InternalShaders::Get( "Texture Blit" );
-	shader_msaa_resolve          = Engine::InternalShaders::Get( "MSAA Resolve" );
-	shader_tone_mapping          = Engine::InternalShaders::Get( "Tone Mapping" );
+	shader_texture_blit = Engine::InternalShaders::Get( "Texture Blit" );
 
 /* Instance Data: */
 	ResetInstanceData();
@@ -119,12 +116,6 @@ void HDR_DemoApplication::Initialize()
 									   Engine::Primitive::Indexed::Cube::UVs,
 									   Engine::Primitive::Indexed::Cube::Indices,
 									   cube_tangents_inverted );
-
-	quad_mesh_fullscreen = Engine::Mesh( Engine::Primitive::NonIndexed::Quad_FullScreen::Positions,
-										 "Quad (FullScreen)",
-										 { /* No normals. */ },
-										 Engine::Primitive::NonIndexed::Quad_FullScreen::UVs,
-										 { /* No indices. */ } );
 
 	const auto sphere_mesh = Engine::Mesh( Engine::Primitive::Indexed::Sphere::Positions(),
 										   "Sphere",
@@ -165,14 +156,6 @@ void HDR_DemoApplication::Initialize()
 
 	light_sources_renderable = Engine::Renderable( &light_source_sphere_mesh, &light_source_material, nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
 	renderer.AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
-
-	offscreen_quad_msaa_resolve_renderable = Engine::Renderable( &quad_mesh_fullscreen, &msaa_resolve_material );
-	renderer.AddRenderable( &offscreen_quad_msaa_resolve_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
-
-	offscreen_quad_tone_mapping_renderable = Engine::Renderable( &quad_mesh_fullscreen, &tone_mapping_material );
-	renderer.AddRenderable( &offscreen_quad_tone_mapping_renderable, Engine::Renderer::QUEUE_ID_FINAL );
-
-	// TODO: Do not create an explicit (or rather, Application-visible) Renderable for skybox; Make it Renderer-internal.
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
 	renderer.TogglePass( Engine::Renderer::PASS_ID_OUTLINE, false );
@@ -267,8 +250,6 @@ void HDR_DemoApplication::RenderImGui()
 
 	Engine::ImGuiDrawer::Draw( wood_material, renderer );
 	Engine::ImGuiDrawer::Draw( light_source_material, renderer );
-	Engine::ImGuiDrawer::Draw( msaa_resolve_material, renderer );
-	Engine::ImGuiDrawer::Draw( tone_mapping_material, renderer );
 
 	if( ImGui::Begin( ICON_FA_LIGHTBULB " Lighting", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
@@ -459,11 +440,6 @@ void HDR_DemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, 
 	renderer.OnFramebufferResize( width_new_pixels, height_new_pixels );
 
 	RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
-
-	// TODO: Check the TODO for these lines of code in Sandbox.
-
-	msaa_resolve_material.SetTexture( "uniform_texture_slot", &renderer.MainFramebuffer().ColorAttachment() );
-	tone_mapping_material.SetTexture( "uniform_texture_slot", &renderer.PostProcessingFramebuffer().ColorAttachment() );
 }
 
 void HDR_DemoApplication::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
@@ -571,20 +547,6 @@ void HDR_DemoApplication::ResetMaterialData()
 	wood_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
 	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );
-
-	/*if( const auto& main_offscreen_framebuffer = renderer.OffscreenFramebuffer( 0 );
-		main_offscreen_framebuffer.IsMultiSampled() )*/
-	{
-		msaa_resolve_material = Engine::Material( "MSAA Resolve", shader_msaa_resolve );
-		//msaa_resolve_material.Set( "uniform_sample_count", main_offscreen_framebuffer.SampleCount() );
-		// TODO: Get rid of the hard-coding here.
-		msaa_resolve_material.Set( "uniform_sample_count", 4 );
-
-		tone_mapping_material = Engine::Material( "Tone Mapping", shader_tone_mapping );
-		tone_mapping_material.Set( "uniform_exposure", 1.0f );
-	}
-	/*else
-		msaa_resolve_material = Engine::Material( "MSAA Resolve", shader_fullscreen_blit );*/
 
 	tunnel_surface_data =
 	{

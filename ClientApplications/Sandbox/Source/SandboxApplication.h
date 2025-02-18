@@ -108,9 +108,6 @@ private:
 	const static constexpr int WINDOW_COUNT = 5;
 	std::array< Engine::Renderable, WINDOW_COUNT > window_renderable_array;
 
-	Engine::Renderable msaa_resolve_renderable;
-	Engine::Renderable tone_mapping_renderable;
-
 	Engine::Renderable mirror_quad_renderable;
 
 	static constexpr Engine::RenderPass::ID RENDER_PASS_ID_LIGHTING_REAR_VIEW = Engine::RenderPass::ID( ( unsigned int )Engine::Renderer::PASS_ID_LIGHTING - 1 );
@@ -155,15 +152,6 @@ private:
 
 	Engine::Shader* shader_texture_blit;
 
-	Engine::Shader* shader_msaa_resolve;
-	Engine::Shader* shader_tone_mapping;
-
-	Engine::Shader* shader_postprocess_grayscale;
-
-	Engine::Shader* shader_postprocess_generic;
-
-	Engine::Shader* shader_normal_visualization;
-
 /* Models: */
 	ModelInfo test_model_info;
 	ModelInfo meteorite_model_info;
@@ -182,9 +170,6 @@ private:
 	Engine::Material window_material;
 
 	Engine::Material outline_material;
-
-	Engine::Material msaa_resolve_material;
-	Engine::Material tone_mapping_material;
 
 	Engine::Material mirror_quad_material;
 

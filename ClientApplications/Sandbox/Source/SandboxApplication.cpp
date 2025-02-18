@@ -149,11 +149,6 @@ void SandboxApplication::Initialize()
 	shader_basic_textured_transparent_discard               = Engine::InternalShaders::Get( "Textured (Discard Transparent)" );
 	shader_outline                                          = Engine::InternalShaders::Get( "Outline" );
 	shader_texture_blit                                     = Engine::InternalShaders::Get( "Texture Blit" );
-	shader_msaa_resolve                                     = Engine::InternalShaders::Get( "MSAA Resolve" );
-	shader_tone_mapping                                     = Engine::InternalShaders::Get( "Tone Mapping" );
-	shader_postprocess_grayscale                            = Engine::InternalShaders::Get( "Post-process Grayscale" );
-	shader_postprocess_generic                              = Engine::InternalShaders::Get( "Post-process Generic" );
-	shader_normal_visualization                             = Engine::InternalShaders::Get( "Normal Visualization" );
 
 /* Instancing Data: */
 	ResetInstanceData();
@@ -377,12 +372,6 @@ void SandboxApplication::Initialize()
 		window_renderable_array[ i ] = Engine::Renderable( &quad_mesh_uvs_only, &window_material, &window_transform_array[ i ] );
 		renderer.AddRenderable( &window_renderable_array[ i ], Engine::Renderer::QUEUE_ID_TRANSPARENT );
 	}
-
-	msaa_resolve_renderable = Engine::Renderable( &quad_mesh_fullscreen, &msaa_resolve_material );
-	renderer.AddRenderable( &msaa_resolve_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
-
-	tone_mapping_renderable = Engine::Renderable( &quad_mesh_fullscreen, &tone_mapping_material );
-	renderer.AddRenderable( &tone_mapping_renderable, Engine::Renderer::QUEUE_ID_FINAL );
 
 	mirror_quad_renderable = Engine::Renderable( &quad_mesh_mirror, &mirror_quad_material );
 	renderer.AddRenderable( &mirror_quad_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
@@ -699,8 +688,6 @@ void SandboxApplication::RenderImGui()
 	for( auto& test_material : meteorite_model_info.model_instance.Materials() )
 		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), renderer );
 	Engine::ImGuiDrawer::Draw( outline_material, renderer );
-	Engine::ImGuiDrawer::Draw( msaa_resolve_material, renderer );
-	Engine::ImGuiDrawer::Draw( tone_mapping_material, renderer );
 	Engine::ImGuiDrawer::Draw( mirror_quad_material, renderer );
 
 	if( ImGui::Begin( "Instance Data" ) )
@@ -974,8 +961,6 @@ void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, c
 	
 	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
 
-	msaa_resolve_material.SetTexture( "uniform_texture_slot", &renderer.MainFramebuffer().ColorAttachment() );
-	tone_mapping_material.SetTexture( "uniform_texture_slot", &renderer.PostProcessingFramebuffer().ColorAttachment() );
 	mirror_quad_material.SetTexture( "uniform_texture_slot", &renderer.CustomFramebuffer( 0 ).ColorAttachment() );
 
 	cube_reflected_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
@@ -1134,20 +1119,6 @@ void SandboxApplication::ResetMaterialData()
 	outline_material = Engine::Material( "Outline", shader_outline );
 
 	mirror_quad_material = Engine::Material( "Rear-view Mirror", shader_texture_blit );
-
-	/*if( const auto& main_offscreen_framebuffer = renderer.OffscreenFramebuffer( 0 );
-		main_offscreen_framebuffer.IsMultiSampled() )*/
-	{
-		msaa_resolve_material = Engine::Material( "MSAA Resolve", shader_msaa_resolve );
-		msaa_resolve_material.Set( "uniform_sample_count", 4 );
-		//msaa_resolve_material.Set( "uniform_sample_count", main_offscreen_framebuffer.SampleCount() );
-		// TODO: Get rid of the hard-coding here.
-
-		tone_mapping_material = Engine::Material( "Tone Mapping", shader_tone_mapping );
-		tone_mapping_material.Set( "uniform_exposure", 1.0f );
-	}
-	/*else
-		msaa_resolve_material = Engine::Material( "Offscreen Quad", shader_fullscreen_blit );*/
 
 	ground_quad_surface_data = wall_surface_data = cube_surface_data =
 	{

@@ -6,7 +6,6 @@
 // std Includes.
 #include <optional>
 #include <set>
-#include <vector>
 
 namespace Engine
 {
@@ -42,6 +41,6 @@ namespace Engine
 		bool is_enabled                       = true;
 		bool clear_framebuffer                = true;
 		
-		// 5 bytes of padding.
+		/* 5 bytes of padding. */
 	};
 }
