@@ -40,4 +40,7 @@ namespace Engine::ImGuiUtility
 	void BeginGroupPanel( const char* name = nullptr, bool* is_enabled = nullptr, const ImVec2& size = ImVec2(0.0f, 0.0f));
 	/* https://github.com/ocornut/imgui/issues/1496#issuecomment-655048353 */
 	void EndGroupPanel( bool* is_enabled = nullptr );
+
+	void BeginDisabledButInteractable();
+	void EndDisabledButInteractable();
 }

@@ -235,4 +235,14 @@ namespace Engine::ImGuiUtility
 
         ImGui::EndGroup();
     }
+
+    void BeginDisabledButInteractable()
+    {
+         ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
+    }
+
+    void EndDisabledButInteractable()
+    {
+        ImGui::PopStyleColor();
+    }
 }
