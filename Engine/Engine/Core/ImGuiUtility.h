@@ -28,6 +28,8 @@ namespace Engine::ImGuiUtility
 	void CenterItem( const int item_width );
 	void CenterCheckbox();
 
+	void ImmutableCheckbox( const char* text, const bool is_enabled );
+
 	/* Only works with same width items. */
 	void SetNextItemRightAligned( const int item_no_starting_from_right, const float item_width );
 	

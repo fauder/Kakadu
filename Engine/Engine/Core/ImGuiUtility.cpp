@@ -67,6 +67,14 @@ namespace Engine::ImGuiUtility
         ImGui::SetCursorPosX( ImGui::GetCursorPosX() + ( available_width - checkbox_width ) * 0.5f );
     }
 
+    void ImmutableCheckbox( const char* text, const bool is_enabled )
+    {
+        ImGui::BeginDisabled();
+        bool enabled = is_enabled;
+        ImGui::Checkbox( text, &enabled );
+        ImGui::EndDisabled();
+    }
+
     /* Only works with same width items. */
     void SetNextItemRightAligned( const int item_no_starting_from_right, const float item_width )
     {
