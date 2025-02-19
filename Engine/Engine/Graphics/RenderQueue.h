@@ -11,21 +11,15 @@ namespace Engine
 
 	struct RenderQueue
 	{
-		friend class Renderer;
-
 		using ReferenceCount = unsigned int;
 
-	public:
 		enum class ID : std::uint16_t {};
-
-	public:
-		inline const std::string&	Name()				const { return name; }
-		inline const RenderState&	GetRenderState()	const { return render_state_override; }
-		inline bool					IsEnabled()			const { return is_enabled; }
 
 		std::string name = "<unnamed-queue>";
 
 		RenderState render_state_override;
+
+		/* 4 bytes of padding. */
 
 		std::vector< Renderable* > renderable_list;
 
@@ -34,6 +28,9 @@ namespace Engine
 
 		bool is_enabled = true;
 
-		// 7 bytes of padding.
+		/* 7 bytes of padding. */
+
+	private:
+		friend class Renderer;
 	};
 }

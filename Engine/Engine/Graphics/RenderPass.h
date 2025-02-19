@@ -1,6 +1,7 @@
 #pragma once
 
 // Engine Includes.
+#include "Framebuffer.h"
 #include "RenderQueue.h"
 
 // std Includes.
@@ -14,12 +15,7 @@ namespace Engine
 
 	struct RenderPass
 	{
-		friend class Renderer;
-
-	public:
 		enum class ID : std::uint8_t {};
-
-	public:
 
 		std::string name = "<unnamed-pass>";
 
@@ -41,6 +37,9 @@ namespace Engine
 		bool is_enabled                       = true;
 		bool clear_framebuffer                = true;
 		
-		/* 5 bytes of padding. */
+		/* 1 byte padding. */
+
+	private:
+		friend class Renderer;
 	};
 }
