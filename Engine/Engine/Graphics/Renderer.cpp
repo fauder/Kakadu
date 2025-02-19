@@ -618,7 +618,7 @@ namespace Engine
 	{
 		for( auto& queue_id : pass_to_query.queue_id_set )
 			if( const auto& queue = render_queue_map.at( queue_id );
-				QueueHasContentToRender( queue ) )
+				queue.is_enabled && QueueHasContentToRender( queue ) )
 				return true;
 
 		return false;
