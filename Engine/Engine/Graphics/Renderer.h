@@ -63,14 +63,18 @@ namespace Engine
 		 */
 
 		RenderState& GetRenderState( const RenderPass::ID pass_id_to_fetch );
+
 		void AddPass( const RenderPass::ID new_pass_id, RenderPass&& new_pass );
 		void RemovePass( const RenderPass::ID pass_id_to_remove );
 		void TogglePass( const RenderPass::ID pass_id_to_toggle, const bool enable );
+
 		void AddQueue( const RenderQueue::ID new_queue_id, RenderQueue&& new_queue );
 		void RemoveQueue( const RenderQueue::ID queue_id_to_remove );
+		void ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable );
+
 		void AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to );
 		void RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from );
-		void ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable );
+		
 		void SetFinalPassToUseFinalFramebuffer();
 		void SetFinalPassToUseDefaultFramebuffer();
 
@@ -257,18 +261,39 @@ namespace Engine
 
 		static constexpr RenderPass::ID PASS_ID_SHADOW_MAPPING = RenderPass::ID( 10u );
 		static constexpr RenderPass::ID PASS_ID_LIGHTING       = RenderPass::ID( 50u );
-		static constexpr RenderPass::ID PASS_ID_POSTPROCESSING = RenderPass::ID( 220u );
-		static constexpr RenderPass::ID PASS_ID_FINAL          = RenderPass::ID( 255u );
+		static constexpr RenderPass::ID PASS_ID_MSAA_RESOLVE   = RenderPass::ID( 220u );
+		static constexpr RenderPass::ID PASS_ID_POSTPROCESSING = RenderPass::ID( ( std::uint8_t )PASS_ID_MSAA_RESOLVE + 1u );
+		static constexpr RenderPass::ID PASS_ID_FINAL          = RenderPass::ID( std::numeric_limits< std::uint8_t >::max() );
+
+		static constexpr std::array< RenderPass::ID, 5 > BUILTIN_PASS_ID_LIST =
+		{
+			PASS_ID_SHADOW_MAPPING,
+			PASS_ID_LIGHTING,
+			PASS_ID_MSAA_RESOLVE,
+			PASS_ID_POSTPROCESSING,
+			PASS_ID_FINAL
+		};
 
 		/* Built-in Queue IDs: */
 
 		/* Using Unity defaults: Background is 1000, Geometry is 2000, AlphaTest is 2450, Transparent is 3000 and Overlay is 4000 */
 
-		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY          = RenderQueue::ID(  2'000u );
-		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT       = RenderQueue::ID(  2'450u );
-		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX            = RenderQueue::ID(  2'900u );
-		static constexpr RenderQueue::ID QUEUE_ID_POSTPROCESSING    = RenderQueue::ID(  3'000u );
-		static constexpr RenderQueue::ID QUEUE_ID_FINAL             = RenderQueue::ID( 10'000u );
+		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY              = RenderQueue::ID(  2'000u );
+		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT           = RenderQueue::ID(  2'450u );
+		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX                = RenderQueue::ID(  2'900u );
+		static constexpr RenderQueue::ID QUEUE_ID_POSTPROCESSING        = RenderQueue::ID(  3'000u );
+		static constexpr RenderQueue::ID QUEUE_ID_MSAA_RESOLVE          = RenderQueue::ID( 10'000u );
+		static constexpr RenderQueue::ID QUEUE_ID_FINAL	                = RenderQueue::ID( ( std::uint8_t )QUEUE_ID_MSAA_RESOLVE + 1u );
+
+		static constexpr std::array< RenderQueue::ID, 6 > BUILTIN_QUEUE_ID_LIST =
+		{
+			QUEUE_ID_GEOMETRY,
+			QUEUE_ID_TRANSPARENT,
+			QUEUE_ID_SKYBOX,
+			QUEUE_ID_POSTPROCESSING,
+			QUEUE_ID_MSAA_RESOLVE,
+			QUEUE_ID_FINAL
+		};
 
 	private:
 

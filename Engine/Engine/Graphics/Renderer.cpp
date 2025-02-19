@@ -552,7 +552,7 @@ namespace Engine
 
 	void Renderer::RemovePass( const RenderPass::ID pass_id_to_remove )
 	{
-		if( pass_id_to_remove == PASS_ID_LIGHTING || pass_id_to_remove == PASS_ID_SHADOW_MAPPING || pass_id_to_remove == PASS_ID_POSTPROCESSING )
+		if( std::find( BUILTIN_PASS_ID_LIST.cbegin(), BUILTIN_PASS_ID_LIST.cend(), pass_id_to_remove ) != BUILTIN_PASS_ID_LIST.cend() )
 		{
 			CONSOLE_ERROR( "Removing a built-in pass is not allowed! Please use TogglePass( id, false ) to disable unwanted passes instead." );
 			return;
@@ -592,8 +592,7 @@ namespace Engine
 
 	void Renderer::RemoveQueue( const RenderQueue::ID queue_id_to_remove )
 	{
-		if( queue_id_to_remove == QUEUE_ID_GEOMETRY || queue_id_to_remove == QUEUE_ID_TRANSPARENT || 
-			queue_id_to_remove == QUEUE_ID_SKYBOX   || queue_id_to_remove == QUEUE_ID_POSTPROCESSING )
+		if( std::find( BUILTIN_QUEUE_ID_LIST.cbegin(), BUILTIN_QUEUE_ID_LIST.cend(), queue_id_to_remove ) != BUILTIN_QUEUE_ID_LIST.cend() )
 		{
 			CONSOLE_ERROR( "Removing a built-in queue is not allowed! Please use ToggleQueue( id, false ) to disable unwanted passes instead." );
 			return;
@@ -608,6 +607,21 @@ namespace Engine
 	#else
 		render_queue_map.erase( queue_id_to_remove );
 #endif // _DEBUG
+	}
+
+	void Renderer::ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable )
+	{
+	#ifdef _DEBUG
+		if( auto iterator = render_queue_map.find( queue_id_to_toggle );
+			iterator != render_queue_map.cend() )
+		{
+			iterator->second.is_enabled = enable;
+		}
+		else
+			CONSOLE_ERROR( "Attempting to toggle a non-existing queue!" );
+	#else
+		render_queue_map[ queue_id_to_toggle ].is_enabled = enable;
+	#endif
 	}
 
 	void Renderer::AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to )
@@ -626,21 +640,6 @@ namespace Engine
 
 		if( not render_pass_map[ pass_to_remove_from ].queue_id_set.erase( queue_id_to_remove ) )
 			CONSOLE_ERROR( "Attempting to add a non-existing queue from a pass!" );
-	}
-
-	void Renderer::ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable )
-	{
-#ifdef _DEBUG
-		if( auto iterator = render_queue_map.find( queue_id_to_toggle );
-			iterator != render_queue_map.cend() )
-		{
-			iterator->second.is_enabled = enable;
-		}
-		else
-			CONSOLE_ERROR( "Attempting to toggle a non-existing queue!" );
-#else
-		render_queue_map[ queue_id_to_toggle ].is_enabled = enable;
-#endif
 	}
 
 	void Renderer::SetFinalPassToUseFinalFramebuffer()
@@ -1004,6 +1003,22 @@ namespace Engine
 						 .depth_comparison_function = ComparisonFunction::LessOrEqual
 					  }
 				  } );
+
+		AddQueue( QUEUE_ID_MSAA_RESOLVE,
+				  RenderQueue
+				  {
+					  .name = "MSAA Resolve",
+					  .render_state_override = RenderState
+					  {
+						  .face_culling_enable = false,
+
+						  .depth_test_enable  = false,
+						  .depth_write_enable = false,
+
+						  .sorting_mode = SortingMode::None // Preserve insertion order.
+					  }
+				  } );
+
 		AddQueue( QUEUE_ID_POSTPROCESSING,
 				  RenderQueue
 				  {
@@ -1053,7 +1068,6 @@ namespace Engine
 					 .clear_framebuffer                = true
 				 } );
 
-
 		AddPass( PASS_ID_LIGHTING,
 				 RenderPass
 				 {
@@ -1061,6 +1075,14 @@ namespace Engine
 					 .target_framebuffer = &framebuffer_main,
 					 .queue_id_set       = { QUEUE_ID_GEOMETRY, QUEUE_ID_TRANSPARENT, QUEUE_ID_SKYBOX },
 					 .clear_framebuffer  = true,
+				 } );
+
+		AddPass( PASS_ID_MSAA_RESOLVE,
+				 RenderPass
+				 {
+					 .name               = "MSAA Resolve",
+					 .target_framebuffer = &framebuffer_postprocessing,
+					 .queue_id_set       = { QUEUE_ID_MSAA_RESOLVE }
 				 } );
 
 		AddPass( PASS_ID_POSTPROCESSING,
@@ -1346,7 +1368,7 @@ namespace Engine
 	void Renderer::InitializeInternalRenderables()
 	{
 		msaa_resolve_renderable = Renderable( &full_screen_quad_mesh, &msaa_resolve_material );
-		AddRenderable( &msaa_resolve_renderable, QUEUE_ID_POSTPROCESSING );
+		AddRenderable( &msaa_resolve_renderable, QUEUE_ID_MSAA_RESOLVE );
 
 		tone_mapping_renderable = Renderable( &full_screen_quad_mesh, &tone_mapping_material );
 		AddRenderable( &tone_mapping_renderable, QUEUE_ID_FINAL );
