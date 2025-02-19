@@ -245,4 +245,39 @@ namespace Engine::ImGuiUtility
     {
         ImGui::PopStyleColor();
     }
+    void DrawRoundedRectText( const char* text, const ImVec4& color, const float thickness, const float rounding )
+    {
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+        const auto& style = ImGui::GetStyle();
+
+        const ImVec2 pos       = ImGui::GetCursorScreenPos();
+        const ImVec2 text_size = ImGui::CalcTextSize( text );
+        const ImVec2 size      = { 2.2f * style.ItemInnerSpacing.x + text_size.x, 1.1f * text_size.y };
+        const ImU32  color_u32 = ImColor( color );
+
+        draw_list->AddRect( pos, pos + size, color_u32, rounding, ImDrawFlags_None, thickness );
+        ImGui::PushStyleColor( ImGuiCol_Text, color );
+        ImGui::SetCursorScreenPos( pos + ImVec2{ 1.1f * style.ItemInnerSpacing.x, 0.0f } );
+        ImGui::TextUnformatted( text );
+        ImGui::PopStyleColor();
+    }
+
+	void DrawRainbowRectText( const char* text, const ImVec4& text_color )
+    {
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+        const auto& style = ImGui::GetStyle();
+
+        const ImVec2 pos       = ImGui::GetCursorScreenPos();
+        const ImVec2 text_size = ImGui::CalcTextSize( text );
+        const ImVec2 size      = { 2.2f * style.ItemInnerSpacing.x + text_size.x, 1.1f * text_size.y };
+        const ImU32  color_u32 = ImColor( text_color );
+
+        draw_list->AddRectFilledMultiColor( pos, pos + size, IM_COL32( 0, 0, 0, 255 ), IM_COL32( 255, 0, 0, 255 ), IM_COL32( 255, 255, 0, 255 ), IM_COL32( 0, 255, 0, 255 ) );
+        ImGui::PushStyleColor( ImGuiCol_Text, color_u32 );
+        ImGui::SetCursorScreenPos( pos + ImVec2{ 1.1f * style.ItemInnerSpacing.x, 0.0f } );
+        ImGui::TextUnformatted( text );
+        ImGui::PopStyleColor();
+    }
 }

@@ -43,4 +43,7 @@ namespace Engine::ImGuiUtility
 
 	void BeginDisabledButInteractable();
 	void EndDisabledButInteractable();
+
+	void DrawRoundedRectText( const char* text, const ImVec4& color, const float thickness = 2.0f, const float rounding = 3.0f );
+	void DrawRainbowRectText( const char* text, const ImVec4& text_color = ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f } );
 }
