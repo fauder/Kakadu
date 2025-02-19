@@ -4,6 +4,7 @@
 #include "BuiltinShaders.h"
 #include "BuiltinTextures.h"
 #include "Core/ImGuiDrawer.hpp"
+#include "Core/ImGuiUtility.h"
 #include "Primitive/Primitive_Quad_FullScreen.h"
 
 // Vendor Includes.
@@ -229,8 +230,9 @@ namespace Engine
 
 			ImGui::SeparatorText( "Passes & Queues" );
 
-			if( ImGui::BeginTable( "Passes & Queues", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
+			if( ImGui::BeginTable( "Passes & Queues", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 			{
+				ImGui::TableSetupColumn( "Active" );
 				ImGui::TableSetupColumn( "Pass" );
 				ImGui::TableSetupColumn( "Target" );
 
@@ -241,12 +243,25 @@ namespace Engine
 				{
 					ImGui::TableNextColumn();
 
+					const bool pass_has_content_to_render = PassHasContentToRender( pass );
+
+					ImGuiUtility::CenterCheckbox();
+
 					ImGui::PushID( ( int )pass_id );
-					ImGui::Checkbox( "", &pass.is_enabled );
+					if( pass_has_content_to_render )
+						ImGui::Checkbox( "", &pass.is_enabled );
+					else
+					{
+						ImGui::BeginDisabled();
+						static bool ALWAYS_FALSE = false;
+						ImGui::Checkbox( "", &ALWAYS_FALSE );
+						ImGui::EndDisabled();
+					}
 					ImGui::PopID();
 
-					ImGui::SameLine();
-					if( ImGui::TreeNodeEx( pass.name.c_str(), 0, "Pass [%d]: %s", ( int )pass_id, pass.name.c_str() ) )
+					ImGui::TableNextColumn();
+
+					if( ImGui::TreeNodeEx( pass.name.c_str(), 0, "Pass [%d]: %s", ( int )pass_id, pass.name.c_str()) )
 					{
 						// TODO: Display RenderState info as a collapseable header.
 						ImGui::BeginDisabled( not pass.is_enabled );
@@ -255,8 +270,23 @@ namespace Engine
 						{
 							auto& queue = render_queue_map[ queue_id ];
 
+							if( queue.renderable_list.empty() )
+							{
+								ImGui::TextDisabled( "Empty Queue [%d]: %s", ( int )queue_id, queue.name.c_str() );
+								continue;
+							}
+							const auto queue_has_content_to_render = QueueHasContentToRender( queue );
+
 							ImGui::PushID( ( int )queue_id );
-							ImGui::Checkbox( "", &queue.is_enabled );
+							if( queue_has_content_to_render )
+								ImGui::Checkbox( "", &queue.is_enabled );
+							else
+							{
+								ImGui::BeginDisabled();
+								static bool ALWAYS_FALSE = false;
+								ImGui::Checkbox( "", &ALWAYS_FALSE );
+								ImGui::EndDisabled();
+							}
 							ImGui::PopID();
 
 							ImGui::SameLine();
@@ -302,7 +332,7 @@ namespace Engine
 
 						ImGui::TreePop();
 					}
-					
+
 					ImGui::TableNextColumn();
 					ImGui::TextUnformatted( pass.target_framebuffer->Name().c_str() );
 				}
