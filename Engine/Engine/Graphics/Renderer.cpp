@@ -1396,6 +1396,9 @@ namespace Engine
 				ResetToDefaultFramebuffer();
 		}
 
+		ToggleDepthWrite( render_state_to_set.depth_write_enable );
+		SetStencilWriteMask( render_state_to_set.stencil_write_mask );
+
 		if( clear_framebuffer )
 			framebuffer_current ? framebuffer_current->Clear() : DefaultFramebuffer::Clear();
 
@@ -1421,7 +1424,6 @@ namespace Engine
 		else
 			DisableDepthTest();
 
-		ToggleDepthWrite( render_state_to_set.depth_write_enable );
 		SetDepthComparisonFunction( render_state_to_set.depth_comparison_function );
 
 		if( render_state_to_set.stencil_test_enable )
@@ -1429,7 +1431,6 @@ namespace Engine
 		else
 			DisableStencilTest();
 
-		SetStencilWriteMask( render_state_to_set.stencil_write_mask );
 		SetStencilComparisonFunction( render_state_to_set.stencil_comparison_function, render_state_to_set.stencil_ref, render_state_to_set.stencil_mask );
 		SetStencilTestResponses( render_state_to_set.stencil_test_response_stencil_fail, 
 								 render_state_to_set.stencil_test_response_stencil_pass_depth_fail, 
