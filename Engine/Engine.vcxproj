@@ -165,6 +165,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClInclude Include="Engine\Core\Assertion.h" />
     <ClInclude Include="Engine\Core\AssetDatabase.hpp" />
     <ClInclude Include="Engine\Core\BitFlags.hpp" />
+    <ClInclude Include="Engine\Core\ImGuiCustomColors.h" />
     <ClInclude Include="Engine\Core\ImGuiDrawer.hpp" />
     <ClInclude Include="Engine\Core\ImGuiLog.hpp" />
     <ClInclude Include="Engine\Core\ImGuiUtility.h" />
@@ -253,6 +254,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClCompile Include="Engine\Core\Application.cpp" />
     <ClCompile Include="Engine\Core\Blob.cpp" />
     <ClCompile Include="Engine\Core\DirtyBlob.cpp" />
+    <ClCompile Include="Engine\Core\ImGuiCustomColors.cpp" />
     <ClCompile Include="Engine\Core\ImGuiDrawer.cpp" />
     <ClCompile Include="Engine\Core\ImGuiSetup.cpp" />
     <ClCompile Include="Engine\Core\ImGuiUtility.cpp" />

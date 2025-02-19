@@ -288,6 +288,9 @@
     <ClInclude Include="Engine\Graphics\MSAA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Core\ImGuiCustomColors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\Application.cpp">
@@ -384,6 +387,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\BuiltinTextures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\ImGuiCustomColors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
