@@ -24,6 +24,10 @@ namespace Engine::ImGuiUtility
 	/* Helper to display a little (?) mark which shows a tooltip when hovered. */
 	void HelpMarker( const char* desc, const int wrap = 35.0f );
 
+	void CenterText( const char* text );
+	void CenterItem( const int item_width );
+	void CenterCheckbox();
+
 	/* Only works with same width items. */
 	void SetNextItemRightAligned( const int item_no_starting_from_right, const float item_width );
 	

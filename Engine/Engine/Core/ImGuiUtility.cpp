@@ -47,6 +47,26 @@ namespace Engine::ImGuiUtility
 		}
 	}
 
+    void CenterText( const char* text )
+    {
+        float available_width = ImGui::GetContentRegionAvail().x;
+        float text_width      = ImGui::CalcTextSize( text ).x;
+        ImGui::SetCursorPosX( ImGui::GetCursorPosX() + ( available_width - text_width ) * 0.5f );
+    }
+
+    void CenterItem( const int item_width )
+    {
+        float available_width = ImGui::GetContentRegionAvail().x;
+        ImGui::SetCursorPosX( ImGui::GetCursorPosX() + ( available_width - item_width ) * 0.5f );
+    }
+
+    void CenterCheckbox()
+    {
+        float available_width = ImGui::GetContentRegionAvail().x;
+        float checkbox_width  = ImGui::GetFrameHeight(); // Height == width for the checkbox.
+        ImGui::SetCursorPosX( ImGui::GetCursorPosX() + ( available_width - checkbox_width ) * 0.5f );
+    }
+
     /* Only works with same width items. */
     void SetNextItemRightAligned( const int item_no_starting_from_right, const float item_width )
     {
