@@ -2,6 +2,7 @@
 
 // Engine Includes.
 #include "AssetDatabase.hpp"
+#include "ImGuiCustomColors.h"
 #include "ImGuiDrawer.hpp"
 #include "ImGuiUtility.h"
 #include "Graphics/ShaderTypeInformation.h"
@@ -455,6 +456,8 @@ namespace Engine::ImGuiDrawer
 				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( int )image_width, ( int )image_height, Texture::FormatName( selected_texture->PixelFormat() ) );
 				ImGui::Indent( ( preview_area_size.x - ImGui::CalcTextSize( info_line_buffer ).x ) / 2.0f );
 				ImGui::TextUnformatted( info_line_buffer );
+				ImGui::SameLine();
+				DrawTextureFormatDecorationsOnly( *selected_texture );
 			}
 			else
 				ImGui::Dummy( ImGui::GetContentRegionAvail() );
@@ -1010,6 +1013,8 @@ namespace Engine::ImGuiDrawer
 		const auto name_cstr = framebuffer.Name().c_str();
 		ImGui::PushID( name_cstr );
 
+		const auto& style = ImGui::GetStyle();
+
 		if( ImGui::BeginTable( "FramebufferTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 		{
 			ImGui::TableNextRow();
@@ -1020,55 +1025,79 @@ namespace Engine::ImGuiDrawer
 
 			Vector2I size = framebuffer.Size();
 
-			ImGui::TableNextColumn(); ImGui::TextDisabled( "Width" );
-			ImGui::TableNextColumn(); ImGui::InputInt( "##Width", reinterpret_cast< int* >( &size ), 0, 0, ImGuiInputTextFlags_ReadOnly );
-			ImGui::TableNextColumn(); ImGui::TextDisabled( "Height" );
-			ImGui::TableNextColumn(); ImGui::InputInt( "##Height", reinterpret_cast< int* >( &size ) + 1, 0, 0, ImGuiInputTextFlags_ReadOnly );
-
-
-			ImGui::TableNextColumn(); ImGui::TextDisabled( "MSAA" );
-			ImGui::TableNextColumn();
+			ImGui::TableNextColumn(); ImGui::TextDisabled( "Size" );
+			ImGui::TableNextColumn(); ImGui::InputInt2( "##Size", reinterpret_cast< int* >( &size ), ImGuiInputTextFlags_ReadOnly );
 
 			if( framebuffer.IsMultiSampled() )
 			{
+				ImGuiCustomColors::PushStyleColor( ImGuiCol_Text, ImGuiCustomColors::CustomColorType::MSAA );
+				ImGui::TableNextColumn(); ImGui::TextDisabled( "MSAA Sample Count" );
+				ImGui::TableNextColumn();
 				int sample_count = framebuffer.SampleCount();
 				ImGui::InputInt( "##Sample Count", &sample_count, 0, 100, ImGuiInputTextFlags_ReadOnly );
+				ImGui::PopStyleColor();
 			}
-			else
-				ImGui::TextUnformatted( ICON_FA_XMARK );
 
 			if( framebuffer.HasColorAttachment() )
 			{
-				ImGui::TableNextColumn(); ImGui::TextDisabled( "Color Texture" );
+				ImGui::TableNextColumn(); ImGui::TextDisabled( "Color Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( framebuffer.ColorAttachment().Name().c_str() );
+				DrawTextureFormatWithDecorations( framebuffer.ColorAttachment() );
 			}
 
 			if( framebuffer.HasCombinedDepthStencilAttachment() )
 			{
-				ImGui::TableNextColumn(); ImGui::TextDisabled( "Combined Depth/Stencil Texture" );
+				ImGui::TableNextColumn(); ImGui::TextDisabled( "Combined Depth/Stencil Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( framebuffer.DepthStencilAttachment().Name().c_str() );
+				ImGui::TextUnformatted( Texture::FormatName( framebuffer.DepthStencilAttachment().PixelFormat() ) );
 			}
 
 			if( framebuffer.HasSeparateDepthAttachment() )
 			{
-				ImGui::TableNextColumn(); ImGui::TextDisabled( "Separate Depth Texture" );
+				ImGui::TableNextColumn(); ImGui::TextDisabled( "Depth Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( framebuffer.DepthAttachment().Name().c_str() );
+				ImGui::TextUnformatted( Texture::FormatName( framebuffer.DepthAttachment().PixelFormat() ) );
 			}
 
 			if( framebuffer.HasSeparateStencilAttachment() )
 			{
-				ImGui::TableNextColumn(); ImGui::TextDisabled( "Separate Stencil Texture" );
+				ImGui::TableNextColumn(); ImGui::TextDisabled( "Stencil Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( framebuffer.StencilAttachment().Name().c_str() );
+				ImGui::TextUnformatted( Texture::FormatName( framebuffer.StencilAttachment().PixelFormat() ) );
 			}
 
 			ImGui::EndTable();
 		}
 
 		ImGui::PopID();
+	}
+
+	/* Decorations are icon-like text with rectangles. Example uses are for HDR, MSAA & sRGB. */
+	void DrawTextureFormatWithDecorations( const Texture& texture )
+	{
+		const auto format = texture.PixelFormat();
+		ImGui::TextUnformatted( Texture::FormatName( format ) );
+
+		DrawTextureFormatDecorationsOnly( texture );
+	}
+
+	void DrawTextureFormatDecorationsOnly( const Texture& texture )
+	{
+		if( texture.IsMultiSampled() )
+		{
+			ImGui::SameLine();
+			ImGuiUtility::DrawRoundedRectText( "MSAA", ImGuiCustomColors::COLOR_MSAA );
+		}
+		if( texture.IsHDR() )
+		{
+			ImGui::SameLine();
+			ImGuiUtility::DrawRoundedRectText( "HDR", ImGuiCustomColors::COLOR_HDR );
+		}
+		if( texture.Is_sRGB() )
+		{
+			ImGui::SameLine();
+			ImGuiUtility::DrawRainbowRectText( "sRGB" );
+		};
 	}
 
 	bool Draw( DirectionalLight& directional_light, const char* light_name, ImGuiWindowFlags window_flags )

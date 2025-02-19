@@ -3,6 +3,7 @@
 #include "DefaultFramebuffer.h"
 #include "BuiltinShaders.h"
 #include "BuiltinTextures.h"
+#include "Core/ImGuiCustomColors.h"
 #include "Core/ImGuiDrawer.hpp"
 #include "Core/ImGuiUtility.h"
 #include "Primitive/Primitive_Quad_FullScreen.h"
@@ -338,22 +339,57 @@ namespace Engine
 			/* Framebuffers: */
 			ImGui::SeparatorText( "Framebuffers" );
 
-			auto DrawFramebufferImGui = []( const Framebuffer& framebuffer )
+			auto DrawFramebufferImGui_Decorations = []( const Framebuffer& framebuffer )
 			{
-				if( framebuffer.IsValid() && ImGui::TreeNodeEx( framebuffer.name.c_str() ) )
+				if( framebuffer.IsMultiSampled() )
 				{
-					ImGuiDrawer::Draw( framebuffer );
-					ImGui::TreePop();
+					ImGui::SameLine();
+					ImGuiUtility::DrawRoundedRectText( "MSAA", ImGuiCustomColors::COLOR_MSAA );
+				}
+
+				if( framebuffer.IsHDR() )
+				{
+					ImGui::SameLine();
+					ImGuiUtility::DrawRoundedRectText( "HDR", ImGuiCustomColors::COLOR_HDR );
+				}
+
+				if( framebuffer.Is_sRGB() )
+				{
+					ImGui::SameLine();
+					ImGuiUtility::DrawRainbowRectText( "sRGB" );
 				}
 			};
 
-			auto DrawCustomFramebufferImGui = []( const Framebuffer& custom_framebuffer )
+			auto DrawFramebufferImGui = [ & ]( const Framebuffer& framebuffer )
+			{
+				if( framebuffer.IsValid() )
+				{
+					if( ImGui::TreeNodeEx( framebuffer.name.c_str() ) )
+					{
+						DrawFramebufferImGui_Decorations( framebuffer );
+
+						ImGuiDrawer::Draw( framebuffer );
+						ImGui::TreePop();
+					}
+					else
+						DrawFramebufferImGui_Decorations( framebuffer );
+				}
+			};
+
+			auto DrawCustomFramebufferImGui = [ & ]( const Framebuffer& custom_framebuffer )
 			{
 				const auto name = custom_framebuffer.name.c_str();
-				if( custom_framebuffer.IsValid() && ImGui::TreeNodeEx( name, ImGuiTreeNodeFlags_None, "[Custom] %s", name ) )
+				if( custom_framebuffer.IsValid() )
 				{
-					ImGuiDrawer::Draw( custom_framebuffer );
-					ImGui::TreePop();
+					if( ImGui::TreeNodeEx( name, ImGuiTreeNodeFlags_None, "[Custom] %s", name ) )
+					{
+						DrawFramebufferImGui_Decorations( custom_framebuffer );
+
+						ImGuiDrawer::Draw( custom_framebuffer );
+						ImGui::TreePop();
+					}
+					else
+						DrawFramebufferImGui_Decorations( custom_framebuffer );
 				}
 			};
 

@@ -554,6 +554,9 @@ namespace Engine::ImGuiDrawer
 	void Draw( const Shader& shader, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 
 	void Draw( const Framebuffer& framebuffer, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
+	/* Decorations are icon-like text with rectangles. Example uses are for HDR, MSAA & sRGB. */
+	void DrawTextureFormatWithDecorations( const Texture& texture );
+	void DrawTextureFormatDecorationsOnly( const Texture& texture );
 
 	bool Draw(		 DirectionalLight&	directional_light,	const char* light_name,											ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 	void Draw( const DirectionalLight&	directional_light,	const char* light_name,											ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
