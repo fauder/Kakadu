@@ -120,7 +120,7 @@ namespace Engine
 	{
 		for( auto& [ pass_id, pass ] : render_pass_map )
 		{
-			if( pass.is_enabled )
+			if( pass.is_enabled && PassHasContentToRender( pass ) )
 			{
 				const auto log_group( logger.TemporaryLogGroup( ( "[Pass]:" + pass.name ).c_str() ) );
 
@@ -134,7 +134,7 @@ namespace Engine
 				for( auto& queue_id : pass.queue_id_set )
 				{
 					if( auto& queue = render_queue_map[ queue_id ]; 
-						queue.is_enabled )
+						queue.is_enabled && QueueHasContentToRender( queue ) )
 					{
 						const auto log_group( logger.TemporaryLogGroup( ( "[Queue]:" + queue.name ).c_str() ) );
 
@@ -584,6 +584,16 @@ namespace Engine
 #endif
 	}
 
+	bool Renderer::PassHasContentToRender( const RenderPass& pass_to_query ) const
+	{
+		for( auto& queue_id : pass_to_query.queue_id_set )
+			if( const auto& queue = render_queue_map.at( queue_id );
+				QueueHasContentToRender( queue ) )
+				return true;
+
+		return false;
+	}
+
 	void Renderer::AddQueue( const RenderQueue::ID new_queue_id, RenderQueue&& new_queue )
 	{
 		if( not render_queue_map.try_emplace( new_queue_id, std::move( new_queue ) ).second )
@@ -622,6 +632,16 @@ namespace Engine
 	#else
 		render_queue_map[ queue_id_to_toggle ].is_enabled = enable;
 	#endif
+	}
+
+	bool Renderer::QueueHasContentToRender( const RenderQueue& queue_to_query ) const
+	{
+		if( not queue_to_query.renderable_list.empty() )
+			for( auto& renderable : queue_to_query.renderable_list )
+				if( renderable && renderable->is_enabled )
+					return true;
+
+		return false;
 	}
 
 	void Renderer::AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to )

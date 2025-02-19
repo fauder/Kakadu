@@ -68,9 +68,13 @@ namespace Engine
 		void RemovePass( const RenderPass::ID pass_id_to_remove );
 		void TogglePass( const RenderPass::ID pass_id_to_toggle, const bool enable );
 
+		bool PassHasContentToRender( const RenderPass& pass_to_query ) const;
+
 		void AddQueue( const RenderQueue::ID new_queue_id, RenderQueue&& new_queue );
 		void RemoveQueue( const RenderQueue::ID queue_id_to_remove );
 		void ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable );
+
+		bool QueueHasContentToRender( const RenderQueue& queue_to_query ) const;
 
 		void AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to );
 		void RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from );
