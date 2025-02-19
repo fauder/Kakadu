@@ -89,6 +89,7 @@ namespace Engine
 		inline bool					IsMultiSampled()	const { return msaa.IsEnabled(); }
 
 		inline bool					Is_sRGB()			const { return HasColorAttachment() && color_attachment->Is_sRGB(); }
+		inline bool					IsHDR()				const { return HasColorAttachment() && color_attachment->IsHDR(); }
 
 		inline const std::string&	Name()				const { return name; }
 
