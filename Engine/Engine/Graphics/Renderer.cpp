@@ -121,7 +121,7 @@ namespace Engine
 	{
 		for( auto& [ pass_id, pass ] : render_pass_map )
 		{
-			if( pass.is_enabled && PassHasContentToRender( pass ) )
+			if( PassHasContentToRender( pass ) )
 			{
 				const auto log_group( logger.TemporaryLogGroup( ( "[Pass]:" + pass.name ).c_str() ) );
 
@@ -135,7 +135,7 @@ namespace Engine
 				for( auto& queue_id : pass.queue_id_set )
 				{
 					if( auto& queue = render_queue_map[ queue_id ]; 
-						queue.is_enabled && QueueHasContentToRender( queue ) )
+						QueueHasContentToRender( queue ) )
 					{
 						const auto log_group( logger.TemporaryLogGroup( ( "[Queue]:" + queue.name ).c_str() ) );
 
@@ -223,49 +223,46 @@ namespace Engine
 		{
 			ImGui::SeparatorText( "General" );
 
-			bool gamma_enabled = gamma_correction_is_enabled;
-			ImGui::BeginDisabled();
-			ImGui::Checkbox( "Gamma Correction", &gamma_enabled );
-			ImGui::EndDisabled();
+			ImGuiUtility::ImmutableCheckbox( "Gamma Correction", gamma_correction_is_enabled );
 
 			ImGui::SeparatorText( "Passes & Queues" );
 
 			if( ImGui::BeginTable( "Passes & Queues", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 			{
-				ImGui::TableSetupColumn( "Active" );
+				ImGui::TableSetupColumn( "Rendering" );
 				ImGui::TableSetupColumn( "Pass" );
 				ImGui::TableSetupColumn( "Target" );
 
-				ImGui::TableHeadersRow();
+				ImGui::TableNextRow( ImGuiTableRowFlags_Headers ); // Indicates that the header row will be modified
+				ImGuiUtility::Table_Header_ManuallySubmit_AppendHelpMarker( 0,
+																			"A pass will not render if:\n"
+																			"\t" ICON_FA_ARROW_RIGHT " All its queues are empty/disabled, \n"
+																			"\t" ICON_FA_ARROW_RIGHT " AND/OR All renderables inside those queues are all disabled." );
+				ImGuiUtility::Table_Header_ManuallySubmit( std::array< int, 2 >{ 1, 2 } );
 				ImGui::TableNextRow();
 
 				for( auto& [ pass_id, pass ] : render_pass_map )
 				{
 					ImGui::TableNextColumn();
+					ImGui::PushID( ( int )pass_id );
 
 					const bool pass_has_content_to_render = PassHasContentToRender( pass );
 
-					ImGuiUtility::CenterCheckbox();
+					if( not pass_has_content_to_render )
+						ImGuiUtility::BeginDisabledButInteractable();
 
-					ImGui::PushID( ( int )pass_id );
-					if( pass_has_content_to_render )
-						ImGui::Checkbox( "", &pass.is_enabled );
-					else
-					{
-						ImGui::BeginDisabled();
-						static bool ALWAYS_FALSE = false;
-						ImGui::Checkbox( "", &ALWAYS_FALSE );
-						ImGui::EndDisabled();
-					}
-					ImGui::PopID();
+					ImGuiUtility::CenterCheckbox();
+					ImGuiUtility::ImmutableCheckbox( "##p_active_checkb", pass_has_content_to_render );
 
 					ImGui::TableNextColumn();
 
+					ImGui::Checkbox( "", &pass.is_enabled );
+
+					ImGui::PopID();
+					ImGui::SameLine();
 					if( ImGui::TreeNodeEx( pass.name.c_str(), 0, "Pass [%d]: %s", ( int )pass_id, pass.name.c_str()) )
 					{
 						// TODO: Display RenderState info as a collapseable header.
-						ImGui::BeginDisabled( not pass.is_enabled );
-
 						for( auto& queue_id : pass.queue_id_set )
 						{
 							auto& queue = render_queue_map[ queue_id ];
@@ -275,22 +272,16 @@ namespace Engine
 								ImGui::TextDisabled( "Empty Queue [%d]: %s", ( int )queue_id, queue.name.c_str() );
 								continue;
 							}
-							const auto queue_has_content_to_render = QueueHasContentToRender( queue );
+
+							const bool queue_has_content_to_render = QueueHasContentToRender( queue );
+
+							if( not queue_has_content_to_render )
+								ImGuiUtility::BeginDisabledButInteractable();
 
 							ImGui::PushID( ( int )queue_id );
-							if( queue_has_content_to_render )
-								ImGui::Checkbox( "", &queue.is_enabled );
-							else
-							{
-								ImGui::BeginDisabled();
-								static bool ALWAYS_FALSE = false;
-								ImGui::Checkbox( "", &ALWAYS_FALSE );
-								ImGui::EndDisabled();
-							}
+							ImGui::Checkbox( "", &queue.is_enabled );
 							ImGui::PopID();
-
 							ImGui::SameLine();
-
 							if( ImGui::TreeNodeEx( queue.name.c_str(), 0, "Queue [%d]: %s", ( int )queue_id, queue.name.c_str() ) )
 							{
 								ImGui::BeginDisabled( not queue.is_enabled );
@@ -325,16 +316,20 @@ namespace Engine
 								ImGui::EndDisabled();
 
 								ImGui::TreePop();
+
+								if( not queue_has_content_to_render )
+									ImGuiUtility::EndDisabledButInteractable();
 							}
 						}
-
-						ImGui::EndDisabled();
 
 						ImGui::TreePop();
 					}
 
 					ImGui::TableNextColumn();
 					ImGui::TextUnformatted( pass.target_framebuffer->Name().c_str() );
+
+					if( not pass_has_content_to_render )
+						ImGuiUtility::EndDisabledButInteractable();
 				}
 
 				ImGui::EndTable();
@@ -616,6 +611,9 @@ namespace Engine
 
 	bool Renderer::PassHasContentToRender( const RenderPass& pass_to_query ) const
 	{
+		if( not pass_to_query.is_enabled )
+			return false;
+
 		for( auto& queue_id : pass_to_query.queue_id_set )
 			if( const auto& queue = render_queue_map.at( queue_id );
 				queue.is_enabled && QueueHasContentToRender( queue ) )
@@ -666,7 +664,7 @@ namespace Engine
 
 	bool Renderer::QueueHasContentToRender( const RenderQueue& queue_to_query ) const
 	{
-		if( not queue_to_query.renderable_list.empty() )
+		if( queue_to_query.is_enabled && not queue_to_query.renderable_list.empty() )
 			for( auto& renderable : queue_to_query.renderable_list )
 				if( renderable && renderable->is_enabled )
 					return true;
