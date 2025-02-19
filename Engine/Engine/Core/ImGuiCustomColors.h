@@ -8,8 +8,8 @@
 
 namespace Engine::ImGuiCustomColors
 {
-	constexpr ImVec4 COLOR_HDR( 0.87f, 0.75f, 0.35f, 1.0f );
-	constexpr ImVec4 COLOR_MSAA( 0.6f, 0.34f, 1.0f, 1.0f );
+	constexpr ImVec4 COLOR_HDR( 0.96f, 0.76f, 0.04f, 1.0f );
+	constexpr ImVec4 COLOR_MSAA( 0.36f, 0.18f, 0.57f, 1.0f );
 
 	enum class CustomColorType : std::uint8_t
 	{
