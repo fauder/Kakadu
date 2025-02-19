@@ -214,7 +214,7 @@ namespace Engine::ImGuiDrawer
 	{
 		const auto& style = ImGui::GetStyle();
 		ImGui::PushItemWidth( 4.0f * ImGui::CalcTextSize( "R:  255" ).x + 4.0f * style.ItemInnerSpacing.x + 2.0f * style.FramePadding.x );
-		return ImGui::ColorEdit4( name, color.Data() );
+		return ImGui::ColorEdit4( name, color.Data(), ImGuiColorEditFlags_AlphaPreviewHalf );
 		ImGui::PopItemWidth();
 	}
 
@@ -223,8 +223,8 @@ namespace Engine::ImGuiDrawer
 		const auto& style = ImGui::GetStyle();
 		ImGui::PushItemWidth( 4.0f * ImGui::CalcTextSize( "R:  255" ).x + 4.0f * style.ItemInnerSpacing.x + 2.0f * style.FramePadding.x );
 		ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
-		/* Since the no inputs & no picker flags are passed, the passed pointer will not be modified. So this hack is safe to use here. */
-		ImGui::ColorEdit4( name, const_cast< float* >( color.Data() ), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoPicker );
+		/* Since no inputs & no picker flags are passed, the passed pointer will not be modified. So this hack is safe to use here. */
+		ImGui::ColorEdit4( name, const_cast< float* >( color.Data() ), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreviewHalf );
 		ImGui::PopStyleColor();
 		ImGui::PopItemWidth();
 	}
