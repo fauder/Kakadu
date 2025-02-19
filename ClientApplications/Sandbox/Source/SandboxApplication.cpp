@@ -340,7 +340,6 @@ void SandboxApplication::Initialize()
 						  .target_framebuffer               = &renderer.CustomFramebuffer( 0 ),
 						  .queue_id_set                     = {
 																Engine::Renderer::QUEUE_ID_GEOMETRY,
-																Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED,
 																Engine::Renderer::QUEUE_ID_TRANSPARENT,
 																Engine::Renderer::QUEUE_ID_SKYBOX },
 					      .render_state_override_is_allowed = true
@@ -351,29 +350,29 @@ void SandboxApplication::Initialize()
 
 	cube_renderable = Engine::Renderable( &cube_mesh_instanced, &cube_material,
 										  nullptr /* => No Transform here, as we will provide the Transforms as instance data. */, true /* => has shadows. */ );
-	renderer.AddRenderable( &cube_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
+	renderer.AddRenderable( &cube_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	cube_parallax_renderable = Engine::Renderable( &cube_mesh, &wall_material, &cube_parallax_transform, true /* => has shadows. */ );
-	renderer.AddRenderable( &cube_parallax_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
+	renderer.AddRenderable( &cube_parallax_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	cube_reflected_renderable = Engine::Renderable( &cube_reflected_mesh_instanced, &cube_reflected_material,
 													nullptr /* => No Transform here, as we will provide the Transforms as instance data. */, true /* => has shadows. */ );
-	renderer.AddRenderable( &cube_reflected_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
+	renderer.AddRenderable( &cube_reflected_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	ground_renderable = Engine::Renderable( &quad_mesh, &ground_material, &ground_transform, true /* => has shadows. */ );
-	renderer.AddRenderable( &ground_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
+	renderer.AddRenderable( &ground_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	wall_front_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_front_transform, true /* => has shadows. */ );
 	wall_left_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_left_transform,  true /* => has shadows. */ );
 	wall_right_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_right_transform, true /* => has shadows. */ );
 	wall_back_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_back_transform,  true /* => has shadows. */ );
-	renderer.AddRenderable( &wall_front_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
-	renderer.AddRenderable( &wall_left_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
-	renderer.AddRenderable( &wall_right_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
-	renderer.AddRenderable( &wall_back_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
+	renderer.AddRenderable( &wall_front_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer.AddRenderable( &wall_left_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer.AddRenderable( &wall_right_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer.AddRenderable( &wall_back_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	sphere_renderable = Engine::Renderable( &sphere_mesh, &sphere_material, &sphere_transform, true /* => has shadows. */ );
-	renderer.AddRenderable( &sphere_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
+	renderer.AddRenderable( &sphere_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	for( auto i = 0; i < WINDOW_COUNT; i++ )
 	{
@@ -392,7 +391,6 @@ void SandboxApplication::Initialize()
 	// TODO: Do not create an explicit (or rather, Application-visible) Renderable for skybox; Make it Renderer-internal.
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
-	renderer.TogglePass( Engine::Renderer::PASS_ID_OUTLINE, false );
 	renderer.ToggleQueue( Engine::Renderer::QUEUE_ID_TRANSPARENT, false );
 
 /* Camera: */
@@ -1233,13 +1231,13 @@ bool SandboxApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const 
 													 Vector3::One(),
 													 Quaternion(),
 													 Vector3::Up() * 8.0f,
-													 Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED,
+													 Engine::Renderer::QUEUE_ID_GEOMETRY,
 													 nullptr,
 													 true, /* has shadows. */
 													 Vector4{ 1.0f, 1.0f, 0.0f, 0.0f } );
 
 		for( auto& renderable_to_add : model_instance_to_load_into.Renderables() )
-			renderer.AddRenderable( &renderable_to_add, Engine::Renderer::QUEUE_ID_GEOMETRY_OUTLINED );
+			renderer.AddRenderable( &renderable_to_add, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 		return true;
 	}

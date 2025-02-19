@@ -138,7 +138,7 @@ void HDR_DemoApplication::Initialize()
 	renderer.AddQueue( QUEUE_ID_CUSTOM,
 					   Engine::RenderQueue
 					   {
-						  .name = "Custom",
+						  .name = "Custom (Inverted)",
 						  .render_state_override = Engine::RenderState
 						  {
 							  .face_culling_face_to_cull = Engine::Face::Front
@@ -154,7 +154,7 @@ void HDR_DemoApplication::Initialize()
 	renderer.AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
-	renderer.TogglePass( Engine::Renderer::PASS_ID_OUTLINE, false );
+	renderer.TogglePass( Engine::Renderer::PASS_ID_SHADOW_MAPPING, false ); // No shadows necessary for this demo.
 	renderer.ToggleQueue( Engine::Renderer::QUEUE_ID_TRANSPARENT, false );
 
 /* Camera: */

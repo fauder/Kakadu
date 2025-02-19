@@ -552,8 +552,7 @@ namespace Engine
 
 	void Renderer::RemovePass( const RenderPass::ID pass_id_to_remove )
 	{
-		if( pass_id_to_remove == PASS_ID_LIGHTING || pass_id_to_remove == PASS_ID_SHADOW_MAPPING ||
-			pass_id_to_remove == PASS_ID_OUTLINE  || pass_id_to_remove == PASS_ID_POSTPROCESSING )
+		if( pass_id_to_remove == PASS_ID_LIGHTING || pass_id_to_remove == PASS_ID_SHADOW_MAPPING || pass_id_to_remove == PASS_ID_POSTPROCESSING )
 		{
 			CONSOLE_ERROR( "Removing a built-in pass is not allowed! Please use TogglePass( id, false ) to disable unwanted passes instead." );
 			return;
@@ -593,9 +592,8 @@ namespace Engine
 
 	void Renderer::RemoveQueue( const RenderQueue::ID queue_id_to_remove )
 	{
-		if( queue_id_to_remove == QUEUE_ID_GEOMETRY    || queue_id_to_remove == QUEUE_ID_GEOMETRY_OUTLINED ||
-			queue_id_to_remove == QUEUE_ID_TRANSPARENT || queue_id_to_remove == QUEUE_ID_SKYBOX ||
-			queue_id_to_remove == QUEUE_ID_POSTPROCESSING )
+		if( queue_id_to_remove == QUEUE_ID_GEOMETRY || queue_id_to_remove == QUEUE_ID_TRANSPARENT || 
+			queue_id_to_remove == QUEUE_ID_SKYBOX   || queue_id_to_remove == QUEUE_ID_POSTPROCESSING )
 		{
 			CONSOLE_ERROR( "Removing a built-in queue is not allowed! Please use ToggleQueue( id, false ) to disable unwanted passes instead." );
 			return;
@@ -978,27 +976,6 @@ namespace Engine
 					  }
 				  } );
 
-		AddQueue( QUEUE_ID_GEOMETRY_OUTLINED,
-				  RenderQueue
-				  {
-					  .name                  = "Geometry - Outlined",
-					  .render_state_override = RenderState
-					  {
-						  /* This pass renders the mesh semi-regularly; It also marks the stencil buffer with 1s everywhere the mesh is rendered at. */
-
-						  .stencil_test_enable = true,
-
-						  .sorting_mode = SortingMode::FrontToBack,
-
-						  .stencil_write_mask                            = 0xFF,
-						  .stencil_comparison_function                   = ComparisonFunction::Always,
-						  .stencil_ref                                   = 0x01,
-						  .stencil_test_response_stencil_fail            = StencilTestResponse::Keep,
-						  .stencil_test_response_stencil_pass_depth_fail = StencilTestResponse::Keep,
-						  .stencil_test_response_both_pass               = StencilTestResponse::Replace
-					  }
-				  } );
-
 		AddQueue( QUEUE_ID_TRANSPARENT,
 				  RenderQueue
 				  {
@@ -1065,7 +1042,7 @@ namespace Engine
 				 {
 					 .name               = "Shadow Mapping",
 					 .target_framebuffer = &framebuffer_shadow_map_light_directional,
-					 .queue_id_set       = { QUEUE_ID_GEOMETRY_OUTLINED },
+					 .queue_id_set       = { QUEUE_ID_GEOMETRY },
 					 .view_matrix		 = Matrix4x4{},
 					 .projection_matrix  = Matrix4x4{},
 					 .render_state       = RenderState
@@ -1082,28 +1059,8 @@ namespace Engine
 				 {
 					 .name               = "Lighting",
 					 .target_framebuffer = &framebuffer_main,
-					 .queue_id_set       = { QUEUE_ID_GEOMETRY, QUEUE_ID_GEOMETRY_OUTLINED, QUEUE_ID_TRANSPARENT, QUEUE_ID_SKYBOX },
+					 .queue_id_set       = { QUEUE_ID_GEOMETRY, QUEUE_ID_TRANSPARENT, QUEUE_ID_SKYBOX },
 					 .clear_framebuffer  = true,
-				 } );
-
-		AddPass( PASS_ID_OUTLINE,
-				 RenderPass
-				 {
-					 .name               = "Outline",
-					 .target_framebuffer = &framebuffer_main,
-					 .queue_id_set       = { QUEUE_ID_GEOMETRY },
-					 .render_state       = RenderState
-					 {
-					     .depth_test_enable   = false,
-						 .stencil_test_enable = true,
-
-
-						 .stencil_write_mask          = 0x00, // Disable writes; This pass only needs to READ the stencil buffer, to figure out where NOT to render.
-						 .stencil_comparison_function = ComparisonFunction::NotEqual, // Render everywhere that's not the actual mesh, i.e., the border.
-						 .stencil_ref                 = 0x01
-					 },
-					 .render_state_override_is_allowed = false,
-					 .clear_framebuffer                = false, // => because rendering into the same framebuffer as the Lighting pass.
 				 } );
 
 		AddPass( PASS_ID_POSTPROCESSING,

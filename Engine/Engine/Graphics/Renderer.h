@@ -257,7 +257,6 @@ namespace Engine
 
 		static constexpr RenderPass::ID PASS_ID_SHADOW_MAPPING = RenderPass::ID( 10u );
 		static constexpr RenderPass::ID PASS_ID_LIGHTING       = RenderPass::ID( 50u );
-		static constexpr RenderPass::ID PASS_ID_OUTLINE		   = RenderPass::ID( 100u );
 		static constexpr RenderPass::ID PASS_ID_POSTPROCESSING = RenderPass::ID( 220u );
 		static constexpr RenderPass::ID PASS_ID_FINAL          = RenderPass::ID( 255u );
 
@@ -266,7 +265,6 @@ namespace Engine
 		/* Using Unity defaults: Background is 1000, Geometry is 2000, AlphaTest is 2450, Transparent is 3000 and Overlay is 4000 */
 
 		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY          = RenderQueue::ID(  2'000u );
-		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY_OUTLINED = RenderQueue::ID(  2'350u );
 		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT       = RenderQueue::ID(  2'450u );
 		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX            = RenderQueue::ID(  2'900u );
 		static constexpr RenderQueue::ID QUEUE_ID_POSTPROCESSING    = RenderQueue::ID(  3'000u );
