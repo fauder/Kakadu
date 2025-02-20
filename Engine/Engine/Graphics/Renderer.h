@@ -246,7 +246,7 @@ namespace Engine
 		 * Pass, Queue & Renderable:
 		 */
 
-		std::vector< RenderQueue >& RenderQueuesContaining( const Renderable* renderable_of_interest );
+		std::vector< RenderQueue* >& RenderQueuesContaining( const Renderable* renderable_of_interest );
 		void SetRenderState( const RenderState& render_state_to_set, Framebuffer* target_framebuffer, const bool clear_framebuffer = false );
 		void SortRenderablesInQueue( const Vector3& camera_position, std::vector< Renderable* >& renderable_array_to_sort, const SortingMode sorting_mode );
 

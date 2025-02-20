@@ -560,18 +560,18 @@ namespace Engine
 		for( auto& queue : queues_containing_renderable )
 		{
 			// For now, stick to removing elements from a vector, which is sub-par performance but should be OK for the time being.
-			std::erase( queue.renderable_list, renderable_to_remove );
+			std::erase( queue->renderable_list, renderable_to_remove );
 
 			const auto& shader = renderable_to_remove->material->shader;
 
-			if( --queue.shaders_in_flight[ shader ] == 0 )
+			if( --queue->shaders_in_flight[ shader ] == 0 )
 			{
-				queue.shaders_in_flight.erase( shader );
+				queue->shaders_in_flight.erase( shader );
 				if( --shaders_registered_reference_count_map[ shader ] == 0 )
 					UnregisterShader( *shader );
 			}
 
-			queue.materials_in_flight.erase( renderable_to_remove->material->Name() );
+			queue->materials_in_flight.erase( renderable_to_remove->material->Name() );
 		}
 	}
 
@@ -1458,14 +1458,14 @@ namespace Engine
 		AddRenderable( &tone_mapping_renderable, QUEUE_ID_FINAL );
 	}
 
-	std::vector< RenderQueue >& Renderer::RenderQueuesContaining( const Renderable* renderable_of_interest )
+	std::vector< RenderQueue* >& Renderer::RenderQueuesContaining( const Renderable* renderable_of_interest )
 	{
-		static std::vector< RenderQueue > queues;
+		static std::vector< RenderQueue* > queues;
 		queues.clear();
 
-		for( const auto& [ queue_id, queue ] : render_queue_map )
+		for( auto& [ queue_id, queue ] : render_queue_map )
 			if( std::find( queue.renderable_list.cbegin(), queue.renderable_list.cend(), renderable_of_interest ) != queue.renderable_list.cend() )
-				queues.push_back( queue );
+				queues.push_back( &queue );
 
 		return queues;
 	}
