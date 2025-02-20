@@ -317,10 +317,10 @@ namespace Engine
 								ImGui::EndDisabled();
 
 								ImGui::TreePop();
-
-								if( not queue_has_content_to_render )
-									ImGuiUtility::EndDisabledButInteractable();
 							}
+
+							if( not queue_has_content_to_render )
+								ImGuiUtility::EndDisabledButInteractable();
 						}
 
 						ImGui::TreePop();
