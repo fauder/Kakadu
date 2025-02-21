@@ -49,7 +49,7 @@ Currently Kakadu has:
 ## WIP
 - [x] Getting the Renderer ready for HDR.
 - [ ] Getting the Renderer ready for a post-processing pipeline.
-- [ ] Bloom post-processing effect (not the default learnopengl.com one, but a physically based one such as CoD AW's & [froyok's](https://github.com/Froyok/Bloom) implementation).
+- [ ] Bloom post-processing effect (not the default learnopengl.com one, but a physically based one such as [CoD AW's implementation](https://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare/) & [froyok's implementation](https://github.com/Froyok/Bloom)).
 
 ## Planned Features
 
