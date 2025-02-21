@@ -12,7 +12,7 @@ It is a graphics framework I'm developing, to study graphics programming topics.
 
 (This project supersedes the https://github.com/fauder/OpenGL-Framework project, which is no longer maintained.)
 
-## Features/Progress
+## Features/Progress ✅
 
 Currently Kakadu has:
 - Its own math library with support for template Vectors, Matrices, Quaternions, Polar & Spherical Coordinates, Angular types and so on, along with a Math namespace with other/extra functions to operate on them.
@@ -46,19 +46,19 @@ Currently Kakadu has:
 - Beginnings of a post-processing pipeline.
 - And 2 client applications to showcase and test functionality (with hopefully more to follow soon!).
 
-## WIP
+## WIP ⏳
 - [x] Getting the Renderer ready for HDR.
 - [ ] Getting the Renderer ready for a post-processing pipeline.
 - [ ] Bloom post-processing effect (not the default learnopengl.com one, but a physically based one such as [CoD AW's implementation](https://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare/) & [froyok's implementation](https://github.com/Froyok/Bloom)).
 
-## Planned Features
+## Planned Features 📅
 
 - [ ] Deferred Rendering (it will either be an interesting challenge to work it into Kakadu or it will be its own repo with the heavily modified skeleton of Kakadu).
 - [ ] SSAO.
 - [ ] PBR.
 - [ ] Frustum Culling.
 
-## Possible Future Additions
+## Possible Future Additions 🧪
 - Client App "SDF-CSG": Constructive Solid Geometry (CSG) through Signed Distance Functions (SDF).
 - Compute Shaders.
 - Tessellation.
@@ -69,10 +69,10 @@ Currently Kakadu has:
 - Switch to multi-draw indirect.
 - GPU driven rendering.
 
-## Credits
+## Credits 🤝
 See [CREDITS.md](CREDITS.md).
 
-## License
+## License 📄
 
 The source code in this repository is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
 
