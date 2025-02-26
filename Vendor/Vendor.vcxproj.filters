@@ -11,6 +11,7 @@
     <ClCompile Include="stb\std_include.cpp" />
     <ClCompile Include="ImGui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="ImGui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Tracy\TracyClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLAD\glad.h" />
@@ -45,6 +46,7 @@
     <ClInclude Include="ImGui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="ImGui\backends\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="IconFontCppHeaders\IconsFontAwesome6.h" />
+    <ClInclude Include="Tracy\Tracy\Tracy.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="ImGui\misc\debuggers\imgui.natvis" />
