@@ -23,8 +23,8 @@ namespace Engine
 
 		std::vector< Renderable* > renderable_list;
 
-		std::unordered_map< Shader*, ReferenceCount > shaders_in_flight;
-		std::unordered_map< std::string, Material* > materials_in_flight; // TODO: Generate an ID for Materials (who will generate it?) and use that ID as the key here.
+		std::map< Shader*, ReferenceCount > shaders_in_flight;
+		std::map< std::string, Material* > materials_in_flight; // TODO: Generate an ID for Materials (who will generate it?) and use that ID as the key here.
 
 		bool is_enabled = true;
 
