@@ -9,7 +9,7 @@ namespace Engine
 		struct NoInitialization			{};
 	}
 
-	static constexpr Initialization::UniformInitialization	UNIFORM_INITIALIZATION;
-	static constexpr Initialization::ZeroInitialization		ZERO_INITIALIZATION;
-	static constexpr Initialization::NoInitialization		NO_INITIALIZATION;
+	inline constexpr Initialization::UniformInitialization	UNIFORM_INITIALIZATION;
+	inline constexpr Initialization::ZeroInitialization		ZERO_INITIALIZATION;
+	inline constexpr Initialization::NoInitialization		NO_INITIALIZATION;
 }

@@ -8,7 +8,7 @@
 
 namespace Engine::Primitive::NonIndexed::Cube_FullScreen
 {
-	constexpr std::array< Vector3, 36 > Positions
+	inline constexpr std::array< Vector3, 36 > Positions
 	( {
 		{ -1.0f, -1.0f, -1.0f }, // FRONT
 		{  1.0f,  1.0f, -1.0f }, // FRONT

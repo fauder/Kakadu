@@ -69,10 +69,10 @@ namespace Engine
 				if( vector_of_attributes.empty() )
 					return 0u;
 
-				return ComponentCount< std::remove_reference_t< decltype( vector_of_attributes ) >::value_type >();
+				return ComponentCount< typename std::remove_reference_t< decltype( vector_of_attributes ) >::value_type >();
 			};
 
-			constexpr auto first_attribute_component_count = ComponentCount< std::remove_reference_t< decltype( vertex_attribute_vector_first ) >::value_type >();
+			constexpr auto first_attribute_component_count = ComponentCount< typename std::remove_reference_t< decltype( vertex_attribute_vector_first ) >::value_type >();
 			const	  auto total_attribute_count           = first_attribute_component_count +
 														     ( ComponentCount_OnlyForNonEmpty( vertex_attribute_vector_pack ) + ... );
 			vertex_count = ( unsigned int )vertex_attribute_vector_first.size();
