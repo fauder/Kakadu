@@ -9,6 +9,7 @@
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
+#include <Tracy/tracy/Tracy.hpp>
 
 /* To enable some .natvis functionality: */
 #include "Natvis/Natvis.h"
@@ -86,12 +87,19 @@ namespace Engine
 
 			Platform::PollEvents();
 
-			Update();
+			{
+				ZoneScopedN( "Update" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
+				Update();
+			}
 
-			Render();
+			{
+				ZoneScopedN( "Render" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
+				Render();
+			}
 
 			if( show_imgui )
 			{
+				ZoneScopedN( "ImGui" );
 				ImGuiSetup::BeginFrame();
 				RenderImGui();
 				auto log_group( ServiceLocator< GLLogger >::Get().TemporaryLogGroup( "ImGuiSetup::EndFrame()" ) );
@@ -99,6 +107,8 @@ namespace Engine
 			}
 
 			Platform::SwapBuffers();
+
+			FrameMark;
 		}
 	}
 
@@ -142,6 +152,8 @@ namespace Engine
 
 	void Application::CalculateTimeInformation()
 	{
+		ZoneScoped;
+
 		time_since_start = Platform::CurrentTime();
 
 		time_delta_real = time_since_start - time_previous_since_start;
