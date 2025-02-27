@@ -1542,7 +1542,7 @@ namespace Engine
 									return Math::Distance( camera_position, renderable_1->GetTransform()->GetTranslation() ) <
 										   Math::Distance( camera_position, renderable_2->GetTransform()->GetTranslation() );
 
-								return renderable_1 < renderable_2; // Does not matter;
+								return false; // Does not matter;
 							} );
 				break;
 
@@ -1554,7 +1554,7 @@ namespace Engine
 									return Math::Distance( camera_position, renderable_1->GetTransform()->GetTranslation() ) >
 										   Math::Distance( camera_position, renderable_2->GetTransform()->GetTranslation() );
 							
-								return renderable_1 < renderable_2; // Does not matter;
+								return false; // Does not matter;
 							} );
 				break;
 
