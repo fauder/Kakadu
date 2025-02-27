@@ -184,7 +184,7 @@ namespace Engine
 
 							default: // "Regular" passes:
 							{
-								for( const auto& [ shader, dont_care ] : queue.shaders_in_flight )
+								for( const auto& [ shader_name, shader ] : queue.shaders_in_flight )
 								{
 									shader->Bind();
 
@@ -287,7 +287,7 @@ namespace Engine
 							{
 								ImGui::BeginDisabled( not queue.is_enabled );
 
-								for( const auto& [ shader, dont_care ] : queue.shaders_in_flight )
+								for( const auto& [ shader_name, shader ] : queue.shaders_in_flight )
 								{
 									for( const auto& [ material_name, material ] : queue.materials_in_flight )
 									{
@@ -545,7 +545,9 @@ namespace Engine
 
 		const auto& shader = renderable_to_add->material->shader;
 
-		if( ++queue.shaders_in_flight[ shader ] == 1 )
+		queue.shaders_in_flight[ shader->name ] = shader;
+
+		if( ++queue.shader_reference_counts[ shader ] == 1 )
 		{
 			if( not shaders_registered.contains( shader ) )
 				RegisterShader( *shader );
@@ -564,9 +566,10 @@ namespace Engine
 
 			const auto& shader = renderable_to_remove->material->shader;
 
-			if( --queue->shaders_in_flight[ shader ] == 0 )
+			if( --queue->shader_reference_counts[ shader ] == 0 )
 			{
-				queue->shaders_in_flight.erase( shader );
+				queue->shaders_in_flight.erase( shader->name );
+				queue->shader_reference_counts.erase( shader );
 				if( --shaders_registered_reference_count_map[ shader ] == 0 )
 					UnregisterShader( *shader );
 			}
@@ -584,18 +587,21 @@ namespace Engine
 			{
 				Material* material = iterator->second;
 
-				if( auto ref_count = queue.shaders_in_flight[ previous_shader ];
+				if( const auto ref_count = queue.shader_reference_counts[ previous_shader ];
 					ref_count == 1 )
-					queue.shaders_in_flight.erase( previous_shader );
+				{
+					queue.shader_reference_counts.erase( previous_shader );
+					queue.shaders_in_flight.erase( previous_shader->name );
+				}
 
-				queue.shaders_in_flight[ material->shader ]++;
+				queue.shader_reference_counts[ material->shader ]++;
+				queue.shaders_in_flight[ material->shader->name ] = material->shader;
 
 				/* Log warning if the new shader is incompatible with mesh(es). */
 				for( auto& renderable : queue.renderable_list )
 					if( renderable->material == material &&
 						not renderable->mesh->IsCompatibleWith( renderable->material->shader->GetSourceVertexLayout() ) )
-						logger.Warning( "Mesh \"" + renderable->mesh->Name() +
-																   "\" is not compatible with its current shader \"" + material->shader->Name() + "\"." );
+						logger.Warning( "Mesh \"" + renderable->mesh->Name() + "\" is not compatible with its current shader \"" + material->shader->Name() + "\"." );
 			}
 		}
 	}
