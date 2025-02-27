@@ -30,7 +30,8 @@ namespace Engine
 		time_previous( 0.0f ),
 		time_previous_since_start( 0.0f ),
 		time_since_start( 0.0f ),
-		frame_count( 1 )
+		frame_count( 1 ),
+		vsync_is_enabled( false )
 	{
 		NatVis::ForceIncludeInBuild();
 
@@ -46,7 +47,7 @@ namespace Engine
 	{
 		Engine::ServiceLocator< Engine::GLLogger >::Register( &gl_logger );
 
-		Platform::InitializeAndCreateWindow( 800, 600, msaa_sample_count );
+		Platform::InitializeAndCreateWindow( 800, 600, msaa_sample_count, vsync_is_enabled );
 
 		const auto version = glGetString( GL_VERSION );
 		std::cout << version << "\n\n";

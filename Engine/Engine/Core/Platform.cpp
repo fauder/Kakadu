@@ -128,7 +128,9 @@ namespace Platform
 	 * Initialization:
 	 */
 
-	void InitializeAndCreateWindow( const int width_pixels, const int height_pixels, const std::optional< int > msaa_sample_count )
+	void InitializeAndCreateWindow( const int width_pixels, const int height_pixels, 
+									const std::optional< int > msaa_sample_count,
+									const bool enable_vsync )
 	{
 #ifdef _WIN32
 		SetConsoleTitle( L"Kakadu Console" );
@@ -161,6 +163,8 @@ namespace Platform
 		glfwShowWindow( WINDOW );
 
 		glfwMakeContextCurrent( WINDOW );
+
+		glfwSwapInterval( ( int )enable_vsync ); // Adaptive v-sync (interval >1) is not supported.
 
 		// GLAD needs the created window's context made current BEFORE it is initialized.
 		InitializeGLAD();

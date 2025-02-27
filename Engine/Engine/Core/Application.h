@@ -72,6 +72,10 @@ namespace Engine
 
 		GLLogger gl_logger;
 
+		bool vsync_is_enabled;
+
+		/* 7 bytes of padding. */
+
 	private:
 		float time_delta_real;
 		float time_previous;
