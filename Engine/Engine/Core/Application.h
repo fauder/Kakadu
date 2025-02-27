@@ -49,6 +49,7 @@ namespace Engine
 		void CalculateTimeInformation();
 
 		void RenderImGui_FrameStatistics();
+		std::uint16_t CalculateFPS_RollingAverage( const float fps_this_frame ) const;
 
 	protected:
 		bool display_frame_statistics;
@@ -74,7 +75,7 @@ namespace Engine
 
 		bool vsync_is_enabled;
 
-		/* 7 bytes of padding. */
+		/* 3 byte(s) of padding. */
 
 	private:
 		float time_delta_real;

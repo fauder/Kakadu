@@ -177,6 +177,8 @@ namespace Engine
 	{
 		const auto fps = 1.0f / time_delta_real;
 
+		const std::uint16_t rolling_average_fps = CalculateFPS_RollingAverage( fps );
+
 		const auto& style = ImGui::GetStyle();
 
 		const ImVec2 max_size( ImGui::CalcTextSize( "FPS: 999.9 fps  |  # Frames: 99999999" ) + style.ItemInnerSpacing );
@@ -188,6 +190,7 @@ namespace Engine
 		if( ImGui::Begin( ICON_FA_CHART_LINE " Frame Statistics", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
 			ImGui::Text( "FPS: %.1f fps  |  # Frames: %8lu", fps, frame_count );
+			ImGui::Text( "FPS (Moving avg.): %hu fps", rolling_average_fps );
 			ImGui::Text( "Time since start: %.1f.", time_since_start );
 			ImGui::Text( "Delta time (real): %.1f", time_delta_real * 1000.0f );
 			if( Math::IsEqual( time_multiplier, 1.0f ) )
@@ -235,5 +238,25 @@ namespace Engine
 		}
 
 		ImGui::End();
+	}
+
+	std::uint16_t Application::CalculateFPS_RollingAverage( const float fps_this_frame ) const
+	{
+		static int index = 0;
+		constexpr auto N = 144;
+
+		static std::array< float, N > last_N_fps_values = {};
+
+		/* Since only 1 value in the ring buffer changes every frame, no need to re-calculate the total sum. Just add the difference between current fps and
+		 * the element at the current index in the framebuffer to the total sum. */
+		static float last_N_fps_values_sum = 0;
+
+		const float previous_fps_at_this_index = last_N_fps_values[ index ];
+		last_N_fps_values_sum += fps_this_frame - previous_fps_at_this_index;
+
+		last_N_fps_values[ index++ ] = fps_this_frame;
+		index = index % N;
+
+		return ( std::uint16_t )Math::Round( last_N_fps_values_sum / N );
 	}
 }
