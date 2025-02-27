@@ -201,29 +201,59 @@ void SandboxApplication::Initialize()
 
 	/* The rest of the cubes: */
 	{
-		constexpr Vector3 minimum_offset( -1.0f, -0.4f, -1.0f );
-		constexpr Vector3 maximum_offset( +1.0f, +0.4f, +1.0f );
-
-		// Skip the first cube and process the rest.
-		std::for_each_n( std::execution::par, cube_transform_array.begin() + 1, CUBE_COUNT - 1, [ & ]( auto&& cube_transform )
+		struct RandomAnglePair
 		{
-			const int cube_index = ( int )( &cube_transform - cube_transform_array.data() );
-			Radians random_xz_angle( Engine::Math::Random::Generate( 0.0_rad, Engine::Constants< Radians >::Two_Pi() ) );
-			constexpr Radians inclination_limit = 15.0_deg;
-			const Radians inclination_angle( Engine::Math::Random::Generate( 0.0_rad,inclination_limit ) );
-			Degrees angle( 20.0f * cube_index + inclination_angle );
-			cube_transform_array[ cube_index ]
-				.SetScaling( 0.3f )
-				.SetRotation( Quaternion( angle, Vector3{ 1.0f, 0.3f, 0.5f }.Normalized() ) )
-				.SetTranslation( CUBES_ORIGIN + 
-								 Vector3( Engine::Math::Cos( random_xz_angle ), 
-										  Engine::Math::Sin( inclination_angle ),
-										  Engine::Math::Sin( random_xz_angle ) )
-								 * ( float )( ( cube_index % 90 ) + 10 ) );
+			Radians xz_angle;
+			Radians inclination_angle;
+		};
+
+		std::vector< RandomAnglePair > random_angles( CUBE_COUNT );
+		
+		constexpr Radians inclination_limit = 15.0_deg;
+
+		for( int i = 0; i < CUBE_COUNT; i++ )
+		{
+			random_angles[ i ].xz_angle          = Engine::Math::Random::Generate( 0.0_rad, Engine::Constants< Radians >::Two_Pi() );
+			random_angles[ i ].inclination_angle = Engine::Math::Random::Generate( 0.0_rad, inclination_limit );
+		}
+
+		constexpr int thread_work_size = 1000 ; // Number of elements each thread should process
+
+		// Ensure CUBE_COUNT is divisible by thread_work_size or adjust accordingly.
+		constexpr int thread_group_count = ( CUBE_COUNT + thread_work_size - 1 ) / thread_work_size;
+
+		constexpr std::array< int, thread_group_count > thread_group_indices = [ thread_group_count ]()
+		{
+			std::array< int, thread_group_count > indices;
+			std::iota( indices.begin(), indices.end(), 0 );
+			return indices;
+		}();
+
+		std::for_each( std::execution::par, thread_group_indices.cbegin(), thread_group_indices.cend(), [ & ]( auto&& thread_group_index )
+		{
+			// Calculate the range of indices for this group:
+			const int start_index = thread_group_index * thread_work_size;
+			const int end_index   = Engine::Math::Min( start_index + thread_work_size, CUBE_COUNT );
+
+			for( auto cube_index = start_index; cube_index < end_index; cube_index++ )
+			{
+				const Radians random_xz_angle          = random_angles[ cube_index ].xz_angle;
+				const Radians random_inclination_angle = random_angles[ cube_index ].inclination_angle;
+				Degrees angle( 20.0f * cube_index + random_inclination_angle );
+				cube_transform_array[ cube_index ]
+					.SetScaling( 0.3f )
+					.SetRotation( Quaternion( angle, Vector3{ 1.0f, 0.3f, 0.5f }.Normalized() ) )
+					.SetTranslation( CUBES_ORIGIN + 
+									 Vector3( Engine::Math::Cos( random_xz_angle ), 
+											  Engine::Math::Sin( random_inclination_angle ),
+											  Engine::Math::Sin( random_xz_angle ) )
+									 * ( float )( ( cube_index % 90 ) + 10 ) );
+			}
 		} );
 
-		/* First cube is reserved: Put it on the ground to test shadows etc. */
-		cube_transform_array[ 0 ]
+		/* Last cube is reserved: Put it on the ground to test shadows etc.
+		 * Above loop processes the last cube as well, but it is simply overwritten here. */
+		cube_transform_array[ CUBE_COUNT - 1 ]
 			.SetTranslation( 1.0f, 0.5f, -3.0f );
 	}
 
@@ -488,9 +518,9 @@ void SandboxApplication::Update()
 	/* Instanced cube's transform: */
 	{
 		Radians old_heading, old_pitch, old_bank;
-		Engine::Math::QuaternionToEuler( cube_transform_array[ 0 ].GetRotation(), old_heading, old_pitch, old_bank );
-		cube_transform_array[ 0 ].SetRotation( old_heading + angle_increment * time_delta, old_pitch, old_bank );
-		cube_instance_data_array[ 0 ] = cube_transform_array[ 0 ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
+		Engine::Math::QuaternionToEuler( cube_transform_array[ CUBE_COUNT - 1 ].GetRotation(), old_heading, old_pitch, old_bank );
+		cube_transform_array[ CUBE_COUNT - 1 ].SetRotation( old_heading + angle_increment * time_delta, old_pitch, old_bank );
+		cube_instance_data_array[ CUBE_COUNT - 1 ] = cube_transform_array[ CUBE_COUNT - 1 ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
 		
 		cube_mesh_instanced.UpdateInstanceData_Partial( std::span( cube_instance_data_array.data(), 1 ), 0 );
 	}
