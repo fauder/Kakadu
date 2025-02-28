@@ -331,7 +331,6 @@ namespace Platform
 
 	void SwapBuffers()
 	{
-		ZoneScoped;
 		glfwSwapBuffers( WINDOW );
 	}
 
@@ -341,8 +340,6 @@ namespace Platform
 
 	void PollEvents()
 	{
-		ZoneScoped;
-
 		MOUSE_CURSOR_X_DELTA = MOUSE_CURSOR_Y_DELTA = 0.0f;
 		MOUSE_SCROLL_X_OFFSET = MOUSE_SCROLL_Y_OFFSET = 0.0f;
 		glfwPollEvents();
