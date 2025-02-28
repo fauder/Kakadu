@@ -158,6 +158,9 @@ void SandboxApplication::Initialize()
 	shader_outline                                          = Engine::BuiltinShaders::Get( "Outline" );
 	shader_texture_blit                                     = Engine::BuiltinShaders::Get( "Texture Blit" );
 
+	shader_msaa_resolve = Engine::BuiltinShaders::Get( "MSAA Resolve" );
+	shader_tone_mapping = Engine::BuiltinShaders::Get( "Tone Mapping" );
+
 /* Instancing Data: */
 	ResetInstanceData();
 
@@ -414,6 +417,12 @@ void SandboxApplication::Initialize()
 
 	mirror_quad_renderable = Engine::Renderable( &quad_mesh_mirror, &mirror_quad_material );
 	renderer.AddRenderable( &mirror_quad_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
+
+	msaa_resolve_renderable = Engine::Renderable( &quad_mesh_fullscreen, &msaa_resolve_material );
+	renderer.AddRenderable( &msaa_resolve_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
+
+	tone_mapping_renderable = Engine::Renderable( &quad_mesh_fullscreen, &tone_mapping_material );
+	renderer.AddRenderable( &tone_mapping_renderable, Engine::Renderer::QUEUE_ID_FINAL );
 
 	mirror_quad_renderable.ToggleOnOrOff( not render_rear_view_cam_to_imgui );
 
@@ -726,6 +735,8 @@ void SandboxApplication::RenderImGui()
 		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), renderer );
 	Engine::ImGuiDrawer::Draw( outline_material, renderer );
 	Engine::ImGuiDrawer::Draw( mirror_quad_material, renderer );
+	Engine::ImGuiDrawer::Draw( msaa_resolve_material, renderer );
+	Engine::ImGuiDrawer::Draw( tone_mapping_material, renderer );
 
 	if( ImGui::Begin( "Instance Data" ) )
 	{
@@ -1000,6 +1011,9 @@ void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, c
 
 	mirror_quad_material.SetTexture( "uniform_texture_slot", &renderer.CustomFramebuffer( 0 ).ColorAttachment() );
 
+	msaa_resolve_material.SetTexture( "uniform_texture_slot", &renderer.MainFramebuffer().ColorAttachment() );
+	tone_mapping_material.SetTexture( "uniform_texture_slot", &renderer.PostProcessingFramebuffer().ColorAttachment() );
+
 	cube_reflected_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
 	cube_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
 	ground_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
@@ -1127,6 +1141,12 @@ void SandboxApplication::ResetMaterialData()
 	outline_material = Engine::Material( "Outline", shader_outline );
 
 	mirror_quad_material = Engine::Material( "Rear-view Mirror", shader_texture_blit );
+
+	msaa_resolve_material = Engine::Material( "MSAA Resolve", shader_msaa_resolve );
+	msaa_resolve_material.Set( "uniform_sample_count", 4 );
+
+	tone_mapping_material = Engine::Material( "Tone Mapping", shader_tone_mapping );
+	tone_mapping_material.Set( "uniform_exposure", 1.0f );
 
 	ground_quad_surface_data = wall_surface_data = cube_surface_data =
 	{

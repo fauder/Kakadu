@@ -79,11 +79,6 @@ namespace Engine
 
 		InitializeBuiltinQueues();
 		InitializeBuiltinPasses();
-
-		InitializeInternalMeshes();
-		InitializeInternalShaders();
-		InitializeInternalMaterials();
-		InitializeInternalRenderables();
 	}
 
 	Renderer::~Renderer()
@@ -408,10 +403,6 @@ namespace Engine
 		for( auto& shader : shaders_registered )
 			ImGuiDrawer::Draw( *shader );
 
-		/* Materials: */
-		ImGuiDrawer::Draw( msaa_resolve_material, *this );
-		ImGuiDrawer::Draw( tone_mapping_material, *this );
-
 		/* Uniforms (Renderer-scope): */
 		ImGuiDrawer::Draw( uniform_buffer_management_intrinsic, "Shader Intrinsics" );
 		ImGuiDrawer::Draw( uniform_buffer_management_global,	"Shader Globals" );
@@ -532,9 +523,6 @@ namespace Engine
 				}
 			}
 		}
-
-		msaa_resolve_material.SetTexture( "uniform_texture_slot", &framebuffer_main.ColorAttachment() );
-		tone_mapping_material.SetTexture( "uniform_texture_slot", &framebuffer_postprocessing.ColorAttachment() );
 	}
 
 	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
@@ -1426,43 +1414,6 @@ namespace Engine
 			else
 				logger.Error( "\"" + shader->name + "\" shader's source files are modified but it could not be recompiled successfully." );
 		}
-	}
-
-	void Renderer::InitializeInternalMeshes()
-	{
-		full_screen_quad_mesh = Mesh( Primitive::NonIndexed::Quad_FullScreen::Positions,
-									  "[Renderer] Quad (FullScreen)",
-									  { /* No normals. */ },
-									  Primitive::NonIndexed::Quad_FullScreen::UVs,
-									  { /* No indices. */ } );
-	}
-
-	void Renderer::InitializeInternalShaders()
-	{
-		shader_msaa_resolve = BuiltinShaders::Get( "MSAA Resolve" );
-		shader_tone_mapping = BuiltinShaders::Get( "Tone Mapping" );
-	}
-
-	void Renderer::InitializeInternalMaterials()
-	{
-		// TODO: Handle No MSAA case.
-
-		msaa_resolve_material = Material( "[Renderer] MSAA Resolve", shader_msaa_resolve );
-		msaa_resolve_material.Set( "uniform_sample_count", ( int )framebuffer_main_msaa_sample_count );
-
-		// TODO: Handle no tone mapping case.
-
-		tone_mapping_material = Material( "[Renderer] Tone Mapping", shader_tone_mapping );
-		tone_mapping_material.Set( "uniform_exposure", 1.0f );
-	}
-
-	void Renderer::InitializeInternalRenderables()
-	{
-		msaa_resolve_renderable = Renderable( &full_screen_quad_mesh, &msaa_resolve_material );
-		AddRenderable( &msaa_resolve_renderable, QUEUE_ID_MSAA_RESOLVE );
-
-		tone_mapping_renderable = Renderable( &full_screen_quad_mesh, &tone_mapping_material );
-		AddRenderable( &tone_mapping_renderable, QUEUE_ID_FINAL );
 	}
 
 	std::vector< RenderQueue* >& Renderer::RenderQueuesContaining( const Renderable* renderable_of_interest )
