@@ -10,6 +10,7 @@
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 #include <Tracy/tracy/Tracy.hpp>
+#include <Tracy/tracy/TracyOpenGL.hpp>
 
 /* To enable some .natvis functionality: */
 #include "Natvis/Natvis.h"
@@ -80,9 +81,13 @@ namespace Engine
 
 	void Application::Run()
 	{
+		TracyGpuContext;
+
 		/* The render loop. */
 		while( !Platform::ShouldClose() )
 		{
+			TracyGpuZone( "GPU Time" );
+
 			CalculateTimeInformation();
 
 			Platform::PollEvents();
@@ -106,8 +111,12 @@ namespace Engine
 				ImGuiSetup::EndFrame();
 			}
 
-			Platform::SwapBuffers();
+			{
+				ZoneScopedN( "Swap Buffers" );
+				Platform::SwapBuffers();
+			}
 
+			TracyGpuCollect;
 			FrameMark;
 		}
 	}
