@@ -237,11 +237,6 @@ namespace Engine
 		void CalculateShadowMappingInformation();
 		void RecompileModifiedShaders();
 
-		void InitializeInternalMeshes();
-		void InitializeInternalShaders();
-		void InitializeInternalMaterials();
-		void InitializeInternalRenderables();
-
 		/*
 		 * Pass, Queue & Renderable:
 		 */
@@ -359,24 +354,6 @@ namespace Engine
 
 		std::unordered_set< Shader* > shaders_registered;
 		std::unordered_map< Shader*, Shader::ReferenceCount > shaders_registered_reference_count_map;
-
-		Engine::Mesh full_screen_quad_mesh;
-
-		/*
-		 * Rendering/MSAA:
-		 */
-
-		Engine::Material msaa_resolve_material;
-		Engine::Renderable msaa_resolve_renderable;
-		Engine::Shader* shader_msaa_resolve;
-
-		/*
-		 * Rendering/Tone Mapping:
-		 */
-
-		Engine::Material tone_mapping_material;
-		Engine::Renderable tone_mapping_renderable;
-		Engine::Shader* shader_tone_mapping;
 
 		/*
 		 * Uniform Management:

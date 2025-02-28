@@ -110,6 +110,9 @@ private:
 
 	Engine::Renderable mirror_quad_renderable;
 
+	Engine::Renderable msaa_resolve_renderable;
+	Engine::Renderable tone_mapping_renderable;
+
 	static constexpr Engine::RenderPass::ID RENDER_PASS_ID_LIGHTING_REAR_VIEW = Engine::RenderPass::ID( ( unsigned int )Engine::Renderer::PASS_ID_LIGHTING - 1 );
 
 /* Textures: */
@@ -152,6 +155,9 @@ private:
 
 	Engine::Shader* shader_texture_blit;
 
+	Engine::Shader* shader_msaa_resolve;
+	Engine::Shader* shader_tone_mapping;
+
 /* Models: */
 	ModelInfo test_model_info;
 	ModelInfo meteorite_model_info;
@@ -174,6 +180,9 @@ private:
 	Engine::Material mirror_quad_material;
 
 	Engine::Material sphere_material;
+
+	Engine::Material msaa_resolve_material;
+	Engine::Material tone_mapping_material;
 
 /* Instancing Data: */
 
