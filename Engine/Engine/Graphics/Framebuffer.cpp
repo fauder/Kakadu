@@ -129,7 +129,7 @@ namespace Engine
 		{
 			Engine::AssetDatabase< Texture >::RemoveAsset( color_attachment->Name() );
 
-			CreateTextureAndAttachToFramebuffer( color_attachment, " Color Tex. ", GL_COLOR_ATTACHMENT0,
+			CreateTextureAndAttachToFramebuffer( color_attachment, " Color ", GL_COLOR_ATTACHMENT0,
 												 description.color_format == Texture::Format::NOT_ASSIGNED ? Texture::Format::RGBA : description.color_format,
 												 description );
 		}
@@ -138,7 +138,7 @@ namespace Engine
 		{
 			Engine::AssetDatabase< Texture >::RemoveAsset( depth_stencil_attachment->Name() );
 
-			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S Tex. ", GL_DEPTH_STENCIL_ATTACHMENT, Texture::Format::DEPTH_STENCIL,
+			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S ", GL_DEPTH_STENCIL_ATTACHMENT, Texture::Format::DEPTH_STENCIL,
 												 description );
 		}
 		else
@@ -147,14 +147,14 @@ namespace Engine
 			{
 				Engine::AssetDatabase< Texture >::RemoveAsset( depth_attachment->Name() );
 
-				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth Tex. ", GL_DEPTH_ATTACHMENT, Texture::Format::DEPTH,
+				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth ", GL_DEPTH_ATTACHMENT, Texture::Format::DEPTH,
 													 description );
 			}
 			if( description.attachment_bits.IsSet( AttachmentType::Stencil ) )
 			{
 				Engine::AssetDatabase< Texture >::RemoveAsset( stencil_attachment->Name() );
 
-				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil Tex. ", GL_STENCIL_ATTACHMENT, Texture::Format::STENCIL,
+				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil ", GL_STENCIL_ATTACHMENT, Texture::Format::STENCIL,
 													 description );
 			}
 		}
@@ -191,7 +191,7 @@ namespace Engine
 
 		if( description.attachment_bits.IsSet( AttachmentType::Color ) )
 		{
-			CreateTextureAndAttachToFramebuffer( color_attachment, " Color Tex. ", GL_COLOR_ATTACHMENT0,
+			CreateTextureAndAttachToFramebuffer( color_attachment, " Color ", GL_COLOR_ATTACHMENT0,
 												 description.color_format == Texture::Format::NOT_ASSIGNED ? Texture::Format::RGBA : description.color_format,
 												 description );
 			clear_targets.Set( ClearTarget::ColorBuffer );
@@ -199,7 +199,7 @@ namespace Engine
 
 		if( description.attachment_bits.IsSet( AttachmentType::DepthStencilCombined ) )
 		{
-			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S Tex. ", GL_DEPTH_STENCIL_ATTACHMENT, Texture::Format::DEPTH_STENCIL,
+			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S ", GL_DEPTH_STENCIL_ATTACHMENT, Texture::Format::DEPTH_STENCIL,
 												 description );
 			clear_targets.Set( ClearTarget::DepthBuffer, ClearTarget::StencilBuffer );
 		}
@@ -207,13 +207,13 @@ namespace Engine
 		{
 			if( description.attachment_bits.IsSet( AttachmentType::Depth ) )
 			{
-				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth Tex. ", GL_DEPTH_ATTACHMENT, Texture::Format::DEPTH,
+				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth ", GL_DEPTH_ATTACHMENT, Texture::Format::DEPTH,
 													 description );
 				clear_targets.Set( ClearTarget::DepthBuffer );
 			}
 			if( description.attachment_bits.IsSet( AttachmentType::Stencil ) )
 			{
-				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil Tex. ", GL_STENCIL_ATTACHMENT, Texture::Format::STENCIL,
+				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil ", GL_STENCIL_ATTACHMENT, Texture::Format::STENCIL,
 													 description );
 				clear_targets.Set( ClearTarget::StencilBuffer );
 			}
