@@ -390,8 +390,8 @@ namespace Engine
 
 		CameraInfo current_camera_info;
 
-		bool update_uniform_buffer_lighting;
-		bool update_uniform_buffer_other;
+		bool shaders_need_uniform_buffer_lighting;
+		bool shaders_need_uniform_buffer_other;
 
 		/*
 		 * Color Space:

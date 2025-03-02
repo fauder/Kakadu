@@ -52,8 +52,8 @@ namespace Engine
 		framebuffer_main_color_format( main_framebuffer_color_format ),
 		lights_point_active_count( 0 ),
 		lights_spot_active_count( 0 ),
-		update_uniform_buffer_lighting( false ),
-		update_uniform_buffer_other( false ),
+		shaders_need_uniform_buffer_lighting( false ),
+		shaders_need_uniform_buffer_other( false ),
 		framebuffer_sRGB_encoding_is_enabled( false ),
 		gamma_correction_is_enabled( enable_gamma_correction )
 	{
@@ -71,7 +71,7 @@ namespace Engine
 		BuiltinShaders::Initialize( *this );
 		BuiltinTextures::Initialize();
 
-		if( update_uniform_buffer_lighting )
+		if( shaders_need_uniform_buffer_lighting )
 		{
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Lighting", "_INTRINSIC_SHADOW_BIAS_MIN_MAX_2_RESERVED", Vector4( 0.005f, 0.05f, 0.0f, 0.0f ) );
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Lighting", "_INTRINSIC_SHADOW_SAMPLE_COUNT_X_Y",		Vector2I( 3, 3 ) );
@@ -421,7 +421,7 @@ namespace Engine
 	{
 		glViewport( 0, 0, new_width_in_pixels, new_height_in_pixels );
 
-		if( update_uniform_buffer_other )
+		if( shaders_need_uniform_buffer_other )
 		{
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Other", "_INTRINSIC_VIEWPORT_SIZE", Vector2( ( float )new_width_in_pixels, ( float )new_height_in_pixels ) );
 		}
@@ -831,13 +831,13 @@ namespace Engine
 		if( shader.GetUniformBufferInfoMap_Intrinsic().contains( "_Intrinsic_Lighting" ) )
 		{
 			shaders_using_intrinsics_lighting.insert( &shader );
-			update_uniform_buffer_lighting = true;
+			shaders_need_uniform_buffer_lighting = true;
 		}
 
 		if( shader.GetUniformBufferInfoMap_Intrinsic().contains( "_Intrinsic_Other" ) )
 		{
 			shaders_using_intrinsics_other.insert( &shader );
-			update_uniform_buffer_other = true;
+			shaders_need_uniform_buffer_other = true;
 		}
 
 		if( ++shaders_registered_reference_count_map[ &shader ] == 1 )
@@ -882,14 +882,14 @@ namespace Engine
 			iterator != shaders_using_intrinsics_lighting.cend() )
 		{
 			shaders_using_intrinsics_lighting.erase( iterator );
-			update_uniform_buffer_lighting = not shaders_using_intrinsics_lighting.empty();
+			shaders_need_uniform_buffer_lighting = not shaders_using_intrinsics_lighting.empty();
 		}
 
 		if( auto iterator = shaders_using_intrinsics_other.find( &shader );
 			iterator != shaders_using_intrinsics_other.cend() )
 		{
 			shaders_using_intrinsics_other.erase( iterator );
-			update_uniform_buffer_other = not shaders_using_intrinsics_other.empty();
+			shaders_need_uniform_buffer_other = not shaders_using_intrinsics_other.empty();
 		}
 
 		shaders_registered.erase( &shader );
@@ -1266,7 +1266,7 @@ namespace Engine
 		if( targets == IntrinsicModifyTarget::None )
 			return;
 
-		if( update_uniform_buffer_other && targets.IsSet( IntrinsicModifyTarget::UniformBuffer_Projection ) )
+		if( shaders_need_uniform_buffer_other && targets.IsSet( IntrinsicModifyTarget::UniformBuffer_Projection ) )
 		{
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Other", "_INTRINSIC_TRANSFORM_PROJECTION", current_camera_info.projection_matrix );
 			if( not targets.IsSet( IntrinsicModifyTarget::UniformBuffer_View ) ) // No need to upload twice.
@@ -1285,14 +1285,14 @@ namespace Engine
 		const auto& view_matrix_3x3           = view_matrix.SubMatrix< 3 >();
 		const auto& view_matrix_rotation_only = Matrix4x4( view_matrix_3x3 );
 
-		if( update_uniform_buffer_other && targets.IsSet( IntrinsicModifyTarget::UniformBuffer_View ) )
+		if( shaders_need_uniform_buffer_other && targets.IsSet( IntrinsicModifyTarget::UniformBuffer_View ) )
 		{
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Other", "_INTRINSIC_TRANSFORM_VIEW",				view_matrix );
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Other", "_INTRINSIC_TRANSFORM_VIEW_ROTATION_ONLY",	view_matrix_rotation_only );
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Other", "_INTRINSIC_TRANSFORM_VIEW_PROJECTION",		current_camera_info.view_projection_matrix );
 		}
 
-		if( update_uniform_buffer_lighting && targets.IsSet( IntrinsicModifyTarget::UniformBuffer_Lighting ) )
+		if( shaders_need_uniform_buffer_lighting && targets.IsSet( IntrinsicModifyTarget::UniformBuffer_Lighting ) )
 		{
 			/* Lighting is always updated, regardless of dirty state. That's because I don't want to deal with it right now. */
 
@@ -1339,7 +1339,7 @@ namespace Engine
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Lighting", "_INTRINSIC_SPOT_LIGHT_ACTIVE_COUNT", lights_spot_active_count );
 		}
 
-		if( update_uniform_buffer_lighting && targets.IsSet( IntrinsicModifyTarget::UniformBuffer_Lighting_ShadowMapping ) )
+		if( shaders_need_uniform_buffer_lighting && targets.IsSet( IntrinsicModifyTarget::UniformBuffer_Lighting_ShadowMapping ) )
 		{
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Lighting", "_INTRINSIC_DIRECTIONAL_LIGHT_VIEW_PROJECTION_TRANSFORM", 
 															light_directional_view_projection_transform_matrix );
