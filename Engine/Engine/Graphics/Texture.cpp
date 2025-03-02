@@ -80,7 +80,7 @@ namespace Engine
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), this->name + " (" + std::to_string( sample_count ) + " samples) " );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), this->name + " (MSAA " + std::to_string( sample_count ) + "x) " );
 #endif // _EDITOR
 
 		glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, sample_count, InternalFormat( format ), width, height, GL_TRUE );
