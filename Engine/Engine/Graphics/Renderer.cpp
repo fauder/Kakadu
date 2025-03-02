@@ -11,13 +11,13 @@
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 #define CONSOLE_ERROR( message ) logger.Error( ICON_FA_DRAW_POLYGON " " message )
 #else
 #define CONSOLE_ERROR( message ) do {} while( false )
-#endif
+#endif // _EDITOR
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 #define CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id )\
 if( not render_pass_map.contains( pass_id ) )\
 {\
@@ -26,9 +26,9 @@ if( not render_pass_map.contains( pass_id ) )\
 }
 #else
 #define CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id ) do {} while( false )
-#endif
+#endif // _EDITOR
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 #define CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id )\
 if( not render_queue_map.contains( queue_id ) )\
 {\
@@ -37,7 +37,7 @@ if( not render_queue_map.contains( queue_id ) )\
 }
 #else
 #define CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id ) do {} while( false )
-#endif
+#endif // _EDITOR
 
 namespace Engine
 {
@@ -99,10 +99,10 @@ namespace Engine
 
 	void Renderer::UpdatePerPass( const RenderPass::ID pass_id_to_update, Camera& camera )
 	{
-#ifdef _DEBUG
+#ifdef _EDITOR
 		if( not render_pass_map.contains( pass_id_to_update ) )
 			CONSOLE_ERROR( " UpdatePerPass() called for non-existing pass." );
-#endif // _DEBUG
+#endif // _EDITOR
 
 		auto& pass = render_pass_map[ pass_id_to_update ];
 
@@ -638,7 +638,7 @@ namespace Engine
 
 	void Renderer::TogglePass( const RenderPass::ID pass_id_to_toggle, const bool enable )
 	{
-#ifdef _DEBUG
+#ifdef _EDITOR
 		if( auto iterator = render_pass_map.find( pass_id_to_toggle );
 			iterator != render_pass_map.cend() )
 		{
@@ -648,7 +648,7 @@ namespace Engine
 			CONSOLE_ERROR( "Attempting to toggle a non-existing pass!" );
 #else
 		render_pass_map[ pass_id_to_toggle ].is_enabled = enable;
-#endif
+#endif // EDITOR
 	}
 
 	bool Renderer::PassHasContentToRender( const RenderPass& pass_to_query ) const
@@ -691,7 +691,7 @@ namespace Engine
 
 	void Renderer::ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable )
 	{
-	#ifdef _DEBUG
+	#ifdef _EDITOR
 		if( auto iterator = render_queue_map.find( queue_id_to_toggle );
 			iterator != render_queue_map.cend() )
 		{
@@ -701,7 +701,7 @@ namespace Engine
 			CONSOLE_ERROR( "Attempting to toggle a non-existing queue!" );
 	#else
 		render_queue_map[ queue_id_to_toggle ].is_enabled = enable;
-	#endif
+	#endif // _EDITOR
 	}
 
 	bool Renderer::QueueHasContentToRender( const RenderQueue& queue_to_query ) const

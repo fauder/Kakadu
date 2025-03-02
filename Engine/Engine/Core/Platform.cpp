@@ -32,9 +32,9 @@ namespace Platform
 	bool MOUSE_CAPTURE_ENABLED = false;
 	std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )	> KEYBOARD_CALLBACK;
 	std::function< void( const int width_new_pixels, const int height_new_pixels )				> FRAMEBUFFER_RESIZE_CALLBACK;
-#ifdef _DEBUG
+#ifdef _EDITOR
 	std::function< void( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
-#endif // _DEBUG
+#endif // _EDITOR
 
 	void OnResizeWindow( GLFWwindow* window, const int width_new_pixels, const int height_new_pixels )
 	{
@@ -86,12 +86,12 @@ namespace Platform
 			KEYBOARD_CALLBACK( KeyCode( key_code ), KeyAction( action ), KeyMods( mods ) );
 	}
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 	void OnDebugOutput( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters )
 	{
 		GL_DEBUG_OUTPUT_CALLBACK( source, type, id, severity, length, message, parameters );
 	}
-#endif // _DEBUG
+#endif // _EDITOR
 
 	/* GLAD needs the created window's context made current BEFORE it is initialized. */
 	void InitializeGLAD()
@@ -100,7 +100,7 @@ namespace Platform
 			throw std::logic_error( "ERROR::GRAPHICS::GLAD::FAILED_TO_INITIALIZE!" );
 	}
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 	void RegisterGLDebugOutputCallback()
 	{
 		glEnable( GL_DEBUG_OUTPUT );
@@ -108,7 +108,7 @@ namespace Platform
 
 		glDebugMessageCallback( OnDebugOutput, nullptr );
 	}
-#endif // _DEBUG
+#endif // _EDITOR
 
 	void RegisterFrameBufferResizeCallback()
 	{
@@ -139,9 +139,9 @@ namespace Platform
 
 		glfwInit();
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 		glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, true );
-#endif // _DEBUG
+#endif // _EDITOR
 		glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
 		glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 6 );
 		glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
@@ -173,7 +173,7 @@ namespace Platform
 		if( msaa_sample_count.has_value() )
 			glEnable( GL_MULTISAMPLE );
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 		int gl_debug_context_flags = 0;
 		glGetIntegerv( GL_CONTEXT_FLAGS, &gl_debug_context_flags );
 
@@ -183,7 +183,7 @@ namespace Platform
 			std::cerr << "Could not create OpenGL debug context!\n";
 
 		RegisterGLDebugOutputCallback();
-#endif // _DEBUG
+#endif // _EDITOR
 
 		SetWindowIcon();
 
@@ -345,7 +345,7 @@ namespace Platform
 		glfwPollEvents();
 	}
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 	/*
 	 * GL Debug Output:
 	 */
@@ -354,7 +354,7 @@ namespace Platform
 	{
 		GL_DEBUG_OUTPUT_CALLBACK = callback;
 	}
-#endif // _DEBUG
+#endif // _EDITOR
 
 	/*
 	 * Keyboard IO:

@@ -234,9 +234,9 @@ namespace Engine
 
 		if( link_result )
 		{
-		#ifdef _DEBUG
+		#ifdef _EDITOR
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_PROGRAM, program_id.Get(), name );
-		#endif // _DEBUG
+		#endif // _EDITOR
 
 			QueryVertexAttributes();
 

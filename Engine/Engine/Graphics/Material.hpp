@@ -64,23 +64,23 @@ namespace Engine
 		template< typename UniformType >
 		void Set( const std::string& uniform_name, const UniformType& value )
 		{
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( not HasUniform( uniform_name ) )
 			{
 				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" does not exist!)" );
 				return;
 			}
-#endif // _DEBUG
+#endif // _EDITOR
 
 			const auto& uniform_info = GetUniformInformation( uniform_name );
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( uniform_info.size != sizeof( value ) )
 			{
 				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" is being set with a type of unmatching size!)" );
 				return;
 			}
-#endif // _DEBUG
+#endif // _EDITOR
 
 			uniform_blob_default_block.Set( value, uniform_info.offset );
 		}
@@ -88,23 +88,23 @@ namespace Engine
 		template< typename UniformType >
 		void SetArray( const std::string& uniform_name, const UniformType* address )
 		{
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( not HasUniform( uniform_name ) )
 			{
 				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" does not exist!)" );
 				return;
 			}
-#endif // _DEBUG
+#endif // _EDITOR
 
 			const auto& uniform_info = GetUniformInformation( uniform_name );
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( uniform_info.size != sizeof( UniformType ) )
 			{
 				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" is being set with a pointer type of unmatching size!)" );
 				return;
 			}
-#endif // _DEBUG
+#endif // _EDITOR
 
 			uniform_blob_default_block.Set( ( std::byte* )address, uniform_info.offset, sizeof( UniformType )* uniform_info.count_array );
 		}
@@ -171,24 +171,24 @@ namespace Engine
 		template< typename UniformType >
 		void SetAndUploadUniform( const std::string& uniform_name, const UniformType& value ) // Renderer calls this, it has private access through friend declaration.
 		{
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( not HasUniform( uniform_name ) )
 			{
 				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" does not exist!)" );
 				return;
 			}
-#endif // _DEBUG
+#endif // _EDITOR
 
 			Set( uniform_name, value );
 			const auto& uniform_info = GetUniformInformation( uniform_name );
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( uniform_info.size != sizeof( value ) )
 			{
 				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" is being set & uploaded with a type of unmatching size!)" );
 				return;
 			}
-#endif // _DEBUG
+#endif // _EDITOR
 
 			uniform_blob_default_block.Set( value, uniform_info.offset );
 
@@ -198,24 +198,24 @@ namespace Engine
 		template< typename UniformType >
 		void SetAndUploadUniformArray( const std::string& uniform_name, const UniformType& value ) // Renderer calls this, it has private access through friend declaration.
 		{
-		#ifdef _DEBUG
+#ifdef _EDITOR
 			if( not HasUniform( uniform_name ) )
 			{
 				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" does not exist!)" );
 				return;
 			}
-#endif // _DEBUG
+#endif // _EDITOR
 
 			Set( uniform_name, value );
 			const auto& uniform_info = GetUniformInformation( uniform_name );
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( uniform_info.size != sizeof( UniformType ) )
 			{
 				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" is being set & uploaded with a pointer type of unmatching size!)" );
 				return;
 			}
-#endif // _DEBUG
+#endif // _EDITOR
 
 			uniform_blob_default_block.Set( value, uniform_info.offset, uniform_info.count_array );
 

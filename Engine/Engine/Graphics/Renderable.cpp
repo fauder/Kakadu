@@ -27,7 +27,7 @@ namespace Engine
 		is_enabled( true ),
 		is_receiving_shadows( receive_shadows )
 	{
-#ifdef _DEBUG
+#if defined( _DEBUG ) || defined( _EDITOR )
 		if( mesh->VertexCount() == 0 )
 		{
 		#if defined( _WIN32 ) && defined( _DEBUG )
@@ -37,7 +37,7 @@ namespace Engine
 
 			ServiceLocator< GLLogger >::Get().Error( "Renderable construction attempt via uninitialized Mesh!" );
 		}
-#endif // _DEBUG
+#endif // _DEBUG || _EDITOR
 	}
 
 	Renderable::~Renderable()

@@ -45,10 +45,10 @@ namespace Engine
 
 			Create( nullptr, usage );
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( not name.empty() )
 				ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.Get(), name );
-#endif // _DEBUG
+#endif // _EDITOR
 		}
 
 		template< typename BufferElementType >
@@ -64,10 +64,10 @@ namespace Engine
 
 			Create( ( void* )data_span.data(), usage );
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( not name.empty() )
 				ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.Get(), name );
-#endif // _DEBUG
+#endif // _EDITOR
 		}
 
 		/* To support cases where the count can not be deduced from the type alone;
@@ -87,10 +87,10 @@ namespace Engine
 
 			Create( ( void* )data_span.data(), usage );
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 			if( not name.empty() )
 				ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.Get(), name );
-#endif // _DEBUG
+#endif // _EDITOR
 		}
 
 		Buffer( const Buffer& other )
@@ -192,7 +192,7 @@ namespace Engine
 		{
 			if( IsValid() && --REF_COUNT_MAP[ id ] == 0 )
 			{
-#ifdef _DEBUG
+#ifdef _EDITOR
 				switch( TargetType )
 				{
 					case GL_ARRAY_BUFFER:			std::cout << "Deleting Vertex (or Instance) Buffer "; break;
@@ -201,7 +201,7 @@ namespace Engine
 				}
 
 				std::cout << id.Get() << ".\n";
-#endif // _DEBUG
+#endif // _EDITOR
 
 				glDeleteBuffers( 1, id.Address() );
 				REF_COUNT_MAP.erase( id );

@@ -117,13 +117,13 @@ namespace Engine
 
 		size = { new_width_in_pixels, new_height_in_pixels };
 
-	#ifdef _DEBUG
+#ifdef _EDITOR
 		if( not name.empty() )
 		{
 			const std::string full_name( IsMultiSampled() ? this->name + " (" + std::to_string( msaa.sample_count ) + " samples)" : this->name );
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), full_name );
 		}
-	#endif // _DEBUG
+#endif // _EDITOR
 
 		if( description.attachment_bits.IsSet( AttachmentType::Color ) )
 		{
@@ -181,13 +181,13 @@ namespace Engine
 		glGenFramebuffers( 1, id.Address() );
 		Bind();
 
-	#ifdef _DEBUG
+#ifdef _EDITOR
 		if( not name.empty() )
 		{
 			const std::string full_name( IsMultiSampled() ? this->name + " (" + std::to_string( msaa.sample_count ) + " samples)" : this->name );
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), full_name );
 		}
-	#endif // _DEBUG
+#endif // _EDITOR
 
 		if( description.attachment_bits.IsSet( AttachmentType::Color ) )
 		{

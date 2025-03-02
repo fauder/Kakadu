@@ -52,11 +52,11 @@ namespace Engine
 	#ifdef _DEBUG
 		else
 		{
-			throw std::runtime_error( "UniformBlockBindingPointManager::ConnectBufferToBlock(): Block with name \"" + block_name + "\" was not registered." );
 		#if defined( _WIN32 )
 			if( IsDebuggerPresent() )
 				OutputDebugStringA( ( "\nUniformBlockBindingPointManager::ConnectBufferToBlock(): Block with name \"" + block_name + "\" was not registered.\n" ).c_str() );
 		#endif // _WIN32
+			throw std::runtime_error( "UniformBlockBindingPointManager::ConnectBufferToBlock(): Block with name \"" + block_name + "\" was not registered." );
 		}
 	#endif // _DEBUG
 	}

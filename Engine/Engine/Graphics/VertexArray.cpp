@@ -149,10 +149,10 @@ namespace Engine
 		glGenVertexArrays( 1, id.Address() );
 		Bind();
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 		if( not name.empty() )
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), name );
-#endif // _DEBUG
+#endif // _EDITOR
 
 		vertex_buffer.Bind();
 		vertex_layout.SetAndEnableAttributes_NonInstanced();
@@ -163,10 +163,10 @@ namespace Engine
 		glGenVertexArrays( 1, id.Address() );
 		Bind();
 
-	#ifdef _DEBUG
+	#ifdef _EDITOR
 		if( not name.empty() )
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), name );
-	#endif // _DEBUG
+	#endif // _EDITOR
 
 		vertex_buffer.Bind();
 		vertex_layout.SetAndEnableAttributes_NonInstanced();

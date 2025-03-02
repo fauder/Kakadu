@@ -41,10 +41,10 @@ namespace Engine
 		glGenTextures( 1, id.Address() );
 		Bind();
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 		if( not name.empty() )
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), this->name );
-#endif // _DEBUG
+#endif // _EDITOR
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );
@@ -78,10 +78,10 @@ namespace Engine
 		glGenTextures( 1, id.Address() );
 		Bind();
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 		if( not name.empty() )
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), this->name + " (" + std::to_string( sample_count ) + " samples) " );
-#endif // _DEBUG
+#endif // _EDITOR
 
 		glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, sample_count, InternalFormat( format ), width, height, GL_TRUE );
 
@@ -109,10 +109,10 @@ namespace Engine
 		glGenTextures( 1, id.Address() );
 		Bind();
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 		if( not name.empty() )
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), this->name );
-#endif // _DEBUG
+#endif // _EDITOR
 
 
 		for( auto i = 0; i < 6; i++ )
@@ -240,10 +240,10 @@ namespace Engine
 		glGenTextures( 1, id.Address() );
 		Bind();
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 		if( not name.empty() )
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), this->name );
-#endif // _DEBUG
+#endif // _EDITOR
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );
@@ -280,10 +280,10 @@ namespace Engine
 		glGenTextures( 1, id.Address() );
 		Bind();
 
-#ifdef _DEBUG
+#ifdef _EDITOR
 		if( not name.empty() )
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), this->name );
-#endif // _DEBUG
+#endif // _EDITOR
 
 		for( auto i = 0; i < 6; i++ )
 			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -305,9 +305,9 @@ namespace Engine
 	{
 		if( IsValid() )
 		{
-#ifdef _DEBUG
+#ifdef _EDITOR
 			std::cout << "Deleting Texture id #" << id.Get() << ": " << name << ".\n";
-#endif // _DEBUG
+#endif // _EDITOR
 
 			glDeleteTextures( 1, id.Address() );
 			id.Reset(); // OpenGL does not reset the id to zero.
