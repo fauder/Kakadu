@@ -37,7 +37,7 @@ namespace Engine
 
 			if( ( section.offset + section.size ) == next_section.offset )
 			{
-				// Remove the first one (actually mark for removal) & grow the next one to include both. This way, as the loop iterates forward, merging > 2 sections is possible.
+				// Remove the first one (rather; mark for removal) & grow the next one to include both. This way, as the loop iterates forward, merging > 2 sections is possible.
 				next_section.offset = section.offset;
 				next_section.size  += section.size;
 
