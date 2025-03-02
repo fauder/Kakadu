@@ -72,7 +72,7 @@ SandboxApplication::SandboxApplication( const Engine::BitFlags< Engine::Creation
 	camera_rotation_speed( 5.0f ),
 	camera_move_speed( 5.0f ),
 	camera_controller( &camera, camera_rotation_speed ),
-	ui_interaction_enabled( false ),
+	ui_interaction_enabled( true ),
 	show_imgui_demo_window( false ),
 	render_rear_view_cam_to_imgui( true )
 {

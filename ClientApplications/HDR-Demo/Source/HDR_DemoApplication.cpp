@@ -43,7 +43,7 @@ HDR_DemoApplication::HDR_DemoApplication( const Engine::BitFlags< Engine::Creati
 	camera_rotation_speed( 5.0f ),
 	camera_move_speed( 5.0f ),
 	camera_controller( &camera, camera_rotation_speed ),
-	ui_interaction_enabled( false ),
+	ui_interaction_enabled( true ),
 	show_imgui_demo_window( false )
 {
 	Initialize();
