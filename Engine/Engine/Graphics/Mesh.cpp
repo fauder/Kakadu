@@ -97,28 +97,28 @@ namespace Engine
 	Mesh::~Mesh()
 	{}
 
-	void Mesh::Update( const void* data ) const
+	void Mesh::Upload( const void* data ) const
 	{
-		vertex_buffer.Update( data );
+		vertex_buffer.Upload( data );
 	}
 
-	void Mesh::Update_Partial( const std::span< std::byte > data_span, const std::size_t offset_from_buffer_start ) const
+	void Mesh::Upload_Partial( const std::span< std::byte > data_span, const std::size_t offset_from_buffer_start ) const
 	{
-		vertex_buffer.Update_Partial( data_span, offset_from_buffer_start );
+		vertex_buffer.Upload_Partial( data_span, offset_from_buffer_start );
 	}
 
 	void Mesh::UpdateInstanceData( const void* data ) const
 	{
 		ASSERT_DEBUG_ONLY( instance_buffer && "UpdateInstanceData() called on non-instanced Mesh!" );
 
-		instance_buffer->Update( data );
+		instance_buffer->Upload( data );
 	}
 
 	void Mesh::UpdateInstanceData_Partial( const std::span< std::byte > data_span, const std::size_t offset_from_buffer_start ) const
 	{
 		ASSERT_DEBUG_ONLY( instance_buffer && "UpdateInstanceData_Partial() called on non-instanced Mesh!" );
 
-		instance_buffer->Update_Partial( data_span, offset_from_buffer_start );
+		instance_buffer->Upload_Partial( data_span, offset_from_buffer_start );
 	}
 
 	std::array< VertexAttribute, 4 > Mesh::GatherAttributes( const std::span< const Vector3 >& positions,

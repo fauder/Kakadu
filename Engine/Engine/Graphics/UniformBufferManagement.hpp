@@ -178,14 +178,14 @@ namespace Engine
 						uniform_blob.MergeConsecutiveDirtySections();
 						const auto& dirty_sections = uniform_blob.DirtySections();
 						for( auto& dirty_section : dirty_sections )
-							uniform_buffer->Update_Partial( uniform_blob.SpanFromSection( dirty_section ), dirty_section.offset );
+							uniform_buffer->Upload_Partial( uniform_blob.SpanFromSection( dirty_section ), dirty_section.offset );
 
 						uniform_blob.ClearDirtySections();
 					}
 				}
 				else // Regular Blob.
 				{
-					uniform_buffer->Update( uniform_blob.Get( 0 ) );
+					uniform_buffer->Upload( uniform_blob.Get( 0 ) );
 				}
 			}
 		}

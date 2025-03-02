@@ -153,13 +153,13 @@ namespace Engine
 			glBindBuffer( TargetType, id.Get() );
 		}
 
-		void Update( const void* data ) const
+		void Upload( const void* data ) const
 		{
 			Bind();
 			glBufferSubData( TargetType, 0, size, data );
 		}
 
-		void Update_Partial( const std::span< std::byte > data_span, const std::size_t offset_from_buffer_start ) const
+		void Upload_Partial( const std::span< std::byte > data_span, const std::size_t offset_from_buffer_start ) const
 		{
 			Bind();
 			glBufferSubData( TargetType, ( GLintptr )offset_from_buffer_start, ( GLsizeiptr )data_span.size_bytes(), ( void* )data_span.data() );

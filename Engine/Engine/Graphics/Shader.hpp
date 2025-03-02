@@ -465,8 +465,8 @@ namespace Engine
 
 	/*
 	 * "Setting" Uniform Buffers is not the Shader's responsibility (nor can it do it); It's just an OpenGL Buffer Object.
-	 * UBO can Update() itself.
-	 * Whoever holds the UBO will call Update() on it.
+	 * UBO can Upload() itself.
+	 * Whoever holds the UBO will call Upload() on it.
 	 * All UBOs are created, connected to shader blocks and kept by the UniformBufferManager internally.
 	 * UniformBufferManagement objects hold references to buffers kept by the UniformBufferManager and manage them (keep CPU-side buffers large enough & update/upload buffers).
 	 * Global & Intrinsic Uniform Buffers are updated by the Renderer (via UniformBufferManagement objects).

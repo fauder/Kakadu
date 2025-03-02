@@ -62,8 +62,8 @@ namespace Engine
 	 */
 
 		inline void Bind() const { vertex_array.Bind(); }
-		void Update( const void* data ) const;
-		void Update_Partial( const std::span< std::byte > data_span, const std::size_t offset_from_buffer_start ) const;
+		void Upload( const void* data ) const;
+		void Upload_Partial( const std::span< std::byte > data_span, const std::size_t offset_from_buffer_start ) const;
 		void UpdateInstanceData( const void* data ) const;
 		void UpdateInstanceData_Partial( const std::span< std::byte > data_span, const std::size_t offset_from_buffer_start ) const;
 
@@ -72,7 +72,7 @@ namespace Engine
 		{
 			ASSERT_DEBUG_ONLY( instance_buffer && "UpdateInstanceData_Partial< T >() called on non-instanced Mesh!" );
 
-			instance_buffer->Update_Partial( std::as_writable_bytes( data_span ), offset_from_buffer_start );
+			instance_buffer->Upload_Partial( std::as_writable_bytes( data_span ), offset_from_buffer_start );
 		}
 
 	/*
