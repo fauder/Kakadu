@@ -16,6 +16,7 @@ Global
 		[ASAN]|x64 = [ASAN]|x64
 		Debug|x64 = Debug|x64
 		Release|x64 = Release|x64
+		Standalone|x64 = Standalone|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{76D08951-C1EE-4856-8F1C-4131D2643141}.[ASAN]|x64.ActiveCfg = [ASAN]|x64
@@ -24,24 +25,32 @@ Global
 		{76D08951-C1EE-4856-8F1C-4131D2643141}.Debug|x64.Build.0 = Debug|x64
 		{76D08951-C1EE-4856-8F1C-4131D2643141}.Release|x64.ActiveCfg = Release|x64
 		{76D08951-C1EE-4856-8F1C-4131D2643141}.Release|x64.Build.0 = Release|x64
+		{76D08951-C1EE-4856-8F1C-4131D2643141}.Standalone|x64.ActiveCfg = Standalone|x64
+		{76D08951-C1EE-4856-8F1C-4131D2643141}.Standalone|x64.Build.0 = Standalone|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.[ASAN]|x64.ActiveCfg = [ASAN]|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.[ASAN]|x64.Build.0 = [ASAN]|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Debug|x64.ActiveCfg = Debug|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Debug|x64.Build.0 = Debug|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Release|x64.ActiveCfg = Release|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Release|x64.Build.0 = Release|x64
+		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Standalone|x64.ActiveCfg = Standalone|x64
+		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Standalone|x64.Build.0 = Standalone|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.[ASAN]|x64.ActiveCfg = [ASAN]|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.[ASAN]|x64.Build.0 = [ASAN]|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Debug|x64.ActiveCfg = Debug|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Debug|x64.Build.0 = Debug|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Release|x64.ActiveCfg = Release|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Release|x64.Build.0 = Release|x64
+		{26C05E65-89CA-4B25-9FB4-04D445372431}.Standalone|x64.ActiveCfg = Standalone|x64
+		{26C05E65-89CA-4B25-9FB4-04D445372431}.Standalone|x64.Build.0 = Standalone|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.[ASAN]|x64.ActiveCfg = [ASAN]|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.[ASAN]|x64.Build.0 = [ASAN]|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Debug|x64.ActiveCfg = Debug|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Debug|x64.Build.0 = Debug|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Release|x64.ActiveCfg = Release|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Release|x64.Build.0 = Release|x64
+		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Standalone|x64.ActiveCfg = Standalone|x64
+		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Standalone|x64.Build.0 = Standalone|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
