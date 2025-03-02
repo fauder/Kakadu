@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.34031.81
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35806.99 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "ClientApplications\Sandbox\Sandbox.vcxproj", "{76D08951-C1EE-4856-8F1C-4131D2643141}"
 EndProject
@@ -13,22 +13,31 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HDR-Demo", "ClientApplicati
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		[ASAN]|x64 = [ASAN]|x64
 		Debug|x64 = Debug|x64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{76D08951-C1EE-4856-8F1C-4131D2643141}.[ASAN]|x64.ActiveCfg = [ASAN]|x64
+		{76D08951-C1EE-4856-8F1C-4131D2643141}.[ASAN]|x64.Build.0 = [ASAN]|x64
 		{76D08951-C1EE-4856-8F1C-4131D2643141}.Debug|x64.ActiveCfg = Debug|x64
 		{76D08951-C1EE-4856-8F1C-4131D2643141}.Debug|x64.Build.0 = Debug|x64
 		{76D08951-C1EE-4856-8F1C-4131D2643141}.Release|x64.ActiveCfg = Release|x64
 		{76D08951-C1EE-4856-8F1C-4131D2643141}.Release|x64.Build.0 = Release|x64
+		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.[ASAN]|x64.ActiveCfg = [ASAN]|x64
+		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.[ASAN]|x64.Build.0 = [ASAN]|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Debug|x64.ActiveCfg = Debug|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Debug|x64.Build.0 = Debug|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Release|x64.ActiveCfg = Release|x64
 		{35612CBB-E2E9-4A89-A930-90F11A8B584D}.Release|x64.Build.0 = Release|x64
+		{26C05E65-89CA-4B25-9FB4-04D445372431}.[ASAN]|x64.ActiveCfg = [ASAN]|x64
+		{26C05E65-89CA-4B25-9FB4-04D445372431}.[ASAN]|x64.Build.0 = [ASAN]|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Debug|x64.ActiveCfg = Debug|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Debug|x64.Build.0 = Debug|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Release|x64.ActiveCfg = Release|x64
 		{26C05E65-89CA-4B25-9FB4-04D445372431}.Release|x64.Build.0 = Release|x64
+		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.[ASAN]|x64.ActiveCfg = [ASAN]|x64
+		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.[ASAN]|x64.Build.0 = [ASAN]|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Debug|x64.ActiveCfg = Debug|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Debug|x64.Build.0 = Debug|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Release|x64.ActiveCfg = Release|x64
