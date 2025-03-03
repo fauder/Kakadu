@@ -252,8 +252,10 @@ namespace Engine
 					   "Time:            %.1f s\n"
 					   "Frame:           #%-8lld",
 					   rolling_avg_fps, rolling_avg_frame_time, time_since_start, frame_count );
+			ImGui::PushStyleColor( ImGuiCol_PlotLines, Math::ToImVec4( Math::Lerp( Color4::Red(), Color4::Green(), ( float )rolling_avg_fps / 144.0f ) ) );
 			ImGui::PlotLines( "##FPS", last_N_fps_values.data(), rolling_avg_fps_frame_count, rolling_avg_index, text,
 							  rolling_avg_fps * 0.9f, rolling_avg_fps * 1.2f, ImVec2{ -1.0f, ImGui::GetTextLineHeight() * 6 } );
+			ImGui::PopStyleColor();
 			ImGui::SetWindowFontScale( 1.0f );
 
 			/*if( not Math::IsEqual( time_multiplier, 1.0f ) )
