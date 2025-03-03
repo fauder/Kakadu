@@ -55,10 +55,14 @@ namespace Engine
 		std::uint16_t CalculateFPS_RollingAverage( const float fps_this_frame ) const;
 
 	protected:
-		bool display_frame_statistics;
+		bool show_frame_statistics;
 		bool show_imgui;
 		bool show_gl_logger;
+
 		bool gamma_correction_is_enabled;
+		bool vsync_is_enabled;
+
+		/* 2 byte(s) of padding. */
 
 		float time_delta;
 		float time_current;
@@ -70,15 +74,13 @@ namespace Engine
 		float time_mod_1;
 		float time_mod_2_pi;
 
+		/* 4 byte(s) of padding. */
+
 		long long frame_count;
 
 		std::optional< int > msaa_sample_count;
 
 		GLLogger gl_logger;
-
-		bool vsync_is_enabled;
-
-		/* 3 byte(s) of padding. */
 
 	private:
 		float time_delta_real;

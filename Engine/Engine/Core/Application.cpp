@@ -5,6 +5,7 @@
 #include "Graphics/Graphics.h"
 #include "ImGuiDrawer.hpp"
 #include "ImGuiSetup.h"
+#include "ImGuiUtility.h"
 #include "Math/Math.hpp"
 #include "Math/VectorConversion.hpp"
 
@@ -23,7 +24,7 @@ namespace Engine
 {
 	Application::Application( const BitFlags< CreationFlags > flags, const std::optional< int > msaa_sample_count )
 		:
-		display_frame_statistics( true ),
+		show_frame_statistics( true ),
 		show_imgui( not flags.IsSet( CreationFlags::OnStart_DisableImGui ) ),
 		show_gl_logger( true ),
 		gamma_correction_is_enabled( not flags.IsSet( CreationFlags::OnStart_DisableGammaCorrection ) ),
@@ -203,20 +204,18 @@ namespace Engine
 
 	void Application::RenderImGui_FrameStatistics()
 	{
-		const auto fps = 1.0f / time_delta_real;
-
-		const std::uint16_t rolling_average_fps = CalculateFPS_RollingAverage( fps );
-
-		const auto& style = ImGui::GetStyle();
-
-		const ImVec2 max_size( ImGui::CalcTextSize( "FPS: 999.9 fps  |  # Frames: 99999999" ) + style.ItemInnerSpacing );
-		const ImVec2 max_size_half_width( max_size.x / 2.0f, max_size.y );
-		const float  max_width = max_size.x;
-
-		// TODO: Convert this to an ImGui overlay.
-
-		if( ImGui::Begin( ICON_FA_CHART_LINE " Frame Statistics", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
+		if( ImGuiUtility::BeginOverlay( "Viewport", ICON_FA_CHART_LINE " Frame Statistics", &show_frame_statistics ) )
 		{
+			const auto fps = 1.0f / time_delta_real;
+
+			const std::uint16_t rolling_average_fps = CalculateFPS_RollingAverage( fps );
+
+			const auto& style = ImGui::GetStyle();
+
+			const ImVec2 max_size( ImGui::CalcTextSize( "FPS: 999.9 fps  |  # Frames: 99999999" ) + style.ItemInnerSpacing );
+			const ImVec2 max_size_half_width( max_size.x / 2.0f, max_size.y );
+			const float  max_width = max_size.x;
+
 			ImGui::Text( "FPS: %.1f fps  |  # Frames: %8lu", fps, frame_count );
 			ImGui::Text( "FPS (Moving avg.): %hu fps", rolling_average_fps );
 			ImGui::Text( "Time since start: %.1f.", time_since_start );
@@ -265,7 +264,7 @@ namespace Engine
 			}
 		}
 
-		ImGui::End();
+		ImGuiUtility::EndOverlay();
 	}
 
 	void Application::RenderImGui_Viewport( const unsigned int texture_id )
