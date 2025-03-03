@@ -247,9 +247,10 @@ namespace Engine
 			ImGui::SetWindowFontScale( 1.2f );
 			static char text[ 255 ] = {};
 			sprintf_s( text,
-					   "FPS (Avg.): %hu fps\n"
-					   "Frame Time (Avg.): %.2f ms\n"
-					   "Time: %.1f s | Frame #%-8lld",
+					   "Avg. FPS:        %hu fps\n"
+					   "Avg. Frame Time: %.2f ms\n"
+					   "Time:            %.1f s\n"
+					   "Frame:           #%-8lld",
 					   rolling_avg_fps, rolling_avg_frame_time, time_since_start, frame_count );
 			ImGui::PlotLines( "##FPS", last_N_fps_values.data(), rolling_avg_fps_frame_count, rolling_avg_index, text,
 							  rolling_avg_fps * 0.9f, rolling_avg_fps * 1.2f, ImVec2{ -1.0f, ImGui::GetTextLineHeight() * 6 } );
