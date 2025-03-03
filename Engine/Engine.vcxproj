@@ -301,7 +301,6 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
   <ItemGroup>
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Engine\Asset\AssetDirectoryPath.h" />
-    <ClInclude Include="Engine\Asset\Font\InternalFontDirectoryPath.h" />
     <ClInclude Include="Engine\Asset\Resource\Resource.h" />
     <ClInclude Include="Engine\Core\Application.h" />
     <ClInclude Include="Engine\Core\Assertion.h" />

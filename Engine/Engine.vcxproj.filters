@@ -279,9 +279,6 @@
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Asset\Font\InternalFontDirectoryPath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Asset\AssetDirectoryPath.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -442,7 +442,7 @@ namespace Engine
 			 maybe_next_token.has_value();
 			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" ) )
 		{
-			includes.emplace_back( std::string( Engine::ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR ) + R"(Shader\)" + std::string( *maybe_next_token ) );
+			includes.emplace_back( std::string( Engine::ENGINE_ASSET_DIRECTORY_WITH_SEPARATOR ) + R"(Shader\)" + std::string( *maybe_next_token ) );
 		}
 
 		return includes;

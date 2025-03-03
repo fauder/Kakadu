@@ -5,8 +5,7 @@
 #include "Core/Utility.hpp"
 #include "Asset/AssetDirectoryPath.h"
 
-#define FullTexturePath( file_path ) std::string( Engine::ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR ) + R"(Texture\)" + file_path
-// Too lazy to get the above macro working constexpr. And frankly, unnecessary.
+#define FullTexturePath( file_path ) ENGINE_ASSET_PATH( "Texture/" file_path )
 
 namespace Engine
 {

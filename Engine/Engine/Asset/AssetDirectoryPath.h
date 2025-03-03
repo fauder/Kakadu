@@ -1,13 +1,11 @@
 #pragma once
 
-// Engine Includes.
-#include "../Core/Macros.h"
-#include "../Core/Utility.hpp"
+#define ENGINE_ASSET_DIRECTORY_MACRO "../../Engine/Engine/Asset"
+#define ENGINE_ASSET_DIRECTORY_WITH_SEPARATOR_MACRO "../../Engine/Engine/Asset/"
+#define ENGINE_ASSET_PATH( relative_file_path ) ENGINE_ASSET_DIRECTORY_WITH_SEPARATOR_MACRO relative_file_path
 
 namespace Engine
 {
-    constexpr std::string_view ASSET_SOURCE_DIRECTORY( __DIR__ );
-    constexpr auto ASSET_SOURCE_DIRECTORY_AS_ARRAY( Utility::String::StringViewToArray< ASSET_SOURCE_DIRECTORY.size() >( ASSET_SOURCE_DIRECTORY ) );
-    constexpr std::string_view ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR( __DIR_WITH_SEPARATOR__ );
-    constexpr auto ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR_AS_ARRAY( Utility::String::StringViewToArray< ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR.size() >( ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR ) );
+    constexpr const char* ENGINE_ASSET_DIRECTORY                = ENGINE_ASSET_DIRECTORY_MACRO;
+    constexpr const char* ENGINE_ASSET_DIRECTORY_WITH_SEPARATOR = ENGINE_ASSET_DIRECTORY_WITH_SEPARATOR_MACRO;
 }

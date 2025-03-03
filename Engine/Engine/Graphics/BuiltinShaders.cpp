@@ -4,8 +4,9 @@
 #include "Core/Utility.hpp"
 #include "Asset/AssetDirectoryPath.h"
 
-#define FullShaderPath( file_path ) Utility::String::ConstexprConcatenate( Engine::ASSET_SOURCE_DIRECTORY_WITH_SEPARATOR_AS_ARRAY,\
-																		   Utility::String::StringViewToArray< std::string_view( R"(Shader\)" file_path ).size() >( std::string_view( R"(Shader\)" file_path ) ) )
+#define FullVertexShaderPath( file_path )	ENGINE_ASSET_PATH( "Shader/" file_path##_vert )
+#define FullGeometryShaderPath( file_path ) ENGINE_ASSET_PATH( "Shader/" file_path##_geom )
+#define FullFragmentShaderPath( file_path ) ENGINE_ASSET_PATH( "Shader/" file_path##_frag )
 
 namespace Engine
 {
@@ -26,123 +27,123 @@ namespace Engine
 
 		SHADER_MAP.try_emplace( "Skybox",
 								"Skybox",
-								FullShaderPath( "Skybox.vert"_vert ),
-								FullShaderPath( "Skybox.frag"_frag ) );
+								FullVertexShaderPath( "Skybox.vert" ),
+								FullFragmentShaderPath( "Skybox.frag" ) );
 		SHADER_MAP.try_emplace( "Blinn-Phong",
 								"Blinn-Phong",
-								FullShaderPath( "Blinn-Phong.vert"_vert ),
-								FullShaderPath( "Blinn-Phong.frag"_frag ) );
+								FullVertexShaderPath( "Blinn-Phong.vert" ),
+								FullFragmentShaderPath( "Blinn-Phong.frag" ) );
 		SHADER_MAP.try_emplace( "Blinn-Phong (Shadowed)",
 								"Blinn-Phong (Shadowed)",
-								FullShaderPath( "Blinn-Phong.vert"_vert ),
-								FullShaderPath( "Blinn-Phong.frag"_frag ),
+								FullVertexShaderPath( "Blinn-Phong.vert" ),
+								FullFragmentShaderPath( "Blinn-Phong.frag" ),
 								Shader::Features{ "SHADOWS_ENABLED",
 												  "SOFT_SHADOWS" } );
 		SHADER_MAP.try_emplace( "Blinn-Phong (Instanced)",
 								"Blinn-Phong (Instanced)",
-								FullShaderPath( "Blinn-Phong.vert"_vert ),
-								FullShaderPath( "Blinn-Phong.frag"_frag ),
+								FullVertexShaderPath( "Blinn-Phong.vert" ),
+								FullFragmentShaderPath( "Blinn-Phong.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
 		SHADER_MAP.try_emplace( "Blinn-Phong (Skybox Reflection)",
 								"Blinn-Phong (Skybox Reflection)",
-								FullShaderPath( "Blinn-Phong.vert"_vert ),
-								FullShaderPath( "Blinn-Phong.frag"_frag ),
+								FullVertexShaderPath( "Blinn-Phong.vert" ),
+								FullFragmentShaderPath( "Blinn-Phong.frag" ),
 								Shader::Features{ "SKYBOX_ENVIRONMENT_MAPPING" } );
 		SHADER_MAP.try_emplace( "Blinn-Phong (Shadowed | Instanced)",
 								"Blinn-Phong (Shadowed | Instanced)",
-								FullShaderPath( "Blinn-Phong.vert"_vert ),
-								FullShaderPath( "Blinn-Phong.frag"_frag ),
+								FullVertexShaderPath( "Blinn-Phong.vert" ),
+								FullFragmentShaderPath( "Blinn-Phong.frag" ),
 								Shader::Features{ "SHADOWS_ENABLED",
 												  "SOFT_SHADOWS",
 												  "INSTANCING_ENABLED" } );
 		SHADER_MAP.try_emplace( "Blinn-Phong (Shadowed | Parallax)",
 								"Blinn-Phong (Shadowed | Parallax)",
-								FullShaderPath( "Blinn-Phong.vert"_vert ),
-								FullShaderPath( "Blinn-Phong.frag"_frag ),
+								FullVertexShaderPath( "Blinn-Phong.vert" ),
+								FullFragmentShaderPath( "Blinn-Phong.frag" ),
 								Shader::Features{ "SHADOWS_ENABLED",
 												  "SOFT_SHADOWS",
 												  "PARALLAX_MAPPING_ENABLED" } );
 		SHADER_MAP.try_emplace( "Blinn-Phong (Shadowed | Parallax | Instanced)",
 								"Blinn-Phong (Shadowed | Parallax | Instanced)",
-								FullShaderPath( "Blinn-Phong.vert"_vert ),
-								FullShaderPath( "Blinn-Phong.frag"_frag ),
+								FullVertexShaderPath( "Blinn-Phong.vert" ),
+								FullFragmentShaderPath( "Blinn-Phong.frag" ),
 								Shader::Features{ "SHADOWS_ENABLED",
 												  "SOFT_SHADOWS",
 												  "PARALLAX_MAPPING_ENABLED",
 												  "INSTANCING_ENABLED" } );
 		SHADER_MAP.try_emplace( "Blinn-Phong (Skybox Reflection | Instanced)",
 								"Blinn-Phong (Skybox Reflection | Instanced)",
-								FullShaderPath( "Blinn-Phong.vert"_vert ),
-								FullShaderPath( "Blinn-Phong.frag"_frag ),
+								FullVertexShaderPath( "Blinn-Phong.vert" ),
+								FullFragmentShaderPath( "Blinn-Phong.frag" ),
 								Shader::Features{ "SKYBOX_ENVIRONMENT_MAPPING",
 												  "INSTANCING_ENABLED" } );
 		SHADER_MAP.try_emplace( "Blinn-Phong (Skybox Reflection | Shadowed | Instanced)",
 								"Blinn-Phong (Skybox Reflection | Shadowed | Instanced)",
-								FullShaderPath( "Blinn-Phong.vert"_vert ),
-								FullShaderPath( "Blinn-Phong.frag"_frag ),
+								FullVertexShaderPath( "Blinn-Phong.vert" ),
+								FullFragmentShaderPath( "Blinn-Phong.frag" ),
 								Shader::Features{ "SKYBOX_ENVIRONMENT_MAPPING",
 												  "SHADOWS_ENABLED", 
 												  "SOFT_SHADOWS",
 												  "INSTANCING_ENABLED" } );
 		SHADER_MAP.try_emplace( "Color",
 								"Color",
-								FullShaderPath( "Color.vert"_vert ),
-								FullShaderPath( "Color.frag"_frag ) );
+								FullVertexShaderPath( "Color.vert" ),
+								FullFragmentShaderPath( "Color.frag" ) );
 		SHADER_MAP.try_emplace( "Color (Instanced)",
 								"Color (Instanced)",
-								FullShaderPath( "Color.vert"_vert ),
-								FullShaderPath( "Color.frag"_frag ),
+								FullVertexShaderPath( "Color.vert" ),
+								FullFragmentShaderPath( "Color.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
 		SHADER_MAP.try_emplace( "Textured",
 								"Textured",
-								FullShaderPath( "Textured.vert"_vert ),
-								FullShaderPath( "Textured.frag"_frag ) );
+								FullVertexShaderPath( "Textured.vert" ),
+								FullFragmentShaderPath( "Textured.frag" ) );
 		SHADER_MAP.try_emplace( "Textured (Discard Transparent)",
 								"Textured (Discard Transparent)",
-								FullShaderPath( "Textured.vert"_vert ),
-								FullShaderPath( "Textured.frag"_frag ),
+								FullVertexShaderPath( "Textured.vert" ),
+								FullFragmentShaderPath( "Textured.frag" ),
 								Shader::Features{ "DISCARD_TRANSPARENT_FRAGMENTS" } );
 		SHADER_MAP.try_emplace( "Outline",
 								"Outline",
-								FullShaderPath( "Outline.vert"_vert ),
-								FullShaderPath( "Color.frag"_frag ) );
+								FullVertexShaderPath( "Outline.vert" ),
+								FullFragmentShaderPath( "Color.frag" ) );
 		SHADER_MAP.try_emplace( "Texture Blit",
 								"Texture Blit",
-								FullShaderPath( "PassThrough_UVs.vert"_vert ),
-								FullShaderPath( "Textured.frag"_frag ) );
+								FullVertexShaderPath( "PassThrough_UVs.vert" ),
+								FullFragmentShaderPath( "Textured.frag" ) );
 		SHADER_MAP.try_emplace( "Fullscreen Blit",
 								"Fullscreen Blit",
-								FullShaderPath( "PassThrough.vert"_vert ),
-								FullShaderPath( "FullScreenBlit.frag"_frag ) );
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "FullScreenBlit.frag" ) );
 		SHADER_MAP.try_emplace( "MSAA Resolve",
 								"MSAA Resolve",
-								FullShaderPath( "PassThrough.vert"_vert ),
-								FullShaderPath( "MSAA_Resolve.frag"_frag ) );
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "MSAA_Resolve.frag" ) );
 		SHADER_MAP.try_emplace( "Tone Mapping",
 								"Tone Mapping",
-								FullShaderPath( "PassThrough.vert"_vert ),
-								FullShaderPath( "Tonemapping.frag"_frag ) );
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "Tonemapping.frag" ) );
 		SHADER_MAP.try_emplace( "Post-process Grayscale",
 								"Post-process Grayscale",
-								FullShaderPath( "PassThrough.vert"_vert ),
-								FullShaderPath( "Grayscale.frag"_frag ) );
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "Grayscale.frag" ) );
 		SHADER_MAP.try_emplace( "Post-process Generic",
 								"Post-process Generic",
-								FullShaderPath( "PassThrough.vert"_vert ),
-								FullShaderPath( "GenericPostprocess.frag"_frag ) );
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "GenericPostprocess.frag" ) );
 		SHADER_MAP.try_emplace( "Normal Visualization",
 								"Normal Visualization",
-								FullShaderPath( "VisualizeNormals.vert"_vert ),
-								FullShaderPath( "VisualizeNormals.geom"_geom ),
-								FullShaderPath( "VisualizeNormals.frag"_frag ) );
+								FullVertexShaderPath( "VisualizeNormals.vert" ),
+								FullGeometryShaderPath( "VisualizeNormals.geom" ),
+								FullFragmentShaderPath( "VisualizeNormals.frag" ) );
 		SHADER_MAP.try_emplace( "Shadow-map Write",
 								"Shadow-map Write",
-								FullShaderPath( "PassThrough_Transform.vert"_vert ),
-								FullShaderPath( "Empty.frag"_frag ) );
+								FullVertexShaderPath( "PassThrough_Transform.vert" ),
+								FullFragmentShaderPath( "Empty.frag" ) );
 		SHADER_MAP.try_emplace( "Shadow-map Write (Instanced)",
 								"Shadow-map Write (Instanced)",
-								FullShaderPath( "PassThrough_Transform.vert"_vert ),
-								FullShaderPath( "Empty.frag"_frag ),
+								FullVertexShaderPath( "PassThrough_Transform.vert" ),
+								FullFragmentShaderPath( "Empty.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
 
 		/* Register all built-in shaders: */
