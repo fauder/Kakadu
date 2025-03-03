@@ -244,30 +244,22 @@ namespace Engine
 			const ImVec2 max_size_half_width( max_size.x / 2.0f, max_size.y );
 			const float  max_width = max_size.x;
 
-			static bool plot_fps = true;
+			ImGui::SetWindowFontScale( 1.2f );
+			static char text[ 255 ] = {};
+			sprintf_s( text,
+					   "FPS (Avg.): %hu fps\n"
+					   "Frame Time (Avg.): %.2f ms\n"
+					   "Time: %.1f s | Frame #%-8lld",
+					   rolling_avg_fps, rolling_avg_frame_time, time_since_start, frame_count );
+			ImGui::PlotLines( "##FPS", last_N_fps_values.data(), rolling_avg_fps_frame_count, rolling_avg_index, text,
+							  rolling_avg_fps * 0.9f, rolling_avg_fps * 1.2f, ImVec2{ -1.0f, ImGui::GetTextLineHeight() * 6 } );
+			ImGui::SetWindowFontScale( 1.0f );
 
-			ImGui::Text( "FPS (Avg.): %hu fps", rolling_avg_fps );
-			ImGui::SameLine();
-			ImGui::Checkbox( "Plot", &plot_fps );
-			if( plot_fps )
-			{
-				ImGui::SetWindowFontScale( 1.5f );
-				static char fps_as_text[ 16 ] = {};
-				sprintf_s( fps_as_text, "%.1f ms", fps );
-				ImGui::PlotLines( "##FPS", last_N_fps_values.data(), rolling_avg_fps_frame_count, rolling_avg_index, fps_as_text,
-								  rolling_avg_fps * 0.9f, rolling_avg_fps * 1.2f, ImVec2{ 0.0f, ImGui::GetTextLineHeight() * 6 } );
-				ImGui::SetWindowFontScale( 1.0f );
-			}
-
-			ImGui::Text( "Frame Time (Avg.): %.2f ms", rolling_avg_frame_time );
-			if( not Math::IsEqual( time_multiplier, 1.0f ) )
+			/*if( not Math::IsEqual( time_multiplier, 1.0f ) )
 			{
 				ImGui::SameLine();
 				ImGui::TextColored( ImGui::GetStyleColorVec4( ImGuiCol_HeaderActive ), " (%.3f ms)", time_delta * 1000.0f );
-			}
-			ImGui::Text( "Time: %.1f s.  |  Frame #%lu", time_since_start, frame_count );
-
-			// TODO: Show immediate (float) fps in the histogram plot.
+			}*/
 
 			ImGui::SetNextItemWidth( max_width - ImGui::CalcTextSize( "Time Multiplier" ).x );
 			ImGui::SliderFloat( "Time Multiplier", &time_multiplier, 0.01f, 5.0f, "x %.2f", ImGuiSliderFlags_Logarithmic );
