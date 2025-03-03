@@ -157,16 +157,17 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 
 		/* NOTE: See the note in Positions(). */
 
-		/* Non-pole rings: */
+		/* Non-pole rings: 
+		 * NOTE: u coordinates are inverted because we are going clockwise. Going from 0 to 1 would invert the texture horizontally. */
 		for( std::uint8_t ring_index = 0; ring_index < non_pole_ring_count; ring_index++ )
 		{
 			const float v = 1.0f - ( ( 1 + ring_index ) * delta_v );
 
 			for( std::uint8_t longitude_index = 0; longitude_index < LongitudeCount; longitude_index++ )
-				uvs[ index++ ] = Vector2( longitude_index * delta_u, v );
+				uvs[ index++ ] = Vector2( 1.0f - longitude_index * delta_u, v );
 
-			/* Duplicate the starting vertex (u=0) of the ring to allow u=1. */
-			uvs[ index++ ] = Vector2( 1.0f, v );
+			/* Duplicate the starting vertex (u=1) of the ring to allow u=0. */
+			uvs[ index++ ] = Vector2( 0.0f, v );
 		}
 
 		/* South pole: */
