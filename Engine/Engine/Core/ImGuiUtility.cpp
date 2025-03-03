@@ -1,4 +1,5 @@
 // Engine Includes.
+#include "Assertion.h"
 #include "ImGuiUtility.h"
 
 // Vendor Includes.
@@ -73,6 +74,37 @@ namespace Engine::ImGuiUtility
         bool enabled = is_enabled;
         ImGui::Checkbox( text, &enabled );
         ImGui::EndDisabled();
+    }
+
+    bool BeginOverlay( const char* window_name, const char* name, bool* p_open, const WindowCorner window_corner, const float alpha )
+    {
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
+            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+		
+        const auto window = ImGui::FindWindowByName( window_name );
+
+        ASSERT_EDITOR_ONLY( window != nullptr );
+
+        constexpr float pad = 10.0f;
+		ImVec2 window_pos, window_pos_pivot;
+
+        const bool is_right  = window_corner == WindowCorner::TOP_RIGHT || window_corner == WindowCorner::BOTTOM_RIGHT;
+        const bool is_bottom = window_corner == WindowCorner::BOTTOM_LEFT || window_corner == WindowCorner::BOTTOM_RIGHT;
+		window_pos.x         = is_right  ? ( window->Pos.x + window->Size.x - pad ) : ( window->Pos.x + pad );
+		window_pos.y         = is_bottom ? ( window->Pos.y + window->Size.y - pad ) : ( window->Pos.y + pad + window->TitleBarHeight );
+		window_pos_pivot.x   = is_right  ? 1.0f : 0.0f;
+		window_pos_pivot.y   = is_bottom ? 1.0f : 0.0f;
+		ImGui::SetNextWindowPos( window_pos, ImGuiCond_Always, window_pos_pivot );
+		window_flags |= ImGuiWindowFlags_NoMove;
+
+		ImGui::SetNextWindowBgAlpha( alpha );
+        return ImGui::Begin( name, p_open, window_flags );
+    }
+
+    void EndOverlay()
+    {
+        ImGui::End();
     }
 
     /* Only works with same width items. */
