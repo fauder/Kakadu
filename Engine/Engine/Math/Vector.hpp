@@ -466,6 +466,12 @@ namespace Engine::Math
 									   u.data[ 2 ] * v.data[ 0 ] - u.data[ 0 ] * v.data[ 2 ],
 									   u.data[ 0 ] * v.data[ 1 ] - u.data[ 1 ] * v.data[ 0 ] );
 	}
+
+	template< Concepts::Arithmetic Component, std::size_t Size >
+	constexpr Vector< Component, Size > Lerp( const Vector< Component, Size > vector_a, const Vector< Component, Size >& vector_b, const Component t )
+	{
+		return ( Component{ 1 } - t ) * vector_a + t * vector_b;
+	}
 }
 
 namespace Engine
