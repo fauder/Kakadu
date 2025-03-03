@@ -206,26 +206,36 @@ namespace Engine
 	{
 		if( ImGuiUtility::BeginOverlay( "Viewport", ICON_FA_CHART_LINE " Frame Statistics", &show_frame_statistics ) )
 		{
-			const auto fps = 1.0f / time_delta_real;
+			const float fps        = 1.0f / time_delta_real;
+			const float frame_time = time_delta_real * 1000.0f;
 
 			constexpr std::uint8_t rolling_avg_fps_frame_count = 144;
 			static std::array< float, rolling_avg_fps_frame_count > last_N_fps_values = {};
+			static std::array< float, rolling_avg_fps_frame_count > last_N_frame_times = {};
 			std::uint16_t rolling_avg_fps;
+			float rolling_avg_frame_time;
 			static int rolling_avg_index = 0;
 
-			/* Calculate rolling avg. fps: */
+			/* Calculate rolling avg. fps & frame time: */
 			{
-				/* Since only 1 value in the ring buffer changes every frame, no need to re-calculate the total sum. Just add the difference between current fps and
-				 * the element at the current index in the framebuffer to the total sum. */
+				/* Since only 1 value in the ring buffer changes every frame, no need to re-calculate the total sum. Just add the difference between current value and
+				 * the element at the current index in the ring buffer to the total sum. */
 				static float last_N_fps_values_sum = 0;
+				static float last_N_frame_times_sum = 0;
 
 				const float previous_fps_at_this_index = last_N_fps_values[ rolling_avg_index ];
 				last_N_fps_values_sum += fps - previous_fps_at_this_index;
 
-				last_N_fps_values[ rolling_avg_index++ ] = fps;
+				const float previous_frame_time_at_this_index = last_N_frame_times[ rolling_avg_index ];
+				last_N_frame_times_sum += frame_time - previous_frame_time_at_this_index;
+
+				last_N_fps_values[ rolling_avg_index ] = fps;
+				last_N_frame_times[ rolling_avg_index++ ] = frame_time;
+
 				rolling_avg_index = rolling_avg_index % rolling_avg_fps_frame_count;
 
-				rolling_avg_fps = ( std::uint16_t )Math::Round( last_N_fps_values_sum / rolling_avg_fps_frame_count );
+				rolling_avg_fps        = ( std::uint16_t )Math::Round( last_N_fps_values_sum / rolling_avg_fps_frame_count );
+				rolling_avg_frame_time = last_N_frame_times_sum / rolling_avg_fps_frame_count;
 			}
 
 			const auto& style = ImGui::GetStyle();
@@ -249,13 +259,13 @@ namespace Engine
 				ImGui::SetWindowFontScale( 1.0f );
 			}
 
-			ImGui::Text( "Time: %.1f s.  |  Frame #%lu", time_since_start, frame_count );
-			ImGui::Text( "Frame Time: %.1f ms", time_delta_real * 1000.0f );
+			ImGui::Text( "Frame Time (Avg.): %.2f ms", rolling_avg_frame_time );
 			if( not Math::IsEqual( time_multiplier, 1.0f ) )
 			{
 				ImGui::SameLine();
 				ImGui::TextColored( ImGui::GetStyleColorVec4( ImGuiCol_HeaderActive ), " (%.3f ms)", time_delta * 1000.0f );
 			}
+			ImGui::Text( "Time: %.1f s.  |  Frame #%lu", time_since_start, frame_count );
 
 			// TODO: Show immediate (float) fps in the histogram plot.
 
