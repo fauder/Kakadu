@@ -251,6 +251,24 @@ namespace Platform
 		return float( width ) / height;
 	}
 
+	std::uint16_t GetMainMonitorRefreshRate()
+	{
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		if( monitor )
+		{
+			const GLFWvidmode* mode = glfwGetVideoMode( monitor );
+
+			if( mode )
+				return mode->refreshRate;
+			else
+				std::cerr << "Could not get video mode of the primary monitor!\n";
+		}
+		else
+			std::cerr << "Could not get the primary monitor!\n";
+
+		return -1;
+	}
+
 	void CenterWindow( const int width_pixels, const int height_pixels )
 	{
 		const GLFWvidmode* mode = glfwGetVideoMode( glfwGetPrimaryMonitor() );
