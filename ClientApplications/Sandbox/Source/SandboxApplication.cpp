@@ -254,6 +254,8 @@ void SandboxApplication::Initialize()
 		/* Last cube is reserved: Put it on the ground to test shadows etc.
 		 * Above loop processes the last cube as well, but it is simply overwritten here. */
 		cube_transform_array[ CUBE_COUNT - 1 ]
+			.SetScaling( 1.0f )
+			.SetRotation( {} )
 			.SetTranslation( 1.0f, 0.5f, -3.0f );
 	}
 
