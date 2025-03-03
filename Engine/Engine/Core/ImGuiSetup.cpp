@@ -149,8 +149,8 @@ namespace Engine::ImGuiSetup
         colors[ ImGuiCol_TabDimmed ]                 = GammaCorrectedColor( 0.06f, 0.06f, 0.06f, 0.75f );
         colors[ ImGuiCol_TabDimmedSelected ]         = GammaCorrectedColor( 0.33f, 0.33f, 0.33f, 0.75f );
         colors[ ImGuiCol_TabDimmedSelectedOverline ] = GammaCorrectedColor( 1.00f, 0.00f, 0.00f, 1.00f );
-        colors[ ImGuiCol_PlotLines ]                 = GammaCorrectedColor( 0.61f, 0.61f, 0.61f, 1.00f );
-        colors[ ImGuiCol_PlotLinesHovered ]          = GammaCorrectedColor( 1.00f, 0.43f, 0.35f, 1.00f );
+        colors[ ImGuiCol_PlotLines ]                 = GammaCorrectedColor( 0.90f, 0.70f, 0.00f, 1.00f );
+        colors[ ImGuiCol_PlotLinesHovered ]          = GammaCorrectedColor( 1.00f, 0.60f, 0.00f, 1.00f );
         colors[ ImGuiCol_PlotHistogram ]             = GammaCorrectedColor( 0.90f, 0.70f, 0.00f, 1.00f );
         colors[ ImGuiCol_PlotHistogramHovered ]      = GammaCorrectedColor( 1.00f, 0.60f, 0.00f, 1.00f );
         colors[ ImGuiCol_TableHeaderBg ]             = GammaCorrectedColor( 0.35f, 0.35f, 0.35f, 1.00f );
