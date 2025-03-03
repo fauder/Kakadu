@@ -99,7 +99,13 @@ namespace Engine::ImGuiUtility
 		window_flags |= ImGuiWindowFlags_NoMove;
 
 		ImGui::SetNextWindowBgAlpha( alpha );
-        return ImGui::Begin( name, p_open, window_flags );
+        if( ImGui::Begin( name, p_open, window_flags ) )
+        {
+            ImGui::TextUnformatted( name );
+            return true;
+        }
+
+        return false;
     }
 
     void EndOverlay()
