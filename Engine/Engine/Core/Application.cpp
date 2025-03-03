@@ -6,6 +6,7 @@
 #include "ImGuiDrawer.hpp"
 #include "ImGuiSetup.h"
 #include "Math/Math.hpp"
+#include "Math/VectorConversion.hpp"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -146,6 +147,11 @@ namespace Engine
 	{
 	}
 
+	void Application::SetImGuiViewportImageID( const unsigned int id )
+	{
+		imgui_viewport_texture_id = id;
+	}
+
 	void Application::OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
 		if( ImGui::GetIO().WantCaptureKeyboard )
@@ -188,6 +194,7 @@ namespace Engine
 
 		ImGuiDrawer::Update();
 
+		RenderImGui_Viewport( imgui_viewport_texture_id );
 		RenderImGui_FrameStatistics();
 
 		if( show_gl_logger )
@@ -256,6 +263,35 @@ namespace Engine
 
 				ImGui::TreePop();
 			}
+		}
+
+		ImGui::End();
+	}
+
+	void Application::RenderImGui_Viewport( const unsigned int texture_id )
+	{
+		{
+			const auto framebuffer_size = Platform::GetFramebufferSizeInPixels();
+			ImGui::SetNextWindowSize( Engine::Math::CopyToImVec2( framebuffer_size ), ImGuiCond_Appearing );
+		}
+
+		if( ImGui::Begin( "Viewport" ) )
+		{
+			const ImVec2   viewport_size_imvec2( ImGui::GetContentRegionAvail() );
+			const Vector2I viewport_size( ( int )viewport_size_imvec2.x, ( int )viewport_size_imvec2.y );
+
+			const auto& imgui_io = ImGui::GetIO();
+			if( ( imgui_io.WantCaptureMouse && imgui_io.MouseReleased[ 0 ] ) ||
+				( not imgui_io.WantCaptureMouse && Platform::IsMouseButtonReleased( Platform::MouseButton::Left ) ) )
+				OnFramebufferResizeEvent( viewport_size.X(), viewport_size.Y() );
+
+			if( ImGui::IsWindowHovered() )
+			{
+				ImGui::SetNextFrameWantCaptureMouse( false );
+				ImGui::SetNextFrameWantCaptureKeyboard( false );
+			}
+
+			ImGui::Image( ( void* )( intptr_t )texture_id, ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
 		}
 
 		ImGui::End();

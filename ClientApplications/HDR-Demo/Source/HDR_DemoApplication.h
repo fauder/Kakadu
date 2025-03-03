@@ -46,8 +46,6 @@ public:
 	void OnFramebufferResizeEvent( const Vector2I new_size_pixels ); // Convenience overload.
 
 private:
-	void RenderImGui_Viewport();
-
 	void ResetInstanceData();
 	void ResetLightingData();
 	void ResetMaterialData();

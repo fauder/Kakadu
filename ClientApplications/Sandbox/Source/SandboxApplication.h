@@ -57,10 +57,8 @@ public:
 	virtual void OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods ) override;
 	virtual void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels ) override;
 	void OnFramebufferResizeEvent( const Vector2I new_size_pixels ); // Convenience overload.
-
+	
 private:
-	void RenderImGui_Viewport();
-
 	void ResetLightingData();
 	void ResetMaterialData();
 	void ResetInstanceData();

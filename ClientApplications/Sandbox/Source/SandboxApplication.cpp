@@ -607,12 +607,11 @@ void SandboxApplication::RenderImGui()
 	/* Need to switch to the default framebuffer, so ImGui can render onto it. */
 	renderer.ResetToDefaultFramebuffer();
 
+	SetImGuiViewportImageID( renderer.FinalFramebuffer().ColorAttachment().Id().Get() );
 	Application::RenderImGui();
 
 	if( show_imgui_demo_window )
 		ImGui::ShowDemoWindow();
-
-	RenderImGui_Viewport();
 
 	const auto& style = ImGui::GetStyle();
 
@@ -1008,35 +1007,6 @@ void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, c
 void SandboxApplication::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
 {
 	OnFramebufferResizeEvent( new_size_pixels.X(), new_size_pixels.Y() );
-}
-
-void SandboxApplication::RenderImGui_Viewport()
-{
-	{
-		const auto framebuffer_size = Platform::GetFramebufferSizeInPixels();
-		ImGui::SetNextWindowSize( Engine::Math::CopyToImVec2( framebuffer_size ), ImGuiCond_Appearing );
-	}
-
-	if( ImGui::Begin( "Viewport" ) )
-	{
-		const ImVec2   viewport_size_imvec2( ImGui::GetContentRegionAvail() );
-		const Vector2I viewport_size( ( int )viewport_size_imvec2.x, ( int )viewport_size_imvec2.y );
-
-		const auto& imgui_io = ImGui::GetIO();
-		if( (     imgui_io.WantCaptureMouse && imgui_io.MouseReleased[ 0 ] ) ||
-			( not imgui_io.WantCaptureMouse && Platform::IsMouseButtonReleased( Platform::MouseButton::Left ) ) )
-			OnFramebufferResizeEvent( viewport_size.X(), viewport_size.Y() );
-
-		if( ImGui::IsWindowHovered() )
-		{
-			ImGui::SetNextFrameWantCaptureMouse( false );
-			ImGui::SetNextFrameWantCaptureKeyboard( false );
-		}
-
-		ImGui::Image( ( void* )( intptr_t )renderer.FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
-	}
-
-	ImGui::End();
 }
 
 void SandboxApplication::ResetLightingData()

@@ -42,6 +42,8 @@ namespace Engine
 
 		inline bool MSAAIsEnabled() { return msaa_sample_count.has_value(); }
 
+		void SetImGuiViewportImageID( const unsigned int id );
+
 	private:
 		void OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		void OnFramebufferResizeEventInternal( const int width_new_pixels, const int height_new_pixels );
@@ -49,6 +51,7 @@ namespace Engine
 		void CalculateTimeInformation();
 
 		void RenderImGui_FrameStatistics();
+		void RenderImGui_Viewport( const unsigned int texture_id );
 		std::uint16_t CalculateFPS_RollingAverage( const float fps_this_frame ) const;
 
 	protected:
@@ -82,6 +85,10 @@ namespace Engine
 		float time_previous;
 		float time_previous_since_start;
 		float time_since_start;
+
+		unsigned int imgui_viewport_texture_id;
+
+		/* 4 byte(s) of padding. */
 	};
 
 	/* Needs to be implemented by the CLIENT Application. */
