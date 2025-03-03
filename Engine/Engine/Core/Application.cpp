@@ -208,7 +208,25 @@ namespace Engine
 		{
 			const auto fps = 1.0f / time_delta_real;
 
-			const std::uint16_t rolling_average_fps = CalculateFPS_RollingAverage( fps );
+			constexpr std::uint8_t rolling_avg_fps_frame_count = 144;
+			static std::array< float, rolling_avg_fps_frame_count > last_N_fps_values = {};
+			std::uint16_t rolling_avg_fps;
+			static int rolling_avg_index = 0;
+
+			/* Calculate rolling avg. fps: */
+			{
+				/* Since only 1 value in the ring buffer changes every frame, no need to re-calculate the total sum. Just add the difference between current fps and
+				 * the element at the current index in the framebuffer to the total sum. */
+				static float last_N_fps_values_sum = 0;
+
+				const float previous_fps_at_this_index = last_N_fps_values[ rolling_avg_index ];
+				last_N_fps_values_sum += fps - previous_fps_at_this_index;
+
+				last_N_fps_values[ rolling_avg_index++ ] = fps;
+				rolling_avg_index = rolling_avg_index % rolling_avg_fps_frame_count;
+
+				rolling_avg_fps = ( std::uint16_t )Math::Round( last_N_fps_values_sum / rolling_avg_fps_frame_count );
+			}
 
 			const auto& style = ImGui::GetStyle();
 
@@ -216,7 +234,21 @@ namespace Engine
 			const ImVec2 max_size_half_width( max_size.x / 2.0f, max_size.y );
 			const float  max_width = max_size.x;
 
-			ImGui::Text( "FPS (Avg.): %hu fps", rolling_average_fps );
+			static bool plot_fps = true;
+
+			ImGui::Text( "FPS (Avg.): %hu fps", rolling_avg_fps );
+			ImGui::SameLine();
+			ImGui::Checkbox( "Plot", &plot_fps );
+			if( plot_fps )
+			{
+				ImGui::SetWindowFontScale( 1.5f );
+				static char fps_as_text[ 16 ] = {};
+				sprintf_s( fps_as_text, "%.1f ms", fps );
+				ImGui::PlotLines( "##FPS", last_N_fps_values.data(), rolling_avg_fps_frame_count, rolling_avg_index, fps_as_text,
+								  rolling_avg_fps * 0.9f, rolling_avg_fps * 1.2f, ImVec2{ 0.0f, ImGui::GetTextLineHeight() * 6 } );
+				ImGui::SetWindowFontScale( 1.0f );
+			}
+
 			ImGui::Text( "Time: %.1f s.  |  Frame #%lu", time_since_start, frame_count );
 			ImGui::Text( "Frame Time: %.1f ms", time_delta_real * 1000.0f );
 			if( not Math::IsEqual( time_multiplier, 1.0f ) )
@@ -269,25 +301,5 @@ namespace Engine
 		}
 
 		ImGui::End();
-	}
-
-	std::uint16_t Application::CalculateFPS_RollingAverage( const float fps_this_frame ) const
-	{
-		static int index = 0;
-		constexpr auto N = 144;
-
-		static std::array< float, N > last_N_fps_values = {};
-
-		/* Since only 1 value in the ring buffer changes every frame, no need to re-calculate the total sum. Just add the difference between current fps and
-		 * the element at the current index in the framebuffer to the total sum. */
-		static float last_N_fps_values_sum = 0;
-
-		const float previous_fps_at_this_index = last_N_fps_values[ index ];
-		last_N_fps_values_sum += fps_this_frame - previous_fps_at_this_index;
-
-		last_N_fps_values[ index++ ] = fps_this_frame;
-		index = index % N;
-
-		return ( std::uint16_t )Math::Round( last_N_fps_values_sum / N );
 	}
 }
