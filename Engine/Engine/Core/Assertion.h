@@ -9,7 +9,7 @@
 #endif
 
 #ifdef _EDITOR
-#define ASSERT_EDITOR_ONLY( x ) ASSERT( x )
+#define ASSERT_EDITOR_ONLY( x ) if( !( x ) ) __debugbreak();
 #else
 #define ASSERT_EDITOR_ONLY( x )
 #endif // _EDITOR
