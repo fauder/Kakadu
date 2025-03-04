@@ -15,7 +15,7 @@ namespace Engine::ImGuiUtility
 
 	void Table_Header_ManuallySubmit( const int column_index );
 	template< int array_size >
-	void Table_Header_ManuallySubmit( const std::array< int, array_size > column_indices )
+	void Table_Header_ManuallySubmit( const std::array< int, array_size >& column_indices )
 	{
 		for( std::size_t i = 0; i < array_size; i++ )
 			Table_Header_ManuallySubmit( column_indices[ i ] );
