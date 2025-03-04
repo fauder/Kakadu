@@ -82,7 +82,7 @@ namespace Engine
 
 		inline int NodeCount()			const { return ( int )nodes.size(); }
 		inline int MeshCount()			const { return ( int )meshes.size(); }
-		inline int MeshInstanceCount()	const { return mesh_istance_count; }
+		inline int MeshInstanceCount()	const { return mesh_instance_count; }
 		inline int MeshGroupCount()		const { return ( int )mesh_groups.size(); }
 		
 		inline const std::vector< std::size_t >& TopLevelNodeIndices() const { return node_indices_top_level; }
@@ -101,7 +101,7 @@ namespace Engine
 
 		std::vector< std::size_t > node_indices_top_level;
 
-		int mesh_istance_count;
+		int mesh_instance_count;
 		//int padding;
 	};
 }

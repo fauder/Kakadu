@@ -494,7 +494,7 @@ namespace Engine
 								  *node.mesh_group, model.meshes, model.textures ) )
                     return std::nullopt;
 
-                model.mesh_istance_count += ( int )node.mesh_group->sub_meshes.size();
+                model.mesh_instance_count += ( int )node.mesh_group->sub_meshes.size();
             }
         }
 
