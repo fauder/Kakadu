@@ -109,7 +109,7 @@ namespace Engine
 			{
 				if( opening_delimiters.empty() )
 				{
-					if( auto closing_delimiters_pos = source.find_first_of( closing_delimiters );
+					if( const auto closing_delimiters_pos = source.find_first_of( closing_delimiters );
 						closing_delimiters_pos != std::string_view::npos )
 					{
 						std::string_view parsed_token = source.substr( 0, closing_delimiters_pos );
@@ -119,10 +119,10 @@ namespace Engine
 				}
 				else
 				{
-					if( auto opening_delimiters_pos = source.find_first_of( opening_delimiters );
+					if( const auto opening_delimiters_pos = source.find_first_of( opening_delimiters );
 						opening_delimiters_pos != std::string_view::npos )
 					{
-						if( auto closing_delimiters_pos = source.find_first_of( closing_delimiters, opening_delimiters_pos + 1 );
+						if( const auto closing_delimiters_pos = source.find_first_of( closing_delimiters, opening_delimiters_pos + 1 );
 							closing_delimiters_pos != std::string_view::npos )
 						{
 							std::string_view parsed_token = source.substr( opening_delimiters_pos + 1, closing_delimiters_pos - ( opening_delimiters_pos + 1 ) );

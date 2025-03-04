@@ -1489,7 +1489,7 @@ namespace Engine
 		if( clear_framebuffer )
 			framebuffer_current ? framebuffer_current->Clear() : DefaultFramebuffer::Clear();
 
-		if( auto framebuffer_uses_srgb_encoding = framebuffer_current ? framebuffer_current->Is_sRGB() : true /* Default framebuffer always uses sRGB Encoding. */;
+		if( const auto framebuffer_uses_srgb_encoding = framebuffer_current ? framebuffer_current->Is_sRGB() : true /* Default framebuffer always uses sRGB Encoding. */;
 			framebuffer_uses_srgb_encoding != framebuffer_sRGB_encoding_is_enabled )
 		{
 			if( framebuffer_uses_srgb_encoding )

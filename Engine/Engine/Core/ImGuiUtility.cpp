@@ -50,21 +50,21 @@ namespace Engine::ImGuiUtility
 
     void CenterText( const char* text )
     {
-        float available_width = ImGui::GetContentRegionAvail().x;
-        float text_width      = ImGui::CalcTextSize( text ).x;
+        const float available_width = ImGui::GetContentRegionAvail().x;
+        const float text_width      = ImGui::CalcTextSize( text ).x;
         ImGui::SetCursorPosX( ImGui::GetCursorPosX() + ( available_width - text_width ) * 0.5f );
     }
 
     void CenterItem( const int item_width )
     {
-        float available_width = ImGui::GetContentRegionAvail().x;
+        const float available_width = ImGui::GetContentRegionAvail().x;
         ImGui::SetCursorPosX( ImGui::GetCursorPosX() + ( available_width - item_width ) * 0.5f );
     }
 
     void CenterCheckbox()
     {
-        float available_width = ImGui::GetContentRegionAvail().x;
-        float checkbox_width  = ImGui::GetFrameHeight(); // Height == width for the checkbox.
+        const float available_width = ImGui::GetContentRegionAvail().x;
+        const float checkbox_width  = ImGui::GetFrameHeight(); // Height == width for the checkbox.
         ImGui::SetCursorPosX( ImGui::GetCursorPosX() + ( available_width - checkbox_width ) * 0.5f );
     }
 
@@ -144,12 +144,11 @@ namespace Engine::ImGuiUtility
     {
         ImGui::BeginGroup();
 
-        auto cursorPos = ImGui::GetCursorScreenPos();
-        auto itemSpacing = ImGui::GetStyle().ItemSpacing;
+        const auto itemSpacing = ImGui::GetStyle().ItemSpacing;
         ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0.0f, 0.0f ) );
         ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0.0f, 0.0f ) );
 
-        auto frameHeight = ImGui::GetFrameHeight();
+        const auto frameHeight = ImGui::GetFrameHeight();
         ImGui::BeginGroup();
 
         ImVec2 effectiveSize = size;
@@ -172,8 +171,8 @@ namespace Engine::ImGuiUtility
         }
         else if( name != nullptr )
             ImGui::TextUnformatted( name );
-        auto labelMin = ImGui::GetItemRectMin();
-        auto labelMax = ImGui::GetItemRectMax();
+        const auto labelMin = ImGui::GetItemRectMin();
+        const auto labelMax = ImGui::GetItemRectMax();
         ImGui::SameLine( 0.0f, 0.0f );
         ImGui::Dummy( ImVec2( 0.0, frameHeight + itemSpacing.y ) );
         ImGui::BeginGroup();
@@ -191,7 +190,7 @@ namespace Engine::ImGuiUtility
     #endif
         ImGui::GetCurrentWindow()->Size.x -= frameHeight;
 
-        auto itemWidth = ImGui::CalcItemWidth();
+        const auto itemWidth = ImGui::CalcItemWidth();
         ImGui::PushItemWidth( ImMax( 0.0f, itemWidth - frameHeight ) );
 
         s_GroupPanelLabelStack.push_back( ImRect( labelMin, labelMax ) );
@@ -205,12 +204,12 @@ namespace Engine::ImGuiUtility
 
         ImGui::PopItemWidth();
 
-        auto itemSpacing = ImGui::GetStyle().ItemSpacing;
+        const auto itemSpacing = ImGui::GetStyle().ItemSpacing;
 
         ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0.0f, 0.0f ) );
         ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0.0f, 0.0f ) );
 
-        auto frameHeight = ImGui::GetFrameHeight();
+        const auto frameHeight = ImGui::GetFrameHeight();
 
         ImGui::EndGroup();
 
