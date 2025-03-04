@@ -77,7 +77,7 @@ namespace Engine
 		void Resize( const int new_width_in_pixels, const int new_height_in_pixels );
 
 	/* Queries: */
-		bool IsValid() const { return id.IsValid(); }
+		bool IsValid() const { return id.IsValid(); } // Technically, this fails for the default framebuffer which has id 0, but it's not needed there anyway.
 
 		inline const ID				Id()				const { return id;	 }
 		
@@ -88,7 +88,8 @@ namespace Engine
 		inline int					SampleCount()		const { return msaa.sample_count; }
 		inline bool					IsMultiSampled()	const { return msaa.IsEnabled(); }
 
-		inline bool					Is_sRGB()			const { return HasColorAttachment() && color_attachment->Is_sRGB(); }
+		/* Default framebuffer always uses sRGB Encoding. */
+		inline bool					Is_sRGB()			const { return id.Get() == 0 || ( HasColorAttachment() && color_attachment->Is_sRGB() ); }
 		inline bool					IsHDR()				const { return HasColorAttachment() && color_attachment->IsHDR(); }
 
 		inline const std::string&	Name()				const { return name; }
@@ -106,6 +107,10 @@ namespace Engine
 		inline const Texture& StencilAttachment()		const { return *stencil_attachment; }
 
 	private:
+		struct DefaultFramebuferConstructorTag {};
+		static constexpr DefaultFramebuferConstructorTag DEFAULT_FRAMEBUFFER_CONSTRUCTOR;
+
+		Framebuffer( DefaultFramebuferConstructorTag );
 
 	/* Usage: */
 		void Bind() const;

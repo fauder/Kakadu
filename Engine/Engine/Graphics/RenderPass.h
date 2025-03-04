@@ -19,7 +19,7 @@ namespace Engine
 
 		std::string name = "<unnamed-pass>";
 
-		Framebuffer* target_framebuffer; // nullptr => Default framebuffer.
+		Framebuffer* target_framebuffer;
 
 		std::set< RenderQueue::ID > queue_id_set;
 

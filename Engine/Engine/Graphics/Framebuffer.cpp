@@ -4,7 +4,9 @@
 #include "GLLogger.h"
 #include "Core/Assertion.h"
 #include "Core/AssetDatabase.hpp"
+#include "Core/Platform.h"
 #include "Core/ServiceLocator.h"
+#include "Math/TypeTraits.h"
 
 namespace Engine
 {
@@ -60,6 +62,47 @@ namespace Engine
 		stencil_attachment( nullptr )
 	{
 		Create();
+	}
+
+	Framebuffer::Framebuffer( DefaultFramebuferConstructorTag )
+		:
+		id( 0 ),
+		bind_point( BindPoint::Both ),
+		size( Platform::GetFramebufferSizeInPixels() ),
+		name( "Default Framebuffer" ),
+		clear_targets( ClearTarget::ColorBuffer ),
+		clear_color( Color4::Black() ),
+		clear_depth_value( 0.0f ),
+		clear_stencil_value( 0 ),
+		color_attachment( nullptr ),
+		depth_stencil_attachment( nullptr ),
+		depth_attachment( nullptr ),
+		stencil_attachment( nullptr )
+	{
+		/* Query attachments: */
+		{
+			int attachment;
+
+			glGetFramebufferAttachmentParameteriv( GL_FRAMEBUFFER, GL_DEPTH, GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &attachment );
+			if( attachment )
+				clear_targets.Set( ClearTarget::DepthBuffer );
+
+			glGetFramebufferAttachmentParameteriv( GL_FRAMEBUFFER, GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &attachment );
+			if( attachment )
+				clear_targets.Set( ClearTarget::StencilBuffer );
+		}
+
+		/* Query MSAA info: */
+		{
+			if( glIsEnabled( GL_MULTISAMPLE ) )
+			{
+				int queried_sample_count;
+				glGetIntegerv( GL_SAMPLES, &queried_sample_count );
+
+				if( queried_sample_count > 1 )
+					msaa.sample_count = queried_sample_count;
+			}
+		}
 	}
 
 	Framebuffer::Framebuffer( Framebuffer&& donor )
@@ -304,7 +347,7 @@ namespace Engine
 
 	void Framebuffer::Destroy()
 	{
-		if( IsValid() )
+		if( IsValid() ) // Also prevents the default framebuffer from getting processed here.
 		{
 			if( HasColorAttachment() )
 				Engine::AssetDatabase< Engine::Texture >::RemoveAsset( color_attachment->Name() );

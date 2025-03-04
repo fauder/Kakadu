@@ -1,6 +1,5 @@
 // Engine Includes.
 #include "Renderer.h"
-#include "DefaultFramebuffer.h"
 #include "BuiltinShaders.h"
 #include "BuiltinTextures.h"
 #include "Core/ImGuiCustomColors.h"
@@ -47,7 +46,8 @@ namespace Engine
 						const std::initializer_list< Framebuffer::Description > custom_framebuffer_descriptions )
 		:
 		logger( ServiceLocator< GLLogger >::Get() ),
-		framebuffer_current( nullptr ),
+		framebuffer_default( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR ),
+		framebuffer_current( &framebuffer_default ),
 		framebuffer_main_msaa_sample_count( main_framebuffer_msaa_sample_count ),
 		framebuffer_main_color_format( main_framebuffer_color_format ),
 		lights_point_active_count( 0 ),
@@ -66,8 +66,6 @@ namespace Engine
 
 		Texture::ToggleGammaCorrection( gamma_correction_is_enabled );
 
-		DefaultFramebuffer::Instance(); // Initialize.
-		
 		BuiltinShaders::Initialize( *this );
 		BuiltinTextures::Initialize();
 
@@ -426,6 +424,8 @@ namespace Engine
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Other", "_INTRINSIC_VIEWPORT_SIZE", Vector2( ( float )new_width_in_pixels, ( float )new_height_in_pixels ) );
 		}
 
+		framebuffer_default = Framebuffer( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR );
+
 		/* Shadow maps: */
 		if( framebuffer_shadow_map_light_directional.IsValid() )
 			framebuffer_shadow_map_light_directional.Resize( new_width_in_pixels, new_height_in_pixels );
@@ -449,7 +449,6 @@ namespace Engine
 																	} );
 
 		}
-
 
 		/* Main: */
 		if( framebuffer_main.IsValid() )
@@ -745,7 +744,7 @@ namespace Engine
 		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseDefaultFramebuffer", PASS_ID_FINAL );
 
 		auto& pass = render_pass_map[ PASS_ID_FINAL ];
-		pass.target_framebuffer = nullptr;
+		pass.target_framebuffer = &framebuffer_default;
 	}
 
 	void Renderer::AddDirectionalLight( DirectionalLight* light_to_add )
@@ -972,7 +971,7 @@ namespace Engine
 	{
 		ASSERT_DEBUG_ONLY( framebuffer && ICON_FA_DRAW_POLYGON " " "SetCurrentFramebuffer() called with nullptr. ResetToDefaultFramebuffer() can be used to bind the default framebuffer." );
 
-		const Vector2I old_framebuffer_size = framebuffer_current ? framebuffer_current->Size() : Vector2I{};
+		const Vector2I old_framebuffer_size = framebuffer_current->Size();
 		
 		framebuffer_current = framebuffer;
 		framebuffer_current->Bind();
@@ -983,13 +982,13 @@ namespace Engine
 
 	void Renderer::ResetToDefaultFramebuffer( const Framebuffer::BindPoint bind_point )
 	{
-		framebuffer_current = nullptr;
-		DefaultFramebuffer::Bind( bind_point );
+		framebuffer_current = &framebuffer_default;
+		framebuffer_current->Bind();
 	}
 
 	bool Renderer::DefaultFramebufferIsBound() const
 	{
-		return framebuffer_current == nullptr;
+		return framebuffer_current == &framebuffer_default;
 	}
 
 	Framebuffer* Renderer::CurrentFramebuffer()
@@ -1475,21 +1474,18 @@ namespace Engine
 
 	void Renderer::SetRenderState( const RenderState& render_state_to_set, Framebuffer* target_framebuffer, const bool clear_framebuffer )
 	{
+		ASSERT_DEBUG_ONLY( target_framebuffer );
+
 		if( framebuffer_current != target_framebuffer )
-		{
-			if( target_framebuffer )
-				SetCurrentFramebuffer( target_framebuffer );
-			else
-				ResetToDefaultFramebuffer();
-		}
+			SetCurrentFramebuffer( target_framebuffer );
 
 		ToggleDepthWrite( render_state_to_set.depth_write_enable );
 		SetStencilWriteMask( render_state_to_set.stencil_write_mask );
 
 		if( clear_framebuffer )
-			framebuffer_current ? framebuffer_current->Clear() : DefaultFramebuffer::Clear();
+			framebuffer_current->Clear();
 
-		if( const auto framebuffer_uses_srgb_encoding = framebuffer_current ? framebuffer_current->Is_sRGB() : true /* Default framebuffer always uses sRGB Encoding. */;
+		if( const auto framebuffer_uses_srgb_encoding = framebuffer_current->Is_sRGB();
 			framebuffer_uses_srgb_encoding != framebuffer_sRGB_encoding_is_enabled )
 		{
 			if( framebuffer_uses_srgb_encoding )

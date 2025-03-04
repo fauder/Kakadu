@@ -325,7 +325,9 @@ namespace Engine
 		 * Framebuffer:
 		 */
 
+		Framebuffer framebuffer_default;
 		Framebuffer* framebuffer_current;
+
 		Framebuffer framebuffer_shadow_map_light_directional;
 		Framebuffer framebuffer_main;
 		Framebuffer framebuffer_postprocessing;

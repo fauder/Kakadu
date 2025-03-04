@@ -314,7 +314,6 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClInclude Include="Engine\Core\Blob.hpp" />
     <ClInclude Include="Engine\Core\Macros.h" />
     <ClInclude Include="Engine\Core\Macros_SpaceshipOperator.h" />
-    <ClInclude Include="Engine\Graphics\DefaultFramebuffer.h" />
     <ClInclude Include="Engine\Graphics\BuiltinTextures.h" />
     <ClInclude Include="Engine\Graphics\Enums.h" />
     <ClInclude Include="Engine\Graphics\Framebuffer.h" />
@@ -399,7 +398,6 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClCompile Include="Engine\Core\ImGuiDrawer.cpp" />
     <ClCompile Include="Engine\Core\ImGuiSetup.cpp" />
     <ClCompile Include="Engine\Core\ImGuiUtility.cpp" />
-    <ClCompile Include="Engine\Graphics\DefaultFramebuffer.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinShaders.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinTextures.cpp" />
     <ClCompile Include="Engine\Graphics\Renderable.cpp" />
