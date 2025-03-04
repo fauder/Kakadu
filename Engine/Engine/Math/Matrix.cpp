@@ -1,6 +1,5 @@
 // Engine Includes.
 #include "Math/Angle.hpp"
-#include "Math/Constants.h"
 #include "Math/Math.hpp"
 #include "Math/Matrix.h"
 
@@ -111,7 +110,7 @@ namespace Engine::Matrix
 
 	/* In-place modification of the upper-left 3x3 portion. */
 	/* In row-major form. Counter-clockwise rotation. */
-	void Matrix::RotationAroundAxis( Matrix4x4& matrix, Radians angle, Vector3 vector )
+	void RotationAroundAxis( Matrix4x4& matrix, Radians angle, Vector3 vector )
 	{
 		vector.Normalize();
 

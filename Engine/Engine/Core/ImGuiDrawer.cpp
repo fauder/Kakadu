@@ -774,8 +774,6 @@ namespace Engine::ImGuiDrawer
 									const auto& texture_map( AssetDatabase< Texture >::Assets() );
 									for( const auto& [ texture_name, texture ] : texture_map )
 									{
-										const auto& selectable_texture_name( texture_name );
-
 										if( ImGui::Selectable( ( ICON_FA_IMAGE " " + texture.Name() ).c_str() ) )
 											if( texture_name != current_texture_name )
 												material.SetTexture( uniform_sampler_name.c_str(), &texture );
@@ -1012,8 +1010,6 @@ namespace Engine::ImGuiDrawer
 	{
 		const auto name_cstr = framebuffer.Name().c_str();
 		ImGui::PushID( name_cstr );
-
-		const auto& style = ImGui::GetStyle();
 
 		if( ImGui::BeginTable( "FramebufferTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 		{

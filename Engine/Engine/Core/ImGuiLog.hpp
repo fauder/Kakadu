@@ -254,7 +254,4 @@ namespace Engine
 		//std::array< const char*,				Size > typeNames;
 		//std::array< bool,						Size > enabledTypes;
 	};
-
-	static const std::size_t align = alignof( ImGuiTextBuffer );
-	static const std::size_t size = sizeof( ImGuiTextBuffer );
 }

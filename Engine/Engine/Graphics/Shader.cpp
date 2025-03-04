@@ -1,9 +1,3 @@
-// Platform-specific Debug API includes.
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
-#include <windows.h> // For Visual Studio's OutputDebugString().
-#endif // _WIN32
-
 // Engince Includes.
 #include "Asset/AssetDirectoryPath.h"
 #include "Core/ServiceLocator.h"
@@ -472,7 +466,6 @@ namespace Engine
 				}
 				else
 				{
-					const auto debug = shader_source_to_modify.find( '\n', hashtag_define_pos + 1 );
 					shader_source_to_modify.erase( hashtag_define_pos,
 												   shader_source_to_modify.find( '\n', hashtag_define_pos + 1 ) - hashtag_define_pos );
 				}
@@ -1071,7 +1064,6 @@ namespace Engine
 					{
 						const auto& other_buffer_info_pair = uniform_buffer_info_sorted_by_offset[ j ];
 						const auto& other_uniform_name     = other_buffer_info_pair->first;
-						const auto& other_uniform_info     = other_buffer_info_pair->second;
 
 						const std::string_view other_uniform_name_without_buffer_name( other_uniform_name.cbegin() + ( other_uniform_name.starts_with( uniform_buffer_name )
 																													   ? uniform_buffer_name.size() + 1 // +1 for the dot.

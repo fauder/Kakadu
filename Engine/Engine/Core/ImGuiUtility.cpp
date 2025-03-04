@@ -78,7 +78,6 @@ namespace Engine::ImGuiUtility
 
     bool BeginOverlay( const char* window_name, const char* name, bool* p_open, const WindowCorner window_corner, const float alpha )
     {
-		ImGuiIO& io = ImGui::GetIO();
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
             ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
 		

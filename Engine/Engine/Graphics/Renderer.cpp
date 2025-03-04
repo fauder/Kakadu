@@ -1363,10 +1363,6 @@ namespace Engine
 
 		Transform light_transform_copy( *light_directional->transform );
 
-		const auto& light_direction( light_transform_copy.Forward() );
-
-		//light_transform_copy.SetTranslation( -light_direction * 50.0f );
-
 		const auto view_matrix = light_transform_copy.GetInverseOfFinalMatrix_NoScale();
 
 		// TODO: AABBs.

@@ -80,8 +80,6 @@ namespace Engine
 	Uniform::BindingPoint UniformBlockBindingPointManager::RegisterUniformBlock( const Shader& shader, const std::string& block_name, 
 																				 Uniform::BindingPointBookKeeping& binding_point_book_keeping )
 	{
-		auto& instance = Instance();
-
 		if( const auto maybe_binding_point = binding_point_book_keeping.Find( block_name );
 			maybe_binding_point.has_value() )
 		{
