@@ -1,5 +1,3 @@
-#pragma once
-
 // Engine Includes.
 #include "Math/Vector.hpp"
 
@@ -79,7 +77,7 @@ namespace Engine
 
 			std::vector< float > interleaved_vertex_attribute_vector( total_attribute_count * vertex_count );
 
-			constexpr auto size_of_first_vertex_attribute = sizeof( std::remove_reference_t< decltype( vertex_attribute_vector_first ) >::value_type );
+			constexpr auto size_of_first_vertex_attribute = sizeof( typename std::remove_reference_t< decltype( vertex_attribute_vector_first ) >::value_type );
 
 			for( unsigned int vertex_index = 0, element_index = 0; vertex_index < vertex_count; vertex_index++ )
 			{
@@ -94,7 +92,7 @@ namespace Engine
 				{
 					if( !vertex_attribute_vector_pack.empty() )
 					{
-						const auto size_of_vertex_attribute = sizeof( std::remove_reference_t< decltype( vertex_attribute_vector_pack ) >::value_type );
+						const auto size_of_vertex_attribute = sizeof( typename std::remove_reference_t< decltype( vertex_attribute_vector_pack ) >::value_type );
 						const auto component_count_of_vertex_attribute = ComponentCount_OnlyForNonEmpty( vertex_attribute_vector_pack );
 						std::memcpy( interleaved_vertex_attribute_vector.data() + element_index,
 									 vertex_attribute_vector_pack.data() + vertex_index,
