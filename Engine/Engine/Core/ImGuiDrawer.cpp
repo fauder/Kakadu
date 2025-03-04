@@ -347,7 +347,7 @@ namespace Engine::ImGuiDrawer
 			if( texture->Type() == TextureType::Texture2D )
 				ImGui::Image( ( void* )( intptr_t )texture->Id().Get(), ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
 			ImGui::SameLine();
-			ImGui::TextColored( ImVec4( 0.84f, 0.59f, 0.45f, 1.0f ), "%s (ID: %d)", texture->Name().c_str(), texture->Id() );
+			ImGui::TextColored( ImVec4( 0.84f, 0.59f, 0.45f, 1.0f ), "%s (ID: %d)", texture->Name().c_str(), texture->Id().Get() );
 		}
 		else
 		{
@@ -367,7 +367,7 @@ namespace Engine::ImGuiDrawer
 			if( texture->Type() == TextureType::Texture2D )
 				ImGui::Image( ( void* )( intptr_t )texture->Id().Get(), ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
 			ImGui::SameLine();
-			ImGui::Text( "%s (ID: %d)", texture->Name().c_str(), texture->Id() );
+			ImGui::Text( "%s (ID: %d)", texture->Name().c_str(), texture->Id().Get() );
 		}
 		else
 		{
