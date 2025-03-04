@@ -6,7 +6,8 @@ namespace Engine
 {
 	Mesh::Mesh()
 		:
-		primitive_type( PrimitiveType::Triangles )
+		primitive_type( PrimitiveType::Triangles ),
+		instance_count( 0 )
 	{}
 
 	Mesh::Mesh( const std::span< const Vector3			> positions, 
