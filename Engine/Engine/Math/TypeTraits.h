@@ -13,12 +13,30 @@ namespace Engine
 	template< typename T > struct TypeTraits
 	{};
 
+	template<> struct TypeTraits< int >
+	{
+		TypeTraits() = delete;
+
+		static constexpr int Min()					{ return ( std::numeric_limits< int >::min )(); }
+		static constexpr int Max()					{ return ( std::numeric_limits< int >::max )(); }
+		static constexpr int Infinity()				{ return std::numeric_limits< int >::infinity(); }
+	};
+
+	template<> struct TypeTraits< unsigned int >
+	{
+		TypeTraits() = delete;
+
+		static constexpr unsigned int Min()			{ return ( std::numeric_limits< unsigned int >::min )(); }
+		static constexpr unsigned int Max()			{ return ( std::numeric_limits< unsigned int >::max )(); }
+		static constexpr unsigned int Infinity()	{ return std::numeric_limits< unsigned int >::infinity(); }
+	};
+
 	template<> struct TypeTraits< float >
 	{
 		TypeTraits() = delete;
 
-		static constexpr float Min()				{ return (std::numeric_limits< float >::min)(); }
-		static constexpr float Max()				{ return (std::numeric_limits< float >::max)(); }
+		static constexpr float Min()				{ return ( std::numeric_limits< float >::min )(); }
+		static constexpr float Max()				{ return ( std::numeric_limits< float >::max )(); }
 		static constexpr float Infinity()			{ return std::numeric_limits< float >::infinity(); }
 		static constexpr float Epsilon()			{ return 10e-5f;			}
 		static constexpr float TwoEpsilon()			{ return Epsilon() * 2.0f;	}
@@ -30,8 +48,8 @@ namespace Engine
 	{
 		TypeTraits() = delete;
 
-		static constexpr double Min()				{ return (std::numeric_limits< double >::min)(); }
-		static constexpr double Max()				{ return (std::numeric_limits< double >::max)(); }
+		static constexpr double Min()				{ return ( std::numeric_limits< double >::min )(); }
+		static constexpr double Max()				{ return ( std::numeric_limits< double >::max )(); }
 		static constexpr double Infinity()			{ return std::numeric_limits< double >::infinity(); }
 		static constexpr double Epsilon()			{ return 10e-15;			}
 		static constexpr double TwoEpsilon()		{ return Epsilon() * 2.0;	}
