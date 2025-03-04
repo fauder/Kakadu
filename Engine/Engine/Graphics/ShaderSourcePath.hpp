@@ -30,7 +30,7 @@ namespace Engine
 
 		constexpr explicit ShaderSourcePath( const std::string_view source_path )
 			:
-			source_path( source_path ),
+			source_path( source_path.data() ),
 			size( source_path.size() )
 		{}
 
