@@ -404,13 +404,13 @@ namespace Engine
 		template<>
 		void SetUniformArray< Color3 >( const int location, const Engine::Color3* address, const int element_count )
 		{
-			SetUniformArray( location, reinterpret_cast< const Vector3* >( address ), element_count );
+			SetUniformArray( location, address, element_count );
 		}
 
 		template<>
 		void SetUniformArray< Color4 >( const int location, const Engine::Color4* address, const int element_count )
 		{
-			SetUniformArray( location, reinterpret_cast< const Vector4* >( address ), element_count );
+			SetUniformArray( location, address, element_count );
 		}
 
 		template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >

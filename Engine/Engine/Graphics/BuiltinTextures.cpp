@@ -25,10 +25,10 @@ namespace Engine
 	{
 		return CreateSingleTexelTexture( std::array< unsigned char, 4 >
 										 {
-											 unsigned char( texel.R() * 255.0f ),
-											 unsigned char( texel.G() * 255.0f ),
-											 unsigned char( texel.B() * 255.0f ),
-											 unsigned char( texel.A() * 255.0f )
+											 ( unsigned char )( texel.R() * 255.0f ),
+											 ( unsigned char )( texel.G() * 255.0f ),
+											 ( unsigned char )( texel.B() * 255.0f ),
+											 ( unsigned char )( texel.A() * 255.0f )
 										 },
 										 name,
 										 import_settings );

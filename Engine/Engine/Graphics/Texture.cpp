@@ -73,7 +73,7 @@ namespace Engine
 		type( TextureType::Texture2D_MultiSample ),
 		name( multi_sample_texture_name ),
 		format( DetermineActualFormat( format ) ),
-		msaa{ Renderer::CheckMSAASupport( format, sample_count ) ? sample_count : 1u }
+		msaa{ Renderer::CheckMSAASupport( format, sample_count ) ? sample_count : std::uint8_t( 1 ) }
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
