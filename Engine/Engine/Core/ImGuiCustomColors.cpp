@@ -6,7 +6,7 @@ namespace Engine::ImGuiCustomColors
 	void Text( const char* text, const CustomColorType type )
 	{
 		PushStyleColor( ImGuiCol_Text, type );
-		ImGui::Text( text );
+		ImGui::TextUnformatted( text );
 		ImGui::PopStyleColor();
 	}
 

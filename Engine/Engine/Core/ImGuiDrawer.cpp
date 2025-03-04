@@ -835,11 +835,11 @@ namespace Engine::ImGuiDrawer
 							ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
 
 							ImGui::TableNextColumn(); ImGui::TextUnformatted( "Source" );
-							ImGui::TableNextColumn(); ImGui::Text( source_path.c_str() );
+							ImGui::TableNextColumn(); ImGui::TextUnformatted( source_path.c_str() );
 							for( auto& include_path : include_paths )
 							{
 								ImGui::TableNextColumn(); ImGui::TextUnformatted( "Include" );
-								ImGui::TableNextColumn(); ImGui::Text( include_path.c_str() );
+								ImGui::TableNextColumn(); ImGui::TextUnformatted( include_path.c_str() );
 							}
 
 							ImGui::PopStyleColor();
