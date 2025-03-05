@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "ClientApplications\Sandbox\Sandbox.vcxproj", "{76D08951-C1EE-4856-8F1C-4131D2643141}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vendor", "Vendor\Vendor.vcxproj", "{26C05E65-89CA-4B25-9FB4-04D445372431}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HDR-Demo", "ClientApplications\HDR-Demo\HDR-Demo.vcxproj", "{C994F29D-2E3D-430D-B148-A3D555FD9AE6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bloom-Demo", "ClientApplications\Bloom-Demo\Bloom-Demo.vcxproj", "{44AF33E6-1513-4663-B2FF-6F42BF70A2E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,14 @@ Global
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Release|x64.Build.0 = Release|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Standalone|x64.ActiveCfg = Standalone|x64
 		{C994F29D-2E3D-430D-B148-A3D555FD9AE6}.Standalone|x64.Build.0 = Standalone|x64
+		{44AF33E6-1513-4663-B2FF-6F42BF70A2E9}.[ASAN]|x64.ActiveCfg = [ASAN]|x64
+		{44AF33E6-1513-4663-B2FF-6F42BF70A2E9}.[ASAN]|x64.Build.0 = [ASAN]|x64
+		{44AF33E6-1513-4663-B2FF-6F42BF70A2E9}.Debug|x64.ActiveCfg = Debug|x64
+		{44AF33E6-1513-4663-B2FF-6F42BF70A2E9}.Debug|x64.Build.0 = Debug|x64
+		{44AF33E6-1513-4663-B2FF-6F42BF70A2E9}.Release|x64.ActiveCfg = Release|x64
+		{44AF33E6-1513-4663-B2FF-6F42BF70A2E9}.Release|x64.Build.0 = Release|x64
+		{44AF33E6-1513-4663-B2FF-6F42BF70A2E9}.Standalone|x64.ActiveCfg = Standalone|x64
+		{44AF33E6-1513-4663-B2FF-6F42BF70A2E9}.Standalone|x64.Build.0 = Standalone|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
