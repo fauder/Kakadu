@@ -54,8 +54,9 @@ namespace Engine
             std::size_t base_color_uv_index = 0;
             std::size_t material_index      = -1;
 
-            Texture* sub_mesh_albedo_texture = nullptr;
-            Texture* sub_mesh_normal_texture = nullptr;
+            Texture* sub_mesh_albedo_texture    = nullptr;
+            Texture* sub_mesh_normal_texture    = nullptr;
+            Texture* metallic_roughness_texture = nullptr;
             std::optional< Color3 > sub_mesh_albedo_color;
 
 			auto* position_iterator = submesh_iterator->findAttribute( "POSITION" );
@@ -105,6 +106,22 @@ namespace Engine
                         sub_mesh_normal_texture->SetName( gltf_mesh.name.empty()
                                                           ? ( "Normal (" + sub_mesh_normal_texture->Name() + ")" ).c_str()
                                                           : ( "Normal (" + gltf_mesh.name + ")" ).c_str() );
+                    }
+                }
+
+                if( const auto& metallic_rougness_texture_info = material.pbrData.metallicRoughnessTexture;
+                    metallic_rougness_texture_info.has_value() )
+                {
+                    const auto& fastgltf_texture = gltf_asset.textures[ metallic_rougness_texture_info->textureIndex ];
+                    if( !fastgltf_texture.imageIndex.has_value() )
+                        return false;
+
+                    metallic_roughness_texture = textures[ fastgltf_texture.imageIndex.value() ];
+                    if( metallic_roughness_texture->Name().front() == '<' ) // <unnamed>.
+                    {
+                        metallic_roughness_texture->SetName( gltf_mesh.name.empty()
+                                                             ? ( "Metallic-Roughness (" + metallic_roughness_texture->Name() + ")" ).c_str()
+                                                             : ( "Metallic-Roughness (" + gltf_mesh.name + ")" ).c_str() );
                     }
                 }
             }
