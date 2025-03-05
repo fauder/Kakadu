@@ -17,6 +17,11 @@ namespace Engine
 
 		std::string name = "<unnamed-queue>";
 
+		/* Default behaviour for a queue is to not override source/target framebuffers and simply use the owning RenderPass' target framebuffer for rendering. */
+
+		Framebuffer* framebuffer_override_source = nullptr; // Read.
+		Framebuffer* framebuffer_override_target = nullptr; // Write.
+
 		RenderState render_state_override;
 
 		/* 4 bytes of padding. */

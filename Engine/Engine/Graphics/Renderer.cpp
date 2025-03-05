@@ -129,6 +129,9 @@ namespace Engine
 				UploadIntrinsics();
 				UploadGlobals();
 
+				if( pass_id == PASS_ID_FINAL )
+					tone_mapping_material.SetTexture( "uniform_texture_slot", framebuffer_current->color_attachment );
+
 				SetRenderState( pass.render_state, pass.target_framebuffer, pass.clear_framebuffer );
 
 				for( auto& queue_id : pass.queue_id_set )
@@ -393,7 +396,8 @@ namespace Engine
 
 			DrawFramebufferImGui( framebuffer_shadow_map_light_directional );
 			DrawFramebufferImGui( framebuffer_main );
-			DrawFramebufferImGui( framebuffer_postprocessing );
+			DrawFramebufferImGui( framebuffer_postprocessing_A );
+			DrawFramebufferImGui( framebuffer_postprocessing_B );
 			DrawFramebufferImGui( framebuffer_final );
 
 			for( auto& custom_framebuffer : framebuffer_custom_array )
@@ -469,21 +473,38 @@ namespace Engine
 		}
 
 		/* Post-processing: */
-		if( framebuffer_postprocessing.IsValid() )
-			framebuffer_postprocessing.Resize( new_width_in_pixels, new_height_in_pixels );
+		if( framebuffer_postprocessing_A.IsValid() )
+			framebuffer_postprocessing_A.Resize( new_width_in_pixels, new_height_in_pixels );
 		else // i.e, the first time the framebuffer is created:
 		{
 			/* Same parameters as the main FBO. */
-			framebuffer_postprocessing = Framebuffer( Framebuffer::Description
-													  {
-														  .name = "Post-processing FB",
+			framebuffer_postprocessing_A = Framebuffer( Framebuffer::Description
+														{
+															.name = "Post-processing A FB",
 
-														  .width_in_pixels  = new_width_in_pixels,
-														  .height_in_pixels = new_height_in_pixels,
+															.width_in_pixels = new_width_in_pixels,
+															.height_in_pixels = new_height_in_pixels,
 
-														  .color_format    = framebuffer_main_color_format,
-														  .attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
-													  } );
+															.color_format = framebuffer_main_color_format,
+															.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
+														} );
+		}
+
+		if( framebuffer_postprocessing_B.IsValid() )
+			framebuffer_postprocessing_B.Resize( new_width_in_pixels, new_height_in_pixels );
+		else // i.e, the first time the framebuffer is created:
+		{
+			/* Same parameters as the main FBO. */
+			framebuffer_postprocessing_B = Framebuffer( Framebuffer::Description
+														{
+															.name = "Post-processing B FB",
+
+															.width_in_pixels = new_width_in_pixels,
+															.height_in_pixels = new_height_in_pixels,
+
+															.color_format = framebuffer_main_color_format,
+															.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
+														} );
 		}
 
 		/* Editor: */
@@ -533,7 +554,9 @@ namespace Engine
 		}
 
 		msaa_resolve_material.SetTexture( "uniform_texture_slot", &framebuffer_main.ColorAttachment() );
-		tone_mapping_material.SetTexture( "uniform_texture_slot", &framebuffer_postprocessing.ColorAttachment() );
+
+		/* Tone-mapping is the final operation and it's texture slot is assigned automatically in Render() every frame.
+		 * This is due to the ping-ponging of post-processing framebuffers A & B. */
 	}
 
 	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
@@ -735,16 +758,14 @@ namespace Engine
 	{
 		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseEditorFramebuffer", PASS_ID_FINAL );
 
-		auto& pass = render_pass_map[ PASS_ID_FINAL ];
-		pass.target_framebuffer = &framebuffer_final;
+		render_pass_map[ PASS_ID_FINAL ].target_framebuffer = &framebuffer_final;
 	}
 
 	void Renderer::SetFinalPassToUseDefaultFramebuffer()
 	{
 		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseDefaultFramebuffer", PASS_ID_FINAL );
 
-		auto& pass = render_pass_map[ PASS_ID_FINAL ];
-		pass.target_framebuffer = &framebuffer_default;
+		render_pass_map[ PASS_ID_FINAL ].target_framebuffer = &framebuffer_default;
 	}
 
 	void Renderer::AddDirectionalLight( DirectionalLight* light_to_add )
@@ -969,7 +990,7 @@ namespace Engine
 
 	void Renderer::SetCurrentFramebuffer( Framebuffer* framebuffer )
 	{
-		ASSERT_DEBUG_ONLY( framebuffer && ICON_FA_DRAW_POLYGON " " "SetCurrentFramebuffer() called with nullptr. ResetToDefaultFramebuffer() can be used to bind the default framebuffer." );
+		ASSERT_DEBUG_ONLY( framebuffer );
 
 		const Vector2I old_framebuffer_size = framebuffer_current->Size();
 		
@@ -1001,9 +1022,14 @@ namespace Engine
 		return framebuffer_main;
 	}
 
-	Framebuffer& Renderer::PostProcessingFramebuffer()
+	Framebuffer& Renderer::PostProcessingFramebuffer_A()
 	{
-		return framebuffer_postprocessing;
+		return framebuffer_postprocessing_A;
+	}
+
+	Framebuffer& Renderer::PostProcessingFramebuffer_B()
+	{
+		return framebuffer_postprocessing_B;
 	}
 
 	Framebuffer& Renderer::FinalFramebuffer()
@@ -1108,10 +1134,29 @@ namespace Engine
 					  }
 				  } );
 
-		AddQueue( QUEUE_ID_POSTPROCESSING,
+		AddQueue( QUEUE_ID_BEFORE_POSTPROCESSING,
 				  RenderQueue
 				  {
-					  .name = "Post-processing",
+					  .name = "Before Post-processing",
+					  .render_state_override = RenderState
+					  {
+						  .face_culling_enable = false,
+
+				          .depth_test_enable  = false,
+						  .depth_write_enable = false,
+
+						  .sorting_mode = SortingMode::None // Preserve effect insertion order.
+                      }
+				  } );
+
+		AddQueue( QUEUE_ID_POSTPROCESSING_BLOOM,
+				  RenderQueue
+				  {
+					  .name = "Post-processing: Bloom",
+
+					  .framebuffer_override_source = &framebuffer_postprocessing_A,
+					  .framebuffer_override_target = &framebuffer_postprocessing_B,
+
 					  .render_state_override = RenderState
 					  {
 						  .face_culling_enable = false,
@@ -1127,6 +1172,10 @@ namespace Engine
 				  RenderQueue
 				  {
 					  .name = "Final",
+
+					  /* Framebuffer overrides are not used here because this queue has its own pass; The Final pass.
+					   * Target framebuffer for the Final pass is automatically determined/set every frame before rendering it. */
+
 					  .render_state_override = RenderState
 					  {
 						  .face_culling_enable = false,
@@ -1170,7 +1219,7 @@ namespace Engine
 				 RenderPass
 				 {
 					 .name               = "MSAA Resolve",
-					 .target_framebuffer = &framebuffer_postprocessing,
+					 .target_framebuffer = &framebuffer_postprocessing_A,
 					 .queue_id_set       = { QUEUE_ID_MSAA_RESOLVE }
 				 } );
 
@@ -1178,15 +1227,15 @@ namespace Engine
 				 RenderPass
 				 {
 					 .name               = "Post-processing",
-					 .target_framebuffer = &framebuffer_postprocessing,
-					 .queue_id_set       = { QUEUE_ID_POSTPROCESSING }
+					 .target_framebuffer = &framebuffer_postprocessing_B, // Does not matter; Will be overridden per-queue for each effect, to point to A or B.
+					 .queue_id_set       = { QUEUE_ID_POSTPROCESSING_BLOOM }
 				 } );
 
 		AddPass( PASS_ID_FINAL,
 				 RenderPass
 				 {
 					 .name               = "Final",
-					 .target_framebuffer = &framebuffer_final,
+					 .target_framebuffer = &framebuffer_final, // Does not matter; Will be set each frame to A or B, depending on what the last queue before this writes to.
 					 .queue_id_set       = { QUEUE_ID_FINAL }
 				 } );
 	}

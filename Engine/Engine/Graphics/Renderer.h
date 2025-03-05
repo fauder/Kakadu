@@ -188,7 +188,8 @@ namespace Engine
 		bool DefaultFramebufferIsBound() const;
 		Framebuffer* CurrentFramebuffer();
 		Framebuffer& MainFramebuffer();
-		Framebuffer& PostProcessingFramebuffer();
+		Framebuffer& PostProcessingFramebuffer_A();
+		Framebuffer& PostProcessingFramebuffer_B();
 		Framebuffer& FinalFramebuffer();
 		Framebuffer& CustomFramebuffer( const unsigned int framebuffer_index = 0 );
 
@@ -282,20 +283,25 @@ namespace Engine
 
 		/* Using Unity defaults: Background is 1000, Geometry is 2000, AlphaTest is 2450, Transparent is 3000 and Overlay is 4000 */
 
-		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY              = RenderQueue::ID(  2'000u );
-		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT           = RenderQueue::ID(  2'450u );
-		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX                = RenderQueue::ID(  2'900u );
-		static constexpr RenderQueue::ID QUEUE_ID_POSTPROCESSING        = RenderQueue::ID(  3'000u );
-		static constexpr RenderQueue::ID QUEUE_ID_MSAA_RESOLVE          = RenderQueue::ID( 10'000u );
-		static constexpr RenderQueue::ID QUEUE_ID_FINAL	                = RenderQueue::ID( ( std::uint8_t )QUEUE_ID_MSAA_RESOLVE + 1u );
+		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY                       = RenderQueue::ID(  2'000u );
+		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT                    = RenderQueue::ID(  2'450u );
+		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX                         = RenderQueue::ID(  2'900u );
+		static constexpr RenderQueue::ID QUEUE_ID_MSAA_RESOLVE                   = RenderQueue::ID(  3'000u );
 
-		static constexpr std::array< RenderQueue::ID, 6 > BUILTIN_QUEUE_ID_LIST =
+		static constexpr RenderQueue::ID QUEUE_ID_BEFORE_POSTPROCESSING          = RenderQueue::ID( 3'001u );
+		/* These are multi-step post-processing effects where each effect reads the previous effect's result and writes to a different framebuffer (ping-ponging). */
+		static constexpr RenderQueue::ID QUEUE_ID_POSTPROCESSING_BLOOM           = RenderQueue::ID( 3'002u );
+
+		static constexpr RenderQueue::ID QUEUE_ID_FINAL	                         = RenderQueue::ID( 5'000u );
+
+		static constexpr std::array< RenderQueue::ID, 7 > BUILTIN_QUEUE_ID_LIST =
 		{
 			QUEUE_ID_GEOMETRY,
 			QUEUE_ID_TRANSPARENT,
 			QUEUE_ID_SKYBOX,
-			QUEUE_ID_POSTPROCESSING,
 			QUEUE_ID_MSAA_RESOLVE,
+			QUEUE_ID_BEFORE_POSTPROCESSING,
+			QUEUE_ID_POSTPROCESSING_BLOOM,
 			QUEUE_ID_FINAL
 		};
 
@@ -330,8 +336,10 @@ namespace Engine
 
 		Framebuffer framebuffer_shadow_map_light_directional;
 		Framebuffer framebuffer_main;
-		Framebuffer framebuffer_postprocessing;
+		Framebuffer framebuffer_postprocessing_A; // Used in ping-pong fashion.
+		Framebuffer framebuffer_postprocessing_B; // Used in ping-pong fashion.
 		Framebuffer framebuffer_final;
+
 		std::array< Framebuffer,								FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_array;
 		std::array< std::optional< Framebuffer::Description >,	FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_description_array;
 

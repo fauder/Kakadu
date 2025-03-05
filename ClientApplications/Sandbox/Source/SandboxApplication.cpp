@@ -413,7 +413,7 @@ void SandboxApplication::Initialize()
 	}
 
 	mirror_quad_renderable = Engine::Renderable( &quad_mesh_mirror, &mirror_quad_material );
-	renderer.AddRenderable( &mirror_quad_renderable, Engine::Renderer::QUEUE_ID_POSTPROCESSING );
+	renderer.AddRenderable( &mirror_quad_renderable, Engine::Renderer::QUEUE_ID_BEFORE_POSTPROCESSING );
 
 	mirror_quad_renderable.ToggleOnOrOff( not render_rear_view_cam_to_imgui );
 
