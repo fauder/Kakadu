@@ -4,15 +4,13 @@
 #include "Engine/Graphics/MaterialData/MaterialData.h"
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Mesh.h"
+#include "Engine/Graphics/ModelInstance.h"
 #include "Engine/Graphics/Renderer.h"
 #include "Engine/Graphics/Texture.h"
 #include "Engine/Scene/Camera.h"
 #include "Engine/Scene/CameraController_Flight.h"
 
 #include "Engine/DefineMathTypes.h"
-
-// Project Includes.
-#include "ModelInstance.h"
 
 // std Includes.
 #include <numeric> // std::accumulate().
@@ -35,7 +33,7 @@ class SandboxApplication : public Engine::Application
 
 	struct ModelInfo
 	{
-		ModelInstance model_instance;
+		Engine::ModelInstance model_instance;
 		Engine::Shader* shader;
 		std::string file_path;
 	};

@@ -1228,15 +1228,15 @@ bool SandboxApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const 
 		for( auto& renderable_to_remove : model_instance_to_load_into.Renderables() )
 			renderer.RemoveRenderable( &renderable_to_remove );
 
-		model_instance_to_load_into = ModelInstance( new_model,
-													 model_info_to_be_loaded.shader,
-													 Vector3::One(),
-													 Quaternion(),
-													 Vector3::Up() * 8.0f,
-													 Engine::Renderer::QUEUE_ID_GEOMETRY,
-													 nullptr,
-													 true, /* has shadows. */
-													 Vector4{ 1.0f, 1.0f, 0.0f, 0.0f } );
+		model_instance_to_load_into = Engine::ModelInstance( new_model,
+															 model_info_to_be_loaded.shader,
+															 Vector3::One(),
+															 Quaternion(),
+															 Vector3::Up() * 8.0f,
+															 Engine::Renderer::QUEUE_ID_GEOMETRY,
+															 nullptr,
+															 true, /* has shadows. */
+															 Vector4{ 1.0f, 1.0f, 0.0f, 0.0f } );
 
 		for( auto& renderable_to_add : model_instance_to_load_into.Renderables() )
 			renderer.AddRenderable( &renderable_to_add, Engine::Renderer::QUEUE_ID_GEOMETRY );

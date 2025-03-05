@@ -215,11 +215,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\ModelInstance.h" />
     <ClInclude Include="Source\SandboxApplication.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\ModelInstance.cpp" />
     <ClCompile Include="Source\SandboxApplication.cpp" />
   </ItemGroup>
   <ItemGroup>

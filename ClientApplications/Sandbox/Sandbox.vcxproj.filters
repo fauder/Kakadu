@@ -2,11 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="Source\SandboxApplication.h" />
-    <ClInclude Include="Source\ModelInstance.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\SandboxApplication.cpp" />
-    <ClCompile Include="Source\ModelInstance.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\Engine\Engine\Asset\Resource\app_icon.rc" />
