@@ -204,6 +204,7 @@ namespace Engine
 
 			case Format::RGBA_16F:		return GL_RGBA16F;
 			case Format::RGBA_32F:		return GL_RGBA32F;
+			case Format::R11G11B10F:	return GL_R11F_G11F_B10F;
 
 			case Format::SRGB:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB			+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGB;
 			case Format::SRGBA:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB_ALPHA	+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGBA;

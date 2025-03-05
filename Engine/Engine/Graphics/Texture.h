@@ -46,6 +46,7 @@ namespace Engine
 
 			RGBA_16F,
 			RGBA_32F,
+			R11G11B10F,
 
 			SRGB,
 			SRGBA,
@@ -65,6 +66,7 @@ namespace Engine
 				case Format::RGBA:			return Format::RGBA;
 				case Format::RGBA_16F:		return Format::RGBA_16F;
 				case Format::RGBA_32F:		return Format::RGBA_32F;
+				case Format::R11G11B10F:	return Format::R11G11B10F;
 				case Format::SRGB:			return GAMMA_CORRECTION_IS_ENABLED ? Format::SRGB  : Format::RGB;
 				case Format::SRGBA:			return GAMMA_CORRECTION_IS_ENABLED ? Format::SRGBA : Format::RGBA;
 				case Format::DEPTH_STENCIL:	return Format::DEPTH_STENCIL;
@@ -86,6 +88,7 @@ namespace Engine
 				case Format::RGBA:			return "RGBA";
 				case Format::RGBA_16F:		return "RGBA_16F";
 				case Format::RGBA_32F:		return "RGBA_32F";
+				case Format::R11G11B10F:	return "R11G11B10F";
 				case Format::SRGB:			return "[S]RGB";
 				case Format::SRGBA:			return "[S]RGBA";
 				case Format::DEPTH_STENCIL:	return "DEPTH_STENCIL";
@@ -191,7 +194,8 @@ namespace Engine
 		inline int					SampleCount()		const { return msaa.sample_count;											}
 		inline bool					IsMultiSampled()	const { return msaa.IsEnabled();											}
 		inline bool					Is_sRGB()			const { return format == Format::SRGB || format == Format::SRGBA;			}
-		inline bool					IsHDR()				const { return format == Format::RGBA_16F || format == Format::RGBA_32F;	}
+		inline bool					IsHDR()				const { return format == Format::RGBA_16F || format == Format::RGBA_32F ||
+																	   format == Format::R11G11B10F; }
 		inline Format				PixelFormat()		const { return format;														}
 
 	/* Usage: */
@@ -215,6 +219,8 @@ namespace Engine
 				case Format::RGBA_16F:		return GL_RGBA;
 				case Format::RGBA_32F:		return GL_RGBA;
 
+				case Format::R11G11B10F:	return GL_RGB;
+
 				case Format::SRGB:			return GL_RGB;
 				case Format::SRGBA:			return GL_RGBA;
 
@@ -236,6 +242,7 @@ namespace Engine
 
 				case Format::RGBA_16F:		return GL_HALF_FLOAT;
 				case Format::RGBA_32F:		return GL_FLOAT;
+				case Format::R11G11B10F:	return GL_FLOAT;
 
 				case Format::DEPTH_STENCIL:	return GL_UNSIGNED_INT_24_8;
 				case Format::DEPTH:			return GL_UNSIGNED_INT;
