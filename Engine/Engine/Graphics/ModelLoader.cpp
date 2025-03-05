@@ -74,7 +74,12 @@ namespace Engine
                         return false;
 
                     sub_mesh_albedo_texture = textures[ fastgltf_texture.imageIndex.value() ];
-                    sub_mesh_albedo_texture->SetName( ( "Albedo (" + gltf_mesh.name + ")" ).c_str() );
+                    if( sub_mesh_albedo_texture->Name().front() == '<' ) // <unnamed>.
+                    {
+                        sub_mesh_albedo_texture->SetName( gltf_mesh.name.empty()
+                                                          ? ( "Albedo (" + sub_mesh_albedo_texture->Name() + ")" ).c_str()
+                                                          : ( "Albedo (" + gltf_mesh.name + ")" ).c_str() );
+                    }
 
                     if( base_color_texture_info->transform && base_color_texture_info->transform->texCoordIndex.has_value() )
                         base_color_uv_index = base_color_texture_info->transform->texCoordIndex.value();
@@ -95,7 +100,12 @@ namespace Engine
                         return false;
 
                     sub_mesh_normal_texture = textures[ fastgltf_texture.imageIndex.value() ];
-                    sub_mesh_normal_texture->SetName( ( "Normal (" + gltf_mesh.name + ")" ).c_str() );
+                    if( sub_mesh_normal_texture->Name().front() == '<' ) // <unnamed>.
+                    {
+                        sub_mesh_normal_texture->SetName( gltf_mesh.name.empty()
+                                                          ? ( "Normal (" + sub_mesh_normal_texture->Name() + ")" ).c_str()
+                                                          : ( "Normal (" + gltf_mesh.name + ")" ).c_str() );
+                    }
                 }
             }
 
