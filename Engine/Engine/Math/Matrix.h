@@ -210,4 +210,6 @@ namespace Engine::Matrix
 	void SRT( Matrix4x4& srt_matrix, const Vector3& scale, const Quaternion& rotation, const Vector3& translation );
 	/* SRT = Scale * Rotate * Translate. */
 	void DecomposeSRT( const Matrix4x4& srt_matrix, Vector3& scale, Quaternion& rotation, Vector3& translation );
+
+	Vector3 CameraWorldPositionFromViewMatrix( const Matrix4x4& view_matrix );
 };

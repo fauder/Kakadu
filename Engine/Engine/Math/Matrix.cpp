@@ -183,4 +183,12 @@ namespace Engine::Matrix
 
 		rotation = Math::MatrixToQuaternion( rotation_matrix ).Normalized();
 	}
+
+	Vector3 CameraWorldPositionFromViewMatrix( const Matrix4x4& view_matrix )
+	{
+		const Matrix3x3 inverse_view_rotation( view_matrix.SubMatrix< 3 >().Transposed() );
+		const Vector3 inverse_view_translation( -view_matrix.GetRow< 3 >( 3 ) );
+
+		return inverse_view_rotation * inverse_view_translation;
+	}
 }
