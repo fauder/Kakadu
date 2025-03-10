@@ -126,6 +126,8 @@ namespace Engine
 
 				SetIntrinsicsPerPass( pass );
 
+				const Vector3 camera_position( Matrix::CameraWorldPositionFromViewMatrix( current_camera_info.view_matrix ) );
+
 				UploadIntrinsics();
 				UploadGlobals();
 
@@ -145,7 +147,7 @@ namespace Engine
 						if( pass.render_state_override_is_allowed )
 							SetRenderState( queue.render_state_override, pass.target_framebuffer /* No clearing for queues. */ );
 
-						SortRenderablesInQueue( current_camera_info.view_matrix.GetRow< 3 >( 3 ), queue.renderable_list, queue.render_state_override.sorting_mode );
+						SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override.sorting_mode );
 
 						switch( pass_id )
 						{
@@ -1589,7 +1591,7 @@ namespace Engine
 		{
 			case SortingMode::FrontToBack:
 				std::sort( renderable_array_to_sort.begin(), renderable_array_to_sort.end(),
-						   [ & ]( Renderable* renderable_1, Renderable* renderable_2 )
+						   [ &camera_position ]( Renderable* renderable_1, Renderable* renderable_2 )
 							{
 								if( renderable_1->GetTransform() && renderable_2->GetTransform() )
 									return Math::DistanceSquared( camera_position, renderable_1->GetTransform()->GetTranslation() ) <
@@ -1601,7 +1603,7 @@ namespace Engine
 
 			case SortingMode::BackToFront:
 				std::sort( renderable_array_to_sort.begin(), renderable_array_to_sort.end(),
-						   [ & ]( Renderable* renderable_1, Renderable* renderable_2 )
+						   [ &camera_position ]( Renderable* renderable_1, Renderable* renderable_2 )
 							{
 								if( renderable_1->GetTransform() && renderable_2->GetTransform() )
 									return Math::DistanceSquared( camera_position, renderable_1->GetTransform()->GetTranslation() ) >
