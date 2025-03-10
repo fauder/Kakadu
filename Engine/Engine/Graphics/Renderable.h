@@ -15,9 +15,11 @@ namespace Engine
 
 	public:
 		Renderable();
-		Renderable( const Mesh* mesh, Material* material, Transform* transform = nullptr, const bool receive_shadows = false );
 
 		DEFAULT_COPY_AND_MOVE_CONSTRUCTORS( Renderable );
+
+		/* Shadows are off by default, for perf. reasons. User must enable them explicitly in order to use them. */
+		Renderable( const Mesh* mesh, Material* material, Transform* transform = nullptr, const bool receive_shadows = false, const bool cast_shadows = false );
 
 		~Renderable();
 
@@ -32,12 +34,15 @@ namespace Engine
 	/* Queries: */
 		inline bool IsEnabled()				const { return is_enabled; }
 		inline bool IsReceivingShadows()	const { return is_receiving_shadows; }
+		inline bool IsCastingShadows()		const { return is_casting_shadows; }
 
 	/* Toggling: */
 		void ToggleOn();
 		void ToggleOff();
 		void ToggleOnOrOff();
 		void ToggleOnOrOff( const bool enable );
+		void ToggleShadowReceiving( const bool enable );
+		void ToggleShadowCasting( const bool enable );
 
 	private:
 		Transform* transform;
@@ -46,6 +51,7 @@ namespace Engine
 
 		bool is_enabled;
 		bool is_receiving_shadows;
-		//bool padding[ 6 ];
+		bool is_casting_shadows;
+		//bool padding[ 5 ];
 	};
 }

@@ -19,13 +19,14 @@ namespace Engine
 	{
 	}
 
-	Renderable::Renderable( const Mesh* mesh, Material* material, Transform* transform, const bool receive_shadows )
+	Renderable::Renderable( const Mesh* mesh, Material* material, Transform* transform, const bool receive_shadows, const bool cast_shadows )
 		:
 		transform( transform ),
 		mesh( mesh ),
 		material( material ),
 		is_enabled( true ),
-		is_receiving_shadows( receive_shadows )
+		is_receiving_shadows( receive_shadows ),
+		is_casting_shadows( cast_shadows )
 	{
 #if defined( _DEBUG ) || defined( _EDITOR )
 		if( mesh->VertexCount() == 0 )
@@ -72,5 +73,15 @@ namespace Engine
 	void Renderable::ToggleOnOrOff( const bool enable )
 	{
 		is_enabled = enable;
+	}
+
+	void Renderable::ToggleShadowReceiving( const bool enable )
+	{
+		is_receiving_shadows = enable;
+	}
+
+	void Renderable::ToggleShadowCasting( const bool enable )
+	{
+		is_casting_shadows = enable;
 	}
 }

@@ -377,33 +377,44 @@ void BloomDemoApplication::Initialize()
 					      .render_state_override_is_allowed = true
 					  } );
 	
-	light_sources_renderable = Engine::Renderable( &cube_mesh_instanced_with_color, &light_source_material, nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
+	light_sources_renderable = Engine::Renderable( &cube_mesh_instanced_with_color, &light_source_material, 
+												   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
 	renderer.AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	cube_renderable = Engine::Renderable( &cube_mesh_instanced, &cube_material,
-										  nullptr /* => No Transform here, as we will provide the Transforms as instance data. */, true /* => has shadows. */ );
+										  nullptr /* => No Transform here, as we will provide the Transforms as instance data. */,
+										  true /* => has shadows. */,
+										  true /* => casts shadows. */ );
 	renderer.AddRenderable( &cube_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
-	cube_parallax_renderable = Engine::Renderable( &cube_mesh, &wall_material, &cube_parallax_transform, true /* => has shadows. */ );
+	cube_parallax_renderable = Engine::Renderable( &cube_mesh, &wall_material,
+												   &cube_parallax_transform, 
+												   true /* => has shadows. */,
+												   true /* => casts shadows. */ );
 	renderer.AddRenderable( &cube_parallax_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	cube_reflected_renderable = Engine::Renderable( &cube_reflected_mesh_instanced, &cube_reflected_material,
-													nullptr /* => No Transform here, as we will provide the Transforms as instance data. */, true /* => has shadows. */ );
+													nullptr /* => No Transform here, as we will provide the Transforms as instance data. */,
+													true /* => has shadows. */,
+													true /* => casts shadows. */ );
 	renderer.AddRenderable( &cube_reflected_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
-	ground_renderable = Engine::Renderable( &quad_mesh, &ground_material, &ground_transform, true /* => has shadows. */ );
+	ground_renderable = Engine::Renderable( &quad_mesh, &ground_material, 
+											&ground_transform, 
+											true /* => has shadows. */,
+											true /* => casts shadows. */ );
 	renderer.AddRenderable( &ground_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
-	wall_front_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_front_transform, true /* => has shadows. */ );
-	wall_left_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_left_transform,  true /* => has shadows. */ );
-	wall_right_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_right_transform, true /* => has shadows. */ );
-	wall_back_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_back_transform,  true /* => has shadows. */ );
+	wall_front_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_front_transform, true /* => has shadows. */, true /* => casts shadows. */ );
+	wall_left_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_left_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
+	wall_right_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_right_transform, true /* => has shadows. */, true /* => casts shadows. */ );
+	wall_back_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_back_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
 	renderer.AddRenderable( &wall_front_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 	renderer.AddRenderable( &wall_left_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 	renderer.AddRenderable( &wall_right_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 	renderer.AddRenderable( &wall_back_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
-	sphere_renderable = Engine::Renderable( &sphere_mesh, &sphere_material, &sphere_transform, true /* => has shadows. */ );
+	sphere_renderable = Engine::Renderable( &sphere_mesh, &sphere_material, &sphere_transform, false /* => does not have shadows. */, true /* => casts shadows. */ );
 	renderer.AddRenderable( &sphere_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	for( auto i = 0; i < WINDOW_COUNT; i++ )
