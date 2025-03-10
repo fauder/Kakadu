@@ -345,10 +345,10 @@ namespace Engine::Math
 	};
 
 	/* Vector-matrix multiplication. */
-	template< Concepts::Arithmetic Type_, std::size_t RowSize, std::size_t ColumnSize >
-	constexpr Vector< Type_, RowSize > operator* ( const Vector< Type_, RowSize >& vector, const Matrix< Type_, RowSize, ColumnSize >& matrix )
+	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
+	constexpr Vector< Type, RowSize > operator* ( const Vector< Type, RowSize >& vector, const Matrix< Type, RowSize, ColumnSize >& matrix )
 	{
-		Vector< Type_, RowSize > vector_transformed;
+		Vector< Type, RowSize > vector_transformed;
 		for( auto j = 0; j < ColumnSize; j++ )
 			for( auto k = 0; k < RowSize; k++ )
 				vector_transformed[ j ] += vector[ k ] * matrix.data[ k ][ j ];
@@ -357,8 +357,8 @@ namespace Engine::Math
 	}
 
 	/* Vector-matrix multiplication. */
-	template< Concepts::Arithmetic Type_, std::size_t RowSize, std::size_t ColumnSize >
-	constexpr Vector< Type_, RowSize >& operator*= ( Vector< Type_, RowSize >& vector, const Matrix< Type_, RowSize, ColumnSize >& matrix )
+	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
+	constexpr Vector< Type, RowSize >& operator*= ( Vector< Type, RowSize >& vector, const Matrix< Type, RowSize, ColumnSize >& matrix )
 	{
 		return vector = vector * matrix;
 	}
