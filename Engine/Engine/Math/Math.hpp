@@ -72,6 +72,12 @@ namespace Engine::Math
 		return ( vector_a - vector_b ).Magnitude();
 	}
 
+	template< typename Component, std::size_t Size > requires( Size > 1 )
+	Component DistanceSquared( const Vector< Component, Size >& vector_a, const Vector< Component, Size >& vector_b )
+	{
+		return ( vector_a - vector_b ).MagnitudeSquared();
+	}
+
 	int RoundToMultiple_PowerOf2( const int value, const int multiple );
 
 /* Trigonometry. */
