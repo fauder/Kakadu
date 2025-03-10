@@ -297,6 +297,11 @@ namespace Engine::Math
 		template< Concepts::Arithmetic Type_, std::size_t RowSize_, std::size_t ColumnSize_ > // Have to use different template parameters here because C++...
 		friend constexpr Vector< Type_, RowSize_ >& operator*= ( const Vector< Type_, RowSize_ >& vector, const Matrix< Type_, RowSize_, ColumnSize_ >& matrix );
 
+		/* Matrix-vector multiplication: Treating the vector on the right as a column matrix, i.e., a matrix with 1 column and ColumnSize rows.
+		 * Produces a row vector of size RowSize. */
+		template< Concepts::Arithmetic Type_, std::size_t RowSize_, std::size_t ColumnSize_ > // Have to use different template parameters here because C++...
+		friend constexpr Vector< Type_, RowSize_ > operator* ( const Matrix< Type_, RowSize_, ColumnSize_ >& matrix, const Vector< Type_, ColumnSize_ >& column_vector );
+
 		/* Arithmetic Operations: Unary operators. */
 		constexpr Matrix operator- () const
 		{
@@ -361,6 +366,19 @@ namespace Engine::Math
 	constexpr Vector< Type, RowSize >& operator*= ( Vector< Type, RowSize >& vector, const Matrix< Type, RowSize, ColumnSize >& matrix )
 	{
 		return vector = vector * matrix;
+	}
+
+	/* Matrix-vector multiplication: Treating the vector on the right as a column matrix, i.e., a matrix with 1 column and ColumnSize rows.
+	 * Produces a row vector of size RowSize. */
+	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
+	constexpr Vector< Type, RowSize > operator* ( const Matrix< Type, RowSize, ColumnSize >& matrix, const Vector< Type, ColumnSize >& column_vector )
+	{
+		Vector< Type, RowSize > vector_transformed;
+		for( auto k = 0; k < RowSize; k++ )
+			for( auto j = 0; j < ColumnSize; j++ )
+				vector_transformed[ k ] += column_vector[ j ] * matrix.data[ k ][ j ];
+
+		return vector_transformed;
 	}
 }
 
