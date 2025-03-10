@@ -487,7 +487,7 @@ void SandboxApplication::Update()
 {
 	auto log_group( gl_logger.TemporaryLogGroup( "Sandbox Update()" ) );
 
-	// TODO: Separate applicationg logs from GL logs.
+	// TODO: Separate application logs from GL logs.
 
 	current_time_as_angle = Radians( time_current );
 	const Radians current_time_mod_two_pi( std::fmod( time_current, Engine::Constants< float >::Two_Pi() ) );
@@ -505,13 +505,17 @@ void SandboxApplication::Update()
 			Radians old_heading, old_pitch, bank;
 			Engine::Math::QuaternionToEuler( old_rotation, old_heading, old_pitch, bank );
 
-			Radians new_angle( current_time_mod_two_pi + ( float )angle_increment * ( float )i );
+			Radians new_angle( Engine::Constants< Radians >::Pi_Over_Two() + current_time_mod_two_pi + ( float )angle_increment * ( float )i );
 			const Radians new_angle_mod_two_pi( std::fmod( new_angle.Value(), Engine::Constants< float >::Two_Pi() ) );
 
 			const bool heading_instead_of_pitching = new_angle_mod_two_pi <= Engine::Constants< Radians >::Pi();
-
-			const auto point_light_rotation( Engine::Math::EulerToMatrix( float(  heading_instead_of_pitching ) * new_angle_mod_two_pi,
-																		  float( !heading_instead_of_pitching ) * ( new_angle_mod_two_pi - 3.0f * Engine::Constants< Radians >::Pi_Over_Two() ), bank ) );
+			
+			const auto point_light_rotation( Engine::Math::EulerToMatrix( /* Offset heading by 45 degrees to prevent light sources rotating directly in front of the camera. */
+																		  Engine::Math::Lerp( Engine::Constants< Radians >::Pi_Over_Four(),
+																							  new_angle_mod_two_pi + Engine::Constants< Radians >::Pi_Over_Four(),
+																							  float( heading_instead_of_pitching ) ),
+																		  float( !heading_instead_of_pitching ) * ( new_angle_mod_two_pi - 3.0f * Engine::Constants< Radians >::Pi_Over_Two() ),
+																		  bank ) );
 
 			point_light_position_world_space = ( ( ( heading_instead_of_pitching ? Vector4::Forward() : Vector4::Up() ) * light_point_orbit_radius ) *
 												 ( point_light_rotation * Engine::Matrix::Translation( CAMERA_ROTATION_ORIGIN ) ) ).XYZ();
