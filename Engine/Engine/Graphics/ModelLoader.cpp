@@ -65,7 +65,7 @@ namespace Engine
             if( submesh_iterator->materialIndex.has_value() )
             {
                 material_index       = submesh_iterator->materialIndex.value();
-                const auto& material = gltf_asset.materials[ submesh_iterator->materialIndex.value() ];
+                const auto& material = gltf_asset.materials[ material_index ];
                 
                 if( const auto& base_color_texture_info = material.pbrData.baseColorTexture; 
                     base_color_texture_info.has_value() )
@@ -428,9 +428,22 @@ namespace Engine
         
         model.textures.reserve( gltf_asset.images.size() );
 
-		for( auto& gltf_texture : gltf_asset.textures )
+        /* For the LoadMesh() to work properly, textures in Model need to be ordered based on gltf_asset.images, NOT gltf_asset.textures (they can have different orderings). 
+         * While it would be more convenient to loop of gltf_asset.textures here since it has an imageIndex into the gltf_asset.images array, we can't,
+         * as we need to create textures in the order of gltf_asset.images.
+         *
+         * Therefore, we first cache the mapping between the two arrays: */
+        std::unordered_map< std::size_t, std::size_t > gltf_texture_index_from_image_index;
+        for( std::size_t texture_index = 0; texture_index < gltf_asset.textures.size(); texture_index++ )
+            gltf_texture_index_from_image_index[ *gltf_asset.textures[ texture_index ].imageIndex ] = texture_index;
+
+        /* Now we can loop over the images safely, referring to the texture index from the map as needed. */
+        for( std::size_t image_index = 0; image_index < gltf_asset.images.size(); image_index++ )
         {
-            const auto& gltf_image = gltf_asset.images[ *gltf_texture.imageIndex ];
+            const auto& gltf_image = gltf_asset.images[ image_index ];
+
+            const std::size_t texture_index = gltf_texture_index_from_image_index[ image_index ];
+            const auto& gltf_texture = gltf_asset.textures[ texture_index ];
 
             Texture::ImportSettings import_settings
             {
@@ -456,16 +469,16 @@ namespace Engine
             /* Turn off sRGB status for linear textures: */
             for( auto& material : gltf_asset.materials )
             {
-                if( ( material.normalTexture                            && material.normalTexture->textureIndex == *gltf_texture.imageIndex ) ||
-                    ( material.packedNormalMetallicRoughnessTexture     && material.packedNormalMetallicRoughnessTexture->textureIndex == *gltf_texture.imageIndex ) ||
-                    ( material.occlusionTexture                         && material.occlusionTexture->textureIndex == *gltf_texture.imageIndex ) ||
+                if( ( material.normalTexture                            && material.normalTexture->textureIndex                        == texture_index ) ||
+                    ( material.packedNormalMetallicRoughnessTexture     && material.packedNormalMetallicRoughnessTexture->textureIndex == texture_index ) ||
+                    ( material.occlusionTexture                         && material.occlusionTexture->textureIndex                     == texture_index ) ||
                     ( material.packedOcclusionRoughnessMetallicTextures &&
 					  ( ( material.packedOcclusionRoughnessMetallicTextures->normalTexture &&
-						  material.packedOcclusionRoughnessMetallicTextures->normalTexture->textureIndex == *gltf_texture.imageIndex ) ||
+						  material.packedOcclusionRoughnessMetallicTextures->normalTexture->textureIndex == texture_index ) ||
 						( material.packedOcclusionRoughnessMetallicTextures->occlusionRoughnessMetallicTexture &&
-						  material.packedOcclusionRoughnessMetallicTextures->occlusionRoughnessMetallicTexture->textureIndex == *gltf_texture.imageIndex ) ||
+						  material.packedOcclusionRoughnessMetallicTextures->occlusionRoughnessMetallicTexture->textureIndex == texture_index ) ||
 						( material.packedOcclusionRoughnessMetallicTextures->roughnessMetallicOcclusionTexture &&
-						  material.packedOcclusionRoughnessMetallicTextures->roughnessMetallicOcclusionTexture->textureIndex == *gltf_texture.imageIndex ) ) ) )
+						  material.packedOcclusionRoughnessMetallicTextures->roughnessMetallicOcclusionTexture->textureIndex == texture_index ) ) ) )
                 {
                     import_settings.format = Texture::Format::RGBA;
                 }
