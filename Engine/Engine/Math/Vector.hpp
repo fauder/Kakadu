@@ -395,7 +395,7 @@ namespace Engine::Math
 
 		constexpr bool IsNormalized() const requires( std::is_integral_v< Component > == false )
 		{
-			return Math::IsEqualSquared( SquareMagnitude(), Component( 1 ) );
+			return Math::IsEqualSquared( MagnitudeSquared(), Component( 1 ) );
 		}
 
 		// TODO: Equality operator etc.
@@ -420,8 +420,8 @@ namespace Engine::Math
 		template< Concepts::Arithmetic Component_ > // Have to use different template parameters here because C++...
 		friend constexpr Vector< Component_, 3 > Cross( const Vector< Component_, 3 >& u, const Vector< Component_, 3 >& v );
 
-		constexpr Component SquareMagnitude() const { return Dot(); }
-		Component Magnitude() const requires( std::floating_point< Component > ) { return Math::Sqrt( SquareMagnitude() ); }
+		constexpr Component MagnitudeSquared() const { return Dot(); }
+		Component Magnitude() const requires( std::floating_point< Component > ) { return Math::Sqrt( MagnitudeSquared() ); }
 
 		Vector Normalized() const requires( std::floating_point< Component > )
 		{

@@ -133,8 +133,8 @@ namespace Engine::Math
 			return VectorType( xyz / SinFromCos( w ) );
 		}
 
-		constexpr ComponentType SquareMagnitude() const { return Dot(); }
-		ComponentType Magnitude() const { return Sqrt( SquareMagnitude() ); }
+		constexpr ComponentType MagnitudeSquared() const { return Dot(); }
+		ComponentType Magnitude() const { return Sqrt( MagnitudeSquared() ); }
 
 		constexpr bool IsIdentity() const
 		{
@@ -143,7 +143,7 @@ namespace Engine::Math
 
 		constexpr bool IsNormalized() const
 		{
-			return Math::IsEqual( SquareMagnitude(), ComponentType( 1 ) );
+			return Math::IsEqual( MagnitudeSquared(), ComponentType( 1 ) );
 		}
 
 	/* Arithmetic Operations: Unary operators. */
