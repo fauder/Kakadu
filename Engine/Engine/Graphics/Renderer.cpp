@@ -1592,8 +1592,8 @@ namespace Engine
 						   [ & ]( Renderable* renderable_1, Renderable* renderable_2 )
 							{
 								if( renderable_1->GetTransform() && renderable_2->GetTransform() )
-									return Math::Distance( camera_position, renderable_1->GetTransform()->GetTranslation() ) <
-										   Math::Distance( camera_position, renderable_2->GetTransform()->GetTranslation() );
+									return Math::DistanceSquared( camera_position, renderable_1->GetTransform()->GetTranslation() ) <
+										   Math::DistanceSquared( camera_position, renderable_2->GetTransform()->GetTranslation() );
 
 								return false; // Does not matter;
 							} );
@@ -1604,8 +1604,8 @@ namespace Engine
 						   [ & ]( Renderable* renderable_1, Renderable* renderable_2 )
 							{
 								if( renderable_1->GetTransform() && renderable_2->GetTransform() )
-									return Math::Distance( camera_position, renderable_1->GetTransform()->GetTranslation() ) >
-										   Math::Distance( camera_position, renderable_2->GetTransform()->GetTranslation() );
+									return Math::DistanceSquared( camera_position, renderable_1->GetTransform()->GetTranslation() ) >
+										   Math::DistanceSquared( camera_position, renderable_2->GetTransform()->GetTranslation() );
 							
 								return false; // Does not matter;
 							} );
