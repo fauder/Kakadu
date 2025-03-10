@@ -1014,11 +1014,6 @@ void BloomDemoApplication::OnFramebufferResizeEvent( const int width_new_pixels,
 	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
 
 	mirror_quad_material.SetTexture( "uniform_texture_slot", &renderer.CustomFramebuffer( 0 ).ColorAttachment() );
-
-	cube_reflected_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
-	cube_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
-	ground_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
-	wall_material.SetTexture( "uniform_shadow_map_slot", renderer.ShadowMapTexture() );
 }
 
 void BloomDemoApplication::OnFramebufferResizeEvent( const Vector2I new_size_pixels )

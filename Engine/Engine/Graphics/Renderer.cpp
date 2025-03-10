@@ -555,6 +555,11 @@ namespace Engine
 
 		msaa_resolve_material.SetTexture( "uniform_texture_slot", &framebuffer_main.ColorAttachment() );
 
+		for( const auto& [ queue_id, queue ]  : render_queue_map )
+			for( const auto& renderable : queue.renderable_list )
+				if( renderable->IsReceivingShadows() )
+					renderable->material->SetTexture( "uniform_shadow_map_slot", ShadowMapTexture() );
+
 		/* Tone-mapping is the final operation and it's texture slot is assigned automatically in Render() every frame.
 		 * This is due to the ping-ponging of post-processing framebuffers A & B. */
 	}
