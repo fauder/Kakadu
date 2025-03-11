@@ -1,10 +1,11 @@
 #pragma once
 
 // Engine Includes.
-#include "Math/Angle.hpp"
-#include "Math/Matrix.hpp"
-#include "Math/Vector.hpp"
-#include "Math/Quaternion.hpp"
+#include "Angle.hpp"
+#include "Matrix.hpp"
+#include "Vector.hpp"
+#include "Quaternion.hpp"
+#include "OrthographicProjectionParameters.h"
 
 namespace Engine::Matrix
 {
@@ -24,6 +25,12 @@ namespace Engine::Matrix
 				0.0f,								0.0f,								-f_plus_n / f_minus_n,		1.0f
 			}
 		);
+	}
+
+	/* In row-major form. Coordinates are in a left-handed coordinate system (both before & after multiplication). */
+	constexpr Matrix4x4 OrthographicProjection( const OrthographicProjectionParameters& parameters )
+	{
+		return OrthographicProjection( parameters.left, parameters.right, parameters.bottom, parameters.top, parameters.near, parameters.far );
 	}
 
 	/* In row-major form. Coordinates are in a left-handed coordinate system (both before & after multiplication). */
