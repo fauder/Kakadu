@@ -94,6 +94,10 @@ namespace Engine
 								FullVertexShaderPath( "Color.vert" ),
 								FullFragmentShaderPath( "Color.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
+		SHADER_MAP.try_emplace( "Debug Geometry",
+								"Debug Geometry",
+								FullVertexShaderPath( "DebugGeometry.vert" ),
+								FullFragmentShaderPath( "DebugGeometry.frag" ) );
 		SHADER_MAP.try_emplace( "Textured",
 								"Textured",
 								FullVertexShaderPath( "Textured.vert" ),
