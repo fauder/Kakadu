@@ -423,5 +423,7 @@
     <None Include="Engine\Asset\Shader\_Attributes.glsl" />
     <None Include="Engine\Asset\Shader\VisualizeNormals.frag" />
     <None Include="Engine\Asset\Shader\Tonemapping.frag" />
+    <None Include="Engine\Asset\Shader\DebugGeometry.frag" />
+    <None Include="Engine\Asset\Shader\DebugGeometry.vert" />
   </ItemGroup>
 </Project>
