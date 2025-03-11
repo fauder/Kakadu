@@ -35,7 +35,10 @@ class SandboxApplication : public Engine::Application
 	{
 		Engine::ModelInstance model_instance;
 		Engine::Shader* shader;
+		Engine::Shader* shader_shadow_receiving;
 		std::string file_path;
+		bool is_receiving_shadows;
+		bool is_casting_shadows;
 	};
 
 public:

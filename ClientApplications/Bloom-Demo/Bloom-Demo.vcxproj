@@ -215,9 +215,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\BloomDemoApplication.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Source\BloomDemoApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +224,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\Engine\Engine\Asset\Resource\app_icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\BloomDemoApplication.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

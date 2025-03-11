@@ -55,15 +55,21 @@ SandboxApplication::SandboxApplication( const Engine::BitFlags< Engine::Creation
 			  } ),
 	test_model_info
 	{
-		.model_instance = {},
-		.shader         = Engine::BuiltinShaders::Get( "Blinn-Phong" ),
-		.file_path      = {}
+		.model_instance          = {},
+		.shader                  = Engine::BuiltinShaders::Get( "Blinn-Phong" ),
+		.shader_shadow_receiving = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed)" ),
+		.file_path               = {},
+		.is_receiving_shadows    = true,
+		.is_casting_shadows      = true
 	},
 	meteorite_model_info
 	{
-		.model_instance = {},
-		.shader         = Engine::BuiltinShaders::Get( "Blinn-Phong (Instanced)" ),
-		.file_path      = {}
+		.model_instance          = {},
+		.shader                  = Engine::BuiltinShaders::Get( "Blinn-Phong (Instanced)" ),
+		.shader_shadow_receiving = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Instanced)" ),
+		.file_path               = {},
+		.is_receiving_shadows    = true,
+		.is_casting_shadows      = true
 	},
 	light_point_transform_array( LIGHT_POINT_COUNT ),
 	cube_transform_array( CUBE_COUNT ),
@@ -666,9 +672,20 @@ void SandboxApplication::RenderImGui()
 			{
 				static char buffer[ 260 ];
 				strncpy_s( buffer, model_info.file_path.c_str(), model_info.file_path.size() );
-				ImGui::BeginDisabled();
-				ImGui::InputText( "Loaded Model Path", buffer, ( int )model_info.file_path.size(), ImGuiInputTextFlags_ReadOnly );
-				ImGui::EndDisabled();
+				ImGui::TextDisabled( "Loaded Model Path", buffer, ( int )model_info.file_path.size(), ImGuiInputTextFlags_ReadOnly );
+				if( ImGui::Checkbox( "Receives Shadows", &model_info.is_receiving_shadows ) )
+				{
+					for( auto& renderable : model_info.model_instance.Renderables() )
+						renderer.RemoveRenderable( &renderable );
+
+					model_info.model_instance.ToggleShadowReceivingStatus( model_info.is_receiving_shadows );
+
+					for( auto& renderable : model_info.model_instance.Renderables() )
+						renderer.AddRenderable( &renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+				}
+				ImGui::SameLine();
+				if( ImGui::Checkbox( "Casts Shadows", &model_info.is_casting_shadows ) )
+					model_info.model_instance.ToggleShadowCastingStatus( model_info.is_casting_shadows );
 
 				if( ImGui::Button( ICON_FA_FOLDER_OPEN " Reload" ) )
 				{
@@ -1240,12 +1257,13 @@ bool SandboxApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const 
 
 		model_instance_to_load_into = Engine::ModelInstance( new_model,
 															 model_info_to_be_loaded.shader,
+															 model_info_to_be_loaded.shader_shadow_receiving,
 															 Vector3::One(),
 															 Quaternion(),
 															 Vector3::Up() * 8.0f,
-															 Engine::Renderer::QUEUE_ID_GEOMETRY,
 															 nullptr,
-															 true, /* has shadows. */
+															 model_info_to_be_loaded.is_receiving_shadows,
+															 model_info_to_be_loaded.is_casting_shadows,
 															 Vector4{ 1.0f, 1.0f, 0.0f, 0.0f } );
 
 		for( auto& renderable_to_add : model_instance_to_load_into.Renderables() )

@@ -6,21 +6,30 @@ namespace Engine
 {
 	ModelInstance::ModelInstance()
 		:
-		model( nullptr )
+		model( nullptr ),
+		shader( nullptr ),
+		shader_shadow_receiving( nullptr )
 	{}
 
-	ModelInstance::ModelInstance( const Engine::Model* model, Engine::Shader* const shader,
+	ModelInstance::ModelInstance( const Engine::Model* model, 
+								  Engine::Shader* const shader,
+								  Engine::Shader* const shader_shadow_receiving,
 								  const Vector3 scale, const Quaternion& rotation, const Vector3& translation,
-								  const Engine::RenderQueue::ID queue_id,
 								  Engine::Material* material,
-								  const bool has_shadows,
+								  const bool receives_shadows,
+								  const bool casts_shadows,
 								  const Vector4 texture_scale_and_offset )
 		:
-		model( model )
+		model( model ),
+		shader( shader ),
+		shader_shadow_receiving( shader_shadow_receiving ),
+		texture_scale_and_offset( texture_scale_and_offset )
 	{
 		ASSERT_DEBUG_ONLY( model != nullptr );
+		ASSERT_EDITOR_ONLY( shader && "Shader of the model instance is nullptr." );
+		ASSERT_EDITOR_ONLY( shader_shadow_receiving && "Shader (shadow receiving) of the model instance is nullptr." );
 
-		SetMaterialData( shader, texture_scale_and_offset );
+		SetMaterialData( receives_shadows ? shader_shadow_receiving : shader, texture_scale_and_offset );
 
 		/* Initialize Transforms, Materials & Renderables of Nodes: */
 
@@ -35,7 +44,7 @@ namespace Engine
 		{
 			node_renderable_array[ i ] = Engine::Renderable( &meshes[ i ], ( material ? material : &node_material_array[ i ] ),
 															 node_material_array[ i ].HasUniform( "uniform_transform_world" ) ? &node_transform_array[ i ] : nullptr,
-															 has_shadows );
+															 receives_shadows, casts_shadows );
 		}
 
 		/* Apply scene-graph transformations: */
@@ -66,13 +75,13 @@ namespace Engine
 	{
 		int material_index = 0;
 
+		ASSERT_EDITOR_ONLY( shader && "Shader passed to ModelInstance::SetMaterialData is nullptr." );
+
 		node_material_array.resize( model->MeshInstanceCount() );
 		blinn_phong_material_data_array.resize( model->MeshInstanceCount() );
 
 		const auto  node_count = model->NodeCount();
 		const auto& nodes      = model->Nodes();
-
-		const auto& model_textures = model->Textures();
 
 		for( auto& node : nodes )
 		{
@@ -118,5 +127,80 @@ namespace Engine
 
 		for( auto i = 0; i < blinn_phong_material_data_array.size(); i++ )
 			node_material_array[ i ].Set( "BlinnPhongMaterialData", blinn_phong_material_data_array[ i ] );
+	}
+
+	void ModelInstance::ToggleShadowReceivingStatus( const bool receive_shadows )
+	{
+		if( receive_shadows == node_renderable_array.front().IsReceivingShadows() )
+			return;
+
+		ASSERT_EDITOR_ONLY( shader && "Shader of the model instance is nullptr." );
+		ASSERT_EDITOR_ONLY( shader_shadow_receiving && "Shader (shadow receiving) of the model instance is nullptr." );
+
+		int material_index = 0;
+
+		ASSERT_EDITOR_ONLY( shader && "Shader passed to ModelInstance::SetMaterialData is nullptr." );
+
+		node_material_array.resize( model->MeshInstanceCount() );
+		blinn_phong_material_data_array.resize( model->MeshInstanceCount() );
+
+		const auto& nodes = model->Nodes();
+
+		const auto shader_to_set = receive_shadows ? shader_shadow_receiving : shader;
+	
+		for( auto& node : nodes )
+		{
+			if( node.mesh_group ) // Only process Nodes with Meshes.
+			{
+				for( auto& sub_mesh : node.mesh_group->sub_meshes )
+				{
+					auto& material = node_material_array[ material_index ];
+					material.SetShader( shader_to_set );
+
+					if( sub_mesh.texture_albedo )
+					{
+						blinn_phong_material_data_array[ material_index ] =
+						{
+							.color_diffuse       = {},
+							.has_texture_diffuse = 1,
+							.shininess           = 32.0f
+						};
+
+						material.SetTexture( "uniform_diffuse_map_slot", sub_mesh.texture_albedo );
+					}
+					else if( sub_mesh.color_albedo )
+					{
+						blinn_phong_material_data_array[ material_index ] =
+						{
+							.color_diffuse       = *sub_mesh.color_albedo,
+							.has_texture_diffuse = 0,
+							.shininess           = 32.0f
+						};
+					}
+
+					static const auto default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
+					static const auto white_texture              = Engine::BuiltinTextures::Get( "White" );
+
+					material.SetTexture( "uniform_normal_map_slot", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
+					material.SetTexture( "uniform_specular_map_slot", white_texture );
+
+					material.Set( "uniform_texture_scale_and_offset", texture_scale_and_offset );
+
+					material_index++;
+				}
+			}
+		}
+
+		for( auto i = 0; i < blinn_phong_material_data_array.size(); i++ )
+			node_material_array[ i ].Set( "BlinnPhongMaterialData", blinn_phong_material_data_array[ i ] );
+
+		for( auto& renderable : node_renderable_array )
+			renderable.ToggleShadowReceiving( receive_shadows );
+	}
+
+	void ModelInstance::ToggleShadowCastingStatus( const bool cast_shadows )
+	{
+		for( auto& renderable : node_renderable_array )
+			renderable.ToggleShadowCasting( cast_shadows );
 	}
 }
