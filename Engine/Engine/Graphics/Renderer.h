@@ -11,6 +11,7 @@
 #include "Lighting/PointLight.h"
 #include "Lighting/SpotLight.h"
 #include "UniformBufferManagement.hpp"
+#include "Math/OrthographicProjectionParameters.h"
 
 // std Includes.
 #include <map>
@@ -387,6 +388,12 @@ namespace Engine
 		Engine::Material tone_mapping_material;
 		Engine::Renderable tone_mapping_renderable;
 		Engine::Shader* shader_tone_mapping;
+
+		/*
+		 * Shadow Mapping:
+		 */
+
+		OrthographicProjectionParameters shadow_mapping_projection_parameters;
 
 		/*
 		 * Uniform Management:

@@ -52,6 +52,7 @@ namespace Engine
 		framebuffer_main_color_format( main_framebuffer_color_format ),
 		lights_point_active_count( 0 ),
 		lights_spot_active_count( 0 ),
+		shadow_mapping_projection_parameters{ .left = -50.0f, .right = +50.0f, .bottom = -50.0f, .top = +50.0f, .near = 0.1f, .far = 100.0f },
 		shaders_need_uniform_buffer_lighting( false ),
 		shaders_need_uniform_buffer_other( false ),
 		framebuffer_sRGB_encoding_is_enabled( false ),
@@ -223,6 +224,8 @@ namespace Engine
 
 	void Renderer::RenderImGui()
 	{
+		const auto& style = ImGui::GetStyle();
+
 		if( ImGui::Begin( ICON_FA_DRAW_POLYGON " Renderer", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
 			ImGui::SeparatorText( "General" );
@@ -404,6 +407,42 @@ namespace Engine
 
 			for( auto& custom_framebuffer : framebuffer_custom_array )
 				DrawCustomFramebufferImGui( custom_framebuffer );
+
+			/* Shadow Mapping: */
+			ImGui::SeparatorText( "Shadow Mapping" );
+
+			if( ImGui::TreeNodeEx( "Shadow Mapping", ImGuiTreeNodeFlags_None ) )
+			{
+				ImGui::PushItemWidth( ImGui::CalcTextSize( "999.9" ).x + style.FramePadding.x * 2 );
+
+			/* Row 1: */
+				const float button_width( ImGui::CalcTextSize( "XXXXXX" ).x + style.ItemInnerSpacing.x );
+				ImGui::Dummy( ImVec2{ 2.0f * button_width, 0 } );
+				ImGui::SameLine();
+				ImGui::InputFloat( " Top", &shadow_mapping_projection_parameters.top, 0.0f, 0.0f, "%.1f" );
+			/* Row 2: */
+				ImGui::Dummy( ImVec2{ 3.0f * button_width, 0 } );
+				ImGui::SameLine();
+				ImGui::InputFloat( " Far", &shadow_mapping_projection_parameters.far, 0.0f, 0.0f, "%.1f" );
+			/* Row 3: */
+				ImGui::InputFloat( " Left", &shadow_mapping_projection_parameters.left, 0.0f, 0.0f, "%.1f" );
+				ImGui::SameLine();
+				ImGui::Dummy( ImVec2{ 2.0f * button_width, 0 } );
+				ImGui::SameLine();
+				ImGui::InputFloat( " Right", &shadow_mapping_projection_parameters.right, 0.0f, 0.0f, "%.1f" );
+			/* Row 4: */
+				ImGui::Dummy( ImVec2{ button_width, 0 } );
+				ImGui::SameLine();
+				ImGui::InputFloat( " Near", &shadow_mapping_projection_parameters.near, 0.0f, 0.0f, "%.1f" );
+			/* Row 5: */
+				ImGui::Dummy( ImVec2{ 2.0f * button_width, 0 } );
+				ImGui::SameLine();
+				ImGui::InputFloat( " Bottom", &shadow_mapping_projection_parameters.bottom, 0.0f, 0.0f, "%.1f" );
+
+				ImGui::PopItemWidth();
+
+				ImGui::TreePop();
+			}
 		}
 
 		ImGui::End();
@@ -1423,7 +1462,7 @@ namespace Engine
 		// TODO: AABBs.
 		// TODO: Render the projection volume as a wireframe cube. More generally, create a debug-render pass, with wire-frame rendering.
 		// Use ortho. projection for directional light. For now, use big values for the projection volume:
-		const auto projection_matrix = Matrix::OrthographicProjection( -50.0f, +50.0f, -50.0f, +50.0f, 1.0f, 101.0f );
+		const auto projection_matrix = Matrix::OrthographicProjection( shadow_mapping_projection_parameters );
 
 		auto& shadow_mapping_pass = render_pass_map[ PASS_ID_SHADOW_MAPPING ];
 		
