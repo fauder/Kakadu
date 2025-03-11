@@ -332,6 +332,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClInclude Include="Engine\Graphics\RenderPass.h" />
     <ClInclude Include="Engine\Graphics\ShaderSourcePath.hpp" />
     <ClInclude Include="Engine\Graphics\ShaderType.h" />
+    <ClInclude Include="Engine\Math\OrthographicProjectionParameters.h" />
     <ClInclude Include="Engine\Math\VectorConversion.hpp" />
     <ClInclude Include="Engine\Natvis\NatVis.h" />
     <ClInclude Include="Engine\Core\Optimization.h" />

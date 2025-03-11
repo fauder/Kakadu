@@ -288,6 +288,9 @@
     <ClInclude Include="Engine\Graphics\ModelInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Math\OrthographicProjectionParameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\Application.cpp">
