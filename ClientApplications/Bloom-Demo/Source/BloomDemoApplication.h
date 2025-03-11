@@ -107,10 +107,6 @@ private:
 	const static constexpr int WINDOW_COUNT = 5;
 	std::array< Engine::Renderable, WINDOW_COUNT > window_renderable_array;
 
-	Engine::Renderable mirror_quad_renderable;
-
-	static constexpr Engine::RenderPass::ID RENDER_PASS_ID_LIGHTING_REAR_VIEW = Engine::RenderPass::ID( ( unsigned int )Engine::Renderer::PASS_ID_LIGHTING - 1 );
-
 /* Textures: */
 	Engine::Texture* skybox_texture;
 
@@ -260,6 +256,4 @@ private:
 
 	bool ui_interaction_enabled;
 	bool show_imgui_demo_window;
-
-	bool render_rear_view_cam_to_imgui;
 };

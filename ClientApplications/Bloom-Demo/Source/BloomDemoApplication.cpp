@@ -79,8 +79,7 @@ BloomDemoApplication::BloomDemoApplication( const Engine::BitFlags< Engine::Crea
 	camera_move_speed( 5.0f ),
 	camera_controller( &camera, camera_rotation_speed ),
 	ui_interaction_enabled( true ),
-	show_imgui_demo_window( false ),
-	render_rear_view_cam_to_imgui( true )
+	show_imgui_demo_window( false )
 {
 	Initialize();
 }
@@ -370,19 +369,6 @@ void BloomDemoApplication::Initialize()
 	ResetMaterialData();
 
 /* Renderer: */
-	/* Add a new Pass for rear-view camera rendering: */
-	renderer.AddPass( RENDER_PASS_ID_LIGHTING_REAR_VIEW,
-					  Engine::RenderPass
-					  {
-						  .name                             = "Lighting - Rear-view",
-						  .target_framebuffer               = &renderer.CustomFramebuffer( 0 ),
-						  .queue_id_set                     = {
-																Engine::Renderer::QUEUE_ID_GEOMETRY,
-																Engine::Renderer::QUEUE_ID_TRANSPARENT,
-																Engine::Renderer::QUEUE_ID_SKYBOX },
-					      .render_state_override_is_allowed = true
-					  } );
-	
 	light_sources_renderable = Engine::Renderable( &cube_mesh_instanced_with_color, &light_source_material, 
 												   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
 	renderer.AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
@@ -428,11 +414,6 @@ void BloomDemoApplication::Initialize()
 		window_renderable_array[ i ] = Engine::Renderable( &quad_mesh_uvs_only, &window_material, &window_transform_array[ i ] );
 		renderer.AddRenderable( &window_renderable_array[ i ], Engine::Renderer::QUEUE_ID_TRANSPARENT );
 	}
-
-	mirror_quad_renderable = Engine::Renderable( &quad_mesh_mirror, &mirror_quad_material );
-	renderer.AddRenderable( &mirror_quad_renderable, Engine::Renderer::QUEUE_ID_BEFORE_POSTPROCESSING );
-
-	mirror_quad_renderable.ToggleOnOrOff( not render_rear_view_cam_to_imgui );
 
 	skybox_renderable = Engine::Renderable( &cube_mesh_fullscreen, &skybox_material );
 	renderer.AddRenderable( &skybox_renderable, Engine::Renderer::QUEUE_ID_SKYBOX );
@@ -600,15 +581,7 @@ void BloomDemoApplication::Render()
 {
 	Engine::Application::Render();
 
-	/* Lighting - Rear-view pass: Invert camera direction, render everything to the off-screen framebuffer 0: */
 	{
-		camera_controller.Invert();
-		renderer.UpdatePerPass( RENDER_PASS_ID_LIGHTING_REAR_VIEW, camera );
-	}
-
-	/* Lighting: Invert camera direction again (to revert to default view), render everything to the off-screen framebuffer 1: */
-	{
-		camera_controller.Invert(); // Revert back to original orientation.
 		renderer.UpdatePerPass( Engine::Renderer::PASS_ID_LIGHTING, camera );
 	}
 
@@ -637,21 +610,6 @@ void BloomDemoApplication::RenderImGui()
 		ImGui::ShowDemoWindow();
 
 	const auto& style = ImGui::GetStyle();
-
-	{
-		const auto initial_window_size = Platform::GetFramebufferSizeInPixels() / 4;
-		ImGui::SetNextWindowSize( Engine::Math::CopyToImVec2( initial_window_size ), ImGuiCond_Appearing );
-	}
-	if( ImGui::Begin( "Rear-view Camera", nullptr, ImGuiWindowFlags_NoScrollbar ) )
-	{
-		if( ImGui::Checkbox( "Render to this window instead of default Framebuffer", &render_rear_view_cam_to_imgui ) )
-			mirror_quad_renderable.ToggleOnOrOff( not render_rear_view_cam_to_imgui );
-
-		if( render_rear_view_cam_to_imgui )
-			ImGui::Image( ( void* )( intptr_t )renderer.CustomFramebuffer( 0 ).ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
-	}
-
-	ImGui::End();
 
 	if( ImGui::Begin( ICON_FA_CUBES " Models", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
