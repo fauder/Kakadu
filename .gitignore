@@ -399,7 +399,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 **/imgui.ini
+**/config.ini
 *.cap
-Sandbox/config.ini
 *.trace
-ClientApplications/Sandbox/config.ini
