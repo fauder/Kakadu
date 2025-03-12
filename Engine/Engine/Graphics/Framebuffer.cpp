@@ -6,6 +6,7 @@
 #include "Core/AssetDatabase.hpp"
 #include "Core/Platform.h"
 #include "Core/ServiceLocator.h"
+#include "Core/MorphSystem.h"
 #include "Math/TypeTraits.h"
 
 namespace Engine
@@ -365,6 +366,34 @@ namespace Engine
 			glDeleteFramebuffers( 1, id.Address() );
 			id.Reset(); // OpenGL does not reset the id to zero.
 		}
+	}
+
+	void Framebuffer::Debug_FlashClearColor( bool& is_running, const Color4& start, const Color4& end, const float duration_in_seconds, const std::uint8_t ping_pong_count )
+	{
+		const auto current_clear_color = clear_color;
+
+		ServiceLocator< MorphSystem >::Get().Add( Morph
+		{
+			.on_execute = [ this, start, end, ping_pong_count ]( float t )
+			{
+				const float single_lerp_duration = 1.0f / ( float )ping_pong_count;
+
+				const std::uint8_t ping_pong_index = int( t / single_lerp_duration );
+
+				if( ping_pong_index % 2 == 0 )
+					clear_color = Math::Lerp( start, end, t * ping_pong_count - ping_pong_index );
+				else
+					clear_color = Math::Lerp( end, start, t * ping_pong_count - ping_pong_index );
+
+				SetClearColor( clear_color );
+			},
+			.on_complete = [ this, current_clear_color, &is_running ]()
+			{
+				SetClearColor( clear_color = current_clear_color );
+				is_running = false;
+			},
+			.duration_in_seconds = duration_in_seconds
+		} );
 	}
 
 	void Framebuffer::SetClearColor()

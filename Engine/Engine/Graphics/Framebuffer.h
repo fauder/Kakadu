@@ -137,6 +137,12 @@ namespace Engine
 
 		void Destroy();
 
+#ifdef _EDITOR
+		void Debug_FlashClearColor( bool& is_running,
+									const Color4& start = Color4::Cyan(), const Color4& end = Color4::Yellow(),
+									const float duration_in_seconds = 0.5f, const std::uint8_t ping_pong_count = 5 );
+#endif // _EDITOR
+
 	/* Clearing: */
 
 		void SetClearColor();
