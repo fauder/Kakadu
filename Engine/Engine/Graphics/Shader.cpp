@@ -308,6 +308,11 @@ namespace Engine
 					return true;
 				}
 			}
+			else if( error_code == std::errc::no_such_file_or_directory )
+			{
+				// File is probably temporarily missing due to overwrite, ignore and check again next frame:
+				continue;
+			}
 			else
 			{
 				std::cerr << "Shader::SourceFilesAreModified() (Category: " << error_code.category().name() << "): " << error_code << ".\n";
