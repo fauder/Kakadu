@@ -5,7 +5,6 @@
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Mesh.h"
 #include "Engine/Graphics/ModelInstance.h"
-#include "Engine/Graphics/Renderer.h"
 #include "Engine/Graphics/Texture.h"
 #include "Engine/Scene/Camera.h"
 #include "Engine/Scene/CameraController_Flight.h"
@@ -79,8 +78,6 @@ private:
 
 private:
 /* Renderer: */
-	Engine::Renderer renderer;
-
 	Engine::Renderable light_sources_renderable;
 
 	const static constexpr int CUBE_COUNT           = 200'000;

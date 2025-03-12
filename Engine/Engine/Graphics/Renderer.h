@@ -36,14 +36,19 @@ namespace Engine
 			All = UniformBuffer_View | UniformBuffer_Projection | UniformBuffer_Lighting | UniformBuffer_Lighting_ShadowMapping,
 		};
 
+		struct Description
+		{
+			bool enable_gamma_correction                    = true;
+			Texture::Format main_framebuffer_color_format   = Texture::Format::RGBA_16F;
+			std::uint8_t main_framebuffer_msaa_sample_count = 4;
+			std::initializer_list< Framebuffer::Description > custom_framebuffer_descriptions;
+		};
+
 	public:
 		static constexpr std::size_t FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT = 4;
 	
 	public:
-		Renderer( const bool enable_gamma_correction,
-				  Texture::Format main_framebuffer_color_format                                           = Texture::Format::RGBA_16F,
-				  std::uint8_t main_framebuffer_msaa_sample_count                                         = 4,
-				  const std::initializer_list< Framebuffer::Description > custom_framebuffer_descriptions = {} );
+		Renderer( Description&& );
 
 		DELETE_COPY_AND_MOVE_CONSTRUCTORS( Renderer );
 

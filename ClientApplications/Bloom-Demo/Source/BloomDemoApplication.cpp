@@ -41,18 +41,21 @@ Engine::Application* Engine::CreateApplication( const Engine::BitFlags< Engine::
 
 BloomDemoApplication::BloomDemoApplication( const Engine::BitFlags< Engine::CreationFlags > flags )
 	:
-	Engine::Application( flags ),
-	renderer( gamma_correction_is_enabled,
-			  /* Main FB: */ Engine::Texture::Format::RGBA_16F,
-			  /* Main FB: */ 4,
-			  {
-				Engine::Framebuffer::Description
-				{
-					.name            = "Rear-view Mirror FB",
-					.color_format    = Engine::Texture::Format::RGBA,
-					.attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
-				}
-			  } ),
+	Engine::Application( flags,
+						 Engine::Renderer::Description
+						 {
+							 .main_framebuffer_color_format      = Engine::Texture::Format::RGBA_16F,
+							 .main_framebuffer_msaa_sample_count = 4,
+							 .custom_framebuffer_descriptions    =
+							 {
+								 Engine::Framebuffer::Description
+								 {
+									 .name            = "Rear-view Mirror FB",
+									 .color_format    = Engine::Texture::Format::RGBA,
+									 .attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
+								 }
+							 }
+						 } ),
 	test_model_info
 	{
 		.model_instance          = {},
@@ -358,12 +361,12 @@ void BloomDemoApplication::Initialize()
 /* Lighting: */
 	ResetLightingData();
 
-	renderer.AddDirectionalLight( &light_directional );
+	renderer->AddDirectionalLight( &light_directional );
 
 	for( auto index = 0; index < LIGHT_POINT_COUNT; index++ )
-		renderer.AddPointLight( &light_point_array[ index ] );
+		renderer->AddPointLight( &light_point_array[ index ] );
 
-	renderer.AddSpotLight( &light_spot );
+	renderer->AddSpotLight( &light_spot );
 
 /* Materials: */
 	ResetMaterialData();
@@ -371,57 +374,57 @@ void BloomDemoApplication::Initialize()
 /* Renderer: */
 	light_sources_renderable = Engine::Renderable( &cube_mesh_instanced_with_color, &light_source_material, 
 												   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
-	renderer.AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	cube_renderable = Engine::Renderable( &cube_mesh_instanced, &cube_material,
 										  nullptr /* => No Transform here, as we will provide the Transforms as instance data. */,
 										  true /* => has shadows. */,
 										  true /* => casts shadows. */ );
-	renderer.AddRenderable( &cube_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &cube_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	cube_parallax_renderable = Engine::Renderable( &cube_mesh, &wall_material,
 												   &cube_parallax_transform, 
 												   true /* => has shadows. */,
 												   true /* => casts shadows. */ );
-	renderer.AddRenderable( &cube_parallax_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &cube_parallax_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	cube_reflected_renderable = Engine::Renderable( &cube_reflected_mesh_instanced, &cube_reflected_material,
 													nullptr /* => No Transform here, as we will provide the Transforms as instance data. */,
 													true /* => has shadows. */,
 													true /* => casts shadows. */ );
-	renderer.AddRenderable( &cube_reflected_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &cube_reflected_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	ground_renderable = Engine::Renderable( &quad_mesh, &ground_material, 
 											&ground_transform, 
 											true /* => has shadows. */,
 											true /* => casts shadows. */ );
-	renderer.AddRenderable( &ground_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &ground_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	wall_front_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_front_transform, true /* => has shadows. */, true /* => casts shadows. */ );
 	wall_left_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_left_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
 	wall_right_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_right_transform, true /* => has shadows. */, true /* => casts shadows. */ );
 	wall_back_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_back_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
-	renderer.AddRenderable( &wall_front_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer.AddRenderable( &wall_left_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer.AddRenderable( &wall_right_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer.AddRenderable( &wall_back_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_front_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_left_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_right_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_back_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	sphere_renderable = Engine::Renderable( &sphere_mesh, &sphere_material, &sphere_transform, false /* => does not have shadows. */, true /* => casts shadows. */ );
-	renderer.AddRenderable( &sphere_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &sphere_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	for( auto i = 0; i < WINDOW_COUNT; i++ )
 	{
 		window_renderable_array[ i ] = Engine::Renderable( &quad_mesh_uvs_only, &window_material, &window_transform_array[ i ] );
-		renderer.AddRenderable( &window_renderable_array[ i ], Engine::Renderer::QUEUE_ID_TRANSPARENT );
+		renderer->AddRenderable( &window_renderable_array[ i ], Engine::Renderer::QUEUE_ID_TRANSPARENT );
 	}
 
 	skybox_renderable = Engine::Renderable( &cube_mesh_fullscreen, &skybox_material );
-	renderer.AddRenderable( &skybox_renderable, Engine::Renderer::QUEUE_ID_SKYBOX );
+	renderer->AddRenderable( &skybox_renderable, Engine::Renderer::QUEUE_ID_SKYBOX );
 
 	// TODO: Do not create an explicit (or rather, Application-visible) Renderable for skybox; Make it Renderer-internal.
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
-	renderer.ToggleQueue( Engine::Renderer::QUEUE_ID_TRANSPARENT, false );
+	renderer->ToggleQueue( Engine::Renderer::QUEUE_ID_TRANSPARENT, false );
 
 /* Camera: */
 	ResetCamera();
@@ -574,7 +577,7 @@ void BloomDemoApplication::Update()
 	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_D ) )
 		camera_transform.OffsetTranslation( camera_transform.Right()   * +camera_move_speed * time_delta );
 
-	renderer.Update();
+	renderer->Update();
 }
 
 void BloomDemoApplication::Render()
@@ -582,7 +585,7 @@ void BloomDemoApplication::Render()
 	Engine::Application::Render();
 
 	{
-		renderer.UpdatePerPass( Engine::Renderer::PASS_ID_LIGHTING, camera );
+		renderer->UpdatePerPass( Engine::Renderer::PASS_ID_LIGHTING, camera );
 	}
 
 	// TODO: Outline pass.
@@ -592,7 +595,7 @@ void BloomDemoApplication::Render()
 		/* This pass does not utilize camera view/projection => no Renderer::Update() necessary. */
 	}
 
-	renderer.Render();
+	renderer->Render();
 }
 
 void BloomDemoApplication::RenderImGui()
@@ -601,9 +604,9 @@ void BloomDemoApplication::RenderImGui()
 	 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the editor FBO). */
 
 	/* Need to switch to the default framebuffer, so ImGui can render onto it. */
-	renderer.ResetToDefaultFramebuffer();
+	renderer->ResetToDefaultFramebuffer();
 
-	SetImGuiViewportImageID( renderer.FinalFramebuffer().ColorAttachment().Id().Get() );
+	SetImGuiViewportImageID( renderer->FinalFramebuffer().ColorAttachment().Id().Get() );
 	Application::RenderImGui();
 
 	if( show_imgui_demo_window )
@@ -634,12 +637,12 @@ void BloomDemoApplication::RenderImGui()
 				if( ImGui::Checkbox( "Receives Shadows", &model_info.is_receiving_shadows ) )
 				{
 					for( auto& renderable : model_info.model_instance.Renderables() )
-						renderer.RemoveRenderable( &renderable );
+						renderer->RemoveRenderable( &renderable );
 
 					model_info.model_instance.ToggleShadowReceivingStatus( model_info.is_receiving_shadows );
 
 					for( auto& renderable : model_info.model_instance.Renderables() )
-						renderer.AddRenderable( &renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+						renderer->AddRenderable( &renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 				}
 				ImGui::SameLine();
 				if( ImGui::Checkbox( "Casts Shadows", &model_info.is_casting_shadows ) )
@@ -702,20 +705,20 @@ void BloomDemoApplication::RenderImGui()
 
 	ImGui::End();
 
-	Engine::ImGuiDrawer::Draw( skybox_material, renderer );
-	Engine::ImGuiDrawer::Draw( light_source_material, renderer );
-	Engine::ImGuiDrawer::Draw( ground_material, renderer );
-	Engine::ImGuiDrawer::Draw( wall_material, renderer );
-	Engine::ImGuiDrawer::Draw( sphere_material, renderer );
-	Engine::ImGuiDrawer::Draw( window_material, renderer );
-	Engine::ImGuiDrawer::Draw( cube_material, renderer );
-	Engine::ImGuiDrawer::Draw( cube_reflected_material, renderer );
+	Engine::ImGuiDrawer::Draw( skybox_material, *renderer );
+	Engine::ImGuiDrawer::Draw( light_source_material, *renderer );
+	Engine::ImGuiDrawer::Draw( ground_material, *renderer );
+	Engine::ImGuiDrawer::Draw( wall_material, *renderer );
+	Engine::ImGuiDrawer::Draw( sphere_material, *renderer );
+	Engine::ImGuiDrawer::Draw( window_material, *renderer );
+	Engine::ImGuiDrawer::Draw( cube_material, *renderer );
+	Engine::ImGuiDrawer::Draw( cube_reflected_material, *renderer );
 	for( auto& test_material : test_model_info.model_instance.Materials() )
-		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), renderer );
+		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), *renderer );
 	for( auto& test_material : meteorite_model_info.model_instance.Materials() )
-		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), renderer );
-	Engine::ImGuiDrawer::Draw( outline_material, renderer );
-	Engine::ImGuiDrawer::Draw( mirror_quad_material, renderer );
+		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), *renderer );
+	Engine::ImGuiDrawer::Draw( outline_material, *renderer );
+	Engine::ImGuiDrawer::Draw( mirror_quad_material, *renderer );
 
 	if( ImGui::Begin( "Instance Data" ) )
 	{
@@ -908,7 +911,7 @@ void BloomDemoApplication::RenderImGui()
 
 	Engine::ImGuiDrawer::Draw( Engine::AssetDatabase< Engine::Texture >::Assets(), { 400.0f, 512.0f } );
 
-	renderer.RenderImGui();
+	renderer->RenderImGui();
 }
 
 void BloomDemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
@@ -957,11 +960,11 @@ void BloomDemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, co
 				show_imgui = !show_imgui;
 				if( show_imgui )
 				{
-					renderer.SetFinalPassToUseFinalFramebuffer();
+					renderer->SetFinalPassToUseFinalFramebuffer();
 				}
 				else
 				{
-					renderer.SetFinalPassToUseDefaultFramebuffer();
+					renderer->SetFinalPassToUseDefaultFramebuffer();
 					OnFramebufferResizeEvent( Platform::GetFramebufferSizeInPixels() );
 				}
 			}
@@ -979,16 +982,16 @@ void BloomDemoApplication::OnFramebufferResizeEvent( const int width_new_pixels,
 {
 	/* Do nothing on minimize: */
 	if( width_new_pixels == 0 || height_new_pixels == 0 || 
-		( renderer.FinalFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
+		( renderer->FinalFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
 		return;
 
-	renderer.OnFramebufferResize( width_new_pixels, height_new_pixels );
+	renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
 
 	RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
 	
 	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
 
-	mirror_quad_material.SetTexture( "uniform_texture_slot", &renderer.CustomFramebuffer( 0 ).ColorAttachment() );
+	mirror_quad_material.SetTexture( "uniform_texture_slot", &renderer->CustomFramebuffer( 0 ).ColorAttachment() );
 }
 
 void BloomDemoApplication::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
@@ -1211,7 +1214,7 @@ bool BloomDemoApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, cons
 		auto& model_instance_to_load_into = model_info_to_be_loaded.model_instance;
 
 		for( auto& renderable_to_remove : model_instance_to_load_into.Renderables() )
-			renderer.RemoveRenderable( &renderable_to_remove );
+			renderer->RemoveRenderable( &renderable_to_remove );
 
 		model_instance_to_load_into = Engine::ModelInstance( new_model,
 															 model_info_to_be_loaded.shader,
@@ -1225,7 +1228,7 @@ bool BloomDemoApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, cons
 															 Vector4{ 1.0f, 1.0f, 0.0f, 0.0f } );
 
 		for( auto& renderable_to_add : model_instance_to_load_into.Renderables() )
-			renderer.AddRenderable( &renderable_to_add, Engine::Renderer::QUEUE_ID_GEOMETRY );
+			renderer->AddRenderable( &renderable_to_add, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 		return true;
 	}
@@ -1238,7 +1241,7 @@ void BloomDemoApplication::UnloadModel( ModelInfo& model_info_to_be_loaded )
 	model_info_to_be_loaded.file_path = "";
 
 	for( auto& renderable_to_remove : model_info_to_be_loaded.model_instance.Renderables() )
-		renderer.RemoveRenderable( &renderable_to_remove );
+		renderer->RemoveRenderable( &renderable_to_remove );
 
 	model_info_to_be_loaded.model_instance = {};
 }
@@ -1256,11 +1259,11 @@ void BloomDemoApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorit
 											CUBE_COUNT,
 											GL_STATIC_DRAW );
 		meteorite_renderable->SetMesh( &cube_mesh_instanced );
-		renderer.RemoveRenderable( &cube_renderable );
+		renderer->RemoveRenderable( &cube_renderable );
 	}
 	else
 	{
-		renderer.RemoveRenderable( meteorite_renderable );
+		renderer->RemoveRenderable( meteorite_renderable );
 		meteorite_renderable = nullptr;
 		cube_mesh_instanced = Engine::Mesh( cube_mesh,
 											{
@@ -1269,7 +1272,7 @@ void BloomDemoApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorit
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,
 											GL_STATIC_DRAW );
-		renderer.AddRenderable( &cube_renderable );
+		renderer->AddRenderable( &cube_renderable );
 	}
 }
 
@@ -1286,5 +1289,5 @@ void BloomDemoApplication::RecalculateProjectionParameters( const Vector2I new_s
 
 void BloomDemoApplication::RecalculateProjectionParameters()
 {
-	RecalculateProjectionParameters( renderer.FinalFramebuffer().Size() );
+	RecalculateProjectionParameters( renderer->FinalFramebuffer().Size() );
 }

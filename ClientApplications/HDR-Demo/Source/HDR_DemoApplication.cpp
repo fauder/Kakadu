@@ -34,10 +34,12 @@ Engine::Application* Engine::CreateApplication( const Engine::BitFlags< Engine::
 
 HDR_DemoApplication::HDR_DemoApplication( const Engine::BitFlags< Engine::CreationFlags > flags )
 	:
-	Engine::Application( flags ),
-	renderer( gamma_correction_is_enabled,
-			  /* Main framebuffer: */ Engine::Texture::Format::RGBA_16F,
-			  /* Main framebuffer: */ 4 ),
+	Engine::Application( flags,
+						 Engine::Renderer::Description
+						 {
+							 .main_framebuffer_color_format      = Engine::Texture::Format::RGBA_16F,
+							 .main_framebuffer_msaa_sample_count = 4
+						 } ),
 	light_point_transform_array( LIGHT_POINT_COUNT ),
 	camera( &camera_transform, Platform::GetAspectRatio(), CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), Platform::GetAspectRatio() ) ),
 	camera_rotation_speed( 5.0f ),
@@ -82,7 +84,7 @@ void HDR_DemoApplication::Initialize()
 	ResetLightingData(); // Also sets light transforms.
 
 	for( auto index = 0; index < LIGHT_POINT_COUNT; index++ )
-		renderer.AddPointLight( &light_point_array[ index ] );
+		renderer->AddPointLight( &light_point_array[ index ] );
 
 /* Initial transforms: */
 	tunnel_transform
@@ -135,7 +137,7 @@ void HDR_DemoApplication::Initialize()
 	ResetMaterialData();
 
 /* Renderer: */
-	renderer.AddQueue( QUEUE_ID_CUSTOM,
+	renderer->AddQueue( QUEUE_ID_CUSTOM,
 					   Engine::RenderQueue
 					   {
 						  .name = "Custom (Inverted)",
@@ -145,17 +147,17 @@ void HDR_DemoApplication::Initialize()
 						  }
 					   } );
 
-	renderer.AddQueueToPass( QUEUE_ID_CUSTOM, Engine::Renderer::PASS_ID_LIGHTING );
+	renderer->AddQueueToPass( QUEUE_ID_CUSTOM, Engine::Renderer::PASS_ID_LIGHTING );
 
 	tunnel_renderable = Engine::Renderable( &cube_mesh_inverted, &wood_material, &tunnel_transform );
-	renderer.AddRenderable( &tunnel_renderable, QUEUE_ID_CUSTOM );
+	renderer->AddRenderable( &tunnel_renderable, QUEUE_ID_CUSTOM );
 
 	light_sources_renderable = Engine::Renderable( &light_source_sphere_mesh, &light_source_material, nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
-	renderer.AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
-	renderer.TogglePass( Engine::Renderer::PASS_ID_SHADOW_MAPPING, false ); // No shadows necessary for this demo.
-	renderer.ToggleQueue( Engine::Renderer::QUEUE_ID_TRANSPARENT, false );
+	renderer->TogglePass( Engine::Renderer::PASS_ID_SHADOW_MAPPING, false ); // No shadows necessary for this demo.
+	renderer->ToggleQueue( Engine::Renderer::QUEUE_ID_TRANSPARENT, false );
 
 /* Camera: */
 	ResetCamera();
@@ -207,7 +209,7 @@ void HDR_DemoApplication::Update()
 	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_D ) )
 		camera_transform.OffsetTranslation( camera_transform.Right() * +camera_move_speed * time_delta );
 
-	renderer.Update();
+	renderer->Update();
 }
 
 void HDR_DemoApplication::Render()
@@ -216,7 +218,7 @@ void HDR_DemoApplication::Render()
 
 	/* Lighting: Render everything to the off-screen framebuffer 1: */
 	{
-		renderer.UpdatePerPass( Engine::Renderer::PASS_ID_LIGHTING, camera );
+		renderer->UpdatePerPass( Engine::Renderer::PASS_ID_LIGHTING, camera );
 	}
 
 	/* Post-processing pass: Blit off-screen framebuffers to quads on the default or the final framebuffer to actually display them: */
@@ -224,7 +226,7 @@ void HDR_DemoApplication::Render()
 		/* This pass does not utilize camera view/projection => no Renderer::Update() necessary. */
 	}
 
-	renderer.Render();
+	renderer->Render();
 }
 
 void HDR_DemoApplication::RenderImGui()
@@ -233,9 +235,9 @@ void HDR_DemoApplication::RenderImGui()
 	 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the final FBO). */
 
 	/* Need to switch to the default framebuffer, so ImGui can render onto it. */
-	renderer.ResetToDefaultFramebuffer();
+	renderer->ResetToDefaultFramebuffer();
 
-	SetImGuiViewportImageID( renderer.FinalFramebuffer().ColorAttachment().Id().Get() );
+	SetImGuiViewportImageID( renderer->FinalFramebuffer().ColorAttachment().Id().Get() );
 	Application::RenderImGui();
 
 	if( show_imgui_demo_window )
@@ -243,8 +245,8 @@ void HDR_DemoApplication::RenderImGui()
 
 	const auto& style = ImGui::GetStyle();
 
-	Engine::ImGuiDrawer::Draw( wood_material, renderer );
-	Engine::ImGuiDrawer::Draw( light_source_material, renderer );
+	Engine::ImGuiDrawer::Draw( wood_material, *renderer );
+	Engine::ImGuiDrawer::Draw( light_source_material, *renderer );
 
 	if( ImGui::Begin( ICON_FA_LIGHTBULB " Lighting", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
@@ -366,7 +368,7 @@ void HDR_DemoApplication::RenderImGui()
 
 	Engine::ImGuiDrawer::Draw( Engine::AssetDatabase< Engine::Texture >::Assets(), { 400.0f, 512.0f } );
 
-	renderer.RenderImGui();
+	renderer->RenderImGui();
 }
 
 void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
@@ -407,11 +409,11 @@ void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, con
 				show_imgui = !show_imgui;
 				if( show_imgui )
 				{
-					renderer.SetFinalPassToUseFinalFramebuffer();
+					renderer->SetFinalPassToUseFinalFramebuffer();
 				}
 				else
 				{
-					renderer.SetFinalPassToUseDefaultFramebuffer();
+					renderer->SetFinalPassToUseDefaultFramebuffer();
 					OnFramebufferResizeEvent( Platform::GetFramebufferSizeInPixels() );
 				}
 			}
@@ -429,10 +431,10 @@ void HDR_DemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, 
 {
 	/* Do nothing on minimize: */
 	if( width_new_pixels == 0 || height_new_pixels == 0 ||
-		( renderer.FinalFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
+		( renderer->FinalFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
 		return;
 
-	renderer.OnFramebufferResize( width_new_pixels, height_new_pixels );
+	renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
 
 	RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
 }
@@ -598,5 +600,5 @@ void HDR_DemoApplication::RecalculateProjectionParameters( const Vector2I new_si
 
 void HDR_DemoApplication::RecalculateProjectionParameters()
 {
-	RecalculateProjectionParameters( renderer.FinalFramebuffer().Size() );
+	RecalculateProjectionParameters( renderer->FinalFramebuffer().Size() );
 }

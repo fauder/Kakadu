@@ -4,7 +4,6 @@
 #include "Engine/Graphics/MaterialData/MaterialData.h"
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Mesh.h"
-#include "Engine/Graphics/Renderer.h"
 #include "Engine/Graphics/Texture.h"
 #include "Engine/Scene/Camera.h"
 #include "Engine/Scene/CameraController_Flight.h"
@@ -60,8 +59,6 @@ private:
 
 private:
 /* Renderer: */
-	Engine::Renderer renderer;
-
 	static constexpr Engine::RenderQueue::ID QUEUE_ID_CUSTOM = Engine::RenderQueue::ID( ( uint16_t )Engine::Renderer::QUEUE_ID_GEOMETRY + 1u );
 
 	Engine::Renderable tunnel_renderable;

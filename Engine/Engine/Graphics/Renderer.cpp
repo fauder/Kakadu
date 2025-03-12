@@ -40,28 +40,25 @@ if( not render_queue_map.contains( queue_id ) )\
 
 namespace Engine
 {
-	Renderer::Renderer( const bool enable_gamma_correction,
-						Texture::Format main_framebuffer_color_format,
-						std::uint8_t main_framebuffer_msaa_sample_count,
-						const std::initializer_list< Framebuffer::Description > custom_framebuffer_descriptions )
+	Renderer::Renderer( Description&& description )
 		:
 		logger( ServiceLocator< GLLogger >::Get() ),
 		framebuffer_default( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR ),
 		framebuffer_current( &framebuffer_default ),
-		framebuffer_main_msaa_sample_count( main_framebuffer_msaa_sample_count ),
-		framebuffer_main_color_format( main_framebuffer_color_format ),
+		framebuffer_main_msaa_sample_count( description.main_framebuffer_msaa_sample_count ),
+		framebuffer_main_color_format( description.main_framebuffer_color_format ),
 		lights_point_active_count( 0 ),
 		lights_spot_active_count( 0 ),
 		shadow_mapping_projection_parameters{ .left = -50.0f, .right = +50.0f, .bottom = -50.0f, .top = +50.0f, .near = 0.1f, .far = 100.0f },
 		shaders_need_uniform_buffer_lighting( false ),
 		shaders_need_uniform_buffer_other( false ),
 		framebuffer_sRGB_encoding_is_enabled( false ),
-		gamma_correction_is_enabled( enable_gamma_correction )
+		gamma_correction_is_enabled( description.enable_gamma_correction )
 	{
 		logger.IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
 
-		if( custom_framebuffer_descriptions.size() <= FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT )
-			std::copy( custom_framebuffer_descriptions.begin(), custom_framebuffer_descriptions.end(), framebuffer_custom_description_array.begin() );
+		if( description.custom_framebuffer_descriptions.size() <= FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT )
+			std::copy( description.custom_framebuffer_descriptions.begin(), description.custom_framebuffer_descriptions.end(), framebuffer_custom_description_array.begin() );
 		else
 			CONSOLE_ERROR( "Renderer: Number of custom framebuffers requested exceeds the max. available limit." );
 

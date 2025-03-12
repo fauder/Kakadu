@@ -6,6 +6,7 @@
 #include "Math/Math.hpp"
 #include "Platform.h"
 #include "Graphics/GLLogger.h"
+#include "Graphics/Renderer.h"
 
 namespace Engine
 {
@@ -19,7 +20,8 @@ namespace Engine
 	class Application
 	{
 	public:
-		Application( const BitFlags< CreationFlags >, const std::optional< int > msaa_sample_count = std::nullopt );
+		Application( const BitFlags< CreationFlags > flags,
+					 Renderer::Description&& renderer_description );
 		virtual ~Application();
 
 		virtual void Initialize();
@@ -55,6 +57,8 @@ namespace Engine
 		std::uint16_t CalculateFPS_RollingAverage( const float fps_this_frame ) const;
 
 	protected:
+		std::unique_ptr< Renderer > renderer;
+
 		bool show_frame_statistics;
 		bool show_imgui;
 		bool show_gl_logger;
@@ -62,7 +66,7 @@ namespace Engine
 		bool gamma_correction_is_enabled;
 		bool vsync_is_enabled;
 
-		/* 2 byte(s) of padding. */
+		/* 3 byte(s) of padding. */
 
 		float time_delta;
 		float time_current;

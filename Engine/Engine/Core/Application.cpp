@@ -22,24 +22,28 @@
 
 namespace Engine
 {
-	Application::Application( const BitFlags< CreationFlags > flags, const std::optional< int > msaa_sample_count )
+	Application::Application( const BitFlags< CreationFlags > flags,
+							  Renderer::Description&& renderer_description )
 		:
 		show_frame_statistics( true ),
 		show_imgui( not flags.IsSet( CreationFlags::OnStart_DisableImGui ) ),
 		show_gl_logger( true ),
-		gamma_correction_is_enabled( not flags.IsSet( CreationFlags::OnStart_DisableGammaCorrection ) ),
-		msaa_sample_count( msaa_sample_count ),
+		gamma_correction_is_enabled( renderer_description.enable_gamma_correction && not flags.IsSet( CreationFlags::OnStart_DisableGammaCorrection ) ),
+		vsync_is_enabled( false ),
 		time_current( 0.0f ),
 		time_multiplier( 1.0f ),
+		frame_count( 1 ),
+		msaa_sample_count( renderer_description.main_framebuffer_msaa_sample_count ),
 		time_previous( 0.0f ),
 		time_previous_since_start( 0.0f ),
-		time_since_start( 0.0f ),
-		frame_count( 1 ),
-		vsync_is_enabled( false )
+		time_since_start( 0.0f )
 	{
 		NatVis::ForceIncludeInBuild();
 
 		Initialize();
+
+		renderer_description.enable_gamma_correction = gamma_correction_is_enabled;
+		renderer = std::make_unique< Engine::Renderer >( std::move( renderer_description ) );
 	}
 
 	Application::~Application()

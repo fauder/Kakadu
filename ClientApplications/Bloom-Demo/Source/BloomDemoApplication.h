@@ -79,8 +79,6 @@ private:
 
 private:
 /* Renderer: */
-	Engine::Renderer renderer;
-
 	Engine::Renderable light_sources_renderable;
 
 	const static constexpr int CUBE_COUNT           = 200'000;
