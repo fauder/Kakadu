@@ -19,11 +19,11 @@ namespace Engine
 		All = DepthBuffer | StencilBuffer | ColorBuffer
 	};
 
-	enum class PolygonMode
+	enum class PolygonMode : std::uint8_t
 	{
-		Point = GL_POINT,
-		Line  = GL_LINE, 
-		Fill  = GL_FILL,
+		Point,
+		Line, 
+		Fill,
 			
 		Wireframe = Line
 	};
@@ -95,4 +95,19 @@ namespace Engine
 		Clockwise        = GL_CW,
 		CounterClockwise = GL_CCW
 	};
+
+#ifdef _EDITOR
+	enum class EditorShadingMode : std::uint8_t
+	{
+		Shaded,
+		Wireframe,
+		ShadedWireframe,
+
+		Texture_Coordinates,
+		Geometry_Tangents,
+		Geometry_Bitangents,
+		Geometry_Normals,
+		Shading_Normals
+	};
+#endif // _EDITOR
 }

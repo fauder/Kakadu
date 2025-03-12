@@ -1116,11 +1116,6 @@ namespace Engine
 		return set_of_sample_counts_queried.contains( sample_count_to_query );
 	}
 
-	void Renderer::SetPolygonMode( const PolygonMode mode )
-	{
-		glPolygonMode( GL_FRONT_AND_BACK, ( GLenum )mode );
-	}
-
 	void Renderer::InitializeBuiltinQueues()
 	{
 		AddQueue( QUEUE_ID_GEOMETRY,
@@ -1550,6 +1545,11 @@ namespace Engine
 
 		tone_mapping_renderable = Renderable( &full_screen_quad_mesh, &tone_mapping_material );
 		AddRenderable( &tone_mapping_renderable, QUEUE_ID_FINAL );
+	}
+
+	void Renderer::SetPolygonMode( const PolygonMode mode )
+	{
+		glPolygonMode( GL_FRONT_AND_BACK, ( GLenum )mode + GL_POINT );
 	}
 
 	std::vector< RenderQueue* >& Renderer::RenderQueuesContaining( const Renderable* renderable_of_interest )

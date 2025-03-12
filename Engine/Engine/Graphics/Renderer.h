@@ -212,12 +212,6 @@ namespace Engine
 		/* Logs a warning if the sample count in question is not available for the given format. */
 		static bool CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query );
 
-		/*
-		 * Other:
-		 */
-
-		void SetPolygonMode( const PolygonMode mode );
-
 	private:
 
 		/*
@@ -248,6 +242,8 @@ namespace Engine
 		void InitializeInternalShaders();
 		void InitializeInternalMaterials();
 		void InitializeInternalRenderables();
+
+		void SetPolygonMode( const PolygonMode mode );
 
 		/*
 		 * Pass, Queue & Renderable:
