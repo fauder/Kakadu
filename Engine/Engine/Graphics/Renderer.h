@@ -253,6 +253,13 @@ namespace Engine
 
 		void SetPolygonMode( const PolygonMode mode );
 
+	#ifdef _EDITOR
+		/*
+		 * Editor:
+		 */
+		void RenderOtherEditorShadingModes();
+	#endif // _EDITOR
+
 		/*
 		 * Pass, Queue & Renderable:
 		 */

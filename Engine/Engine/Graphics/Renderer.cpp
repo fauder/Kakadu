@@ -11,23 +11,14 @@
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
 #ifdef _EDITOR
+#define CONSOLE_WARNING( message ) logger.Warning( ICON_FA_DRAW_POLYGON " " message )
 #define CONSOLE_ERROR( message ) logger.Error( ICON_FA_DRAW_POLYGON " " message )
-#else
-#define CONSOLE_ERROR( message ) do {} while( false )
-#endif // _EDITOR
-
-#ifdef _EDITOR
 #define CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id )\
 if( not render_pass_map.contains( pass_id ) )\
 {\
 	logger.Error( ICON_FA_DRAW_POLYGON " " function_name "() called for non-existing pass." );\
 	return;\
 }
-#else
-#define CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id ) do {} while( false )
-#endif // _EDITOR
-
-#ifdef _EDITOR
 #define CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id )\
 if( not render_queue_map.contains( queue_id ) )\
 {\
@@ -35,6 +26,9 @@ if( not render_queue_map.contains( queue_id ) )\
 	return;\
 }
 #else
+#define CONSOLE_WARNING( message )  do {} while( false )
+#define CONSOLE_ERROR( message ) do {} while( false )
+#define CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id ) do {} while( false )
 #define CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id ) do {} while( false )
 #endif // _EDITOR
 
@@ -120,6 +114,14 @@ namespace Engine
 
 	void Renderer::Render()
 	{
+#ifdef _EDITOR
+		if( editor_shading_mode != EditorShadingMode::Shaded )
+		{
+			RenderOtherEditorShadingModes();
+			return;
+		}
+#endif // _EDITOR
+
 		for( auto& [ pass_id, pass ] : render_pass_map )
 		{
 			if( PassHasContentToRender( pass ) )
@@ -1559,6 +1561,113 @@ namespace Engine
 	void Renderer::SetPolygonMode( const PolygonMode mode )
 	{
 		glPolygonMode( GL_FRONT_AND_BACK, ( GLenum )mode + GL_POINT );
+	}
+
+	void Renderer::RenderOtherEditorShadingModes()
+	{
+		ASSERT( editor_shading_mode != EditorShadingMode::Shaded );
+
+		Shader* shader = nullptr;
+
+		static constexpr RenderState debug_shading_render_state{};
+		static constexpr RenderState debug_shading_render_state_wireframe{ .polygon_mode = PolygonMode::Wireframe };
+
+		switch( editor_shading_mode )
+		{
+			case EditorShadingMode::Wireframe:
+				{
+					SetRenderState( debug_shading_render_state_wireframe, &framebuffer_main, true );
+					shader = BuiltinShaders::Get( "Color" );
+					shader->Bind();
+					shader->SetUniform( "uniform_color", Color4( 0.29f, 0.75f, 0.67f, 1.0f ) );
+				}
+				break;
+			case EditorShadingMode::Geometry_Tangents:
+			case EditorShadingMode::Geometry_Bitangents:
+			case EditorShadingMode::Geometry_Normals:
+				SetRenderState( debug_shading_render_state, &framebuffer_main, true );
+				shader = BuiltinShaders::Get( "Debug Geometry" );
+				shader->Bind();
+				shader->SetUniform( "uniform_show_tangents_bitangents_normals", ( int )editor_shading_mode - ( int )EditorShadingMode::Geometry_Tangents );
+				break;
+			default:
+				CONSOLE_WARNING( "Not implemented shading mode selected." );
+				return;
+		}
+
+
+		SetIntrinsicsPerPass( render_pass_map[ PASS_ID_LIGHTING ] );
+		UploadIntrinsics();
+
+		for( auto& [ pass_id, pass ] : render_pass_map )
+		{
+			if( PassHasContentToRender( pass ) && 
+				pass_id != PASS_ID_SHADOW_MAPPING && 
+				pass_id != PASS_ID_MSAA_RESOLVE &&
+				pass_id != PASS_ID_POSTPROCESSING &&
+				pass_id != PASS_ID_FINAL )
+			{
+				const auto log_group( logger.TemporaryLogGroup( ( "[Debug Pass]:" + pass.name ).c_str() ) );
+
+				const Vector3 camera_position( Matrix::CameraWorldPositionFromViewMatrix( current_camera_info.view_matrix ) );
+
+				for( auto& queue_id : pass.queue_id_set )
+				{
+					if( auto& queue = render_queue_map[ queue_id ];
+						QueueHasContentToRender( queue ) )
+					{
+						const auto log_group( logger.TemporaryLogGroup( ( "[Debug Queue]:" + queue.name ).c_str() ) );
+
+						SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override.sorting_mode ); // Might remove this as well but oh well.
+
+						for( auto& renderable : queue.renderable_list )
+						{
+							if( renderable->is_enabled )
+							{
+								renderable->mesh->Bind();
+
+								if( renderable->transform )
+									shader->SetUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
+
+								Render( *renderable->mesh );
+							}
+						}
+					}
+				}
+			}
+		}
+
+		/* MSAA Resolve: */
+		{
+			const auto& pass = render_pass_map[ PASS_ID_MSAA_RESOLVE ];
+
+			SetRenderState( pass.render_state, pass.target_framebuffer, pass.clear_framebuffer );
+
+			const auto& queue      = render_queue_map[ QUEUE_ID_MSAA_RESOLVE ];
+			const auto& renderable = queue.renderable_list.front();
+
+			shader_msaa_resolve->Bind();
+
+			renderable->mesh->Bind();
+
+			Render( *renderable->mesh );
+		}
+
+		/* Final Blit: */
+		{
+			const auto& pass = render_pass_map[ PASS_ID_FINAL ];
+
+			SetRenderState( pass.render_state, pass.target_framebuffer, pass.clear_framebuffer );
+
+			const auto& queue      = render_queue_map[ QUEUE_ID_FINAL ];
+			const auto& renderable = queue.renderable_list.front();
+
+			renderable->material->shader->Bind();
+
+			renderable->mesh->Bind();
+
+			Render( *renderable->mesh );
+		}
 	}
 
 	std::vector< RenderQueue* >& Renderer::RenderQueuesContaining( const Renderable* renderable_of_interest )
