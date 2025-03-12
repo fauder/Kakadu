@@ -314,6 +314,8 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClInclude Include="Engine\Core\Blob.hpp" />
     <ClInclude Include="Engine\Core\Macros.h" />
     <ClInclude Include="Engine\Core\Macros_SpaceshipOperator.h" />
+    <ClInclude Include="Engine\Core\Morph.h" />
+    <ClInclude Include="Engine\Core\MorphSystem.h" />
     <ClInclude Include="Engine\Graphics\BuiltinTextures.h" />
     <ClInclude Include="Engine\Graphics\Enums.h" />
     <ClInclude Include="Engine\Graphics\Framebuffer.h" />

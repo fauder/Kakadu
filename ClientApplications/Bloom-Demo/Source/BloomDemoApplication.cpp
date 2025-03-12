@@ -475,6 +475,8 @@ void BloomDemoApplication::Shutdown()
 
 void BloomDemoApplication::Update()
 {
+	Application::Update();
+
 	auto log_group( gl_logger.TemporaryLogGroup( "Bloom Demo Update()" ) );
 
 	// TODO: Separate application logs from GL logs.

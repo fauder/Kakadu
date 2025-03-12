@@ -494,6 +494,8 @@ void SandboxApplication::Shutdown()
 
 void SandboxApplication::Update()
 {
+	Application::Update();
+
 	auto log_group( gl_logger.TemporaryLogGroup( "Sandbox Update()" ) );
 
 	// TODO: Separate application logs from GL logs.

@@ -181,6 +181,8 @@ void HDR_DemoApplication::Shutdown()
 
 void HDR_DemoApplication::Update()
 {
+	Application::Update();
+
 	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo Update()" ) );
 
 	// TODO: Separate applicationg logs from GL logs.

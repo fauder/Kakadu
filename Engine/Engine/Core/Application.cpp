@@ -44,7 +44,7 @@ namespace Engine
 		Initialize();
 
 		renderer_description.enable_gamma_correction = gamma_correction_is_enabled;
-		renderer = std::make_unique< Engine::Renderer >( std::move( renderer_description ) );
+		renderer = std::make_unique< Renderer >( std::move( renderer_description ) );
 	}
 
 	Application::~Application()
@@ -54,7 +54,8 @@ namespace Engine
 
 	void Application::Initialize()
 	{
-		Engine::ServiceLocator< Engine::GLLogger >::Register( &gl_logger );
+		ServiceLocator< GLLogger >::Register( &gl_logger );
+		ServiceLocator< MorphSystem >::Register( &morph_system );
 
 		Platform::InitializeAndCreateWindow( 800, 600, msaa_sample_count, vsync_is_enabled );
 
@@ -130,6 +131,7 @@ namespace Engine
 
 	void Application::Update()
 	{
+		morph_system.Execute( time_delta );
 	}
 
 	void Application::Render()
@@ -212,7 +214,7 @@ namespace Engine
 	{
 		{
 			const auto framebuffer_size = Platform::GetFramebufferSizeInPixels();
-			ImGui::SetNextWindowSize( Engine::Math::CopyToImVec2( framebuffer_size ), ImGuiCond_Appearing );
+			ImGui::SetNextWindowSize( Math::CopyToImVec2( framebuffer_size ), ImGuiCond_Appearing );
 		}
 
 		if( ImGui::Begin( "Viewport" ) )

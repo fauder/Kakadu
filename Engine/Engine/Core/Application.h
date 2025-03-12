@@ -3,8 +3,9 @@
 // Engine Includes.
 #include "BitFlags.hpp"
 #include "ImGuiLog.hpp"
-#include "Math/Math.hpp"
+#include "MorphSystem.h"
 #include "Platform.h"
+#include "Math/Math.hpp"
 #include "Graphics/GLLogger.h"
 #include "Graphics/Renderer.h"
 
@@ -88,6 +89,8 @@ namespace Engine
 		GLLogger gl_logger;
 
 	private:
+		MorphSystem morph_system;
+
 		float time_delta_real;
 		float time_previous;
 		float time_previous_since_start;
