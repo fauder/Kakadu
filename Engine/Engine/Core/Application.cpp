@@ -6,6 +6,7 @@
 #include "ImGuiDrawer.hpp"
 #include "ImGuiSetup.h"
 #include "ImGuiUtility.h"
+#include "Graphics/Enums.h"
 #include "Math/Math.hpp"
 #include "Math/VectorConversion.hpp"
 
@@ -200,10 +201,65 @@ namespace Engine
 		ImGuiDrawer::Update();
 
 		RenderImGui_Viewport( imgui_viewport_texture_id );
+		RenderImGui_ViewportControls();
 		RenderImGui_FrameStatistics();
 
 		if( show_gl_logger )
 			gl_logger.Render( &show_gl_logger );
+	}
+
+	void Application::RenderImGui_Viewport( const unsigned int texture_id )
+	{
+		{
+			const auto framebuffer_size = Platform::GetFramebufferSizeInPixels();
+			ImGui::SetNextWindowSize( Engine::Math::CopyToImVec2( framebuffer_size ), ImGuiCond_Appearing );
+		}
+
+		if( ImGui::Begin( "Viewport" ) )
+		{
+			const ImVec2   viewport_size_imvec2( ImGui::GetContentRegionAvail() );
+			const Vector2I viewport_size( ( int )viewport_size_imvec2.x, ( int )viewport_size_imvec2.y );
+
+			const auto& imgui_io = ImGui::GetIO();
+			if( ( imgui_io.WantCaptureMouse && imgui_io.MouseReleased[ 0 ] ) ||
+				( not imgui_io.WantCaptureMouse && Platform::IsMouseButtonReleased( Platform::MouseButton::Left ) ) )
+				OnFramebufferResizeEvent( viewport_size.X(), viewport_size.Y() );
+
+			if( ImGui::IsWindowHovered() )
+			{
+				ImGui::SetNextFrameWantCaptureMouse( false );
+				ImGui::SetNextFrameWantCaptureKeyboard( false );
+			}
+
+			ImGui::Image( ( void* )( intptr_t )texture_id, ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
+		}
+
+		ImGui::End();
+	}
+
+	void Application::RenderImGui_ViewportControls()
+	{
+		if( ImGuiUtility::BeginOverlay( "Viewport", "##ViewportControls", &show_frame_statistics, ImGuiUtility::WindowCorner::TOP_LEFT, 0.65f ) )
+		{
+			int editor_shading_mode = ( int )renderer->GetEditorShadingMode();
+			if( ImGuiUtility::DrawShadedSphereComboButton( "ShadingMode", reinterpret_cast< int* >( &editor_shading_mode ),
+														   { 
+																"Shaded",
+																"Wireframe",
+																"Shaded Wireframe", 
+																"___",
+																"Texture Coordinates",
+																"Geometry Tangents",
+																"Geometry Bitangents",
+																"Geometry Normals", 
+																"Shading Normals"
+														   } ) )
+			{
+				renderer->SetEditorShadingMode( ( EditorShadingMode )editor_shading_mode );
+			}
+		}
+		
+		ImGuiUtility::EndOverlay();
 	}
 
 	void Application::RenderImGui_FrameStatistics()
@@ -282,34 +338,5 @@ namespace Engine
 		}
 
 		ImGuiUtility::EndOverlay();
-	}
-
-	void Application::RenderImGui_Viewport( const unsigned int texture_id )
-	{
-		{
-			const auto framebuffer_size = Platform::GetFramebufferSizeInPixels();
-			ImGui::SetNextWindowSize( Engine::Math::CopyToImVec2( framebuffer_size ), ImGuiCond_Appearing );
-		}
-
-		if( ImGui::Begin( "Viewport" ) )
-		{
-			const ImVec2   viewport_size_imvec2( ImGui::GetContentRegionAvail() );
-			const Vector2I viewport_size( ( int )viewport_size_imvec2.x, ( int )viewport_size_imvec2.y );
-
-			const auto& imgui_io = ImGui::GetIO();
-			if( ( imgui_io.WantCaptureMouse && imgui_io.MouseReleased[ 0 ] ) ||
-				( not imgui_io.WantCaptureMouse && Platform::IsMouseButtonReleased( Platform::MouseButton::Left ) ) )
-				OnFramebufferResizeEvent( viewport_size.X(), viewport_size.Y() );
-
-			if( ImGui::IsWindowHovered() )
-			{
-				ImGui::SetNextFrameWantCaptureMouse( false );
-				ImGui::SetNextFrameWantCaptureKeyboard( false );
-			}
-
-			ImGui::Image( ( void* )( intptr_t )texture_id, ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
-		}
-
-		ImGui::End();
 	}
 }

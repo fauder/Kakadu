@@ -54,6 +54,10 @@ namespace Engine
 		shaders_need_uniform_buffer_other( false ),
 		framebuffer_sRGB_encoding_is_enabled( false ),
 		gamma_correction_is_enabled( description.enable_gamma_correction )
+#ifdef _EDITOR
+		,
+		editor_shading_mode( EditorShadingMode::Shaded )
+#endif // _EDITOR
 	{
 		logger.IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
 
@@ -600,6 +604,11 @@ namespace Engine
 
 		/* Tone-mapping is the final operation and it's texture slot is assigned automatically in Render() every frame.
 		 * This is due to the ping-ponging of post-processing framebuffers A & B. */
+	}
+
+	void Renderer::SetEditorShadingMode( const EditorShadingMode new_editor_shading_mode )
+	{
+		editor_shading_mode = new_editor_shading_mode;
 	}
 
 	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )

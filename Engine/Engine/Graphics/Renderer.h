@@ -64,6 +64,14 @@ namespace Engine
 		void RenderImGui();
 		void OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels );
 
+#ifdef _EDITOR
+		/*
+		 * Editor:
+		 */
+		inline EditorShadingMode GetEditorShadingMode() const { return editor_shading_mode; };
+		void SetEditorShadingMode( const EditorShadingMode new_editor_shading_mode );
+#endif // _EDITOR
+
 		/* 
 		 * Pass, Queue & Renderable:
 		 */
@@ -417,6 +425,12 @@ namespace Engine
 
 		bool framebuffer_sRGB_encoding_is_enabled;
 		bool gamma_correction_is_enabled;
+
+		/*
+		 * Editor:
+		 */
+
+		EditorShadingMode editor_shading_mode;
 		
 		/* 4 bytes of padding. */
 	};

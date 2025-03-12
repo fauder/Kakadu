@@ -52,8 +52,9 @@ namespace Engine
 
 		void CalculateTimeInformation();
 
-		void RenderImGui_FrameStatistics();
 		void RenderImGui_Viewport( const unsigned int texture_id );
+		void RenderImGui_ViewportControls();
+		void RenderImGui_FrameStatistics();
 		std::uint16_t CalculateFPS_RollingAverage( const float fps_this_frame ) const;
 
 	protected:
