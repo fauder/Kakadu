@@ -281,7 +281,7 @@ namespace Engine::ImGuiUtility
     {
         ImGui::PopStyleColor();
     }
-    void DrawRoundedRectText( const char* text, const ImVec4& color, const float thickness, const float rounding )
+    void DrawRoundedRectText( const char* text, const ImU32 color, const float thickness, const float rounding )
     {
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
@@ -299,7 +299,7 @@ namespace Engine::ImGuiUtility
         ImGui::PopStyleColor();
     }
 
-	void DrawRainbowRectText( const char* text, const ImVec4& text_color )
+	void DrawRainbowRectText( const char* text, const ImU32 text_color )
     {
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 

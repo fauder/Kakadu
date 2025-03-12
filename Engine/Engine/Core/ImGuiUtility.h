@@ -42,13 +42,13 @@ namespace Engine::ImGuiUtility
 						   const ImGuiCond condition = ImGuiCond_Always );
 
 	/* https://github.com/ocornut/imgui/issues/1496#issuecomment-655048353 */
-	void BeginGroupPanel( const char* name = nullptr, bool* is_enabled = nullptr, const ImVec2& size = ImVec2(0.0f, 0.0f));
+	void BeginGroupPanel( const char* name = nullptr, bool* is_enabled = nullptr, const ImVec2& size = ImVec2( 0.0f, 0.0f ) );
 	/* https://github.com/ocornut/imgui/issues/1496#issuecomment-655048353 */
 	void EndGroupPanel( bool* is_enabled = nullptr );
 
 	void BeginDisabledButInteractable();
 	void EndDisabledButInteractable();
 
-	void DrawRoundedRectText( const char* text, const ImVec4& color, const float thickness = 2.0f, const float rounding = 3.0f );
-	void DrawRainbowRectText( const char* text, const ImVec4& text_color = ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f } );
+	void DrawRoundedRectText( const char* text, const ImU32 color, const float thickness = 2.0f, const float rounding = 3.0f );
+	void DrawRainbowRectText( const char* text, const ImU32 text_color = ImColor{ 0.0f, 0.0f, 0.0f, 1.0f } );
 }
