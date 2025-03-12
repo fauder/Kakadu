@@ -51,4 +51,13 @@ namespace Engine::ImGuiUtility
 
 	void DrawRoundedRectText( const char* text, const ImU32 color, const float thickness = 2.0f, const float rounding = 3.0f );
 	void DrawRainbowRectText( const char* text, const ImU32 text_color = ImColor{ 0.0f, 0.0f, 0.0f, 1.0f } );
+
+	void DrawArrow( ImDrawList* draw_list, float size = -1.0f, const ImU32 color = ImColor{ 0.75f, 0.75f, 0.75f, 1.0f }, const bool advance_cursor = true );
+
+	void DrawShadedSphere( ImDrawList* draw_list, const ImU32 shade_color, const ImU32 specular_color, const float radius, const bool advance_cursor = true );
+	bool DrawShadedSphereComboButton( const char* name,
+									  int* current_index,
+									  const std::initializer_list< const char* > option_strings,
+									  const ImU32 shade_color    = ImColor{ 0.2f, 0.2f, 0.2f, 1.0f },
+									  const ImU32 specular_color = ImColor{ 0.75f, 0.75f, 0.75f, 1.0f } );
 }

@@ -100,7 +100,9 @@ namespace Engine::ImGuiUtility
 		ImGui::SetNextWindowBgAlpha( alpha );
         if( ImGui::Begin( name, p_open, window_flags ) )
         {
-            ImGui::TextUnformatted( name );
+            if( name[ 0 ] != '#' )
+                ImGui::TextUnformatted( name );
+
             return true;
         }
 
@@ -315,5 +317,97 @@ namespace Engine::ImGuiUtility
         ImGui::SetCursorScreenPos( pos + ImVec2{ 1.1f * style.ItemInnerSpacing.x, 0.0f } );
         ImGui::TextUnformatted( text );
         ImGui::PopStyleColor();
+    }
+
+    void DrawArrow( ImDrawList* draw_list, float size, const ImU32 color, const bool advance_cursor )
+    {
+        if( size < 0.0f )
+            size = ImGui::CalcTextSize( "A" ).x * 1.25f;
+
+        const ImVec2 pos = ImGui::GetCursorScreenPos() + ImVec2{ size * 0.5f, 0.0f };
+
+        ImVec2 p1 = { pos.x - size * 0.5f, pos.y + size * 0.5f };
+        ImVec2 p2 = { pos.x + size * 0.5f, pos.y + size * 0.5f };
+        ImVec2 p3 = { pos.x, pos.y + size * ( 0.5f + 0.6f ) };
+
+        draw_list->AddTriangleFilled( p1, p2, p3, color );
+
+        if( advance_cursor )
+            ImGui::SetCursorScreenPos( pos + ImVec2{ size, 0.0f } );
+    }
+
+    void DrawShadedSphere( ImDrawList* draw_list, const ImU32 shade_color, const ImU32 specular_color, const float radius, const bool advance_cursor )
+    {
+        const auto& style = ImGui::GetStyle();
+
+        const ImVec2 pos                = ImGui::GetCursorScreenPos();
+        const ImVec2 size               = ImVec2{ 2.0f * ( radius + style.ItemInnerSpacing.x ), style.ItemInnerSpacing.y + radius };
+        
+        const ImU32  shade_color_u32    = ImColor( shade_color );
+        const ImU32  specular_color_u32 = ImColor( specular_color );
+
+        const ImVec2 center = pos + ImVec2{ radius, radius };
+
+        draw_list->AddCircleFilled( center, radius, shade_color_u32 );
+
+        const ImVec2 highlight_center = { center.x - radius * 0.3f, center.y - radius * 0.4f };
+        const ImVec2 highlight_size   = { radius * 0.7f, radius * 0.5f };
+
+        constexpr float highlight_rot = -0.7f; // -45 degrees.
+
+        draw_list->AddEllipseFilled( highlight_center, highlight_size, specular_color_u32, highlight_rot );
+
+        if( advance_cursor )
+            ImGui::SetCursorScreenPos( pos + ImVec2{ size.x, 0.0f } );
+    }
+
+    bool DrawShadedSphereComboButton( const char* name,
+                                      int* current_index,
+                                      const std::initializer_list< const char* > option_strings,
+                                      const ImU32 shade_color, const ImU32 specular_color )
+    {
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+        const float radius = ImGui::CalcTextSize( "A" ).x * 1.15f;
+
+        const auto pos_start = ImGui::GetCursorScreenPos();
+
+        DrawShadedSphere( draw_list, shade_color, specular_color, radius );
+        DrawArrow( draw_list );
+
+        const auto width = ImGui::GetCursorScreenPos().x - pos_start.x;
+
+        ImGui::SetCursorScreenPos( pos_start );
+
+        ImGui::InvisibleButton( name, { width, radius * 2 } );
+
+        bool result = false;
+
+        if( ImGui::BeginPopupContextItem( name ) )
+        {
+            int index = 0;
+            for( const auto option_string : option_strings )
+            {
+                if( option_string[ 0 ] == '_' )
+                    ImGui::Separator();
+                else 
+                {
+                    if( ImGui::Selectable( option_string ) )
+                    {
+                        *current_index = index;
+                        result = true;
+                    }
+
+                    index++;
+                }
+            }
+
+            ImGui::EndPopup();
+        }
+
+        if( ImGui::IsItemClicked( ImGuiMouseButton_Left ) )
+            ImGui::OpenPopup( name );
+
+        return result;
     }
 }
