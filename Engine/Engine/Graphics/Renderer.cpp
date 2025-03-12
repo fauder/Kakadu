@@ -461,6 +461,20 @@ namespace Engine
 		/* Uniforms (Renderer-scope): */
 		ImGuiDrawer::Draw( uniform_buffer_management_intrinsic, "Shader Intrinsics" );
 		ImGuiDrawer::Draw( uniform_buffer_management_global,	"Shader Globals" );
+
+		/* Debug: */
+		if( ImGui::Begin( "Debug" ) )
+		{
+			static bool is_running = false;
+			ImGui::BeginDisabled( is_running );
+			if( ImGui::Button( "Flash Main Framebuffer Clear Color" ) )
+				framebuffer_main.Debug_FlashClearColor( is_running = true );
+
+			ImGuiDrawer::Draw( framebuffer_main.clear_color );
+			ImGui::EndDisabled();
+		}
+
+		ImGui::End();
 	}
 
 	void Renderer::OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels )
