@@ -19,7 +19,11 @@ namespace Engine
 
 		SortingMode sorting_mode = SortingMode::FrontToBack;
 
-		/* 2 bytes of padding here. */
+	/* Polygon Mode: */
+
+		PolygonMode polygon_mode = PolygonMode::Fill;
+
+		/* 1 byte(s) of padding here. */
 
 	/* Face-culling & winding-order: */
 
@@ -49,6 +53,5 @@ namespace Engine
 		BlendingFactor blending_destination_alpha_factor = BlendingFactor::Zero;
 
 		BlendingFunction blending_function = BlendingFunction::Add;
-
-	}; /* Total: 2 bytes of padding. */
+	};
 }
