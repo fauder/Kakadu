@@ -516,6 +516,8 @@ namespace Engine
 											} );
 		}
 
+		framebuffer_main.SetClearColor( Color4::Gray( 0.064f ) ); // Same as Unity's scene view, in linear color space.
+
 		/* Post-processing: */
 		if( framebuffer_postprocessing_A.IsValid() )
 			framebuffer_postprocessing_A.Resize( new_width_in_pixels, new_height_in_pixels );
