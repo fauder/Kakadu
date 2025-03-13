@@ -1643,7 +1643,7 @@ namespace Engine
 			case EditorShadingMode::TextureCoordinates:
 				shader_not_instanced = BuiltinShaders::Get( "Debug UVs As Colors" );
 				shader_instanced     = BuiltinShaders::Get( "Debug UVs As Colors (Instanced)" );
-				SetRenderState( render_state_wireframe, &framebuffer_main, true );
+				SetRenderState( render_state, &framebuffer_main, true );
 				break;
 			case EditorShadingMode::Geometry_Tangents:
 			case EditorShadingMode::Geometry_Bitangents:
