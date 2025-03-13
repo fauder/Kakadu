@@ -779,7 +779,7 @@ namespace Engine::ImGuiDrawer
 						{
 							for( const auto& [ uniform_sampler_name, texture_pointer ] : texture_map )
 							{
-								ImGui::TableNextColumn(); ImGui::TextUnformatted( ( "Texture: " + uniform_info_map.at( uniform_sampler_name ).editor_name ).c_str() );
+								ImGui::TableNextColumn(); ImGui::TextUnformatted( uniform_info_map.at( uniform_sampler_name ).editor_name.c_str() );
 
 								ImGui::TableNextColumn();
 
