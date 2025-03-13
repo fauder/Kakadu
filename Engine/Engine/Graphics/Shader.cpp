@@ -1266,6 +1266,9 @@ namespace Engine
 		if( editor_name.compare( 0, 8, "UNIFORM ", 8 ) == 0 || editor_name.compare( 0, 8, "uniform ", 8 ) == 0 )
 			editor_name.erase( 0, 8 );
 
+		if( editor_name.compare( 0, 4, "TEX ", 4 ) == 0 || editor_name.compare( 0, 4, "tex ", 4 ) == 0 )
+			editor_name.erase( 0, 4 );
+
 		if( std::isalpha( editor_name[ 0 ] ) )
 			editor_name[ 0 ] = std::toupper( editor_name[ 0 ] );
 		else if( editor_name.starts_with( ' ' ) )
