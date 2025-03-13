@@ -424,18 +424,20 @@
     <None Include="Engine\Asset\Shader\Skybox.frag" />
     <None Include="Engine\Asset\Shader\Skybox.vert" />
     <None Include="Engine\Asset\Shader\DebugDepth.frag" />
-    <None Include="Engine\Asset\Shader\DebugGeometry_Vectors.geom" />
-    <None Include="Engine\Asset\Shader\DebugGeometry_Vectors.vert" />
+    <None Include="Engine\Asset\Shader\DebugTBN_AsVectors.geom" />
+    <None Include="Engine\Asset\Shader\DebugTBN_AsVectors.vert" />
     <None Include="Engine\Asset\Shader\Outline.vert" />
     <None Include="Engine\Asset\Shader\Empty.frag" />
     <None Include="Engine\Asset\Shader\PassThrough_Transform.vert" />
     <None Include="Engine\Asset\Shader\_Attributes.glsl" />
-    <None Include="Engine\Asset\Shader\DebugGeometry_Vectors.frag" />
+    <None Include="Engine\Asset\Shader\DebugTBN_AsVectors.frag" />
     <None Include="Engine\Asset\Shader\Tonemapping.frag" />
-    <None Include="Engine\Asset\Shader\DebugGeometry_Colors.frag" />
-    <None Include="Engine\Asset\Shader\DebugGeometry_Colors.vert" />
+    <None Include="Engine\Asset\Shader\DebugTBN_AsColors.frag" />
+    <None Include="Engine\Asset\Shader\DebugTBN_AsColors.vert" />
     <None Include="Engine\Asset\Shader\Wireframe.vert" />
     <None Include="Engine\Asset\Shader\Wireframe.geom" />
     <None Include="Engine\Asset\Shader\Wireframe.frag" />
+    <None Include="Engine\Asset\Shader\DebugUVs_AsColors.frag" />
+    <None Include="Engine\Asset\Shader\DebugUVs_AsColors.vert" />
   </ItemGroup>
 </Project>

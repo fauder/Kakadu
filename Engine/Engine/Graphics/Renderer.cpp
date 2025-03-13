@@ -1610,6 +1610,11 @@ namespace Engine
 
 		switch( editor_shading_mode )
 		{
+			case EditorShadingMode::Texture_Coordinates:
+				shader_not_instanced = BuiltinShaders::Get( "Debug UVs As Colors" );
+				shader_instanced     = BuiltinShaders::Get( "Debug UVs As Colors (Instanced)" );
+				SetRenderState( debug_shading_render_state_wireframe, &framebuffer_main, true );
+				break;
 			case EditorShadingMode::Wireframe:
 				shader_not_instanced = BuiltinShaders::Get( "Wireframe" );
 				shader_instanced     = BuiltinShaders::Get( "Wireframe (Instanced)" );

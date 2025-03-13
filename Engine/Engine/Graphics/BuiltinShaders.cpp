@@ -115,6 +115,15 @@ namespace Engine
 								FullGeometryShaderPath( "DebugTBN_AsVectors.geom" ),
 								FullFragmentShaderPath( "DebugTBN_AsVectors.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
+		SHADER_MAP.try_emplace( "Debug UVs As Colors",
+								"Debug UVs As Colors",
+								FullVertexShaderPath( "DebugUVs_AsColors.vert" ),
+								FullFragmentShaderPath( "DebugUVs_AsColors.frag" ) );
+		SHADER_MAP.try_emplace( "Debug UVs As Colors (Instanced)",
+								"Debug UVs As Colors (Instanced)",
+								FullVertexShaderPath( "DebugUVs_AsColors.vert" ),
+								FullFragmentShaderPath( "DebugUVs_AsColors.frag" ),
+								Shader::Features{ "INSTANCING_ENABLED" } );
 #endif // _EDITOR
 		SHADER_MAP.try_emplace( "Textured",
 								"Textured",
