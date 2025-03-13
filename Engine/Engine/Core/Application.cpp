@@ -256,6 +256,7 @@ namespace Engine
 																"Geometry Tangents",
 																"Geometry Bitangents",
 																"Geometry Normals", 
+																"Debug Vectors",
 																"Shading Normals"
 														   } ) )
 			{

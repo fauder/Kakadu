@@ -107,6 +107,7 @@ namespace Engine
 		Geometry_Tangents,
 		Geometry_Bitangents,
 		Geometry_Normals,
+		DebugVectors,
 		Shading_Normals
 	};
 #endif // _EDITOR

@@ -1622,6 +1622,12 @@ namespace Engine
 				shader_instanced     = BuiltinShaders::Get( "Debug TBN As Colors (Instanced)" );
 				SetRenderState( debug_shading_render_state, &framebuffer_main, true );
 				break;
+			case EditorShadingMode::DebugVectors:
+				shader_not_instanced = BuiltinShaders::Get( "Debug TBN As Vectors" );
+				shader_instanced     = BuiltinShaders::Get( "Debug TBN As Vectors (Instanced)" );
+				SetRenderState( debug_shading_render_state, &framebuffer_main, true );
+				break;
+
 			default:
 				CONSOLE_WARNING( "Not implemented shading mode selected." );
 				return;
@@ -1647,6 +1653,10 @@ namespace Engine
 				case EditorShadingMode::Geometry_Bitangents:
 				case EditorShadingMode::Geometry_Normals:
 					shader->SetUniform( "uniform_show_tangents_bitangents_normals", ( int )editor_shading_mode - ( int )EditorShadingMode::Geometry_Tangents );
+					break;
+				case EditorShadingMode::DebugVectors:
+					shader->SetUniform( "uniform_line_scale_override", 0.2f );
+					shader->SetUniform( "uniform_line_offset_from_surface_override", 0.2f );
 					break;
 				default:
 					break;
