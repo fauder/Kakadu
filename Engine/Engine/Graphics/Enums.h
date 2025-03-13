@@ -103,7 +103,7 @@ namespace Engine
 		Wireframe,
 		ShadedWireframe,
 
-		Texture_Coordinates,
+		TextureCoordinates,
 		Geometry_Tangents,
 		Geometry_Bitangents,
 		Geometry_Normals,
