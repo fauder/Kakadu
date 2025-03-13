@@ -350,12 +350,12 @@ void BloomDemoApplication::Initialize()
 									 Engine::Primitive::NonIndexed::Quad_FullScreen::UVs,
 									 { /* No indices. */ } );
 
-	sphere_mesh = Engine::Mesh( Engine::Primitive::Indexed::Sphere::Positions(),
+	sphere_mesh = Engine::Mesh( Engine::Primitive::Indexed::UVSphereTemplate::Positions< 40 >(),
 								"Sphere",
-								Engine::Primitive::Indexed::Sphere::Normals(),
-								Engine::Primitive::Indexed::Sphere::UVs(),
-								Engine::Primitive::Indexed::Sphere::Indices(),
-								Engine::Primitive::Indexed::Sphere::Tangents() );
+								Engine::Primitive::Indexed::UVSphereTemplate::Normals< 40 >(),
+								Engine::Primitive::Indexed::UVSphereTemplate::UVs< 40 >(),
+								Engine::Primitive::Indexed::UVSphereTemplate::Indices< 40 >(),
+								Engine::Primitive::Indexed::UVSphereTemplate::Tangents< 40 >() );
 
 /* Lighting: */
 	ResetLightingData();
