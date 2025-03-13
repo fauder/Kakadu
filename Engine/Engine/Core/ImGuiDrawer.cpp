@@ -579,7 +579,9 @@ namespace Engine::ImGuiDrawer
 					for( const auto& [ uniform_name, uniform_info ] : uniform_info_map )
 					{
 						if( uniform_info.is_buffer_member || /* Skip uniform buffer members; They will be drawn under their parent uniform buffer instead. */
-							( not drawer_state.window_material_show_texture_slots && uniform_info.type == GL_SAMPLER_2D ) ||
+							( not drawer_state.window_material_show_texture_slots && ( uniform_info.type == GL_SAMPLER_2D ||
+																					   uniform_info.type == GL_SAMPLER_2D_MULTISAMPLE ||
+																					   uniform_info.type == GL_SAMPLER_CUBE ) ) ||
 							( not drawer_state.window_material_show_world_transforms && uniform_name == "uniform_transform_world" ) )
 							continue;
 
