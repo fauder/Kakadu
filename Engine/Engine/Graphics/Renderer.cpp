@@ -116,9 +116,10 @@ namespace Engine
 	void Renderer::Render()
 	{
 #ifdef _EDITOR
-		if( editor_shading_mode != EditorShadingMode::Shaded )
+		if( editor_shading_mode != EditorShadingMode::Shaded && editor_shading_mode != EditorShadingMode::ShadedWireframe )
 		{
 			RenderOtherEditorShadingModes();
+
 			return;
 		}
 #endif // _EDITOR
@@ -224,6 +225,14 @@ namespace Engine
 				}
 			}
 		}
+
+#ifdef _EDITOR
+		if( editor_shading_mode == EditorShadingMode::ShadedWireframe )
+		{
+			// Regular rendering path rendered the "shaded" part, now it's time to render the "wireframe" part.
+			RenderOtherEditorShadingModes();
+		}
+#endif // _EDITOR
 	}
 
 	void Renderer::RenderImGui()
@@ -1593,8 +1602,8 @@ namespace Engine
 		Shader* shader_not_instanced = nullptr;
 		Shader* shader_instanced     = nullptr;
 
-		static constexpr RenderState debug_shading_render_state{};
-		static constexpr RenderState debug_shading_render_state_wireframe // Nearly the same as transparent queue's, i.e., uses alpha blending.
+		static constexpr RenderState render_state{};
+		static constexpr RenderState render_state_wireframe // Nearly the same as transparent queue's, i.e., uses alpha blending.
 		{
 			.depth_test_enable = false, // This may decrease fps a little, but it is vital to the idea of "wireframe mode": User needs to be able to see behind objects.
 
@@ -1607,30 +1616,46 @@ namespace Engine
 			.blending_source_alpha_factor      = BlendingFactor::SourceAlpha,
 			.blending_destination_alpha_factor = BlendingFactor::OneMinusSourceAlpha
 		};
+		static constexpr RenderState render_state_shaded_wireframe
+		{
+			.blending_enable = true,
+
+			.sorting_mode = Engine::SortingMode::BackToFront,
+
+			.blending_source_color_factor      = BlendingFactor::SourceAlpha,
+			.blending_destination_color_factor = BlendingFactor::OneMinusSourceAlpha,
+			.blending_source_alpha_factor      = BlendingFactor::SourceAlpha,
+			.blending_destination_alpha_factor = BlendingFactor::OneMinusSourceAlpha
+		};
 
 		switch( editor_shading_mode )
 		{
-			case EditorShadingMode::TextureCoordinates:
-				shader_not_instanced = BuiltinShaders::Get( "Debug UVs As Colors" );
-				shader_instanced     = BuiltinShaders::Get( "Debug UVs As Colors (Instanced)" );
-				SetRenderState( debug_shading_render_state_wireframe, &framebuffer_main, true );
-				break;
 			case EditorShadingMode::Wireframe:
 				shader_not_instanced = BuiltinShaders::Get( "Wireframe" );
 				shader_instanced     = BuiltinShaders::Get( "Wireframe (Instanced)" );
-				SetRenderState( debug_shading_render_state_wireframe, &framebuffer_main, true );
+				SetRenderState( render_state_wireframe, &framebuffer_main, true );
+				break;
+			case EditorShadingMode::ShadedWireframe:
+				shader_not_instanced = BuiltinShaders::Get( "Shaded Wireframe" );
+				shader_instanced     = BuiltinShaders::Get( "Shaded Wireframe (Instanced)" );
+				SetRenderState( render_state_shaded_wireframe, &framebuffer_main, false );
+				break;
+			case EditorShadingMode::TextureCoordinates:
+				shader_not_instanced = BuiltinShaders::Get( "Debug UVs As Colors" );
+				shader_instanced     = BuiltinShaders::Get( "Debug UVs As Colors (Instanced)" );
+				SetRenderState( render_state_wireframe, &framebuffer_main, true );
 				break;
 			case EditorShadingMode::Geometry_Tangents:
 			case EditorShadingMode::Geometry_Bitangents:
 			case EditorShadingMode::Geometry_Normals:
 				shader_not_instanced = BuiltinShaders::Get( "Debug TBN As Colors" );
 				shader_instanced     = BuiltinShaders::Get( "Debug TBN As Colors (Instanced)" );
-				SetRenderState( debug_shading_render_state, &framebuffer_main, true );
+				SetRenderState( render_state, &framebuffer_main, true );
 				break;
 			case EditorShadingMode::DebugVectors:
 				shader_not_instanced = BuiltinShaders::Get( "Debug TBN As Vectors" );
 				shader_instanced     = BuiltinShaders::Get( "Debug TBN As Vectors (Instanced)" );
-				SetRenderState( debug_shading_render_state, &framebuffer_main, true );
+				SetRenderState( render_state, &framebuffer_main, true );
 				break;
 
 			default:
@@ -1641,8 +1666,6 @@ namespace Engine
 		SetIntrinsicsPerPass( render_pass_map[ PASS_ID_LIGHTING ] );
 		UploadIntrinsics();
 
-		framebuffer_main.Clear();
-
 		for( auto shader_index = 0; shader_index < 2; shader_index++ ) // First time is for not instanced geometry, second is for instanced.
 		{
 			auto shader = shader_index == 0 ? shader_not_instanced : shader_instanced;
@@ -1651,6 +1674,7 @@ namespace Engine
 			switch( editor_shading_mode )
 			{
 				case EditorShadingMode::Wireframe:
+				case EditorShadingMode::ShadedWireframe:
 					shader->SetUniform( "uniform_color", Color4( 0.29f, 0.75f, 0.67f, 1.0f ) );
 					shader->SetUniform( "uniform_threshold", editor_wireframe_edge_threshold );
 					break;
