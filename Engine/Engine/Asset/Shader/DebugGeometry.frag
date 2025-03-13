@@ -16,10 +16,13 @@ uniform int uniform_show_tangents_bitangents_normals;
 
 void main()
 {
-    if( uniform_show_tangents_bitangents_normals == 0 ) // Tangents:
+    // Tangents:
+    if( uniform_show_tangents_bitangents_normals == 0 )
     	out_color = sRGBA_To_Linear( fs_in.varying_tangent_world_space * 0.5 + vec4( 0.5, 0.5, 0.5, 1.0f ) );
-    else if( uniform_show_tangents_bitangents_normals == 1 ) // Bitangents:
+    // Bitangents:
+    else if( uniform_show_tangents_bitangents_normals == 1 )
     	out_color = sRGBA_To_Linear( fs_in.varying_bitangent_world_space * 0.5 + vec4( 0.5, 0.5, 0.5, 1.0f ) );
-    else if( uniform_show_tangents_bitangents_normals == 2 ) // Normals:
+    // Normals:
+     else if( uniform_show_tangents_bitangents_normals == 2 )
     	out_color = sRGBA_To_Linear( fs_in.varying_normal_world_space * 0.5 + vec4( 0.5, 0.5, 0.5, 1.0f ) );
 }

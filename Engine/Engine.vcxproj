@@ -464,6 +464,9 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <None Include="Engine\Asset\Shader\VisualizeNormals.frag" />
     <None Include="Engine\Asset\Shader\VisualizeNormals.geom" />
     <None Include="Engine\Asset\Shader\VisualizeNormals.vert" />
+    <None Include="Engine\Asset\Shader\Wireframe.frag" />
+    <None Include="Engine\Asset\Shader\Wireframe.geom" />
+    <None Include="Engine\Asset\Shader\Wireframe.vert" />
     <None Include="Engine\Asset\Shader\_Attributes.glsl" />
     <None Include="Engine\Asset\Shader\_Depth.glsl" />
     <None Include="Engine\Asset\Shader\_Global.glsl" />

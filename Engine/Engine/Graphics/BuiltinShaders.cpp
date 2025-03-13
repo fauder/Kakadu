@@ -94,10 +94,17 @@ namespace Engine
 								FullVertexShaderPath( "Color.vert" ),
 								FullFragmentShaderPath( "Color.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
+#ifdef _EDITOR
 		SHADER_MAP.try_emplace( "Debug Geometry",
 								"Debug Geometry",
 								FullVertexShaderPath( "DebugGeometry.vert" ),
 								FullFragmentShaderPath( "DebugGeometry.frag" ) );
+		SHADER_MAP.try_emplace( "Debug Geometry (Instanced)",
+								"Debug Geometry (Instanced)",
+								FullVertexShaderPath( "DebugGeometry.vert" ),
+								FullFragmentShaderPath( "DebugGeometry.frag" ),
+								Shader::Features{ "INSTANCING_ENABLED" } );
+#endif // _EDITOR
 		SHADER_MAP.try_emplace( "Textured",
 								"Textured",
 								FullVertexShaderPath( "Textured.vert" ),
@@ -148,6 +155,17 @@ namespace Engine
 								"Shadow-map Write (Instanced)",
 								FullVertexShaderPath( "PassThrough_Transform.vert" ),
 								FullFragmentShaderPath( "Empty.frag" ),
+								Shader::Features{ "INSTANCING_ENABLED" } );
+		SHADER_MAP.try_emplace( "Wireframe",
+								"Wireframe",
+								FullVertexShaderPath( "Wireframe.vert" ),
+								FullGeometryShaderPath( "Wireframe.geom" ),
+								FullFragmentShaderPath( "Wireframe.frag" ) );
+		SHADER_MAP.try_emplace( "Wireframe (Instanced)",
+								"Wireframe (Instanced)",
+								FullVertexShaderPath( "Wireframe.vert" ),
+								FullGeometryShaderPath( "Wireframe.geom" ),
+								FullFragmentShaderPath( "Wireframe.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
 
 		/* Register all built-in shaders: */

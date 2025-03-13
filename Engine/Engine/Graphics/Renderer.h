@@ -438,7 +438,6 @@ namespace Engine
 		 */
 
 		EditorShadingMode editor_shading_mode;
-		
-		/* 4 bytes of padding. */
+		float editor_wireframe_edge_threshold;
 	};
 }

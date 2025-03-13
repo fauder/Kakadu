@@ -50,7 +50,8 @@ namespace Engine
 		gamma_correction_is_enabled( description.enable_gamma_correction )
 #ifdef _EDITOR
 		,
-		editor_shading_mode( EditorShadingMode::Shaded )
+		editor_shading_mode( EditorShadingMode::Shaded ),
+		editor_wireframe_edge_threshold( 0.02f )
 #endif // _EDITOR
 	{
 		logger.IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
@@ -472,6 +473,12 @@ namespace Engine
 
 			ImGuiDrawer::Draw( framebuffer_main.clear_color );
 			ImGui::EndDisabled();
+
+			float temp = editor_wireframe_edge_threshold * 100.0f;
+			if( ImGui::SliderFloat( "Wireframe Thickness", &temp, 0.0f, 100.0f, "%.1f%%", ImGuiSliderFlags_Logarithmic ) )
+			{
+				editor_wireframe_edge_threshold = temp / 100.0f;
+			}
 		}
 
 		ImGui::End();
@@ -1583,69 +1590,100 @@ namespace Engine
 	{
 		ASSERT( editor_shading_mode != EditorShadingMode::Shaded );
 
-		Shader* shader = nullptr;
+		Shader* shader_not_instanced = nullptr;
+		Shader* shader_instanced     = nullptr;
 
 		static constexpr RenderState debug_shading_render_state{};
-		static constexpr RenderState debug_shading_render_state_wireframe{ .polygon_mode = PolygonMode::Wireframe };
+		static constexpr RenderState debug_shading_render_state_wireframe // Nearly the same as transparent queue's, i.e., uses alpha blending.
+		{
+			.depth_test_enable = false, // This may decrease fps a little, but it is vital to the idea of "wireframe mode": User needs to be able to see behind objects.
+
+			.blending_enable = true,
+
+			.sorting_mode = Engine::SortingMode::None, // No point in sorting, since depth test is disabled.
+
+			.blending_source_color_factor      = BlendingFactor::SourceAlpha,
+			.blending_destination_color_factor = BlendingFactor::OneMinusSourceAlpha,
+			.blending_source_alpha_factor      = BlendingFactor::SourceAlpha,
+			.blending_destination_alpha_factor = BlendingFactor::OneMinusSourceAlpha
+		};
 
 		switch( editor_shading_mode )
 		{
 			case EditorShadingMode::Wireframe:
-				{
-					SetRenderState( debug_shading_render_state_wireframe, &framebuffer_main, true );
-					shader = BuiltinShaders::Get( "Color" );
-					shader->Bind();
-					shader->SetUniform( "uniform_color", Color4( 0.29f, 0.75f, 0.67f, 1.0f ) );
-				}
+				shader_not_instanced = BuiltinShaders::Get( "Wireframe" );
+				shader_instanced     = BuiltinShaders::Get( "Wireframe (Instanced)" );
+				SetRenderState( debug_shading_render_state_wireframe, &framebuffer_main, true );
 				break;
 			case EditorShadingMode::Geometry_Tangents:
 			case EditorShadingMode::Geometry_Bitangents:
 			case EditorShadingMode::Geometry_Normals:
+				shader_not_instanced = BuiltinShaders::Get( "Debug Geometry" );
+				shader_instanced     = BuiltinShaders::Get( "Debug Geometry (Instanced)" );
 				SetRenderState( debug_shading_render_state, &framebuffer_main, true );
-				shader = BuiltinShaders::Get( "Debug Geometry" );
-				shader->Bind();
-				shader->SetUniform( "uniform_show_tangents_bitangents_normals", ( int )editor_shading_mode - ( int )EditorShadingMode::Geometry_Tangents );
 				break;
 			default:
 				CONSOLE_WARNING( "Not implemented shading mode selected." );
 				return;
 		}
-
-
+		
 		SetIntrinsicsPerPass( render_pass_map[ PASS_ID_LIGHTING ] );
 		UploadIntrinsics();
 
-		for( auto& [ pass_id, pass ] : render_pass_map )
+		framebuffer_main.Clear();
+
+		for( auto shader_index = 0; shader_index < 2; shader_index++ ) // First time is for not instanced geometry, second is for instanced.
 		{
-			if( PassHasContentToRender( pass ) && 
-				pass_id != PASS_ID_SHADOW_MAPPING && 
-				pass_id != PASS_ID_MSAA_RESOLVE &&
-				pass_id != PASS_ID_POSTPROCESSING &&
-				pass_id != PASS_ID_FINAL )
+			auto shader = shader_index == 0 ? shader_not_instanced : shader_instanced;
+			shader->Bind();
+
+			switch( editor_shading_mode )
 			{
-				const auto log_group( logger.TemporaryLogGroup( ( "[Debug Pass]:" + pass.name ).c_str() ) );
+				case EditorShadingMode::Wireframe:
+					shader->SetUniform( "uniform_color", Color4( 0.29f, 0.75f, 0.67f, 1.0f ) );
+					shader->SetUniform( "uniform_threshold", editor_wireframe_edge_threshold );
+					break;
+				case EditorShadingMode::Geometry_Tangents:
+				case EditorShadingMode::Geometry_Bitangents:
+				case EditorShadingMode::Geometry_Normals:
+					shader->SetUniform( "uniform_show_tangents_bitangents_normals", ( int )editor_shading_mode - ( int )EditorShadingMode::Geometry_Tangents );
+					break;
+				default:
+					break;
+			}
 
-				const Vector3 camera_position( Matrix::CameraWorldPositionFromViewMatrix( current_camera_info.view_matrix ) );
-
-				for( auto& queue_id : pass.queue_id_set )
+			for( auto& [ pass_id, pass ] : render_pass_map )
+			{
+				if( PassHasContentToRender( pass ) &&
+					pass_id != PASS_ID_SHADOW_MAPPING &&
+					pass_id != PASS_ID_MSAA_RESOLVE &&
+					pass_id != PASS_ID_POSTPROCESSING &&
+					pass_id != PASS_ID_FINAL )
 				{
-					if( auto& queue = render_queue_map[ queue_id ];
-						QueueHasContentToRender( queue ) )
+					const auto log_group( logger.TemporaryLogGroup( ( "[Debug Pass]:" + pass.name ).c_str() ) );
+
+					const Vector3 camera_position( Matrix::CameraWorldPositionFromViewMatrix( current_camera_info.view_matrix ) );
+
+					for( auto& queue_id : pass.queue_id_set )
 					{
-						const auto log_group( logger.TemporaryLogGroup( ( "[Debug Queue]:" + queue.name ).c_str() ) );
-
-						SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override.sorting_mode ); // Might remove this as well but oh well.
-
-						for( auto& renderable : queue.renderable_list )
+						if( auto& queue = render_queue_map[ queue_id ];
+							QueueHasContentToRender( queue ) )
 						{
-							if( renderable->is_enabled )
+							const auto log_group( logger.TemporaryLogGroup( ( "[Debug Queue]:" + queue.name ).c_str() ) );
+
+							SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override.sorting_mode );
+
+							for( auto& renderable : queue.renderable_list )
 							{
-								renderable->mesh->Bind();
+								if( renderable->is_enabled && ( ( shader_index == 1 ) == renderable->mesh->HasInstancing() ) )
+								{
+									renderable->mesh->Bind();
 
-								if( renderable->transform )
-									shader->SetUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
+									if( renderable->transform )
+										shader->SetUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
 
-								Render( *renderable->mesh );
+									Render( *renderable->mesh );
+								}
 							}
 						}
 					}
