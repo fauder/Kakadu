@@ -21,7 +21,6 @@
 #include "Engine/Math/Math.hpp"
 #include "Engine/Math/Matrix.h"
 #include "Engine/Math/Random.hpp"
-#include "Engine/Math/VectorConversion.hpp"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -1070,10 +1069,10 @@ void BloomDemoApplication::ResetMaterialData()
 	
 	/* Set the first cube's material to Blinn-Phong shader w/ skybox reflection: */
 	cube_reflected_material = Engine::Material( "Cube (Reflected)", shader_blinn_phong_skybox_reflection_shadowed_instanced );
-	cube_reflected_material.SetTexture( "uniform_tex_diffuse", container_texture_diffuse_map );
-	cube_reflected_material.SetTexture( "uniform_tex_specular", container_texture_specular_map );
+	cube_reflected_material.SetTexture( "uniform_tex_diffuse", Engine::BuiltinTextures::Get( "UV Test" ) );
+	cube_reflected_material.SetTexture( "uniform_tex_specular", Engine::BuiltinTextures::Get( "Black" ) );
 	cube_reflected_material.SetTexture( "uniform_tex_normal", container_texture_normal_map );
-	cube_reflected_material.SetTexture( "uniform_tex_reflection", container_texture_specular_map );
+	cube_reflected_material.SetTexture( "uniform_tex_reflection", Engine::BuiltinTextures::Get( "Black" ) );
 	cube_reflected_material.SetTexture( "uniform_tex_skybox", skybox_texture );
 	cube_reflected_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 	cube_reflected_material.Set( "uniform_reflectivity", 1.0f );
