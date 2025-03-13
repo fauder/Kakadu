@@ -233,7 +233,7 @@ namespace Engine
 				ImGui::SetNextFrameWantCaptureKeyboard( false );
 			}
 
-			ImGui::Image( ( void* )( intptr_t )texture_id, ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
+			ImGui::Image( ( ImTextureID )texture_id, ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
 		}
 
 		ImGui::End();

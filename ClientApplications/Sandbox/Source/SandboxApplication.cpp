@@ -653,7 +653,7 @@ void SandboxApplication::RenderImGui()
 			mirror_quad_renderable.ToggleOnOrOff( not render_rear_view_cam_to_imgui );
 
 		if( render_rear_view_cam_to_imgui )
-			ImGui::Image( ( void* )( intptr_t )renderer->CustomFramebuffer( 0 ).ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
+			ImGui::Image( ( ImTextureID )renderer->CustomFramebuffer( 0 ).ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
 	}
 
 	ImGui::End();

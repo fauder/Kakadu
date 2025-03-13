@@ -345,7 +345,7 @@ namespace Engine::ImGuiDrawer
 		if( texture )
 		{
 			if( texture->Type() == TextureType::Texture2D )
-				ImGui::Image( ( void* )( intptr_t )texture->Id().Get(), ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
+				ImGui::Image( ( ImTextureID )texture->Id().Get(), ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
 			ImGui::SameLine();
 			ImGui::TextColored( ImVec4( 0.84f, 0.59f, 0.45f, 1.0f ), "%s (ID: %d)", texture->Name().c_str(), texture->Id().Get() );
 		}
@@ -365,7 +365,7 @@ namespace Engine::ImGuiDrawer
 		if( texture )
 		{
 			if( texture->Type() == TextureType::Texture2D )
-				ImGui::Image( ( void* )( intptr_t )texture->Id().Get(), ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
+				ImGui::Image( ( ImTextureID )texture->Id().Get(), ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
 			ImGui::SameLine();
 			ImGui::Text( "%s (ID: %d)", texture->Name().c_str(), texture->Id().Get() );
 		}
@@ -436,7 +436,7 @@ namespace Engine::ImGuiDrawer
 				{
 					case TextureType::Texture2D:
 						ImGui::SetCursorPos( ImGui::GetCursorPos() + ImVec2( padding_x, padding_y ) );
-						ImGui::Image( ( void* )( intptr_t )selected_texture->Id().Get(), ImVec2( image_width_fit, image_height_fit ), { 0, 1 }, { 1, 0 } );
+						ImGui::Image( ( ImTextureID )selected_texture->Id().Get(), ImVec2( image_width_fit, image_height_fit ), { 0, 1 }, { 1, 0 } );
 						break;
 
 					case TextureType::Texture2D_MultiSample:
