@@ -95,14 +95,25 @@ namespace Engine
 								FullFragmentShaderPath( "Color.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
 #ifdef _EDITOR
-		SHADER_MAP.try_emplace( "Debug Geometry",
-								"Debug Geometry",
-								FullVertexShaderPath( "DebugGeometry.vert" ),
-								FullFragmentShaderPath( "DebugGeometry.frag" ) );
-		SHADER_MAP.try_emplace( "Debug Geometry (Instanced)",
-								"Debug Geometry (Instanced)",
-								FullVertexShaderPath( "DebugGeometry.vert" ),
-								FullFragmentShaderPath( "DebugGeometry.frag" ),
+		SHADER_MAP.try_emplace( "Debug TBN As Colors",
+								"Debug TBN As Colors",
+								FullVertexShaderPath( "DebugTBN_AsColors.vert" ),
+								FullFragmentShaderPath( "DebugTBN_AsColors.frag" ) );
+		SHADER_MAP.try_emplace( "Debug TBN As Colors (Instanced)",
+								"Debug TBN As Colors (Instanced)",
+								FullVertexShaderPath( "DebugTBN_AsColors.vert" ),
+								FullFragmentShaderPath( "DebugTBN_AsColors.frag" ),
+								Shader::Features{ "INSTANCING_ENABLED" } );
+		SHADER_MAP.try_emplace( "Debug TBN As Vectors",
+								"Debug TBN As Vectors",
+								FullVertexShaderPath( "DebugTBN_AsVectors.vert" ),
+								FullGeometryShaderPath( "DebugTBN_AsVectors.geom" ),
+								FullFragmentShaderPath( "DebugTBN_AsVectors.frag" ) );
+		SHADER_MAP.try_emplace( "Debug TBN As Vectors (Instanced)",
+								"Debug TBN As Vectors (Instanced)",
+								FullVertexShaderPath( "DebugTBN_AsVectors.vert" ),
+								FullGeometryShaderPath( "DebugTBN_AsVectors.geom" ),
+								FullFragmentShaderPath( "DebugTBN_AsVectors.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
 #endif // _EDITOR
 		SHADER_MAP.try_emplace( "Textured",
@@ -142,11 +153,6 @@ namespace Engine
 								"Post-process Generic",
 								FullVertexShaderPath( "PassThrough.vert" ),
 								FullFragmentShaderPath( "GenericPostprocess.frag" ) );
-		SHADER_MAP.try_emplace( "Normal Visualization",
-								"Normal Visualization",
-								FullVertexShaderPath( "VisualizeNormals.vert" ),
-								FullGeometryShaderPath( "VisualizeNormals.geom" ),
-								FullFragmentShaderPath( "VisualizeNormals.frag" ) );
 		SHADER_MAP.try_emplace( "Shadow-map Write",
 								"Shadow-map Write",
 								FullVertexShaderPath( "PassThrough_Transform.vert" ),

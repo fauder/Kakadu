@@ -441,8 +441,8 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
   <ItemGroup>
     <None Include="Engine\Asset\Shader\Color.frag" />
     <None Include="Engine\Asset\Shader\Color.vert" />
-    <None Include="Engine\Asset\Shader\DebugGeometry.frag" />
-    <None Include="Engine\Asset\Shader\DebugGeometry.vert" />
+    <None Include="Engine\Asset\Shader\DebugGeometry_Colors.frag" />
+    <None Include="Engine\Asset\Shader\DebugGeometry_Colors.vert" />
     <None Include="Engine\Asset\Shader\Empty.frag" />
     <None Include="Engine\Asset\Shader\PassThrough_Transform.vert" />
     <None Include="Engine\Asset\Shader\Textured.frag" />
@@ -460,10 +460,10 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <None Include="Engine\Asset\Shader\Skybox.frag" />
     <None Include="Engine\Asset\Shader\Skybox.vert" />
     <None Include="Engine\Asset\Shader\Tonemapping.frag" />
-    <None Include="Engine\Asset\Shader\VisualizeDepth.frag" />
-    <None Include="Engine\Asset\Shader\VisualizeNormals.frag" />
-    <None Include="Engine\Asset\Shader\VisualizeNormals.geom" />
-    <None Include="Engine\Asset\Shader\VisualizeNormals.vert" />
+    <None Include="Engine\Asset\Shader\DebugDepth.frag" />
+    <None Include="Engine\Asset\Shader\DebugGeometry_Vectors.frag" />
+    <None Include="Engine\Asset\Shader\DebugGeometry_Vectors.geom" />
+    <None Include="Engine\Asset\Shader\DebugGeometry_Vectors.vert" />
     <None Include="Engine\Asset\Shader\Wireframe.frag" />
     <None Include="Engine\Asset\Shader\Wireframe.geom" />
     <None Include="Engine\Asset\Shader\Wireframe.vert" />

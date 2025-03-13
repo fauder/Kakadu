@@ -1618,8 +1618,8 @@ namespace Engine
 			case EditorShadingMode::Geometry_Tangents:
 			case EditorShadingMode::Geometry_Bitangents:
 			case EditorShadingMode::Geometry_Normals:
-				shader_not_instanced = BuiltinShaders::Get( "Debug Geometry" );
-				shader_instanced     = BuiltinShaders::Get( "Debug Geometry (Instanced)" );
+				shader_not_instanced = BuiltinShaders::Get( "Debug TBN As Colors" );
+				shader_instanced     = BuiltinShaders::Get( "Debug TBN As Colors (Instanced)" );
 				SetRenderState( debug_shading_render_state, &framebuffer_main, true );
 				break;
 			default:
