@@ -15,6 +15,7 @@ namespace Engine
 		AsArray,
 		AsSlider_Normalized,
 		AsSlider_Normalized_Percentage,
+		AsSlider_Normalized_Percentage_Logarithmic
 	};
 
 	static UsageHint UsageHint_StringToEnum( const std::string& string )
@@ -29,6 +30,8 @@ namespace Engine
 			return UsageHint::AsSlider_Normalized;
 		else if( string == "normalized_percentage" )
 			return UsageHint::AsSlider_Normalized_Percentage;
+		else if( string == "normalized_percentage_logarithmic" )
+			return UsageHint::AsSlider_Normalized_Percentage_Logarithmic;
 		else
 			return UsageHint::None;
 	}
