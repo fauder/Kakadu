@@ -5,7 +5,7 @@ in vec3 varying_barycentric_coordinates;
 out vec4 out_color;
 
 uniform vec4 uniform_color; /* _hint_color4 */
-uniform float uniform_threshold; /* _hint_normalized_percentage */
+uniform float uniform_threshold; /* _hint_normalized_percentage_logarithmic */
 
 void main()
 {
