@@ -182,6 +182,18 @@ namespace Engine
 								FullGeometryShaderPath( "Wireframe.geom" ),
 								FullFragmentShaderPath( "Wireframe.frag" ),
 								Shader::Features{ "INSTANCING_ENABLED" } );
+		SHADER_MAP.try_emplace( "Shaded Wireframe",
+								"Shaded Wireframe",
+								FullVertexShaderPath( "Wireframe.vert" ),
+								FullGeometryShaderPath( "Wireframe.geom" ),
+								FullFragmentShaderPath( "Wireframe.frag" ),
+								Shader::Features{ "OFFSET_DEPTH" } );
+		SHADER_MAP.try_emplace( "Shaded Wireframe (Instanced)",
+								"Shaded Wireframe (Instanced)",
+								FullVertexShaderPath( "Wireframe.vert" ),
+								FullGeometryShaderPath( "Wireframe.geom" ),
+								FullFragmentShaderPath( "Wireframe.frag" ),
+								Shader::Features{ "INSTANCING_ENABLED", "OFFSET_DEPTH" } );
 
 		/* Register all built-in shaders: */
 		for( auto& [ shader_name, shader ] : SHADER_MAP )
