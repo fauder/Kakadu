@@ -38,22 +38,22 @@ layout ( std140 ) uniform BlinnPhongMaterialData
 	vec3 padding;
 } uniform_blinn_phong_material_data;
 
-uniform sampler2D uniform_diffuse_map_slot;
-uniform sampler2D uniform_specular_map_slot;
-uniform sampler2D uniform_normal_map_slot;
+uniform sampler2D uniform_tex_diffuse;
+uniform sampler2D uniform_tex_specular;
+uniform sampler2D uniform_tex_normal;
 
 #ifdef SKYBOX_ENVIRONMENT_MAPPING
-uniform samplerCube uniform_texture_skybox_slot;
-uniform sampler2D uniform_reflection_map_slot;
+uniform samplerCube uniform_tex_skybox;
+uniform sampler2D uniform_tex_reflection;
 uniform float uniform_reflectivity; /* _hint_normalized_percentage */
 #endif
 
 #ifdef SHADOWS_ENABLED
-uniform sampler2D uniform_shadow_map_slot;
+uniform sampler2D uniform_tex_shadow;
 #endif
 
 #ifdef PARALLAX_MAPPING_ENABLED
-uniform sampler2D uniform_parallax_height_map_slot;
+uniform sampler2D uniform_tex_parallax_height;
 uniform float uniform_parallax_height_scale;
 uniform uvec2 uniform_parallax_depth_layer_count_min_max;
 #endif
@@ -76,7 +76,7 @@ float CalculateShadowAmount( float light_dot_normal )
 
 #ifdef SOFT_SHADOWS
 	float shadow = 0.0f;
-	vec2 texel_size = 1.0f / textureSize( uniform_shadow_map_slot, 0 );
+	vec2 texel_size = 1.0f / textureSize( uniform_tex_shadow, 0 );
 
 	int x_limit = _INTRINSIC_SHADOW_SAMPLE_COUNT_X_Y.x / 2;
 	int y_limit = _INTRINSIC_SHADOW_SAMPLE_COUNT_X_Y.y / 2;
@@ -86,7 +86,7 @@ float CalculateShadowAmount( float light_dot_normal )
 	{
 		for( int y = -y_limit; y < y_limit; y++ )
 		{
-			float shadow_map_sample_z = texture( uniform_shadow_map_slot, ndc_unorm.xy + vec2( x, y ) * texel_size ).r;
+			float shadow_map_sample_z = texture( uniform_tex_shadow, ndc_unorm.xy + vec2( x, y ) * texel_size ).r;
 
 			float bias = max( _INTRINSIC_SHADOW_BIAS_MIN_MAX_2_RESERVED.y * ( 1.0f - light_dot_normal ), _INTRINSIC_SHADOW_BIAS_MIN_MAX_2_RESERVED.x );  
 			shadow += ( current_depth - bias ) > shadow_map_sample_z ? 1.0f : 0.0f;
@@ -95,7 +95,7 @@ float CalculateShadowAmount( float light_dot_normal )
 
 	return shadow / sample_count;
 #else
-	float shadow_map_sample_z = texture( uniform_shadow_map_slot, ndc_unorm.xy ).r;
+	float shadow_map_sample_z = texture( uniform_tex_shadow, ndc_unorm.xy ).r;
 
 	float bias = max( _INTRINSIC_SHADOW_BIAS_MIN_MAX_2_RESERVED.y * ( 1.0f - light_dot_normal ), _INTRINSIC_SHADOW_BIAS_MIN_MAX_2_RESERVED.x );  
 	return ( current_depth - bias ) > shadow_map_sample_z ? 1.0f : 0.0f;
@@ -203,7 +203,7 @@ vec3 CalculateColorFromSpotLight( const int spot_light_index,
 #ifdef PARALLAX_MAPPING_ENABLED
 vec2 ParallaxMappedTextureCoordinates( vec2 original_texture_coordinates, vec3 viewing_direction_tangent_space )
 {
-	float height_sample = texture( uniform_parallax_height_map_slot, original_texture_coordinates ).r;
+	float height_sample = texture( uniform_tex_parallax_height, original_texture_coordinates ).r;
 
 	// Use the lerp. range max-min, as we want to minimize the sample count when the viewing direction aligns with the normal.
 	const float layer_count = float( mix( uniform_parallax_depth_layer_count_min_max.y, uniform_parallax_depth_layer_count_min_max.x,
@@ -227,7 +227,7 @@ vec2 ParallaxMappedTextureCoordinates( vec2 original_texture_coordinates, vec3 v
 		current_uv -= delta_uv;
 
 		previous_height_sample = height_sample;
-		height_sample          = texture( uniform_parallax_height_map_slot, current_uv ).r;
+		height_sample          = texture( uniform_tex_parallax_height, current_uv ).r;
 
 		previous_level_depth_value = current_level_depth_value;
 		current_level_depth_value += layer_depth;
@@ -262,15 +262,15 @@ void main()
 	 * tangent_to_view_space_transformation is constructed in the vertex shader part of this shader program => it is column-major.
 	 * That's why in the below line, the sampled tangent-space normal vector is pre-multiplied by the column-major tangent_to_view_space_transformation matrix. */
 
-    vec4 normal_sample_view_space = vec4( normalize( fs_in.tangent_to_view_space_transformation * ( texture( uniform_normal_map_slot, uvs ).xyz * 2.0f - 1.0f ) ),
+    vec4 normal_sample_view_space = vec4( normalize( fs_in.tangent_to_view_space_transformation * ( texture( uniform_tex_normal, uvs ).xyz * 2.0f - 1.0f ) ),
 										  0.0f );
 
 //	vec4 surface_normal_view_space = normalize( fs_in.surface_normal_view_space );
 
 	vec3 diffuse_sample  = uniform_blinn_phong_material_data.has_texture_diffuse
-							   ? vec3( texture( uniform_diffuse_map_slot, uvs ) )
+							   ? vec3( texture( uniform_tex_diffuse, uvs ) )
 							   : uniform_blinn_phong_material_data.color_diffuse;
-	vec3 specular_sample = vec3( texture( uniform_specular_map_slot, uvs ) );
+	vec3 specular_sample = vec3( texture( uniform_tex_specular, uvs ) );
 
 	vec3 from_directional_light = _INTRINSIC_DIRECTIONAL_LIGHT_IS_ACTIVE * 
 									CalculateColorFromDirectionalLight( normal_sample_view_space, viewing_direction_view_space,
@@ -293,9 +293,9 @@ void main()
 #ifdef SKYBOX_ENVIRONMENT_MAPPING
 	// TODO: Calculate the reflected vector in the vertex shader AND make sure it is in world space.
 	vec3 reflected         = reflect( fs_in.position_view_space, normal_sample_view_space ).xyz;
-	vec4 reflection_sample = vec4( texture( uniform_texture_skybox_slot, reflected.xyz ).rgb, 1.0 );
+	vec4 reflection_sample = vec4( texture( uniform_tex_skybox, reflected.xyz ).rgb, 1.0 );
 
-	vec4 reflection_map_sample = vec4( texture( uniform_reflection_map_slot, uvs ).rgb, 1.0 );
+	vec4 reflection_map_sample = vec4( texture( uniform_tex_reflection, uvs ).rgb, 1.0 );
 
 	out_color = mix( out_color, ( 1.0 - reflection_map_sample.r ) * reflection_sample, uniform_reflectivity );
 #endif

@@ -5,9 +5,9 @@
 
 out vec4 out_color;
 
-uniform sampler2D uniform_texture_slot;
+uniform sampler2D uniform_tex;
 
 void main()
 {
-    out_color = texture( uniform_texture_slot, gl_FragCoord.xy / _INTRINSIC_VIEWPORT_SIZE );
+    out_color = texture( uniform_tex, gl_FragCoord.xy / _INTRINSIC_VIEWPORT_SIZE );
 }

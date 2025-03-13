@@ -100,7 +100,7 @@ namespace Engine
 							.shininess           = 32.0f
 						};
 
-						material.SetTexture( "uniform_diffuse_map_slot", sub_mesh.texture_albedo );
+						material.SetTexture( "uniform_tex_diffuse", sub_mesh.texture_albedo );
 					}
 					else if( sub_mesh.color_albedo )
 					{
@@ -115,8 +115,8 @@ namespace Engine
 					static const auto default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
 					static const auto white_texture              = Engine::BuiltinTextures::Get( "White" );
 
-					material.SetTexture( "uniform_normal_map_slot", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
-					material.SetTexture( "uniform_specular_map_slot", white_texture );
+					material.SetTexture( "uniform_tex_normal", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
+					material.SetTexture( "uniform_tex_specular", white_texture );
 
 					material.Set( "uniform_texture_scale_and_offset", texture_scale_and_offset );
 
@@ -166,7 +166,7 @@ namespace Engine
 							.shininess           = 32.0f
 						};
 
-						material.SetTexture( "uniform_diffuse_map_slot", sub_mesh.texture_albedo );
+						material.SetTexture( "uniform_tex_diffuse", sub_mesh.texture_albedo );
 					}
 					else if( sub_mesh.color_albedo )
 					{
@@ -181,8 +181,8 @@ namespace Engine
 					static const auto default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
 					static const auto white_texture              = Engine::BuiltinTextures::Get( "White" );
 
-					material.SetTexture( "uniform_normal_map_slot", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
-					material.SetTexture( "uniform_specular_map_slot", white_texture );
+					material.SetTexture( "uniform_tex_normal", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
+					material.SetTexture( "uniform_tex_specular", white_texture );
 
 					material.Set( "uniform_texture_scale_and_offset", texture_scale_and_offset );
 

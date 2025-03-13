@@ -5,7 +5,7 @@
 
 out vec4 out_color;
 
-uniform sampler2D uniform_texture_slot;
+uniform sampler2D uniform_tex;
 
 #define KERNEL_WIDTH 3
 #define KERNEL_HEIGHT 3
@@ -30,7 +30,7 @@ void main()
         for( int column_index = 0; column_index < KERNEL_WIDTH; column_index++ )
         {
             int kernel_index_horizontal = column_index - kernel_to_texel_index_offset_horizontal;
-            samples[ row_index * KERNEL_WIDTH + column_index ] = texture( uniform_texture_slot, gl_FragCoord.xy + vec2( float( kernel_index_horizontal ) / _INTRINSIC_VIEWPORT_SIZE.x, 
+            samples[ row_index * KERNEL_WIDTH + column_index ] = texture( uniform_tex, gl_FragCoord.xy + vec2( float( kernel_index_horizontal ) / _INTRINSIC_VIEWPORT_SIZE.x, 
                                                                                                                         float( kernel_index_vertical   ) / _INTRINSIC_VIEWPORT_SIZE.y ) );
         }
     }

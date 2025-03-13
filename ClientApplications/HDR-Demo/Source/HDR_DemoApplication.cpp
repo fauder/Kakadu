@@ -512,8 +512,8 @@ void HDR_DemoApplication::ResetLightingData()
 void HDR_DemoApplication::ResetMaterialData()
 {
 	wood_material = Engine::Material( "Wood", shader_blinn_phong );
-	wood_material.SetTexture( "uniform_diffuse_map_slot", wood_diffuse_map );
-	wood_material.SetTexture( "uniform_specular_map_slot", Engine::ServiceLocator< Engine::BuiltinTextures >::Get().Get( "White" ) );
+	wood_material.SetTexture( "uniform_tex_diffuse", wood_diffuse_map );
+	wood_material.SetTexture( "uniform_tex_specular", Engine::ServiceLocator< Engine::BuiltinTextures >::Get().Get( "White" ) );
 	wood_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
 	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );

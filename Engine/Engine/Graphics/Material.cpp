@@ -186,7 +186,7 @@ namespace Engine
 #ifdef _EDITOR
 			else
 			{
-				if( sampler_name.find( "normal_map" ) != std::string::npos )
+				if( sampler_name.find( "tex_normal" ) != std::string::npos )
 				{
 					UploadTexture( sampler_name, *BuiltinTextures::Get( "Normal Map" ) );
 				}

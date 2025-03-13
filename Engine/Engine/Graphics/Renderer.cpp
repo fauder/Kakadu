@@ -137,7 +137,7 @@ namespace Engine
 				UploadGlobals();
 
 				if( pass_id == PASS_ID_FINAL )
-					tone_mapping_material.SetTexture( "uniform_texture_slot", framebuffer_current->color_attachment );
+					tone_mapping_material.SetTexture( "uniform_tex", framebuffer_current->color_attachment );
 
 				SetRenderState( pass.render_state, pass.target_framebuffer, pass.clear_framebuffer );
 
@@ -620,12 +620,12 @@ namespace Engine
 			}
 		}
 
-		msaa_resolve_material.SetTexture( "uniform_texture_slot", &framebuffer_main.ColorAttachment() );
+		msaa_resolve_material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
 
 		for( const auto& [ queue_id, queue ]  : render_queue_map )
 			for( const auto& renderable : queue.renderable_list )
 				if( renderable->IsReceivingShadows() )
-					renderable->material->SetTexture( "uniform_shadow_map_slot", ShadowMapTexture() );
+					renderable->material->SetTexture( "uniform_tex_shadow", ShadowMapTexture() );
 
 		/* Tone-mapping is the final operation and it's texture slot is assigned automatically in Render() every frame.
 		 * This is due to the ping-ponging of post-processing framebuffers A & B. */

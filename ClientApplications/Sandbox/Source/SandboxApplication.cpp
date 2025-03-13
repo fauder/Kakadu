@@ -1035,7 +1035,7 @@ void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, c
 	
 	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
 
-	mirror_quad_material.SetTexture( "uniform_texture_slot", &renderer->CustomFramebuffer( 0 ).ColorAttachment() );
+	mirror_quad_material.SetTexture( "uniform_tex", &renderer->CustomFramebuffer( 0 ).ColorAttachment() );
 }
 
 void SandboxApplication::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
@@ -1106,38 +1106,38 @@ void SandboxApplication::ResetLightingData()
 void SandboxApplication::ResetMaterialData()
 {
 	skybox_material = Engine::Material( "Skybox", shader_skybox );
-	skybox_material.SetTexture( "uniform_texture_slot", skybox_texture );
+	skybox_material.SetTexture( "uniform_tex", skybox_texture );
 
 	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );
 	
 	/* Set the first cube's material to Blinn-Phong shader w/ skybox reflection: */
 	cube_reflected_material = Engine::Material( "Cube (Reflected)", shader_blinn_phong_skybox_reflection_shadowed_instanced );
-	cube_reflected_material.SetTexture( "uniform_diffuse_map_slot", container_texture_diffuse_map );
-	cube_reflected_material.SetTexture( "uniform_specular_map_slot", container_texture_specular_map );
-	cube_reflected_material.SetTexture( "uniform_normal_map_slot", container_texture_normal_map );
-	cube_reflected_material.SetTexture( "uniform_reflection_map_slot", container_texture_specular_map );
-	cube_reflected_material.SetTexture( "uniform_texture_skybox_slot", skybox_texture );
+	cube_reflected_material.SetTexture( "uniform_tex_diffuse", container_texture_diffuse_map );
+	cube_reflected_material.SetTexture( "uniform_tex_specular", container_texture_specular_map );
+	cube_reflected_material.SetTexture( "uniform_tex_normal", container_texture_normal_map );
+	cube_reflected_material.SetTexture( "uniform_tex_reflection", container_texture_specular_map );
+	cube_reflected_material.SetTexture( "uniform_tex_skybox", skybox_texture );
 	cube_reflected_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 	cube_reflected_material.Set( "uniform_reflectivity", 1.0f );
 
 	cube_material = Engine::Material( "Cube", shader_blinn_phong_shadowed_instanced );
-	cube_material.SetTexture( "uniform_diffuse_map_slot", container_texture_diffuse_map );
-	cube_material.SetTexture( "uniform_specular_map_slot", container_texture_specular_map );
-	cube_material.SetTexture( "uniform_normal_map_slot", container_texture_normal_map );
+	cube_material.SetTexture( "uniform_tex_diffuse", container_texture_diffuse_map );
+	cube_material.SetTexture( "uniform_tex_specular", container_texture_specular_map );
+	cube_material.SetTexture( "uniform_tex_normal", container_texture_normal_map );
 	cube_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
 	ground_material = Engine::Material( "Ground", shader_blinn_phong_shadowed );
-	ground_material.SetTexture( "uniform_diffuse_map_slot", checker_pattern_texture );
-	ground_material.SetTexture( "uniform_specular_map_slot", checker_pattern_texture );
+	ground_material.SetTexture( "uniform_tex_diffuse", checker_pattern_texture );
+	ground_material.SetTexture( "uniform_tex_specular", checker_pattern_texture );
 	const auto& ground_quad_scale( ground_transform.GetScaling().XY() );
 	Vector4 ground_texture_scale_and_offset( ground_quad_scale.X(), ground_quad_scale.Y() /* Offset is 0 so no need to set it explicitly. */ );
 	ground_material.Set( "uniform_texture_scale_and_offset", ground_texture_scale_and_offset );
 
 	wall_material = Engine::Material( "Wall", shader_blinn_phong_shadowed_parallax );
-	wall_material.SetTexture( "uniform_diffuse_map_slot", brickwall_diffuse_map );
-	wall_material.SetTexture( "uniform_specular_map_slot", checker_pattern_texture );
-	wall_material.SetTexture( "uniform_normal_map_slot", brickwall_normal_map );
-	wall_material.SetTexture( "uniform_parallax_height_map_slot", brickwall_displacement_map );
+	wall_material.SetTexture( "uniform_tex_diffuse", brickwall_diffuse_map );
+	wall_material.SetTexture( "uniform_tex_specular", checker_pattern_texture );
+	wall_material.SetTexture( "uniform_tex_normal", brickwall_normal_map );
+	wall_material.SetTexture( "uniform_tex_parallax_height", brickwall_displacement_map );
 	const auto& front_wall_quad_scale( wall_front_transform.GetScaling().XY() / 10.0f );
 	Vector4 front_wall_texture_scale_and_offset( front_wall_quad_scale /* Offset is 0 so no need to set it explicitly. */ );
 	wall_material.Set( "uniform_texture_scale_and_offset", front_wall_texture_scale_and_offset );
@@ -1146,14 +1146,14 @@ void SandboxApplication::ResetMaterialData()
 	wall_material.Set( "uniform_parallax_depth_layer_count_min_max", Vector2U( 8u, 32u ) );
 
 	sphere_material = Engine::Material( "Sphere", shader_blinn_phong_skybox_reflection );
-	sphere_material.SetTexture( "uniform_diffuse_map_slot", Engine::ServiceLocator< Engine::BuiltinTextures >::Get().Get( "UV Test" ) );
-	//sphere_material.SetTexture( "uniform_reflection_map_slot", container_texture_specular_map );
-	sphere_material.SetTexture( "uniform_texture_skybox_slot", skybox_texture );
+	sphere_material.SetTexture( "uniform_tex_diffuse", Engine::ServiceLocator< Engine::BuiltinTextures >::Get().Get( "UV Test" ) );
+	//sphere_material.SetTexture( "uniform_tex_reflection", container_texture_specular_map );
+	sphere_material.SetTexture( "uniform_tex_skybox", skybox_texture );
 	sphere_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 	sphere_material.Set( "uniform_reflectivity", 0.9f );
 
 	window_material = Engine::Material( "Transparent Window", shader_basic_textured );
-	window_material.SetTexture( "uniform_texture_slot", transparent_window_texture );
+	window_material.SetTexture( "uniform_tex", transparent_window_texture );
 	window_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
 	outline_material = Engine::Material( "Outline", shader_outline );
