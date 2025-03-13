@@ -1753,8 +1753,6 @@ namespace Engine
 		SetBlendingFactors( render_state_to_set.blending_source_color_factor, render_state_to_set.blending_destination_color_factor,
 							render_state_to_set.blending_source_alpha_factor, render_state_to_set.blending_destination_alpha_factor );
 		SetBlendingFunction( render_state_to_set.blending_function );
-
-		SetPolygonMode( render_state_to_set.polygon_mode );
 	}
 
 	void Renderer::SortRenderablesInQueue( const Vector3& camera_position, std::vector< Renderable* >& renderable_array_to_sort, const SortingMode sorting_mode )
