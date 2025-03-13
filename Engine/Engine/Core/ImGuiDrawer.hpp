@@ -20,7 +20,9 @@ namespace Engine::ImGuiDrawer
 {
 	struct State
 	{
-		bool window_material_padding_hide = true;
+		bool window_material_show_padding          = false;
+		bool window_material_show_world_transforms = false;
+		bool window_material_show_texture_slots    = false;
 	};
 	
 	void Initialize();

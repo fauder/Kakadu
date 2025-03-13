@@ -25,7 +25,15 @@ namespace Engine::ImGuiDrawer
 	{
 		if( ImGui::Begin( ICON_FA_PAINTBRUSH " Materials", nullptr ) )
 		{
-			ImGui::Checkbox( "Hide padding parameters", &ServiceLocator< State >::Get().window_material_padding_hide );
+			if( ImGui::TreeNode( "Display Options" ) )
+			{
+				ImGui::Checkbox( "Padding",				&ServiceLocator< State >::Get().window_material_show_padding );				ImGui::SameLine();
+				ImGui::Checkbox( "World transforms",	&ServiceLocator< State >::Get().window_material_show_world_transforms );	ImGui::SameLine();
+				ImGui::Checkbox( "Tex. IDs",			&ServiceLocator< State >::Get().window_material_show_texture_slots );
+
+				ImGui::TreePop();
+			}
+
 			ImGui::Separator();
 		}
 		ImGui::End();
@@ -528,6 +536,8 @@ namespace Engine::ImGuiDrawer
 	{
 		bool is_modified = false;
 
+		const auto& drawer_state = ServiceLocator< State >::Get();
+
 		Shader* new_shader_to_assign = nullptr; // This is only set upon new shader assignment.
 
 		if( ImGui::Begin( ICON_FA_PAINTBRUSH " Materials", nullptr ) )
@@ -568,8 +578,9 @@ namespace Engine::ImGuiDrawer
 
 					for( const auto& [ uniform_name, uniform_info ] : uniform_info_map )
 					{
-						/* Skip uniform buffer members; They will be drawn under their parent uniform buffer instead. */
-						if( uniform_info.is_buffer_member )
+						if( uniform_info.is_buffer_member || /* Skip uniform buffer members; They will be drawn under their parent uniform buffer instead. */
+							( not drawer_state.window_material_show_texture_slots && uniform_info.type == GL_SAMPLER_2D ) ||
+							( not drawer_state.window_material_show_world_transforms && uniform_name == "uniform_transform_world" ) )
 							continue;
 
 						ImGui::TableNextColumn(); ImGui::TextUnformatted( uniform_info.editor_name.c_str() );
@@ -733,7 +744,7 @@ namespace Engine::ImGuiDrawer
 							{
 								const bool is_padding = uniform_buffer_member_info->editor_name.compare( 0, 8, "Padding", 8 ) == 0;
 
-								if( is_padding && ServiceLocator< State >::Get().window_material_padding_hide )
+								if( is_padding && not drawer_state.window_material_show_padding )
 									continue;
 
 								ImGui::BeginDisabled( is_padding );
