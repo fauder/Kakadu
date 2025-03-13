@@ -9,9 +9,8 @@
 
 namespace Engine::ImGuiUtility
 {
-	enum class HorizontalWindowPositioning	{ LEFT, CENTER,  RIGHT };
-	enum class VerticalWindowPositioning	{ TOP,  CENTER, BOTTOM };
-	enum class WindowCorner					{ TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
+	enum class HorizontalPosition	{ LEFT, CENTER,  RIGHT };
+	enum class VerticalPosition	{ TOP,  CENTER, BOTTOM };
 
 	void Table_Header_ManuallySubmit( const int column_index );
 	template< int array_size >
@@ -32,13 +31,15 @@ namespace Engine::ImGuiUtility
 	void ImmutableCheckbox( const char* text, const bool is_enabled );
 
 	bool BeginOverlay( const char* window_name, const char* name, 
-					   bool* p_open = ( bool* )0, const WindowCorner window_corner = WindowCorner::TOP_RIGHT, const float alpha = 0.35f );
+					   const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
+					   bool* p_open = ( bool* )0, 
+					   const float alpha = 0.35f );
 	void EndOverlay();
 
 	/* Only works with same width items. */
 	void SetNextItemRightAligned( const int item_no_starting_from_right, const float item_width );
 	
-	void SetNextWindowPos( const HorizontalWindowPositioning horizontal_positioning, const VerticalWindowPositioning vertical_positioning,
+	void SetNextWindowPos( const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
 						   const ImGuiCond condition = ImGuiCond_Always );
 
 	/* https://github.com/ocornut/imgui/issues/1496#issuecomment-655048353 */

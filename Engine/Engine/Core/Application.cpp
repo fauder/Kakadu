@@ -241,7 +241,9 @@ namespace Engine
 
 	void Application::RenderImGui_ViewportControls()
 	{
-		if( ImGuiUtility::BeginOverlay( "Viewport", "##ViewportControls", &show_frame_statistics, ImGuiUtility::WindowCorner::TOP_LEFT, 0.65f ) )
+		if( ImGuiUtility::BeginOverlay( "Viewport", "##ViewportControls", 
+										ImGuiUtility::HorizontalPosition::LEFT, ImGuiUtility::VerticalPosition::TOP, 
+										&show_frame_statistics, 0.65f ) )
 		{
 			int editor_shading_mode = ( int )renderer->GetEditorShadingMode();
 			if( ImGuiUtility::DrawShadedSphereComboButton( "ShadingMode", reinterpret_cast< int* >( &editor_shading_mode ),
@@ -266,7 +268,9 @@ namespace Engine
 
 	void Application::RenderImGui_FrameStatistics()
 	{
-		if( ImGuiUtility::BeginOverlay( "Viewport", ICON_FA_CHART_LINE " Frame Statistics", &show_frame_statistics ) )
+		if( ImGuiUtility::BeginOverlay( "Viewport", ICON_FA_CHART_LINE " Frame Statistics",
+										ImGuiUtility::HorizontalPosition::RIGHT, ImGuiUtility::VerticalPosition::TOP,
+										&show_frame_statistics ) )
 		{
 			const float fps        = 1.0f / time_delta_real;
 			const float frame_time = time_delta_real * 1000.0f;

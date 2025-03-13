@@ -76,7 +76,9 @@ namespace Engine::ImGuiUtility
         ImGui::EndDisabled();
     }
 
-    bool BeginOverlay( const char* window_name, const char* name, bool* p_open, const WindowCorner window_corner, const float alpha )
+    bool BeginOverlay( const char* window_name, const char* name,
+                       const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
+                       bool* p_open, const float alpha )
     {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
             ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
@@ -84,16 +86,26 @@ namespace Engine::ImGuiUtility
         const auto window = ImGui::FindWindowByName( window_name );
 
         ASSERT_EDITOR_ONLY( window != nullptr );
+        ASSERT_EDITOR_ONLY( not ( horizontal_positioning == HorizontalPosition::CENTER && vertical_positioning == VerticalPosition::CENTER ) &&
+							"Overlay at the center of the viewport is not allowed!" );
 
         constexpr float pad = 10.0f;
 		ImVec2 window_pos, window_pos_pivot;
 
-        const bool is_right  = window_corner == WindowCorner::TOP_RIGHT || window_corner == WindowCorner::BOTTOM_RIGHT;
-        const bool is_bottom = window_corner == WindowCorner::BOTTOM_LEFT || window_corner == WindowCorner::BOTTOM_RIGHT;
-		window_pos.x         = is_right  ? ( window->Pos.x + window->Size.x - pad ) : ( window->Pos.x + pad );
-		window_pos.y         = is_bottom ? ( window->Pos.y + window->Size.y - pad ) : ( window->Pos.y + pad + window->TitleBarHeight );
-		window_pos_pivot.x   = is_right  ? 1.0f : 0.0f;
-		window_pos_pivot.y   = is_bottom ? 1.0f : 0.0f;
+		window_pos.x = window->Pos.x + 
+			            ( horizontal_positioning == HorizontalPosition::LEFT
+			              ? pad
+			              : horizontal_positioning == HorizontalPosition::CENTER
+			                ? window->Size.x / 2.0f
+			                : window->Size.x - pad );
+		window_pos.y = window->Pos.y +
+                        ( vertical_positioning == VerticalPosition::TOP
+                            ? pad + window->TitleBarHeight
+                            : vertical_positioning == VerticalPosition::CENTER
+                                ? window->Size.y / 2.0f
+                                : window->Size.y - pad );
+		window_pos_pivot.x = ( int )horizontal_positioning * 0.5f;
+		window_pos_pivot.y = ( int )vertical_positioning * 0.5f;
 		ImGui::SetNextWindowPos( window_pos, ImGuiCond_Always, window_pos_pivot );
 		window_flags |= ImGuiWindowFlags_NoMove;
 
@@ -120,17 +132,17 @@ namespace Engine::ImGuiUtility
         ImGui::SetCursorPosX( ImGui::GetWindowWidth() - item_no_starting_from_right * ( ImGui::GetStyle().ItemSpacing.x + item_width ) );
     }
 
-	void SetNextWindowPos( const HorizontalWindowPositioning horizontal_positioning, const VerticalWindowPositioning vertical_positioning, const ImGuiCond condition )
+	void SetNextWindowPos( const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning, const ImGuiCond condition )
 	{
 		const auto& io = ImGui::GetIO();
-		const auto horizontal_position = horizontal_positioning == HorizontalWindowPositioning::RIGHT
+		const auto horizontal_position = horizontal_positioning == HorizontalPosition::RIGHT
 			? io.DisplaySize.x
-			: horizontal_positioning == HorizontalWindowPositioning::CENTER
+			: horizontal_positioning == HorizontalPosition::CENTER
 				? io.DisplaySize.x / 2.0f
 				: 0.0f;
-		const auto vertical_position = vertical_positioning == VerticalWindowPositioning::BOTTOM
+		const auto vertical_position = vertical_positioning == VerticalPosition::BOTTOM
 			? io.DisplaySize.y
-			: vertical_positioning == VerticalWindowPositioning::CENTER
+			: vertical_positioning == VerticalPosition::CENTER
 				? io.DisplaySize.y / 2.0f
 				: 0.0f;
 		const auto horizontal_pivot = ( float )horizontal_positioning / 2.0f; // Map to [+1, 0] range.
