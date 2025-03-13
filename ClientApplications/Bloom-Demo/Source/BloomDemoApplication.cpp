@@ -44,16 +44,7 @@ BloomDemoApplication::BloomDemoApplication( const Engine::BitFlags< Engine::Crea
 						 Engine::Renderer::Description
 						 {
 							 .main_framebuffer_color_format      = Engine::Texture::Format::RGBA_16F,
-							 .main_framebuffer_msaa_sample_count = 4,
-							 .custom_framebuffer_descriptions    =
-							 {
-								 Engine::Framebuffer::Description
-								 {
-									 .name            = "Rear-view Mirror FB",
-									 .color_format    = Engine::Texture::Format::RGBA,
-									 .attachment_bits = Engine::Framebuffer::AttachmentType::Color_DepthStencilCombined
-								 }
-							 }
+							 .main_framebuffer_msaa_sample_count = 4
 						 } ),
 	test_model_info
 	{
