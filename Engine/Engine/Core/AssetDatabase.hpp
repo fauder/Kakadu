@@ -139,6 +139,29 @@ namespace Engine
 			return found_asset;
 		}
 
+		static bool RenameAsset( std::convertible_to< std::string_view > auto&& old_name, std::convertible_to< std::string_view > auto&& new_name )
+		{
+			auto& instance = Instance();
+
+			if( auto asset_node = instance.asset_map.extract( old_name );
+				asset_node )
+			{
+				asset_node.key() = std::forward< decltype( new_name ) >( new_name );
+				instance.asset_map.insert( std::move( asset_node ) );
+
+				if( auto path_node = instance.asset_path_map.extract( old_name );
+					path_node )
+				{
+					path_node.key() = std::forward< decltype( new_name ) >( new_name );
+					instance.asset_path_map.insert( std::move( path_node ) );
+				}
+
+				return true;
+			}
+
+			return false;
+		}
+
 		static const std::map< std::string, AssetType >& Assets()
 		{
 			auto& instance = Instance();
