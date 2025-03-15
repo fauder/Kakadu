@@ -707,7 +707,7 @@ void SandboxApplication::RenderImGui()
 				ImGui::SameLine();
 				if( ImGui::Button( ICON_FA_XMARK " Unload" ) )
 				{
-					UnloadModel( model_info );
+					UnloadModel( model_info, model_name );
 					action = ModelLoadActionResult::Unloaded;
 				}
 			}
@@ -1280,12 +1280,14 @@ bool SandboxApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const 
 	return false;
 }
 
-void SandboxApplication::UnloadModel( ModelInfo& model_info_to_be_loaded )
+void SandboxApplication::UnloadModel( ModelInfo& model_info_to_be_loaded, const char* name )
 {
 	model_info_to_be_loaded.file_path = "";
 
 	for( auto& renderable_to_remove : model_info_to_be_loaded.model_instance.Renderables() )
 		renderer->RemoveRenderable( &renderable_to_remove );
+
+	Engine::AssetDatabase< Engine::Model >::RemoveAsset( name );
 
 	model_info_to_be_loaded.model_instance = {};
 }

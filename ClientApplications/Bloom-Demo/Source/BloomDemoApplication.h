@@ -69,7 +69,7 @@ private:
 	Radians CalculateVerticalFieldOfView( const Radians horizontal_field_of_view, const float aspect_ratio ) const;
 
 	bool ReloadModel( ModelInfo& model_info_to_be_loaded, const std::string& file_path, const char* name );
-	void UnloadModel( ModelInfo& model_info_to_be_unloaded );
+	void UnloadModel( ModelInfo& model_info_to_be_unloaded, const char* name );
 
 	void ReplaceMeteoriteAndCubeRenderables( bool use_meteorites );
 
