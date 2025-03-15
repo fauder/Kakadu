@@ -116,7 +116,7 @@ namespace Engine
 	void Renderer::Render()
 	{
 #ifdef _EDITOR
-		if( editor_shading_mode != EditorShadingMode::Shaded && editor_shading_mode != EditorShadingMode::ShadedWireframe )
+		if( editor_shading_mode != EditorShadingMode::Shaded && editor_shading_mode != EditorShadingMode::ShadedWireframe ) // "Shaded" part of shaded wireframe needs to run first, which is in here.
 		{
 			RenderOtherEditorShadingModes();
 
@@ -600,11 +600,6 @@ namespace Engine
 											 } );
 		}
 
-		// TODO: Create a SizeInfo struct to store absolute size vs relative sizes (multipliers). For example, a rear-view mirror framebuffer may have half-resolution.
-		// So resizing the main framebuffer should resize this rear-view framebuffer to half the new resolution (size info of this framebuffer will have a relative 0.5 multiplier).
-
-		// TODO: Create APIs for the client code to modify custom framebuffer descriptions.
-
 		/* Custom Framebuffers: */
 		for( auto index = 0; index < framebuffer_custom_array.size(); index++ )
 		{
@@ -636,8 +631,21 @@ namespace Engine
 				if( renderable->IsReceivingShadows() )
 					renderable->material->SetTexture( "uniform_tex_shadow", ShadowMapTexture() );
 
-		/* Tone-mapping is the final operation and it's texture slot is assigned automatically in Render() every frame.
-		 * This is due to the ping-ponging of post-processing framebuffers A & B. */
+		/* Tone-mapping is the final operation and it's input texture is assigned automatically in Render() every frame.
+		 * This is because it can change dynamically, due to the possible ping-ponging of post-processing framebuffers A & B, mainly utilized by post-processing. */
+
+#ifdef _EDITOR
+		if( editor_shading_mode != EditorShadingMode::Shaded )
+		{
+			/* Any framebuffer resize means invalidation of the final pass' (tone-mapping) input texture.
+			 *
+			 * Since anything else between MSAA and tone-mapping is effectively disabled for the purposes of editor rendering,
+			 * we can safely say that the last used framebuffer (prior to tone-mapping) is the MSAA one, which is the postprocessing framebuffer A.
+			 */
+
+			tone_mapping_material.SetTexture( "uniform_tex", &framebuffer_postprocessing_A.ColorAttachment() );
+		}
+#endif // _EDITOR
 	}
 
 	void Renderer::SetEditorShadingMode( const EditorShadingMode new_editor_shading_mode )
@@ -1739,7 +1747,8 @@ namespace Engine
 			const auto& queue      = render_queue_map[ QUEUE_ID_MSAA_RESOLVE ];
 			const auto& renderable = queue.renderable_list.front();
 
-			shader_msaa_resolve->Bind();
+			renderable->material->Bind();
+			renderable->material->UploadUniforms();
 
 			renderable->mesh->Bind();
 
@@ -1756,6 +1765,7 @@ namespace Engine
 			const auto& renderable = queue.renderable_list.front();
 
 			renderable->material->shader->Bind();
+			renderable->material->UploadUniforms();
 
 			renderable->mesh->Bind();
 
