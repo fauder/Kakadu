@@ -1,5 +1,7 @@
 // Engine Includes.
 #include "Model.h"
+#include "Core/AssetDatabase.hpp"
+#include "Core/ServiceLocator.h"
 
 namespace Engine
 {
@@ -43,5 +45,10 @@ namespace Engine
 
 	Model::~Model()
 	{
+		static auto& asset_database = ServiceLocator< AssetDatabase< Texture > >::Get();
+
+		for( auto& texture : textures )
+			if( texture )
+				asset_database.RemoveAsset( texture->Name() );
 	}
 }
