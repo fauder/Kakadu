@@ -77,9 +77,11 @@ namespace Engine
                     sub_mesh_albedo_texture = textures[ fastgltf_texture.imageIndex.value() ];
                     if( sub_mesh_albedo_texture->Name().front() == '<' ) // <unnamed>.
                     {
+                        std::string old_name( sub_mesh_albedo_texture->Name() );
                         sub_mesh_albedo_texture->SetName( gltf_mesh.name.empty()
                                                           ? ( "Albedo (" + sub_mesh_albedo_texture->Name() + ")" ).c_str()
                                                           : ( "Albedo (" + gltf_mesh.name + ")" ).c_str() );
+                        AssetDatabase< Texture >::RenameAsset( std::move( old_name ), sub_mesh_albedo_texture->Name() );
                     }
 
                     if( base_color_texture_info->transform && base_color_texture_info->transform->texCoordIndex.has_value() )
@@ -103,9 +105,11 @@ namespace Engine
                     sub_mesh_normal_texture = textures[ fastgltf_texture.imageIndex.value() ];
                     if( sub_mesh_normal_texture->Name().front() == '<' ) // <unnamed>.
                     {
+                        std::string old_name( sub_mesh_normal_texture->Name() );
                         sub_mesh_normal_texture->SetName( gltf_mesh.name.empty()
                                                           ? ( "Normal (" + sub_mesh_normal_texture->Name() + ")" ).c_str()
                                                           : ( "Normal (" + gltf_mesh.name + ")" ).c_str() );
+                        AssetDatabase< Texture >::RenameAsset( std::move( old_name ), sub_mesh_normal_texture->Name() );
                     }
                 }
 
@@ -119,9 +123,11 @@ namespace Engine
                     metallic_roughness_texture = textures[ fastgltf_texture.imageIndex.value() ];
                     if( metallic_roughness_texture->Name().front() == '<' ) // <unnamed>.
                     {
+                        std::string old_name( metallic_roughness_texture->Name() );
                         metallic_roughness_texture->SetName( gltf_mesh.name.empty()
                                                              ? ( "Metallic-Roughness (" + metallic_roughness_texture->Name() + ")" ).c_str()
                                                              : ( "Metallic-Roughness (" + gltf_mesh.name + ")" ).c_str() );
+                        AssetDatabase< Texture >::RenameAsset( std::move( old_name ), metallic_roughness_texture->Name() );
                     }
                 }
             }
