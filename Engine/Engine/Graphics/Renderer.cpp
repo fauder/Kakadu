@@ -1701,13 +1701,14 @@ namespace Engine
 
 			for( auto& [ pass_id, pass ] : render_pass_map )
 			{
-				if( PassHasContentToRender( pass ) &&
-					pass_id != PASS_ID_SHADOW_MAPPING &&
+				if( pass_id != PASS_ID_SHADOW_MAPPING &&
 					pass_id != PASS_ID_MSAA_RESOLVE &&
 					pass_id != PASS_ID_POSTPROCESSING &&
-					pass_id != PASS_ID_FINAL )
+					pass_id != PASS_ID_FINAL &&
+					pass.target_framebuffer == &framebuffer_main &&
+					PassHasContentToRender( pass ) )
 				{
-					const auto log_group( logger.TemporaryLogGroup( ( "[Debug Pass]:" + pass.name ).c_str() ) );
+					const auto log_group( logger.TemporaryLogGroup( ( shader_index == 0 ? "[Debug Pass]:" : "[Debug Pass (Instanced)]:" + pass.name ).c_str() ) );
 
 					const Vector3 camera_position( Matrix::CameraWorldPositionFromViewMatrix( current_camera_info.view_matrix ) );
 
@@ -1716,7 +1717,7 @@ namespace Engine
 						if( auto& queue = render_queue_map[ queue_id ];
 							QueueHasContentToRender( queue ) )
 						{
-							const auto log_group( logger.TemporaryLogGroup( ( "[Debug Queue]:" + queue.name ).c_str() ) );
+							const auto log_group( logger.TemporaryLogGroup( ( shader_index == 0 ? "[Debug Queue]:" : "[Debug Queue (Instanced)]:" + queue.name ).c_str() ) );
 
 							SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override.sorting_mode );
 
