@@ -208,7 +208,9 @@ namespace Platform
 
 	/* Mouse IO. */
 	bool IsMouseButtonPressed( const MouseButton mouse_button );
+	bool IsMouseButtonPressed_ThisFrame( const MouseButton mouse_button );
 	bool IsMouseButtonReleased( const MouseButton mouse_button );
+	bool IsMouseButtonReleased_ThisFrame( const MouseButton mouse_button );
 	void ResetMouseDeltas();
 	void CaptureMouse( const bool should_capture );
 	float GetMouseSensitivity();

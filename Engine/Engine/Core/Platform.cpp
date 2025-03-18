@@ -359,6 +359,14 @@ namespace Platform
 	{
 		MOUSE_CURSOR_X_DELTA = MOUSE_CURSOR_Y_DELTA = 0.0f;
 		MOUSE_SCROLL_X_OFFSET = MOUSE_SCROLL_Y_OFFSET = 0.0f;
+
+		for( auto button_index = 0; button_index < GLFW_MOUSE_BUTTON_LAST; button_index++ )
+		{
+			const auto action_this_frame = MouseButtonAction( glfwGetMouseButton( WINDOW, button_index ) );
+			MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME[ button_index ] = action_this_frame != MOUSE_BUTTON_STATES[ button_index ]; // First update status change.
+			MOUSE_BUTTON_STATES[ button_index ] = action_this_frame; // Then update actual button state.
+		}
+
 		glfwPollEvents();
 	}
 
@@ -410,10 +418,20 @@ namespace Platform
 	{
 		return glfwGetMouseButton( WINDOW, ( int )mouse_button ) == GLFW_PRESS;
 	}
+
+	bool IsMouseButtonPressed_ThisFrame( const MouseButton mouse_button )
+	{
+		return MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME[ ( int )mouse_button ] && IsMouseButtonPressed( mouse_button );
+	}
 	
 	bool IsMouseButtonReleased( const MouseButton mouse_button )
 	{
 		return glfwGetMouseButton( WINDOW, ( int )mouse_button ) == GLFW_RELEASE;
+	}
+
+	bool IsMouseButtonReleased_ThisFrame( const MouseButton mouse_button )
+	{
+		return MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME[ ( int )mouse_button ] && IsMouseButtonReleased( mouse_button );
 	}
 
 	void ResetMouseDeltas()
