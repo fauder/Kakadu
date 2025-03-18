@@ -558,10 +558,10 @@ namespace Engine
 														{
 															.name = "Post-processing A FB",
 
-															.width_in_pixels = new_width_in_pixels,
+															.width_in_pixels  = new_width_in_pixels,
 															.height_in_pixels = new_height_in_pixels,
 
-															.color_format = framebuffer_main_color_format,
+															.color_format    = framebuffer_main_color_format,
 															.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
 														} );
 		}
@@ -575,10 +575,10 @@ namespace Engine
 														{
 															.name = "Post-processing B FB",
 
-															.width_in_pixels = new_width_in_pixels,
+															.width_in_pixels  = new_width_in_pixels,
 															.height_in_pixels = new_height_in_pixels,
 
-															.color_format = framebuffer_main_color_format,
+															.color_format    = framebuffer_main_color_format,
 															.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
 														} );
 		}
@@ -648,10 +648,12 @@ namespace Engine
 #endif // _EDITOR
 	}
 
+#ifdef _EDITOR
 	void Renderer::SetEditorShadingMode( const EditorShadingMode new_editor_shading_mode )
 	{
 		editor_shading_mode = new_editor_shading_mode;
 	}
+#endif // _EDITOR
 
 	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
 	{
@@ -1603,6 +1605,7 @@ namespace Engine
 		glPolygonMode( GL_FRONT_AND_BACK, ( GLenum )mode + GL_POINT );
 	}
 
+#ifdef _EDITOR
 	void Renderer::RenderOtherEditorShadingModes()
 	{
 		ASSERT( editor_shading_mode != EditorShadingMode::Shaded );
@@ -1773,6 +1776,7 @@ namespace Engine
 			Render( *renderable->mesh );
 		}
 	}
+#endif // _EDITOR
 
 	std::vector< RenderQueue* >& Renderer::RenderQueuesContaining( const Renderable* renderable_of_interest )
 	{
