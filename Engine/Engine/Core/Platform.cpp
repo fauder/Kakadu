@@ -29,8 +29,10 @@ namespace Platform
 	float MOUSE_SENSITIVITY = 0.004f;
 	bool MOUSE_CAPTURE_IS_RESET = true;
 	bool MOUSE_CAPTURE_ENABLED = false;
-	std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )	> KEYBOARD_CALLBACK;
-	std::function< void( const int width_new_pixels, const int height_new_pixels )				> FRAMEBUFFER_RESIZE_CALLBACK;
+	std::array< bool, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME{ false };
+	std::array< MouseButtonAction, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATES{ MouseButtonAction::RELEASE };
+	std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )			> KEYBOARD_CALLBACK;
+	std::function< void( const int width_new_pixels, const int height_new_pixels )						> FRAMEBUFFER_RESIZE_CALLBACK;
 #ifdef _EDITOR
 	std::function< void( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
 #endif // _EDITOR
