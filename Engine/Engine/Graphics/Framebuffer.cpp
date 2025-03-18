@@ -7,7 +7,6 @@
 #include "Core/Platform.h"
 #include "Core/ServiceLocator.h"
 #include "Core/MorphSystem.h"
-#include "Math/TypeTraits.h"
 
 namespace Engine
 {
@@ -164,44 +163,12 @@ namespace Engine
 #ifdef _EDITOR
 		if( not name.empty() )
 		{
-			const std::string full_name( IsMultiSampled() ? this->name + " (" + std::to_string( msaa.sample_count ) + " samples)" : this->name );
+			const std::string full_name( IsMultiSampled() ? this->name + " (MSAA " + std::to_string( msaa.sample_count ) + "x)" : this->name );
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), full_name );
 		}
 #endif // _EDITOR
 
-		if( description.attachment_bits.IsSet( AttachmentType::Color ) )
-		{
-			Engine::AssetDatabase< Texture >::RemoveAsset( color_attachment->Name() );
-
-			CreateTextureAndAttachToFramebuffer( color_attachment, " Color ", GL_COLOR_ATTACHMENT0,
-												 description.color_format == Texture::Format::NOT_ASSIGNED ? Texture::Format::RGBA : description.color_format,
-												 description );
-		}
-
-		if( description.attachment_bits.IsSet( AttachmentType::DepthStencilCombined ) )
-		{
-			Engine::AssetDatabase< Texture >::RemoveAsset( depth_stencil_attachment->Name() );
-
-			CreateTextureAndAttachToFramebuffer( depth_stencil_attachment, " D/S ", GL_DEPTH_STENCIL_ATTACHMENT, Texture::Format::DEPTH_STENCIL,
-												 description );
-		}
-		else
-		{
-			if( description.attachment_bits.IsSet( AttachmentType::Depth ) )
-			{
-				Engine::AssetDatabase< Texture >::RemoveAsset( depth_attachment->Name() );
-
-				CreateTextureAndAttachToFramebuffer( depth_attachment, " Depth ", GL_DEPTH_ATTACHMENT, Texture::Format::DEPTH,
-													 description );
-			}
-			if( description.attachment_bits.IsSet( AttachmentType::Stencil ) )
-			{
-				Engine::AssetDatabase< Texture >::RemoveAsset( stencil_attachment->Name() );
-
-				CreateTextureAndAttachToFramebuffer( stencil_attachment, " Stencil ", GL_STENCIL_ATTACHMENT, Texture::Format::STENCIL,
-													 description );
-			}
-		}
+		CreateAttachments();
 
 		Unbind();
 	}
@@ -233,6 +200,24 @@ namespace Engine
 		}
 #endif // _EDITOR
 
+		CreateAttachments();
+
+		if( not HasColorAttachment() )
+		{
+			/* Disable color read/write since there's no color attachment attached. */
+			glDrawBuffer( GL_NONE );
+			glReadBuffer( GL_NONE );
+		}
+
+		ASSERT_DEBUG_ONLY( glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
+		if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+			std::cerr << "ERROR::FRAMEBUFFER::Framebuffer is not complete!\n";
+
+		Unbind();
+	}
+
+	void Framebuffer::CreateAttachments()
+	{
 		if( description.attachment_bits.IsSet( AttachmentType::Color ) )
 		{
 			CreateTextureAndAttachToFramebuffer( color_attachment, " Color ", GL_COLOR_ATTACHMENT0,
@@ -262,19 +247,6 @@ namespace Engine
 				clear_targets.Set( ClearTarget::StencilBuffer );
 			}
 		}
-
-		if( not HasColorAttachment() )
-		{
-			/* Disable color read/write since there's no color attachment attached. */
-			glDrawBuffer( GL_NONE );
-			glReadBuffer( GL_NONE );
-		}
-
-		ASSERT_DEBUG_ONLY( glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
-		if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
-			std::cerr << "ERROR::FRAMEBUFFER::Framebuffer is not complete!\n";
-
-		Unbind();
 	}
 
 	void Framebuffer::CreateTextureAndAttachToFramebuffer( const Texture*& attachment_texture,

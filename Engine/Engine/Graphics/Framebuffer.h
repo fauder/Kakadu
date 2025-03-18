@@ -119,6 +119,7 @@ namespace Engine
 		static void Blit( const Framebuffer& source, const Framebuffer& destination );
 
 		void Create();
+		void CreateAttachments();
 		void CreateTextureAndAttachToFramebuffer( const Texture*& attachment_texture,
 												  const char* attachment_type_name,
 												  const GLenum attachment_type_enum,
