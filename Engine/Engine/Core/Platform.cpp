@@ -32,6 +32,7 @@ namespace Platform
 	std::array< bool, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME{ false };
 	std::array< MouseButtonAction, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATES{ MouseButtonAction::RELEASE };
 	std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )			> KEYBOARD_CALLBACK;
+	std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods )	> MOUSE_BUTTON_CALLBACK;
 	std::function< void( const int width_new_pixels, const int height_new_pixels )						> FRAMEBUFFER_RESIZE_CALLBACK;
 #ifdef _EDITOR
 	std::function< void( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
@@ -48,6 +49,15 @@ namespace Platform
 
 		if( FRAMEBUFFER_RESIZE_CALLBACK )
 			FRAMEBUFFER_RESIZE_CALLBACK( width_new_pixels, height_new_pixels );
+	}
+
+	void OnKeyboardEvent( GLFWwindow* window, const int key_code, const int scan_code, const int action, const int mods )
+	{
+		if( ImGui::GetIO().WantCaptureKeyboard )
+			return;
+
+		if( KEYBOARD_CALLBACK )
+			KEYBOARD_CALLBACK( KeyCode( key_code ), KeyAction( action ), KeyMods( mods ) );
 	}
 
 	void OnMouseCursorPositionChanged( GLFWwindow* window, const double x_position, const double y_position )
@@ -78,13 +88,13 @@ namespace Platform
 		MOUSE_SCROLL_Y_OFFSET = ( float )y_offset;
 	}
 
-	void OnKeyboardEvent( GLFWwindow* window, const int key_code, const int scan_code, const int action, const int mods )
+	void OnMouseButtonEvent( GLFWwindow* window, const int button, const int action, const int mods )
 	{
-		if( ImGui::GetIO().WantCaptureKeyboard )
+		if( ImGui::GetIO().WantCaptureMouse )
 			return;
 
-		if( KEYBOARD_CALLBACK )
-			KEYBOARD_CALLBACK( KeyCode( key_code ), KeyAction( action ), KeyMods( mods ) );
+		if( MOUSE_BUTTON_CALLBACK )
+			MOUSE_BUTTON_CALLBACK( MouseButton( button ), MouseButtonAction( action ), KeyMods( mods ) );
 	}
 
 #ifdef _EDITOR
@@ -415,6 +425,15 @@ namespace Platform
 	/*
 	 * Mouse IO:
 	 */
+
+	void SetMouseButtonEventCallback( std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods ) > callback )
+	{
+		MOUSE_BUTTON_CALLBACK = callback;
+
+		ImGui_ImplGlfw_RestoreCallbacks( WINDOW );
+		glfwSetMouseButtonCallback( WINDOW, OnMouseButtonEvent );
+		ImGui_ImplGlfw_InstallCallbacks( WINDOW );
+	}
 
 	bool IsMouseButtonPressed( const MouseButton mouse_button )
 	{

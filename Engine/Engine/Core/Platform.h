@@ -210,6 +210,7 @@ namespace Platform
 	bool IsKeyReleased( const KeyCode key_code );
 
 	/* Mouse IO. */
+	void SetMouseButtonEventCallback( std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods ) > callback = {} );
 	bool IsMouseButtonPressed( const MouseButton mouse_button );
 	bool IsMouseButtonPressed_ThisFrame( const MouseButton mouse_button );
 	bool IsMouseButtonReleased( const MouseButton mouse_button );

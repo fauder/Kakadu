@@ -71,6 +71,12 @@ namespace Engine
 				this->OnKeyboardEventInternal( key_code, key_action, key_mods );
 			} );
 
+		Platform::SetMouseButtonEventCallback(
+			[ = ]( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
+			{
+				this->OnMouseButtonEventInternal( button, button_action, key_mods );
+			} );
+
 		Platform::SetFramebufferResizeCallback(
 			[ = ]( const int width_new_pixels, const int height_new_pixels )
 			{
@@ -151,6 +157,10 @@ namespace Engine
 		}
 	}
 
+	void Application::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
+	{
+	}
+
 	void Application::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 	{
 	}
@@ -162,10 +172,16 @@ namespace Engine
 
 	void Application::OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
-		if( ImGui::GetIO().WantCaptureKeyboard )
-			return;
+		// No need to query ImGui::GetIO().WantCaptureKeyboard here because Platform already queries it before calling this function. 
 
 		OnKeyboardEvent( key_code, key_action, key_mods );
+	}
+
+	void Application::OnMouseButtonEventInternal( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
+	{
+		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function. 
+
+		OnMouseButtonEvent( button, button_action, key_mods );
 	}
 
 	void Application::OnFramebufferResizeEventInternal( const int width_new_pixels, const int height_new_pixels )
@@ -224,8 +240,10 @@ namespace Engine
 
 			const auto& imgui_io = ImGui::GetIO();
 			if( ( imgui_io.WantCaptureMouse && imgui_io.MouseReleased[ 0 ] ) ||
-				( not imgui_io.WantCaptureMouse && Platform::IsMouseButtonReleased( Platform::MouseButton::Left ) ) )
+				( not imgui_io.WantCaptureMouse && Platform::IsMouseButtonReleased_ThisFrame( Platform::MouseButton::Left ) ) )
+			{
 				OnFramebufferResizeEvent( viewport_size.X(), viewport_size.Y() );
+			}
 
 			if( ImGui::IsWindowHovered() )
 			{
