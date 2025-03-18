@@ -37,7 +37,10 @@ namespace Engine
 		virtual void OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		virtual void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
 		virtual void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels );
+#ifdef _EDITOR
 		virtual void RenderImGui();
+#endif // _EDITOR
+
 
 	protected:
 		inline void FreezeTime()   { time_multiplier = 0.0f; }
@@ -46,8 +49,6 @@ namespace Engine
 
 		inline bool MSAAIsEnabled() { return msaa_sample_count.has_value(); }
 
-		void SetImGuiViewportImageID( const unsigned int id );
-
 	private:
 		void OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		void OnMouseButtonEventInternal( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
@@ -55,22 +56,31 @@ namespace Engine
 
 		void CalculateTimeInformation();
 
-		void RenderImGui_Viewport( const unsigned int texture_id );
+#ifdef _EDITOR
+		void RenderImGui_Viewport();
 		void RenderImGui_ViewportControls();
 		void RenderImGui_FrameStatistics();
+#endif // _EDITOR
+
 		std::uint16_t CalculateFPS_RollingAverage( const float fps_this_frame ) const;
 
 	protected:
-		std::unique_ptr< Renderer > renderer;
+#ifdef _EDITOR
+		GLLogger gl_logger;
 
 		bool show_frame_statistics;
 		bool show_imgui;
 		bool show_gl_logger;
 
+		/* 5 bytes(s) of padding. */
+#endif // _EDITOR
+
+		std::unique_ptr< Renderer > renderer;
+
 		bool gamma_correction_is_enabled;
 		bool vsync_is_enabled;
 
-		/* 3 byte(s) of padding. */
+		/* 2 byte(s) of padding. */
 
 		float time_delta;
 		float time_current;
@@ -82,13 +92,9 @@ namespace Engine
 		float time_mod_1;
 		float time_mod_2_pi;
 
-		/* 4 byte(s) of padding. */
-
 		long long frame_count;
 
 		std::optional< int > msaa_sample_count;
-
-		GLLogger gl_logger;
 
 	private:
 		MorphSystem morph_system;
@@ -97,10 +103,6 @@ namespace Engine
 		float time_previous;
 		float time_previous_since_start;
 		float time_since_start;
-
-		unsigned int imgui_viewport_texture_id;
-
-		/* 4 byte(s) of padding. */
 	};
 
 	/* Needs to be implemented by the CLIENT Application. */

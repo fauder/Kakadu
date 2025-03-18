@@ -239,7 +239,6 @@ void HDR_DemoApplication::RenderImGui()
 	/* Need to switch to the default framebuffer, so ImGui can render onto it. */
 	renderer->ResetToDefaultFramebuffer();
 
-	SetImGuiViewportImageID( renderer->FinalFramebuffer().ColorAttachment().Id().Get() );
 	Application::RenderImGui();
 
 	if( show_imgui_demo_window )

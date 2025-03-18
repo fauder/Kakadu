@@ -26,9 +26,11 @@ namespace Engine
 	Application::Application( const BitFlags< CreationFlags > flags,
 							  Renderer::Description&& renderer_description )
 		:
+#ifdef _EDITOR
 		show_frame_statistics( true ),
 		show_imgui( not flags.IsSet( CreationFlags::OnStart_DisableImGui ) ),
 		show_gl_logger( true ),
+#endif // _EDITOR
 		gamma_correction_is_enabled( renderer_description.enable_gamma_correction && not flags.IsSet( CreationFlags::OnStart_DisableGammaCorrection ) ),
 		vsync_is_enabled( false ),
 		time_current( 0.0f ),
@@ -165,11 +167,6 @@ namespace Engine
 	{
 	}
 
-	void Application::SetImGuiViewportImageID( const unsigned int id )
-	{
-		imgui_viewport_texture_id = id;
-	}
-
 	void Application::OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
 		// No need to query ImGui::GetIO().WantCaptureKeyboard here because Platform already queries it before calling this function. 
@@ -201,24 +198,25 @@ namespace Engine
 
 		time_delta = time_current - time_previous;
 
-		time_previous = time_current;
+		time_previous             = time_current;
 		time_previous_since_start = time_since_start;
 
-		time_sin = Math::Sin( Radians( time_current ) );
-		time_cos = Math::Cos( Radians( time_current ) );
-		time_mod_1 = std::fmod( time_current, 1.0f );
+		time_sin      = Math::Sin( Radians( time_current ) );
+		time_cos      = Math::Cos( Radians( time_current ) );
+		time_mod_1    = std::fmod( time_current, 1.0f );
 		time_mod_2_pi = std::fmod( time_current, Constants< float >::Two_Pi() );
 
 		frame_count++;
 	}
 
+#ifdef _EDITOR
 	void Application::RenderImGui()
 	{
 		ImGui::DockSpaceOverViewport();
 
 		ImGuiDrawer::Update();
 
-		RenderImGui_Viewport( imgui_viewport_texture_id );
+		RenderImGui_Viewport();
 		RenderImGui_ViewportControls();
 		RenderImGui_FrameStatistics();
 
@@ -226,7 +224,7 @@ namespace Engine
 			gl_logger.Render( &show_gl_logger );
 	}
 
-	void Application::RenderImGui_Viewport( const unsigned int texture_id )
+	void Application::RenderImGui_Viewport()
 	{
 		{
 			const auto framebuffer_size = Platform::GetFramebufferSizeInPixels();
@@ -251,7 +249,7 @@ namespace Engine
 				ImGui::SetNextFrameWantCaptureKeyboard( false );
 			}
 
-			ImGui::Image( ( ImTextureID )texture_id, ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
+			ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), {0, 1}, {1, 0});
 		}
 
 		ImGui::End();
@@ -364,4 +362,5 @@ namespace Engine
 
 		ImGuiUtility::EndOverlay();
 	}
+#endif // _EDITOR
 }
