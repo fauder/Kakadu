@@ -228,7 +228,7 @@ namespace Engine
 	{
 		{
 			const auto framebuffer_size = Platform::GetFramebufferSizeInPixels();
-			ImGui::SetNextWindowSize( Math::CopyToImVec2( framebuffer_size ), ImGuiCond_Appearing );
+			ImGui::SetNextWindowSize( Math::CopyToImVec2( framebuffer_size ), ImGuiCond_FirstUseEver );
 		}
 
 		if( ImGui::Begin( "Viewport" ) )
@@ -237,8 +237,8 @@ namespace Engine
 			const Vector2I viewport_size( ( int )viewport_size_imvec2.x, ( int )viewport_size_imvec2.y );
 
 			const auto& imgui_io = ImGui::GetIO();
-			if( ( imgui_io.WantCaptureMouse && imgui_io.MouseReleased[ 0 ] ) ||
-				( not imgui_io.WantCaptureMouse && Platform::IsMouseButtonReleased_ThisFrame( Platform::MouseButton::Left ) ) )
+			if( viewport_size != renderer->FinalFramebuffer().Size() &&
+				( not imgui_io.WantCaptureMouse || not imgui_io.MouseDown[ 0 ] ) )
 			{
 				OnFramebufferResizeEvent( viewport_size.X(), viewport_size.Y() );
 			}
@@ -249,7 +249,7 @@ namespace Engine
 				ImGui::SetNextFrameWantCaptureKeyboard( false );
 			}
 
-			ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), {0, 1}, {1, 0});
+			ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
 		}
 
 		ImGui::End();
