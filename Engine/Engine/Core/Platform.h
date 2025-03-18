@@ -148,6 +148,9 @@ namespace Platform
 		PRESS	= 1,
 		REPEAT	= 2
 	};
+
+	using MouseButtonAction = KeyAction;
+
 	enum class KeyMods
 	{
 		SHIFT     = 0x0001,
