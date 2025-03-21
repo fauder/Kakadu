@@ -65,11 +65,11 @@ namespace Engine
 		TEXTURE_MAP.try_emplace( "Normal Map",	CreateSingleTexelTexture( std::array< unsigned char, 4 >{ 127, 127, 255, 255 }, "Default Normal Map",
 																		  Texture::ImportSettings
 																		  {
-																			  .wrap_u = Texture::Wrapping::ClampToEdge,
-																			  .wrap_v = Texture::Wrapping::ClampToEdge,
-																			  .min_filter = Texture::Filtering::Nearest,
-																			  .mag_filter = Texture::Filtering::Nearest,
-																			  .flip_vertically = false,
+																			  .wrap_u           = Texture::Wrapping::ClampToEdge,
+																			  .wrap_v           = Texture::Wrapping::ClampToEdge,
+																			  .min_filter       = Texture::Filtering::Nearest,
+																			  .mag_filter       = Texture::Filtering::Nearest,
+																			  .flip_vertically  = false,
 																			  .generate_mipmaps = false,
 
 																			  .format = Texture::Format::RGBA

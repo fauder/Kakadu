@@ -497,12 +497,8 @@ namespace Engine
 
 		void SetUniform( const Uniform::Information& uniform_info, const void* value_pointer );
 		void SetUniformArray( const Uniform::Information& uniform_info, const void* value_pointer );
-
-
-
-	private:
-
-
+	
+private:
 
 		void Delete();
 

@@ -15,7 +15,8 @@ namespace Engine
 		mesh( nullptr ),
 		material( nullptr ),
 		is_enabled( false ),
-		is_receiving_shadows( false )
+		is_receiving_shadows( false ),
+		is_casting_shadows( false )
 	{
 	}
 
