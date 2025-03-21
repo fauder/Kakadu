@@ -314,4 +314,133 @@
       </CustomListItems>
     </Expand>
   </Type>
+
+  <!-- ID<Type> -->
+  <Type Name="Engine::ID&lt;*&gt;">
+    <DisplayString>{id}</DisplayString>
+  </Type>
+
+  <!-- Texture -->
+  <Type Name="Engine::Texture">
+    <!-- Basic information -->
+    <!-- Sampled Texture - Add specific handling for MSAA, color format, and attachment types -->
+    <Intrinsic Name="Is_sRGB" Expression="format == Engine::Texture::Format::SRGB || format == Engine::Texture::Format::SRGBA"></Intrinsic>
+    <Intrinsic Name="Is_HDR" Expression="format == Engine::Texture::Format::RGBA_16F || format == Engine::Texture::Format::RGBA_32F || format == Engine::Texture::Format::R11G11B10F"></Intrinsic>
+    <Intrinsic Name="Has_MSAA" Expression="msaa.sample_count > 1"></Intrinsic>
+
+    <!-- sRGB, HDR, and MSAA -->
+    <DisplayString Condition="Is_sRGB() &amp;&amp; Is_HDR() &amp;&amp; Has_MSAA()">
+      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)msaa.sample_count}x | sRGB HDR | ID: {id}
+    </DisplayString>
+
+    <!-- sRGB and HDR -->
+    <DisplayString Condition="Is_sRGB() &amp;&amp; Is_HDR()">
+      {name} | {size.data[0]}x{size.data[1]} | {type} | sRGB HDR | ID: {id}
+    </DisplayString>
+
+    <!-- sRGB and MSAA -->
+    <DisplayString Condition="Is_sRGB() &amp;&amp; Has_MSAA()">
+      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)msaa.sample_count}x | sRGB | ID: {id}
+    </DisplayString>
+
+    <!-- HDR and MSAA -->
+    <DisplayString Condition="Is_HDR() &amp;&amp; Has_MSAA()">
+      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)msaa.sample_count}x | HDR | ID: {id}
+    </DisplayString>
+
+    <!-- Only sRGB -->
+    <DisplayString Condition="Is_sRGB()">
+      {name} | {size.data[0]}x{size.data[1]} | {type} | sRGB | ID: {id}
+    </DisplayString>
+
+    <!-- Only HDR -->
+    <DisplayString Condition="Is_HDR()">
+      {name} | {size.data[0]}x{size.data[1]} | {type} | HDR | ID: {id}
+    </DisplayString>
+
+    <!-- Only MSAA -->
+    <DisplayString Condition="Has_MSAA()">
+      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)msaa.sample_count}x | ID: {id}
+    </DisplayString>
+
+    <!-- Default case -->
+    <DisplayString>
+      {name} | {size.data[0]}x{size.data[1]} | {type} | ID: {id}
+    </DisplayString>
+
+    <Expand>
+      <Item Name="Name">name</Item>
+      <Item Name="ID">id</Item>
+      <Item Name="Width">size.data[0]</Item>
+      <Item Name="Height">size.data[1]</Item>
+      <Item Name="Type" Condition="type == Engine::TextureType::Texture2D">"2D"</Item>
+      <Item Name="Type" Condition="type == Engine::TextureType::Texture2D_MultiSample">"2D MultiSample"</Item>
+      <Item Name="Type" Condition="type == Engine::TextureType::Cubemap">"Cubemap"</Item>
+      <Item Name="MSAA Samples" Condition="Has_MSAA()">msaa.sample_count</Item>
+      <Item Name="sRGB">Is_sRGB()</Item>
+      <Item Name="HDR">Is_HDR()</Item>
+    </Expand>
+  </Type>
+
+  <!-- Framebuffer -->
+  <Type Name="Engine::Framebuffer">
+    <Intrinsic Name="Has_MSAA" Expression="msaa.sample_count > 1"></Intrinsic>
+    <Intrinsic Name="Is_sRGB" Expression="color_attachment &amp;&amp; ( color_attachment->format == Engine::Texture::Format::SRGB || color_attachment->format == Engine::Texture::Format::SRGBA )"></Intrinsic>
+    <Intrinsic Name="Is_HDR" Expression="color_attachment &amp;&amp; ( color_attachment->format == Engine::Texture::Format::RGBA_16F || 
+      color_attachment->format == Engine::Texture::Format::RGBA_32F || color_attachment->format == Engine::Texture::Format::R11G11B10F )"></Intrinsic>
+
+    <!-- sRGB, HDR, and MSAA -->
+    <DisplayString Condition="Is_sRGB() &amp;&amp; Is_HDR() &amp;&amp; Has_MSAA()">
+      {name} | {size.data[0]}x{size.data[1]} | MSAA {(int)msaa.sample_count}x | sRGB HDR | ID: {id}
+    </DisplayString>
+
+    <!-- sRGB and HDR -->
+    <DisplayString Condition="Is_sRGB() &amp;&amp; Is_HDR()">
+      {name} | {size.data[0]}x{size.data[1]} | sRGB HDR | ID: {id}
+    </DisplayString>
+
+    <!-- sRGB and MSAA -->
+    <DisplayString Condition="Is_sRGB() &amp;&amp; Has_MSAA()">
+      {name} | {size.data[0]}x{size.data[1]} | MSAA {(int)msaa.sample_count}x | sRGB | ID: {id}
+    </DisplayString>
+
+    <!-- HDR and MSAA -->
+    <DisplayString Condition="Is_HDR() &amp;&amp; Has_MSAA()">
+      {name} | {size.data[0]}x{size.data[1]} | MSAA {(int)msaa.sample_count}x | HDR | ID: {id}
+    </DisplayString>
+
+    <!-- Only sRGB -->
+    <DisplayString Condition="Is_sRGB()">
+      {name} | {size.data[0]}x{size.data[1]} | sRGB | ID: {id}
+    </DisplayString>
+
+    <!-- Only HDR -->
+    <DisplayString Condition="Is_HDR()">
+      {name} | {size.data[0]}x{size.data[1]} | HDR | ID: {id}
+    </DisplayString>
+
+    <!-- Only MSAA -->
+    <DisplayString Condition="Has_MSAA()">
+      {name} | {size.data[0]}x{size.data[1]} | MSAA {(int)msaa.sample_count}x | ID: {id}
+    </DisplayString>
+
+    <!-- Default case -->
+    <DisplayString>
+      {name} | {size.data[0]}x{size.data[1]} | ID: {id}
+    </DisplayString>
+    <Expand>
+      <Item Name="Name">name</Item>
+      <Item Name="ID">id</Item>
+      <Item Name="Width">size.data[0]</Item>
+      <Item Name="Height">size.data[1]</Item>
+      <Item Name="MSAA Samples" Condition="Has_MSAA()">(int)msaa.sample_count</Item>
+      <Item Name="sRGB">Is_sRGB()</Item>
+      <Item Name="HDR">Is_HDR()</Item>
+      <Item Name="Read/Draw">bind_point</Item>
+      <Item Name="Color"                Condition="color_attachment">*color_attachment</Item>
+      <Item Name="Depth Stencil Combo"  Condition="depth_stencil_attachment">*depth_stencil_attachment</Item>
+      <Item Name="Depth"                Condition="depth_attachment">*depth_attachment</Item>
+      <Item Name="Stencil"              Condition="stencil_attachment">*stencil_attachment</Item>
+    </Expand>
+  </Type>
 </AutoVisualizer>
