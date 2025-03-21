@@ -1746,29 +1746,12 @@ namespace Engine
 		{
 			const auto& pass = render_pass_map[ PASS_ID_MSAA_RESOLVE ];
 
-			SetRenderState( pass.render_state, pass.target_framebuffer, pass.clear_framebuffer );
+			SetRenderState( pass.render_state, &framebuffer_final, pass.clear_framebuffer );
 
 			const auto& queue      = render_queue_map[ QUEUE_ID_MSAA_RESOLVE ];
 			const auto& renderable = queue.renderable_list.front();
 
 			renderable->material->Bind();
-			renderable->material->UploadUniforms();
-
-			renderable->mesh->Bind();
-
-			Render( *renderable->mesh );
-		}
-
-		/* Final Blit: */
-		{
-			const auto& pass = render_pass_map[ PASS_ID_FINAL ];
-
-			SetRenderState( pass.render_state, pass.target_framebuffer, pass.clear_framebuffer );
-
-			const auto& queue      = render_queue_map[ QUEUE_ID_FINAL ];
-			const auto& renderable = queue.renderable_list.front();
-
-			renderable->material->shader->Bind();
 			renderable->material->UploadUniforms();
 
 			renderable->mesh->Bind();
