@@ -505,122 +505,93 @@ namespace Engine
 		framebuffer_default = Framebuffer( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR );
 
 		/* Shadow maps: */
-		if( framebuffer_shadow_map_light_directional.IsValid() )
-			framebuffer_shadow_map_light_directional.Resize( new_width_in_pixels, new_height_in_pixels );
-		else // i.e, the first time the framebuffer is created:
-		{
-			framebuffer_shadow_map_light_directional = Framebuffer( Framebuffer::Description
-																	{
-																		.name = "Shadow Map FB - Dir. Light",
+		framebuffer_shadow_map_light_directional = Framebuffer( Framebuffer::Description
+																{
+																	.name = "Shadow Map FB - Dir. Light",
 
-																		.width_in_pixels  = new_width_in_pixels,
-																		.height_in_pixels = new_height_in_pixels,
+																	.width_in_pixels  = new_width_in_pixels,
+																	.height_in_pixels = new_height_in_pixels,
 
-																		.minification_filter  = Texture::Filtering::Nearest,
-																		.magnification_filter = Texture::Filtering::Nearest,
+																	.minification_filter  = Texture::Filtering::Nearest,
+																	.magnification_filter = Texture::Filtering::Nearest,
 
-																		/* Default wrapping = clamp to border, with border = Color4{0,0,0,0}. */
+																	/* Default wrapping = clamp to border, with border = Color4{0,0,0,0}. */
 
-																		/* Default color format = RGBA, adequate. */
+																	/* Default color format = RGBA, adequate. */
 
-																		.attachment_bits = Framebuffer::AttachmentType::Depth
-																	} );
+																	.attachment_bits = Framebuffer::AttachmentType::Depth
+																} );
 
-		}
 
 		/* Main: */
-		if( framebuffer_main.IsValid() )
-			framebuffer_main.Resize( new_width_in_pixels, new_height_in_pixels );
-		else // i.e, the first time the framebuffer is created:
-		{
-			framebuffer_main = Framebuffer( Framebuffer::Description
-											{
-												.name = "Main FB",
+		framebuffer_main = Framebuffer( Framebuffer::Description
+										{
+											.name = "Main FB",
 
-												.width_in_pixels  = new_width_in_pixels,
-												.height_in_pixels = new_height_in_pixels,
+											.width_in_pixels  = new_width_in_pixels,
+											.height_in_pixels = new_height_in_pixels,
 
-												.color_format    = framebuffer_main_color_format,
-												.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
-												.msaa            = MSAA( framebuffer_main_msaa_sample_count )
-											} );
-		}
+											.color_format    = framebuffer_main_color_format,
+											.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
+											.msaa            = MSAA( framebuffer_main_msaa_sample_count )
+										} );
 
 		framebuffer_main.SetClearColor( Color4::Gray( 0.064f ) ); // Same as Unity's scene view, in linear color space.
 
-		/* Post-processing: */
-		if( framebuffer_postprocessing_A.IsValid() )
-			framebuffer_postprocessing_A.Resize( new_width_in_pixels, new_height_in_pixels );
-		else // i.e, the first time the framebuffer is created:
-		{
-			/* Same parameters as the main FBO. */
-			framebuffer_postprocessing_A = Framebuffer( Framebuffer::Description
-														{
-															.name = "Post-processing A FB",
+		/* Same parameters as the main FBO. */
+		framebuffer_postprocessing_A = Framebuffer( Framebuffer::Description
+													{
+														.name = "Post-processing A FB",
 
-															.width_in_pixels  = new_width_in_pixels,
-															.height_in_pixels = new_height_in_pixels,
+														.width_in_pixels  = new_width_in_pixels,
+														.height_in_pixels = new_height_in_pixels,
 
-															.color_format    = framebuffer_main_color_format,
-															.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
-														} );
-		}
+														.color_format    = framebuffer_main_color_format,
+														.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
+													} );
 
-		if( framebuffer_postprocessing_B.IsValid() )
-			framebuffer_postprocessing_B.Resize( new_width_in_pixels, new_height_in_pixels );
-		else // i.e, the first time the framebuffer is created:
-		{
-			/* Same parameters as the main FBO. */
-			framebuffer_postprocessing_B = Framebuffer( Framebuffer::Description
-														{
-															.name = "Post-processing B FB",
+	
+		/* Same parameters as the main FBO. */
+		framebuffer_postprocessing_B = Framebuffer( Framebuffer::Description
+													{
+														.name = "Post-processing B FB",
 
-															.width_in_pixels  = new_width_in_pixels,
-															.height_in_pixels = new_height_in_pixels,
+														.width_in_pixels  = new_width_in_pixels,
+														.height_in_pixels = new_height_in_pixels,
 
-															.color_format    = framebuffer_main_color_format,
-															.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
-														} );
-		}
+														.color_format    = framebuffer_main_color_format,
+														.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
+													} );
 
 		/* Editor: */
-		if( framebuffer_final.IsValid() )
-			framebuffer_final.Resize( new_width_in_pixels, new_height_in_pixels );
-		else // i.e, the first time the framebuffer is created:
-		{
-			framebuffer_final = Framebuffer( Framebuffer::Description
-											 {
-												 .name = "Editor FB",
+		framebuffer_final = Framebuffer( Framebuffer::Description
+											{
+												.name = "Editor FB",
 
-												 .width_in_pixels  = new_width_in_pixels,
-												 .height_in_pixels = new_height_in_pixels,
-
-												 .color_format    = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
-												 .attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined // Some post-processing fx may need depth.
-											 } );
-		}
+												.width_in_pixels  = new_width_in_pixels,
+												.height_in_pixels = new_height_in_pixels,
+	
+												.color_format    = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
+												.attachment_bits = Framebuffer::AttachmentType::Color
+											} );
 
 		/* Custom Framebuffers: */
 		for( auto index = 0; index < framebuffer_custom_array.size(); index++ )
 		{
-			if( const auto description = framebuffer_custom_description_array[ index ]; description )
+			if( const auto description = framebuffer_custom_description_array[ index ];
+				description )
 			{
-				if( auto& custom_framebuffer = framebuffer_custom_array[ index ];
-					custom_framebuffer.IsValid() )
-					custom_framebuffer.Resize( new_width_in_pixels, new_height_in_pixels );
-				else // i.e, the first time the framebuffer is created:
+				auto& custom_framebuffer = framebuffer_custom_array[ index ];
+				if( description->width_in_pixels == 0 || description->height_in_pixels == 0 )
 				{
-					if( description->width_in_pixels == 0 || description->height_in_pixels == 0 )
-					{
-						auto copy             = *description;
-						copy.width_in_pixels  = new_width_in_pixels;
-						copy.height_in_pixels = new_height_in_pixels;
+					auto copy             = *description;
+					copy.width_in_pixels  = new_width_in_pixels;
+					copy.height_in_pixels = new_height_in_pixels;
 
-						custom_framebuffer = Engine::Framebuffer( copy );
-					}
-					else
-						custom_framebuffer = Engine::Framebuffer( *description );
+					custom_framebuffer = Engine::Framebuffer( copy );
 				}
+				else
+					custom_framebuffer = Engine::Framebuffer( *description );
 			}
 		}
 
