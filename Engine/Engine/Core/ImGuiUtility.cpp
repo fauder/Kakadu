@@ -304,9 +304,8 @@ namespace Engine::ImGuiUtility
         const ImVec2 pos       = ImGui::GetCursorScreenPos();
         const ImVec2 text_size = ImGui::CalcTextSize( text );
         const ImVec2 size      = { 2.2f * style.ItemInnerSpacing.x + text_size.x, 1.1f * text_size.y };
-        const ImU32  color_u32 = ImColor( color );
 
-        draw_list->AddRect( pos, pos + size, color_u32, rounding, ImDrawFlags_None, thickness );
+        draw_list->AddRect( pos, pos + size, color, rounding, ImDrawFlags_None, thickness );
         ImGui::PushStyleColor( ImGuiCol_Text, color );
         ImGui::SetCursorScreenPos( pos + ImVec2{ 1.1f * style.ItemInnerSpacing.x, 0.0f } );
         ImGui::TextUnformatted( text );
@@ -322,10 +321,9 @@ namespace Engine::ImGuiUtility
         const ImVec2 pos       = ImGui::GetCursorScreenPos();
         const ImVec2 text_size = ImGui::CalcTextSize( text );
         const ImVec2 size      = { 2.2f * style.ItemInnerSpacing.x + text_size.x, 1.1f * text_size.y };
-        const ImU32  color_u32 = ImColor( text_color );
 
         draw_list->AddRectFilledMultiColor( pos, pos + size, IM_COL32( 0, 0, 0, 255 ), IM_COL32( 255, 0, 0, 255 ), IM_COL32( 255, 255, 0, 255 ), IM_COL32( 0, 255, 0, 255 ) );
-        ImGui::PushStyleColor( ImGuiCol_Text, color_u32 );
+        ImGui::PushStyleColor( ImGuiCol_Text, text_color );
         ImGui::SetCursorScreenPos( pos + ImVec2{ 1.1f * style.ItemInnerSpacing.x, 0.0f } );
         ImGui::TextUnformatted( text );
         ImGui::PopStyleColor();
@@ -355,19 +353,16 @@ namespace Engine::ImGuiUtility
         const ImVec2 pos                = ImGui::GetCursorScreenPos();
         const ImVec2 size               = ImVec2{ 2.0f * ( radius + style.ItemInnerSpacing.x ), style.ItemInnerSpacing.y + radius };
         
-        const ImU32  shade_color_u32    = ImColor( shade_color );
-        const ImU32  specular_color_u32 = ImColor( specular_color );
-
         const ImVec2 center = pos + ImVec2{ radius, radius };
 
-        draw_list->AddCircleFilled( center, radius, shade_color_u32 );
+        draw_list->AddCircleFilled( center, radius, shade_color );
 
         const ImVec2 highlight_center = { center.x - radius * 0.3f, center.y - radius * 0.4f };
         const ImVec2 highlight_size   = { radius * 0.7f, radius * 0.5f };
 
         constexpr float highlight_rot = -0.7f; // -45 degrees.
 
-        draw_list->AddEllipseFilled( highlight_center, highlight_size, specular_color_u32, highlight_rot );
+        draw_list->AddEllipseFilled( highlight_center, highlight_size, specular_color, highlight_rot );
 
         if( advance_cursor )
             ImGui::SetCursorScreenPos( pos + ImVec2{ size.x, 0.0f } );
