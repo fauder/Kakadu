@@ -1197,6 +1197,8 @@ BloomDemoApplication::Radians BloomDemoApplication::CalculateVerticalFieldOfView
 
 bool BloomDemoApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const std::string& file_path, const char* name )
 {
+	Engine::AssetDatabase< Engine::Model >::RemoveAsset( name );
+
 	if( auto new_model = Engine::AssetDatabase< Engine::Model >::CreateAssetFromFile( name, file_path ); 
 		new_model )
 	{
