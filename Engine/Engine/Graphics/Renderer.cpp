@@ -565,15 +565,19 @@ namespace Engine
 
 		/* Editor: */
 		framebuffer_final = Framebuffer( Framebuffer::Description
-											{
-												.name = "Editor FB",
+										 {
+											 .name = "Editor FB",
 
-												.width_in_pixels  = new_width_in_pixels,
-												.height_in_pixels = new_height_in_pixels,
-	
-												.color_format    = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
-												.attachment_bits = Framebuffer::AttachmentType::Color
-											} );
+											 .width_in_pixels  = new_width_in_pixels,
+											 .height_in_pixels = new_height_in_pixels,
+#ifdef _EDITOR
+											 .color_format = ( editor_shading_mode == EditorShadingMode::Shaded || editor_shading_mode == EditorShadingMode::ShadedWireframe )
+												? Texture::Format::SRGBA : Texture::Format::RGBA,
+#else
+											 .color_format = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
+#endif // _EDITOR
+											 .attachment_bits = Framebuffer::AttachmentType::Color
+										 } );
 
 		/* Custom Framebuffers: */
 		for( auto index = 0; index < framebuffer_custom_array.size(); index++ )

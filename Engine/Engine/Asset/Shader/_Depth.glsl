@@ -21,7 +21,7 @@ float LinearizeDepth( float screen_space_depth_value )
 	 * This brings us to the final formula for Vz:
 	 * Vz = Pers.Proj.[3,2] / ( ndc_z - Pers.Proj.[2,2] ) */
 
-	/* NOTE: Matrices are treated as row_major in the comments above, but are indexed with [column][row] below in actual shader code.. */
+	/* NOTE: Matrices are treated as row_major in the comments above, but are indexed with [column][row] below in actual shader code. */
 
 	float view_space_z = _INTRINSIC_TRANSFORM_PROJECTION[ 2 ][ 3 ] / ( ndc_z - _INTRINSIC_TRANSFORM_PROJECTION[ 2 ][ 2 ] );
 
