@@ -476,6 +476,7 @@ namespace Engine
             for( auto& material : gltf_asset.materials )
             {
                 if( ( material.normalTexture                            && material.normalTexture->textureIndex                        == texture_index ) ||
+                    ( material.pbrData.metallicRoughnessTexture         && material.pbrData.metallicRoughnessTexture->textureIndex     == texture_index ) ||
                     ( material.packedNormalMetallicRoughnessTexture     && material.packedNormalMetallicRoughnessTexture->textureIndex == texture_index ) ||
                     ( material.occlusionTexture                         && material.occlusionTexture->textureIndex                     == texture_index ) ||
                     ( material.packedOcclusionRoughnessMetallicTextures &&
