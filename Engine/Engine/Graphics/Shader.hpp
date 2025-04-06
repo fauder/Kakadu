@@ -481,7 +481,12 @@ namespace Engine
 		{
 			const auto& uniform_info = GetUniformInformation( uniform_name );
 
-			SetUniform( uniform_info.location_or_block_index, value );
+#ifdef _EDITOR
+			if( not uniform_info )
+				return;
+#endif // _EDITOR
+
+			SetUniform( uniform_info->location_or_block_index, value );
 		}
 
 		template< typename UniformType >
@@ -490,7 +495,12 @@ namespace Engine
 		{
 			const auto& uniform_info = GetUniformInformation( uniform_name );
 
-			SetUniformArray( uniform_info.location_or_block_index, value, element_count );
+#ifdef _EDITOR
+			if( not uniform_info )
+				return;
+#endif // _EDITOR
+
+			SetUniformArray( uniform_info->location_or_block_index, value, element_count );
 		}
 
 /* Uniform setters; By info. & pointer: */
@@ -540,7 +550,8 @@ private:
 		void CalculateTotalUniformSizes();
 		void EnumerateUniformBufferCategories();
 
-		const Uniform::Information& GetUniformInformation( const std::string& uniform_name );
+		/* This returns a pointer so Editor vs Standalone builds have a consistent API regarding the return value. */
+		const Uniform::Information* GetUniformInformation( const std::string& uniform_name );
 
 /* Error Checking/Reporting: */
 

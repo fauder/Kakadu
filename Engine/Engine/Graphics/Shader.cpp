@@ -1188,20 +1188,22 @@ namespace Engine
 		uniform_book_keeping_info.intrinsic_block_count = ( int )uniform_buffer_info_map_intrinsic.size();
 	}
 
-	const Uniform::Information& Shader::GetUniformInformation( const std::string& uniform_name )
+	const Uniform::Information*  Shader::GetUniformInformation( const std::string& uniform_name )
 	{
-	#ifdef _DEBUG
-		try
+#ifdef _EDITOR
+		if( const auto iterator = uniform_info_map.find( uniform_name );
+			iterator != uniform_info_map.cend() )
 		{
-			return uniform_info_map.at( uniform_name );
+			return &iterator->second;
 		}
-		catch( const std::exception& )
+		else
 		{
-			throw std::runtime_error( R"(ERROR::SHADER::GetUniformInformation(): uniform ")" + std::string( uniform_name ) + R"(" does not exist!)" );
+			ServiceLocator< GLLogger >::Get().Warning( R"(Shader::GetUniformInformation(): Shader ")" + name + R"(" does not define the uniform ")" + std::string( uniform_name ) + R"(" (may be optimized away).)" );
+			return nullptr;
 		}
-	#else
+#else // STANDALONE:
 		return uniform_info_map[ uniform_name ];
-	#endif // DEBUG
+#endif // _EDITOR
 	}
 
 	void Shader::LogErrors( const std::string& error_string ) const
