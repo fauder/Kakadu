@@ -1618,8 +1618,8 @@ namespace Engine
 				SetRenderState( render_state_wireframe, &framebuffer_main, true );
 				break;
 			case EditorShadingMode::ShadedWireframe:
-				shader_not_instanced = BuiltinShaders::Get( "Shaded Wireframe" );
-				shader_instanced     = BuiltinShaders::Get( "Shaded Wireframe (Instanced)" );
+				shader_not_instanced = BuiltinShaders::Get( "Wireframe Overlay" );
+				shader_instanced     = BuiltinShaders::Get( "Wireframe Overlay (Instanced)" );
 				SetRenderState( render_state_shaded_wireframe, &framebuffer_main, false );
 				break;
 			case EditorShadingMode::TextureCoordinates:

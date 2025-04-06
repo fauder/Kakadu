@@ -7,8 +7,17 @@ out vec4 out_color;
 uniform vec4 uniform_color; /* _hint_color4 */
 uniform float uniform_threshold; /* _hint_normalized_percentage_logarithmic */
 
+#pragma feature OFFSET_DEPTH
+#ifdef OFFSET_DEPTH
+#define DEPTH_BIAS 1e-5
+#endif
+
 void main()
 {
+#ifdef OFFSET_DEPTH
+    gl_FragDepth = gl_FragCoord.z - DEPTH_BIAS;
+#endif
+
     float min_bary    = min( min( varying_barycentric_coordinates.x, varying_barycentric_coordinates.y ), varying_barycentric_coordinates.z );
     float edge_factor = 1.0f - smoothstep( 0.0, uniform_threshold, min_bary );
 
