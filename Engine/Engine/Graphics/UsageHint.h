@@ -13,6 +13,7 @@ namespace Engine
 		AsColor3,
 		AsColor4,
 		AsArray,
+		AsSlider_In_Pixels,
 		AsSlider_Normalized,
 		AsSlider_Normalized_Percentage,
 		AsSlider_Normalized_Percentage_Logarithmic
@@ -26,6 +27,8 @@ namespace Engine
 			return UsageHint::AsColor4;
 		else if( string.compare( 0, 5, "array", 5 ) == 0 )
 			return UsageHint::AsArray;
+		else if( string == "slider_in_pixels" )
+			return UsageHint::AsSlider_In_Pixels;
 		else if( string == "normalized" )
 			return UsageHint::AsSlider_Normalized;
 		else if( string == "normalized_percentage" )

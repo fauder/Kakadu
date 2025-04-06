@@ -628,6 +628,9 @@ namespace Engine::ImGuiDrawer
 								ImGui::NewLine();
 							}
 								break;
+							case UsageHint::AsSlider_In_Pixels:
+								is_modified |= ImGui::SliderFloat( "##scalar_float", reinterpret_cast< float* >( material.Get( uniform_info ) ), 0.0f, 1.0f, "%.2f pixels" );
+								break;
 							case UsageHint::AsSlider_Normalized:
 								is_modified |= ImGui::SliderFloat( "##scalar_float", reinterpret_cast< float* >( material.Get( uniform_info ) ), 0.0f, 1.0f, GetFormat< float >() );
 								break;
