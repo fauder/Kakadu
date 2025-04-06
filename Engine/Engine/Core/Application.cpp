@@ -218,6 +218,14 @@ namespace Engine
 
 		RenderImGui_Viewport();
 		RenderImGui_ViewportControls();
+
+		if( ImGui::Begin( "Viewport" ) )
+		{
+			ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
+		}
+
+		ImGui::End();
+
 		RenderImGui_FrameStatistics();
 
 		if( show_gl_logger )
@@ -249,7 +257,8 @@ namespace Engine
 				ImGui::SetNextFrameWantCaptureKeyboard( false );
 			}
 
-			ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
+			/* ImGui::Image() call below is moved to a later point, to make sure the image itself stays the same until ImGui actually renders it. */
+			//ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
 		}
 
 		ImGui::End();
@@ -277,6 +286,9 @@ namespace Engine
 														   } ) )
 			{
 				renderer->SetEditorShadingMode( ( EditorShadingMode )editor_shading_mode );
+				const auto size = Platform::GetFramebufferSizeInPixels();
+				Platform::ResizeWindow( size.X(), size.Y() ); // This is to prompt the Renderer to re-create the framebuffers and change the sRGBA status accordingly.
+				ImGuiSetup::SetStyle( ( EditorShadingMode )editor_shading_mode == EditorShadingMode::Shaded || ( EditorShadingMode )editor_shading_mode == EditorShadingMode::ShadedWireframe );
 			}
 		}
 		
