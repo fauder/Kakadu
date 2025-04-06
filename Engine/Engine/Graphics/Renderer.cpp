@@ -51,7 +51,8 @@ namespace Engine
 #ifdef _EDITOR
 		,
 		editor_shading_mode( EditorShadingMode::Shaded ),
-		editor_wireframe_edge_threshold( 0.02f )
+		editor_wireframe_thickness_in_pixels( 2.0f ),
+		editor_wireframe_color( 0.29f, 0.75f, 0.67f, 1.0f )
 #endif // _EDITOR
 	{
 		logger.IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
@@ -483,11 +484,8 @@ namespace Engine
 			ImGuiDrawer::Draw( framebuffer_main.clear_color );
 			ImGui::EndDisabled();
 
-			float temp = editor_wireframe_edge_threshold * 100.0f;
-			if( ImGui::SliderFloat( "Wireframe Thickness", &temp, 0.0f, 100.0f, "%.1f%%", ImGuiSliderFlags_Logarithmic ) )
-			{
-				editor_wireframe_edge_threshold = temp / 100.0f;
-			}
+			ImGui::SliderFloat( "Wireframe Thickness", &editor_wireframe_thickness_in_pixels, 0.0f, 100.0f, "%.1f pixels", ImGuiSliderFlags_Logarithmic );
+			ImGuiDrawer::Draw( editor_wireframe_color, "Wireframe Color" );
 		}
 
 		ImGui::End();
@@ -1661,8 +1659,8 @@ namespace Engine
 			{
 				case EditorShadingMode::Wireframe:
 				case EditorShadingMode::ShadedWireframe:
-					shader->SetUniform( "uniform_color", Color4( 0.29f, 0.75f, 0.67f, 1.0f ) );
-					shader->SetUniform( "uniform_threshold", editor_wireframe_edge_threshold );
+					shader->SetUniform( "uniform_line_thickness", editor_wireframe_thickness_in_pixels );
+					shader->SetUniform( "uniform_color", editor_wireframe_color );
 					break;
 				case EditorShadingMode::Geometry_Tangents:
 				case EditorShadingMode::Geometry_Bitangents:

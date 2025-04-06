@@ -438,6 +438,7 @@ namespace Engine
 		 */
 
 		EditorShadingMode editor_shading_mode;
-		float editor_wireframe_edge_threshold;
+		float editor_wireframe_thickness_in_pixels;
+		Color4 editor_wireframe_color;
 	};
 }
