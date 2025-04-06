@@ -57,6 +57,7 @@ namespace Engine
             Texture* sub_mesh_albedo_texture    = nullptr;
             Texture* sub_mesh_normal_texture    = nullptr;
             Texture* metallic_roughness_texture = nullptr;
+            Texture* occlusion_texture          = nullptr;
             std::optional< Color3 > sub_mesh_albedo_color;
 
 			auto* position_iterator = submesh_iterator->findAttribute( "POSITION" );
@@ -128,6 +129,24 @@ namespace Engine
                                                              ? ( "Unnamed Model " + metallic_roughness_texture->Name().substr( 10 ) + " (Metallic-Roughness)" ).c_str()
                                                              : ( gltf_mesh.name + " (Metallic-Roughness)" ).c_str() );
                         AssetDatabase< Texture >::RenameAsset( std::move( old_name ), metallic_roughness_texture->Name() );
+                    }
+                }
+
+                if( const auto& occlusion_texture_info = material.occlusionTexture;
+                    occlusion_texture_info.has_value() )
+                {
+                    const auto& fastgltf_texture = gltf_asset.textures[ occlusion_texture_info->textureIndex ];
+                    if( !fastgltf_texture.imageIndex.has_value() )
+                        return false;
+
+                    occlusion_texture = textures[ fastgltf_texture.imageIndex.value() ];
+                    if( occlusion_texture->Name().front() == '<' ) // <unnamed>.
+                    {
+                        std::string old_name( occlusion_texture->Name() );
+                        occlusion_texture->SetName( gltf_mesh.name.empty()
+                                                             ? ( "Unnamed Model " + occlusion_texture->Name().substr( 10 ) + " (Occlusion)" ).c_str()
+                                                             : ( gltf_mesh.name + " (Occlusion)" ).c_str() );
+                        AssetDatabase< Texture >::RenameAsset( std::move( old_name ), occlusion_texture->Name() );
                     }
                 }
             }
