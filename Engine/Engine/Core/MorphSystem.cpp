@@ -1,11 +1,21 @@
 // Engine Includes.
 #include "MorphSystem.h"
 
+// std Includes.
+#include <stdexcept>
 namespace Engine
 {
 	void MorphSystem::Add( Morph&& new_morph )
 	{
+#ifdef _EDITOR
+		if( not new_morph.on_execute )
+		{
+			throw std::runtime_error( "MorphSystem::Add(): Attempt to Add() Morph with unset on_execute callback detected!" );
+		}
+#endif // _EDITOR
+
 		new_morph.remaining_duration_in_seconds = new_morph.duration_in_seconds;
+
 		morph_array.emplace_back( std::move( new_morph ) );
 	}
 
