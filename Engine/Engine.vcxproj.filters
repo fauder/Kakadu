@@ -398,6 +398,9 @@
     <ClCompile Include="Engine\Graphics\ModelInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Core\MorphSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Engine.natvis" />
