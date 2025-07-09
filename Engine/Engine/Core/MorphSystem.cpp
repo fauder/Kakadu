@@ -21,7 +21,8 @@ namespace Engine
 				const auto t = ( morph.duration_in_seconds - morph.remaining_duration_in_seconds ) / morph.duration_in_seconds;
 
 				morph.on_execute( t );
-				morph.on_complete();
+				if( morph.on_complete )
+					morph.on_complete();
 
 				remove_iterator = std::remove( morph_array.begin(), morph_array.end(), morph );
 			}
