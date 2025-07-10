@@ -246,10 +246,10 @@ namespace Engine
 		void CalculateShadowMappingInformation();
 		void RecompileModifiedShaders();
 
-		void InitializeInternalMeshes();
-		void InitializeInternalShaders();
-		void InitializeInternalMaterials();
-		void InitializeInternalRenderables();
+		void InitializeBuiltinMeshes();
+		void InitializeBuiltinShaders();
+		void InitializeBuiltinMaterials();
+		void InitializeBuiltinRenderables();
 
 		void SetPolygonMode( const PolygonMode mode );
 

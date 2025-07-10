@@ -76,10 +76,10 @@ namespace Engine
 		InitializeBuiltinQueues();
 		InitializeBuiltinPasses();
 
-		InitializeInternalMeshes();
-		InitializeInternalShaders();
-		InitializeInternalMaterials();
-		InitializeInternalRenderables();
+		InitializeBuiltinMeshes();
+		InitializeBuiltinShaders();
+		InitializeBuiltinMaterials();
+		InitializeBuiltinRenderables();
 	}
 
 	Renderer::~Renderer()
@@ -1536,7 +1536,7 @@ namespace Engine
 		}
 	}
 
-	void Renderer::InitializeInternalMeshes()
+	void Renderer::InitializeBuiltinMeshes()
 	{
 		full_screen_quad_mesh = Mesh( Primitive::NonIndexed::Quad_FullScreen::Positions,
 									  "[Renderer] Quad (FullScreen)",
@@ -1545,13 +1545,13 @@ namespace Engine
 									  { /* No indices. */ } );
 	}
 
-	void Renderer::InitializeInternalShaders()
+	void Renderer::InitializeBuiltinShaders()
 	{
 		shader_msaa_resolve = BuiltinShaders::Get( "MSAA Resolve" );
 		shader_tone_mapping = BuiltinShaders::Get( "Tone Mapping" );
 	}
 
-	void Renderer::InitializeInternalMaterials()
+	void Renderer::InitializeBuiltinMaterials()
 	{
 		// TODO: Handle No MSAA case.
 
@@ -1564,7 +1564,7 @@ namespace Engine
 		tone_mapping_material.Set( "uniform_exposure", 1.0f );
 	}
 
-	void Renderer::InitializeInternalRenderables()
+	void Renderer::InitializeBuiltinRenderables()
 	{
 		msaa_resolve_renderable = Renderable( &full_screen_quad_mesh, &msaa_resolve_material );
 		AddRenderable( &msaa_resolve_renderable, QUEUE_ID_MSAA_RESOLVE );
