@@ -150,6 +150,12 @@ namespace Engine
 
 		features_requested = features_to_set;
 
+		/* Even though the shader may fail the following compilation or linking stages, last write time should be set in order to make recompilation (due to user modification of sources) possible. */
+		last_write_time_map.emplace( vertex_source_path, std::filesystem::last_write_time( vertex_source_path ) );
+		if( not geometry_shader_source_path.Empty() )
+			last_write_time_map.emplace( geometry_source_path, std::filesystem::last_write_time( geometry_source_path ) );
+		last_write_time_map.emplace( fragment_source_path, std::filesystem::last_write_time( fragment_source_path ) );
+
 		unsigned int vertex_shader_id = 0, geometry_shader_id = 0, fragment_shader_id = 0;
 
 		std::optional< std::string > vertex_shader_source;
@@ -279,11 +285,6 @@ namespace Engine
 
 			for( auto& [ uniform_buffer_name, uniform_buffer_info ] : uniform_buffer_info_map_intrinsic )
 				UniformBlockBindingPointManager::RegisterUniformBlock( *this, uniform_buffer_name, uniform_buffer_info );
-
-			last_write_time_map.emplace( vertex_source_path, std::filesystem::last_write_time( vertex_source_path ) );
-			if( not geometry_shader_source_path.Empty() )
-				last_write_time_map.emplace( geometry_source_path, std::filesystem::last_write_time( geometry_source_path ) );
-			last_write_time_map.emplace( fragment_source_path, std::filesystem::last_write_time( fragment_source_path ) );
 		}
 
 		return link_result;
