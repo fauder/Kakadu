@@ -1529,10 +1529,10 @@ namespace Engine
 
 				RegisterShader( *shader );
 
-				logger.Info( "\"" + shader->name + "\" shader's source files are modified. It is recompiled." );
+				logger.Info( "Recompiled modified shader: \"" + shader->name + "\"" );
 			}
 			else
-				logger.Error( "\"" + shader->name + "\" shader's source files are modified but it could not be recompiled successfully." );
+				logger.Error( "Failed to recompile modified shader: \"" + shader->name + "\"" );
 		}
 	}
 
