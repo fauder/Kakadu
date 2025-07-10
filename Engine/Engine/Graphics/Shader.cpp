@@ -190,7 +190,10 @@ namespace Engine
 				PreProcessShaderStage_SetFeatures( shader_source, geometry_shader_features, features_to_set );
 
 				if( !CompileShader( shader_source.c_str(), geometry_shader_id, ShaderType::Geometry ) )
+				{
+					glDeleteShader( vertex_shader_id );
 					return false;
+				}
 			}
 			else
 			{
@@ -212,7 +215,12 @@ namespace Engine
 			PreProcessShaderStage_SetFeatures( shader_source, fragment_shader_features, features_to_set );
 
 			if( !CompileShader( shader_source.c_str(), fragment_shader_id, ShaderType::Fragment ) )
+			{
+				glDeleteShader( vertex_shader_id );
+				if( geometry_shader_id > 0 )
+					glDeleteShader( geometry_shader_id );
 				return false;
+			}
 		}
 		else
 		{
@@ -1215,8 +1223,6 @@ namespace Engine
 #endif // _WIN32 && _DEBUG
 
 		ServiceLocator< GLLogger >::Get().Error( error_string );
-
-		throw std::logic_error( error_string );
 	}
 
 	void Shader::LogErrors_Compilation( const int shader_id, const ShaderType shader_type ) const
@@ -1240,8 +1246,11 @@ namespace Engine
 	std::string Shader::FormatErrorLog( const char* log ) const
 	{
 		std::string error_log_string( log );
+		if( error_log_string.back() == '\n' )
+			error_log_string.pop_back();
+
 		Utility::String::Replace( error_log_string, "\n", "\n    " );
-		return "\n    " + error_log_string;
+		return "\n    " + error_log_string + "\n";
 	}
 
 	std::string Shader::UniformEditorName( const std::string_view original_name )
