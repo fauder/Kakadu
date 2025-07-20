@@ -211,6 +211,7 @@ namespace Platform
 
 	/* Mouse IO. */
 	void SetMouseButtonEventCallback( std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods ) > callback = {} );
+	void SetMouseScrollEventCallback( std::function< void( const float x_offset, const float y_offset ) > callback = {} );
 	bool IsMouseButtonPressed( const MouseButton mouse_button );
 	bool IsMouseButtonPressed_ThisFrame( const MouseButton mouse_button );
 	bool IsMouseButtonReleased( const MouseButton mouse_button );

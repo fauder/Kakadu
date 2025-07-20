@@ -36,6 +36,7 @@ namespace Engine
 
 		virtual void OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		virtual void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
+		virtual void OnMouseScrollEvent( const float x_offset, const float y_offset );
 		virtual void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels );
 #ifdef _EDITOR
 		virtual void RenderImGui();
@@ -58,6 +59,7 @@ namespace Engine
 	private:
 		void OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		void OnMouseButtonEventInternal( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
+		void OnMouseScrollEventInternal( const float x_offset, const float y_offset  );
 		void OnFramebufferResizeEventInternal( const int width_new_pixels, const int height_new_pixels );
 
 		void CalculateTimeInformation();

@@ -33,6 +33,7 @@ namespace Platform
 	std::array< MouseButtonAction, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATES{ MouseButtonAction::RELEASE };
 	std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )			> KEYBOARD_CALLBACK;
 	std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods )	> MOUSE_BUTTON_CALLBACK;
+	std::function< void( const float x_offset, const float y_offset )									> MOUSE_SCROLL_CALLBACK;
 	std::function< void( const int width_new_pixels, const int height_new_pixels )						> FRAMEBUFFER_RESIZE_CALLBACK;
 #ifdef _EDITOR
 	std::function< void( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
@@ -42,7 +43,7 @@ namespace Platform
 	{
 		if( glfwGetMouseButton( WINDOW, GLFW_MOUSE_BUTTON_LEFT ) != GLFW_RELEASE )
 			return;
-
+		
 		glfwSetWindowSize( window, width_new_pixels, height_new_pixels );
 
 		/* It is the client application's (renderer's) responsibility to call glViewport(). */
@@ -86,6 +87,9 @@ namespace Platform
 
 		MOUSE_SCROLL_X_OFFSET = ( float )x_offset;
 		MOUSE_SCROLL_Y_OFFSET = ( float )y_offset;
+
+		if( MOUSE_SCROLL_CALLBACK )
+			MOUSE_SCROLL_CALLBACK( MOUSE_SCROLL_X_OFFSET, MOUSE_SCROLL_Y_OFFSET );
 	}
 
 	void OnMouseButtonEvent( GLFWwindow* window, const int button, const int action, const int mods )
@@ -432,6 +436,15 @@ namespace Platform
 
 		ImGui_ImplGlfw_RestoreCallbacks( WINDOW );
 		glfwSetMouseButtonCallback( WINDOW, OnMouseButtonEvent );
+		ImGui_ImplGlfw_InstallCallbacks( WINDOW );
+	}
+
+	void SetMouseScrollEventCallback( std::function< void( const float x_offset, const float y_offset ) > callback )
+	{
+		MOUSE_SCROLL_CALLBACK = callback;
+
+		ImGui_ImplGlfw_RestoreCallbacks( WINDOW );
+		glfwSetScrollCallback( WINDOW, OnMouseScrolled );
 		ImGui_ImplGlfw_InstallCallbacks( WINDOW );
 	}
 

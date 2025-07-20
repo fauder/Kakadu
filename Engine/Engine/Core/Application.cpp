@@ -81,6 +81,12 @@ namespace Engine
 				this->OnMouseButtonEventInternal( button, button_action, key_mods );
 			} );
 
+		Platform::SetMouseScrollEventCallback(
+			[ = ]( const float x_offset, const float y_offset )
+			{
+				this->OnMouseScrollEventInternal( x_offset, y_offset );
+			} );
+
 		Platform::SetFramebufferResizeCallback(
 			[ = ]( const int width_new_pixels, const int height_new_pixels )
 			{
@@ -165,6 +171,10 @@ namespace Engine
 	{
 	}
 
+	void Application::OnMouseScrollEvent( const float x_offset, const float y_offset )
+	{
+	}
+
 	void Application::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 	{
 	}
@@ -192,6 +202,13 @@ namespace Engine
 		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function. 
 
 		OnMouseButtonEvent( button, button_action, key_mods );
+	}
+
+	void Application::OnMouseScrollEventInternal( const float x_offset, const float y_offset )
+	{
+		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function. 
+
+		OnMouseScrollEvent( x_offset, y_offset );
 	}
 
 	void Application::OnFramebufferResizeEventInternal( const int width_new_pixels, const int height_new_pixels )
