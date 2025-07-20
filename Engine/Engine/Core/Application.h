@@ -49,6 +49,12 @@ namespace Engine
 
 		inline bool MSAAIsEnabled() { return msaa_sample_count.has_value(); }
 
+#ifdef _EDITOR
+		bool IsMouseHoveringTheViewport() const { return viewport_info.is_hovered; }
+		/* This returns the viewport coordinates (bottom-left origin for OpenGL). Beware: may return garbage when the mouse is outside the viewport. */
+		Vector2 GetMouseScreenSpacePosition() const;
+#endif
+
 	private:
 		void OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		void OnMouseButtonEventInternal( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
@@ -68,11 +74,21 @@ namespace Engine
 #ifdef _EDITOR
 		GLLogger gl_logger;
 
-		bool show_frame_statistics;
+		bool show_frame_statistics_overlay;
 		bool show_imgui;
 		bool show_gl_logger;
 
-		/* 5 bytes(s) of padding. */
+		/* 4 bytes(s) of padding. */
+
+		struct ViewportWindowInfo
+		{
+			ImVec2 framebuffer_size; // The OpenGL framebuffer size.
+			ImVec2 position; // The ImGui window position.
+			Vector2I mouse_screen_space_position; // Screen-space position of the mouse, relative to OpenGL convention: the bottom-left of the viewport.
+			bool is_hovered;
+			/* 3 bytes(s) of padding. */
+		};
+		ViewportWindowInfo viewport_info;
 #endif // _EDITOR
 
 		std::unique_ptr< Renderer > renderer;

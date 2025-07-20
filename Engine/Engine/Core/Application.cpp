@@ -27,7 +27,7 @@ namespace Engine
 							  Renderer::Description&& renderer_description )
 		:
 #ifdef _EDITOR
-		show_frame_statistics( true ),
+		show_frame_statistics_overlay( true ),
 		show_imgui( not flags.IsSet( CreationFlags::OnStart_DisableImGui ) ),
 		show_gl_logger( true ),
 #endif // _EDITOR
@@ -167,6 +167,17 @@ namespace Engine
 	{
 	}
 
+#ifdef _EDITOR
+	Vector2 Application::GetMouseScreenSpacePosition() const
+	{
+		ImVec2 mouse = ImGui::GetMousePos();
+
+		/* ImGui uses top - left as the origin for its windows while OpenGL's viewport conventions dictate bottom-left as the origin => flip Y.
+		 * Relative mouse pos: */
+		return Vector2( mouse.x - viewport_info.position.x, viewport_info.framebuffer_size.y - ( mouse.y - viewport_info.position.y ) );
+	}
+#endif
+
 	void Application::OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
 		// No need to query ImGui::GetIO().WantCaptureKeyboard here because Platform already queries it before calling this function. 
@@ -241,14 +252,14 @@ namespace Engine
 
 		if( ImGui::Begin( "Viewport" ) )
 		{
-			const ImVec2   viewport_size_imvec2( ImGui::GetContentRegionAvail() );
-			const Vector2I viewport_size( ( int )viewport_size_imvec2.x, ( int )viewport_size_imvec2.y );
+			viewport_info.framebuffer_size = ImGui::GetContentRegionAvail();
+			const Vector2I viewport_available_size( ( int )viewport_info.framebuffer_size.x, ( int )viewport_info.framebuffer_size.y );
 
 			const auto& imgui_io = ImGui::GetIO();
-			if( viewport_size != renderer->FinalFramebuffer().Size() &&
+			if( viewport_available_size != renderer->FinalFramebuffer().Size() &&
 				( not imgui_io.WantCaptureMouse || not imgui_io.MouseDown[ 0 ] ) )
 			{
-				OnFramebufferResizeEvent( viewport_size.X(), viewport_size.Y() );
+				OnFramebufferResizeEvent( viewport_available_size.X(), viewport_available_size.Y() );
 			}
 
 			if( ImGui::IsWindowHovered() )
@@ -256,6 +267,10 @@ namespace Engine
 				ImGui::SetNextFrameWantCaptureMouse( false );
 				ImGui::SetNextFrameWantCaptureKeyboard( false );
 			}
+
+			/* Collect information for mouse hover/pos. info detection OUTSIDE the Begin()/End() block here. */
+			viewport_info.position   = ImGui::GetCursorScreenPos();
+			viewport_info.is_hovered = ImGui::IsWindowHovered( ImGuiHoveredFlags_AllowWhenBlockedByActiveItem );
 
 			/* ImGui::Image() call below is moved to a later point, to make sure the image itself stays the same until ImGui actually renders it. */
 			//ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
@@ -268,7 +283,7 @@ namespace Engine
 	{
 		if( ImGuiUtility::BeginOverlay( "Viewport", "##ViewportControls", 
 										ImGuiUtility::HorizontalPosition::LEFT, ImGuiUtility::VerticalPosition::TOP, 
-										&show_frame_statistics, 0.65f ) )
+										&show_frame_statistics_overlay, 0.65f ) )
 		{
 			int editor_shading_mode = ( int )renderer->GetEditorShadingMode();
 			if( ImGuiUtility::DrawShadedSphereComboButton( "ShadingMode", reinterpret_cast< int* >( &editor_shading_mode ),
@@ -299,7 +314,7 @@ namespace Engine
 	{
 		if( ImGuiUtility::BeginOverlay( "Viewport", ICON_FA_CHART_LINE " Frame Statistics",
 										ImGuiUtility::HorizontalPosition::RIGHT, ImGuiUtility::VerticalPosition::TOP,
-										&show_frame_statistics ) )
+										&show_frame_statistics_overlay ) )
 		{
 			const float fps        = 1.0f / time_delta_real;
 			const float frame_time = time_delta_real * 1000.0f;
