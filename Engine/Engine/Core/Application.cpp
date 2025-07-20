@@ -188,6 +188,16 @@ namespace Engine
 		 * Relative mouse pos: */
 		return Vector2( mouse.x - viewport_info.position.x, viewport_info.framebuffer_size.y - ( mouse.y - viewport_info.position.y ) );
 	}
+
+	void Application::SetViewportMagnifierZoom( const float new_zoom_multiplier )
+	{
+		viewport_info.magnifier_zoom_multiplier = Math::ClampMin( new_zoom_multiplier, 1.0f );
+	}
+
+	void Application::OffsetViewportMagnifierZoom( const float delta_zoom_multiplier )
+	{
+		SetViewportMagnifierZoom( viewport_info.magnifier_zoom_multiplier + delta_zoom_multiplier );
+	}
 #endif
 
 	void Application::OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
@@ -251,7 +261,7 @@ namespace Engine
 		if( show_mouse_screen_space_position_overlay )
 		{
 			RenderImGui_CursorScreenSpacePositionOverlay();
-			RenderImGui_MagnifierOverlay( 2, 256.0f );
+			RenderImGui_MagnifierOverlay( Math::Pow( 2.0f, viewport_info.magnifier_zoom_multiplier * viewport_info.magnifier_zoom_sensitivity ), 256.0f );
 		}
 
 		if( ImGui::Begin( "Viewport" ) )

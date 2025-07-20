@@ -54,6 +54,8 @@ namespace Engine
 		bool IsMouseHoveringTheViewport() const { return viewport_info.is_hovered; }
 		/* This returns the viewport coordinates (bottom-left origin for OpenGL). Beware: may return garbage when the mouse is outside the viewport. */
 		Vector2 GetMouseScreenSpacePosition() const;
+		void SetViewportMagnifierZoom( const float new_zoom_multiplier );
+		void OffsetViewportMagnifierZoom( const float delta_zoom_multiplier );
 #endif
 
 	private:
@@ -68,7 +70,7 @@ namespace Engine
 		void RenderImGui_Viewport();
 		void RenderImGui_ViewportControls();
 		void RenderImGui_CursorScreenSpacePositionOverlay();
-		void RenderImGui_MagnifierOverlay( float zoom = 4.0f, float window_size = 128.0f );
+		void RenderImGui_MagnifierOverlay( float zoom, float window_size = 128.0f );
 		void RenderImGui_FrameStatistics();
 #endif // _EDITOR
 
@@ -90,7 +92,9 @@ namespace Engine
 			ImVec2 framebuffer_size; // The OpenGL framebuffer size.
 			ImVec2 position; // The ImGui window position.
 			Vector2I mouse_screen_space_position; // Screen-space position of the mouse, relative to OpenGL convention: the bottom-left of the viewport.
-			bool is_hovered;
+			float magnifier_zoom_multiplier = 2.0f;
+			float magnifier_zoom_sensitivity = 0.1f;
+			bool is_hovered = false;
 			/* 3 bytes(s) of padding. */
 		};
 		ViewportWindowInfo viewport_info;
@@ -126,6 +130,8 @@ namespace Engine
 		float time_since_start;
 
 		bool mouse_screen_space_position_overlay_is_active;
+
+		/* 7 byte(s) of padding. */
 	};
 
 	/* Needs to be implemented by the CLIENT Application. */
