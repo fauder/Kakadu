@@ -66,6 +66,7 @@ namespace Engine
 		void RenderImGui_Viewport();
 		void RenderImGui_ViewportControls();
 		void RenderImGui_CursorScreenSpacePositionOverlay();
+		void RenderImGui_MagnifierOverlay( float zoom = 4.0f, float window_size = 128.0f );
 		void RenderImGui_FrameStatistics();
 #endif // _EDITOR
 

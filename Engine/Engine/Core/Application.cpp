@@ -234,6 +234,7 @@ namespace Engine
 		if( show_mouse_screen_space_position_overlay )
 		{
 			RenderImGui_CursorScreenSpacePositionOverlay();
+			RenderImGui_MagnifierOverlay( 2, 256.0f );
 		}
 
 		if( ImGui::Begin( "Viewport" ) )
@@ -326,6 +327,55 @@ namespace Engine
 			if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, 0.65f ) )
 			{
 				ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_screen_space_position.X(), viewport_info.mouse_screen_space_position.Y() );
+			}
+
+			Engine::ImGuiUtility::EndOverlay();
+		}
+	}
+
+	void Application::RenderImGui_MagnifierOverlay( float zoom, float window_size )
+	{
+		ASSERT( zoom >= 1.0f );
+
+		if( mouse_screen_space_position_overlay_is_active = IsMouseHoveringTheViewport() )
+		{
+			// Find out how many "original pixels" a magnifier pixel is:
+			const float magnified_pixel_multiplier = 1.0f / zoom;
+
+			// Calculate UV coordinates in the viewport texture:
+			ImVec2 mouse_pos = reinterpret_cast< ImVec2&& >( std::move( GetMouseScreenSpacePosition() ) );
+			ImVec2 uv_center = mouse_pos / viewport_info.framebuffer_size;
+			ImVec2 uv_radius = ImVec2( 0.5f * window_size * magnified_pixel_multiplier,
+									   0.5f * window_size * magnified_pixel_multiplier ) / viewport_info.framebuffer_size;
+
+			ImVec2 uv0 = uv_center - uv_radius;
+			ImVec2 uv1 = uv_center + uv_radius;
+
+			// Clamp to [0,1] to avoid wrapping:
+			uv0.x = Math::Clamp( uv0.x, 0.0f, 1.0f );
+			uv0.y = Math::Clamp( uv0.y, 0.0f, 1.0f );
+			uv1.x = Math::Clamp( uv1.x, 0.0f, 1.0f );
+			uv1.y = Math::Clamp( uv1.y, 0.0f, 1.0f );
+
+			std::swap( uv0.y, uv1.y );
+
+			viewport_info.mouse_screen_space_position = Vector2I( GetMouseScreenSpacePosition() );
+			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, +ImGui::GetTextLineHeightWithSpacing() );
+
+			if( ImGuiUtility::BeginOverlay( "Viewport", "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, 0.65f ) )
+			{
+				static GLuint nearest_sampler = 0;
+				if( nearest_sampler == 0 )
+				{
+					glGenSamplers( 1, &nearest_sampler );
+					glSamplerParameteri( nearest_sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+					glSamplerParameteri( nearest_sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				}
+
+				const auto texture_id = renderer->FinalFramebuffer().ColorAttachment().Id().Get();
+				glBindSampler( texture_id, nearest_sampler );
+				ImGui::Image( ( ImTextureID )texture_id, ImVec2( window_size, window_size ), uv0, uv1 );
+				glBindSampler( texture_id, 0 );
 			}
 
 			Engine::ImGuiUtility::EndOverlay();
