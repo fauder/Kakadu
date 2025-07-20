@@ -8,6 +8,7 @@
 
 // Engine Includes.
 #include "Graphics/Graphics.h"
+#include "Optimization.h"
 #include "Platform.h"
 #include "Utility.hpp"
 
@@ -424,6 +425,26 @@ namespace Platform
 			return false;
 
 		return glfwGetKey( WINDOW, int( key_code ) ) == GLFW_RELEASE;
+	}
+
+	bool IsKeyModifierHeldDown( const KeyMods key_mod )
+	{
+		if( ImGui::GetIO().WantCaptureKeyboard )
+			return false;
+
+		switch( key_mod )
+		{
+			case KeyMods::SHIFT:		return glfwGetKey( WINDOW, int( KeyCode::KEY_LEFT_SHIFT		) ) || glfwGetKey( WINDOW, int( KeyCode::KEY_RIGHT_SHIFT	) );
+			case KeyMods::CONTROL:		return glfwGetKey( WINDOW, int( KeyCode::KEY_LEFT_CONTROL	) ) || glfwGetKey( WINDOW, int( KeyCode::KEY_RIGHT_CONTROL	) );
+			case KeyMods::ALT:			return glfwGetKey( WINDOW, int( KeyCode::KEY_LEFT_ALT		) ) || glfwGetKey( WINDOW, int( KeyCode::KEY_RIGHT_ALT		) );
+			case KeyMods::SUPER:		return glfwGetKey( WINDOW, int( KeyCode::KEY_LEFT_SUPER		) ) || glfwGetKey( WINDOW, int( KeyCode::KEY_RIGHT_SUPER	) );
+			case KeyMods::CAPS_LOCK:	return glfwGetKey( WINDOW, int( KeyCode::KEY_CAPS_LOCK		) );
+			case KeyMods::NUM_LOCK:		return glfwGetKey( WINDOW, int( KeyCode::KEY_NUM_LOCK		) );
+
+			default:
+				UNREACHABLE();
+				return false;
+		}
 	}
 
 	/*

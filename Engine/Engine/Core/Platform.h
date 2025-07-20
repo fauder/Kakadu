@@ -208,6 +208,7 @@ namespace Platform
 	void SetKeyboardEventCallback( std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods ) > callback = {} );
 	bool IsKeyPressed( const KeyCode key_code );
 	bool IsKeyReleased( const KeyCode key_code );
+	bool IsKeyModifierHeldDown( const KeyMods key_mod );
 
 	/* Mouse IO. */
 	void SetMouseButtonEventCallback( std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods ) > callback = {} );
