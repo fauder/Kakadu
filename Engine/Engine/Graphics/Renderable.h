@@ -37,10 +37,10 @@ namespace Engine
 		inline bool IsCastingShadows()		const { return is_casting_shadows; }
 
 	/* Toggling: */
-		void ToggleOn();
-		void ToggleOff();
-		void ToggleOnOrOff();
-		void ToggleOnOrOff( const bool enable );
+		void Enable();
+		void Disable();
+		void ToggleOnOff();
+		void ToggleOnOff( const bool enable );
 		void ToggleShadowReceiving( const bool enable );
 		void ToggleShadowCasting( const bool enable );
 

@@ -56,22 +56,22 @@ namespace Engine
 		this->material = material;
 	}
 
-	void Renderable::ToggleOn()
+	void Renderable::Enable()
 	{
 		is_enabled = true;
 	}
 
-	void Renderable::ToggleOff()
+	void Renderable::Disable()
 	{
 		is_enabled = false;
 	}
 
-	void Renderable::ToggleOnOrOff()
+	void Renderable::ToggleOnOff()
 	{
 		is_enabled = !is_enabled;
 	}
 
-	void Renderable::ToggleOnOrOff( const bool enable )
+	void Renderable::ToggleOnOff( const bool enable )
 	{
 		is_enabled = enable;
 	}

@@ -435,7 +435,7 @@ void SandboxApplication::Initialize()
 	mirror_quad_renderable = Engine::Renderable( &quad_mesh_mirror, &mirror_quad_material );
 	renderer->AddRenderable( &mirror_quad_renderable, Engine::Renderer::QUEUE_ID_BEFORE_POSTPROCESSING );
 
-	mirror_quad_renderable.ToggleOnOrOff( not render_rear_view_cam_to_imgui );
+	mirror_quad_renderable.ToggleOnOff( not render_rear_view_cam_to_imgui );
 
 	skybox_renderable = Engine::Renderable( &cube_mesh_fullscreen, &skybox_material );
 	renderer->AddRenderable( &skybox_renderable, Engine::Renderer::QUEUE_ID_SKYBOX );
@@ -649,7 +649,7 @@ void SandboxApplication::RenderImGui()
 	if( ImGui::Begin( "Rear-view Camera", nullptr, ImGuiWindowFlags_NoScrollbar ) )
 	{
 		if( ImGui::Checkbox( "Render to this window instead of default Framebuffer", &render_rear_view_cam_to_imgui ) )
-			mirror_quad_renderable.ToggleOnOrOff( not render_rear_view_cam_to_imgui );
+			mirror_quad_renderable.ToggleOnOff( not render_rear_view_cam_to_imgui );
 
 		if( render_rear_view_cam_to_imgui )
 			ImGui::Image( ( ImTextureID )renderer->CustomFramebuffer( 0 ).ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
