@@ -70,7 +70,8 @@ namespace Engine::ImGuiDrawer
 	bool Draw( bool& value,					const char* name = "##bool" );
 	void Draw( const bool& value,			const char* name = "##bool" );
 
-	template< Concepts::Arithmetic Component, std::size_t Size > requires( Size > 1 )
+	template< Concepts::Arithmetic Component, std::size_t Size >
+		requires( Size > 1 )
 	void Draw( const Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
 	{
 		ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
@@ -107,7 +108,8 @@ namespace Engine::ImGuiDrawer
 		ImGui::PopStyleColor();
 	}
 
-	template< Concepts::Arithmetic Component, std::size_t Size > requires( Size > 1 )
+	template< Concepts::Arithmetic Component, std::size_t Size >
+		requires( Size > 1 )
 	bool Draw( Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
 	{
 		bool is_modified = false;
@@ -141,6 +143,8 @@ namespace Engine::ImGuiDrawer
 	}
 
 	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize > requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
+	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
+		requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
 	void Draw( const Math::Matrix< Type, RowSize, ColumnSize >& matrix, const char* name = "##matrix<>" )
 	{
 		if( ImGui::TreeNodeEx( name, 0 ) )
@@ -165,7 +169,8 @@ namespace Engine::ImGuiDrawer
 		}
 	}
 
-	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize > requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
+	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
+		requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
 	bool Draw( Math::Matrix< Type, RowSize, ColumnSize >& matrix, const char* name = "##matrix<>" )
 	{
 		bool is_modified = false;
@@ -277,7 +282,8 @@ namespace Engine::ImGuiDrawer
 	bool Draw( Material& material, Renderer& renderer, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 	/* const version of Material is nearly the same as the non-const and it was getting annoying having to update a huge and mostly unused function, so it is removed. */
 
-	template< typename BlobType > requires( std::is_base_of_v< Blob, BlobType > )
+	template< typename BlobType >
+		requires( std::is_base_of_v< Blob, BlobType > )
 	bool Draw( UniformBufferManagement< BlobType >& buffer_management, const char* name = "##buffer-management", ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing )
 	{
 		if( buffer_management.GetBufferInformationMap().empty() )
@@ -433,7 +439,8 @@ namespace Engine::ImGuiDrawer
 		return is_modified;
 	}
 
-	template< typename BlobType > requires( std::is_base_of_v< Blob, BlobType > )
+	template< typename BlobType >
+		requires( std::is_base_of_v< Blob, BlobType > )
 	void Draw( const UniformBufferManagement< BlobType >& buffer_management, const char* name = "##buffer-management",
 			   ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing )
 	{
