@@ -29,6 +29,9 @@ namespace Engine::Math
 			requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
 		friend class Matrix;
 
+		template< typename, std::size_t Size > requires( Size > 1 )
+		friend class Vector; // For example, needed in the conversion constructor.
+
 	public:
 		using ComponentType = Component;
 
@@ -78,6 +81,14 @@ namespace Engine::Math
 			:
 			data{ x, y, z, w }
 		{
+		}
+
+		/* Conversion constructor: */
+		template< typename OtherComponent >
+		constexpr Vector( const Vector< OtherComponent, Size >& other_vector_of_different_type )
+		{
+			for( std::size_t i = 0; i < Size; ++i )
+				data[ i ] = static_cast< Component >( other_vector_of_different_type.data[ i ] );
 		}
 
 		template< typename SmallerVectorType > requires( SmallerVectorType::Dimension() > 1 && SmallerVectorType::Dimension() < Size )
