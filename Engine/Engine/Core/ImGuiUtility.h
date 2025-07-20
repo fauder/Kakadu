@@ -9,8 +9,8 @@
 
 namespace Engine::ImGuiUtility
 {
-	enum class HorizontalPosition	{ LEFT, CENTER,  RIGHT };
-	enum class VerticalPosition	{ TOP,  CENTER, BOTTOM };
+	enum class HorizontalPosition	{ LEFT, CENTER, RIGHT };
+	enum class VerticalPosition		{ TOP, CENTER, BOTTOM };
 
 	void Table_Header_ManuallySubmit( const int column_index );
 	template< int array_size >
@@ -33,6 +33,10 @@ namespace Engine::ImGuiUtility
 	bool BeginOverlay( const char* window_name, const char* name, 
 					   const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
 					   bool* p_open = ( bool* )0, 
+					   const float alpha = 0.35f );
+	bool BeginOverlay( const char* window_name, const char* name,
+					   const ImVec2 pos,
+					   bool* p_open = ( bool* )0,
 					   const float alpha = 0.35f );
 	void EndOverlay();
 

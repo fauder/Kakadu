@@ -80,7 +80,7 @@ namespace Engine::ImGuiUtility
                        const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
                        bool* p_open, const float alpha )
     {
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
+		constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
             ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
 		
         const auto window = ImGui::FindWindowByName( window_name );
@@ -107,7 +107,29 @@ namespace Engine::ImGuiUtility
 		window_pos_pivot.x = ( int )horizontal_positioning * 0.5f;
 		window_pos_pivot.y = ( int )vertical_positioning * 0.5f;
 		ImGui::SetNextWindowPos( window_pos, ImGuiCond_Always, window_pos_pivot );
-		window_flags |= ImGuiWindowFlags_NoMove;
+
+		ImGui::SetNextWindowBgAlpha( alpha );
+        if( ImGui::Begin( name, p_open, window_flags ) )
+        {
+            if( name[ 0 ] != '#' )
+                ImGui::TextUnformatted( name );
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool BeginOverlay( const char* window_name, const char* name, const ImVec2 pos, bool* p_open, const float alpha )
+    {
+        constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
+            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+		
+        const auto window = ImGui::FindWindowByName( window_name );
+
+        ASSERT_EDITOR_ONLY( window != nullptr );
+
+        ImGui::SetNextWindowPos( pos, ImGuiCond_Always );
 
 		ImGui::SetNextWindowBgAlpha( alpha );
         if( ImGui::Begin( name, p_open, window_flags ) )
