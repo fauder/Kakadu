@@ -10,6 +10,16 @@
 // std Includes.
 #include <algorithm>
 
+namespace Engine
+{
+	namespace Initialization
+	{
+		struct HomogeneousVectorInitialization {};
+	}
+
+	inline constexpr Initialization::HomogeneousVectorInitialization HOMOGENEOUS_VECTOR_INITIALIZATION;
+}
+
 namespace Engine::Math
 {
 	template< typename Component, std::size_t Size > requires( Size > 1 )
@@ -78,6 +88,14 @@ namespace Engine::Math
 			std::copy( &vector_of_smaller_dimension[ 0 ], &vector_of_smaller_dimension[ 0 ] + SmallerVectorType::Dimension(), data );
 		}
 
+		template< typename SmallerVectorType > requires( Size == 4 && SmallerVectorType::Dimension() > 1 && SmallerVectorType::Dimension() < Size )
+		constexpr Vector( const SmallerVectorType& vector_of_smaller_dimension, Initialization::HomogeneousVectorInitialization )
+			:
+			data{ Component( 0 ), Component( 0 ), Component( 0 ), Component( 1 ) }
+		{
+			std::copy( &vector_of_smaller_dimension[ 0 ], &vector_of_smaller_dimension[ 0 ] + SmallerVectorType::Dimension(), data );
+		}
+
 		template< typename ... Values >
 		constexpr Vector( Values ... values ) requires( sizeof ... ( Values ) == Size )
 			:
@@ -115,9 +133,9 @@ namespace Engine::Math
 		constexpr const Component& Z() const requires( Size >= 3 ) { return data[ 2 ]; };
 		constexpr const Component& W() const requires( Size >= 4 ) { return data[ 3 ]; };
 
-		constexpr const Vector< Component, 2 >& XY()   const requires( Size >= 2 ) { return reinterpret_cast< const Vector< Component,2 >& >( *this ); };
-		constexpr const Vector< Component, 3 >& XYZ()  const requires( Size >= 3 ) { return reinterpret_cast< const Vector< Component,3 >& >( *this ); };
-		constexpr const Vector< Component, 4 >& XYZW() const requires( Size >= 4 ) { return reinterpret_cast< const Vector< Component,4 >& >( *this ); };
+		constexpr const Vector< Component, 2 >& XY()   const requires( Size >= 2 ) { return reinterpret_cast< const Vector< Component, 2 >& >( *this ); };
+		constexpr const Vector< Component, 3 >& XYZ()  const requires( Size >= 3 ) { return reinterpret_cast< const Vector< Component, 3 >& >( *this ); };
+		constexpr const Vector< Component, 4 >& XYZW() const requires( Size >= 4 ) { return reinterpret_cast< const Vector< Component, 4 >& >( *this ); };
 
 		constexpr Vector< Component, 2 >& XY()		requires( Size >= 2 ) { return reinterpret_cast< Vector< Component, 2 >& >( *this ); };
 		constexpr Vector< Component, 3 >& XYZ()		requires( Size >= 3 ) { return reinterpret_cast< Vector< Component, 3 >& >( *this ); };
