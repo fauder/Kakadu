@@ -28,6 +28,7 @@ namespace Engine
 		:
 #ifdef _EDITOR
 		show_frame_statistics_overlay( true ),
+		show_mouse_screen_space_position_overlay( false ),
 		show_imgui( not flags.IsSet( CreationFlags::OnStart_DisableImGui ) ),
 		show_gl_logger( true ),
 #endif // _EDITOR
@@ -39,7 +40,8 @@ namespace Engine
 		msaa_sample_count( renderer_description.main_framebuffer_msaa_sample_count ),
 		time_previous( 0.0f ),
 		time_previous_since_start( 0.0f ),
-		time_since_start( 0.0f )
+		time_since_start( 0.0f ),
+		mouse_screen_space_position_overlay_is_active( false )
 	{
 		NatVis::ForceIncludeInBuild();
 
@@ -229,6 +231,10 @@ namespace Engine
 
 		RenderImGui_Viewport();
 		RenderImGui_ViewportControls();
+		if( show_mouse_screen_space_position_overlay )
+		{
+			RenderImGui_CursorScreenSpacePositionOverlay();
+		}
 
 		if( ImGui::Begin( "Viewport" ) )
 		{
@@ -310,6 +316,22 @@ namespace Engine
 		ImGuiUtility::EndOverlay();
 	}
 
+	void Application::RenderImGui_CursorScreenSpacePositionOverlay()
+	{
+		if( mouse_screen_space_position_overlay_is_active = IsMouseHoveringTheViewport() )
+		{
+			viewport_info.mouse_screen_space_position = Vector2I( GetMouseScreenSpacePosition() );
+			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -ImGui::GetTextLineHeightWithSpacing() );
+
+			if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, 0.65f ) )
+			{
+				ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_screen_space_position.X(), viewport_info.mouse_screen_space_position.Y() );
+			}
+
+			Engine::ImGuiUtility::EndOverlay();
+		}
+	}
+
 	void Application::RenderImGui_FrameStatistics()
 	{
 		if( ImGuiUtility::BeginOverlay( "Viewport", ICON_FA_CHART_LINE " Frame Statistics",
@@ -385,6 +407,9 @@ namespace Engine
 			ImGui::SameLine();
 			if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Reset##time_multiplier", max_size_half_width ) )
 				time_multiplier = 1.0f;
+
+			if( show_mouse_screen_space_position_overlay )
+				ImGui::TextDisabled( "Viewport size: %dx%d", ( int )viewport_info.framebuffer_size.x, ( int )viewport_info.framebuffer_size.y );
 		}
 
 		ImGuiUtility::EndOverlay();

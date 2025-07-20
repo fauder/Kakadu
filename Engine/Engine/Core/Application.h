@@ -65,6 +65,7 @@ namespace Engine
 #ifdef _EDITOR
 		void RenderImGui_Viewport();
 		void RenderImGui_ViewportControls();
+		void RenderImGui_CursorScreenSpacePositionOverlay();
 		void RenderImGui_FrameStatistics();
 #endif // _EDITOR
 
@@ -75,6 +76,7 @@ namespace Engine
 		GLLogger gl_logger;
 
 		bool show_frame_statistics_overlay;
+		bool show_mouse_screen_space_position_overlay;
 		bool show_imgui;
 		bool show_gl_logger;
 
@@ -119,6 +121,8 @@ namespace Engine
 		float time_previous;
 		float time_previous_since_start;
 		float time_since_start;
+
+		bool mouse_screen_space_position_overlay_is_active;
 	};
 
 	/* Needs to be implemented by the CLIENT Application. */
