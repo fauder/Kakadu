@@ -142,7 +142,129 @@ namespace Engine::ImGuiDrawer
 		return is_modified;
 	}
 
-	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize > requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
+	template< Concepts::Arithmetic Component, std::size_t Size >
+		requires( Size > 1 )
+	void DrawAsTableCells( const Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
+	{
+		ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
+
+		if constexpr( std::is_same_v< Component, bool > )
+		{
+			static_assert( Size <= 4, "DrawAsTableCells(): Bool vectors only supported up to 4 components (X, Y, Z, W)" );
+			constexpr const char* component_labels[ 4 ] = { "##x", "##y", "##z", "##w" };
+
+			for( std::size_t i = 0; i < Size; ++i )
+			{
+				ImGui::TableNextColumn();
+				ImGui::Checkbox( component_labels[ i ], &vector[ i ] );
+			}
+		}
+		else
+		{
+			for( std::size_t i = 0; i < Size; ++i )
+			{
+				ImGui::TableNextColumn();
+
+				ImGui::PushID( static_cast< int >( i ) );
+				ImGui::SetNextItemWidth( -FLT_MIN );
+				ImGui::InputScalar(
+					name,
+					GetImGuiDataType< Component >(),
+					/* Since the read-only flag is passed, the passed pointer will not be modified. So this hack is safe to use here. */
+					const_cast< Component* >( &vector[ i ] ),
+					nullptr,
+					nullptr,
+					GetFormat< Component >(),
+					ImGuiInputTextFlags_ReadOnly
+				);
+				ImGui::PopID();
+			}
+		}
+
+		ImGui::PopStyleColor();
+	}
+
+	template< Concepts::Arithmetic Component, std::size_t Size >
+		requires( Size == 4 && std::is_floating_point_v< Component > )
+	void DrawClipSpacePositionVectorAsTableCells( const Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
+	{
+		ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
+
+		if( vector.W() <= Component( 0 ) )
+			ImGui::PushStyleColor( ImGuiCol_Text, IM_COL32( 255, 0, 0, 255 ) );
+
+		for( std::size_t i = 0; i < Size; ++i )
+		{
+			if( -vector.W() > vector[ i ] || vector[ i ] > vector.W() )
+				ImGui::PushStyleColor( ImGuiCol_Text, IM_COL32( 255, 0, 0, 255 ) );
+
+			ImGui::TableNextColumn();
+
+			ImGui::PushID( static_cast< int >( i ) );
+			ImGui::SetNextItemWidth( -FLT_MIN );
+			ImGui::InputScalar(
+				name,
+				GetImGuiDataType< Component >(),
+				/* Since the read-only flag is passed, the passed pointer will not be modified. So this hack is safe to use here. */
+				const_cast< Component* >( &vector[ i ] ),
+				nullptr,
+				nullptr,
+				GetFormat< Component >(),
+				ImGuiInputTextFlags_ReadOnly
+			);
+			ImGui::PopID();
+
+			if( -vector.W() > vector[ i ] || vector[ i ] > vector.W() )
+				ImGui::PopStyleColor();
+		}
+
+		if( vector.W() <= Component( 0 ) )
+			ImGui::PopStyleColor();
+
+		ImGui::PopStyleColor();
+	}
+
+	template< Concepts::Arithmetic Component, std::size_t Size >
+		requires( Size > 1 )
+	bool DrawAsTableCells( Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
+	{
+		bool is_modified = false;
+
+		if constexpr( std::is_same_v< Component, bool > )
+		{
+			static_assert( Size <= 4, "DrawAsTableCells(): Bool vectors only supported up to 4 components (X, Y, Z, W)" );
+			constexpr const char* labels[ 4 ] = { "##x", "##y", "##z", "##w" };
+
+			for( std::size_t i = 0; i < Size; ++i )
+			{
+				ImGui::TableNextColumn();
+				is_modified |= ImGui::Checkbox( labels[ i ], &vector[ i ] );
+			}
+		}
+		else
+		{
+			for( std::size_t i = 0; i < Size; ++i )
+			{
+				ImGui::TableNextColumn();
+
+				ImGui::PushID( static_cast< int >( i ) );
+				ImGui::SetNextItemWidth( -FLT_MIN );
+				is_modified |= ImGui::DragScalar(
+					name,
+					GetImGuiDataType< Component >(),
+					&vector[ i ],
+					1.0f, // step.
+					nullptr,
+					nullptr,
+					GetFormat< Component >()
+				);
+				ImGui::PopID();
+			}
+		}
+
+		return is_modified;
+	}
+
 	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
 		requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
 	void Draw( const Math::Matrix< Type, RowSize, ColumnSize >& matrix, const char* name = "##matrix<>" )
