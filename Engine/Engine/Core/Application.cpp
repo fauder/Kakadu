@@ -162,6 +162,10 @@ namespace Engine
 				if( show_mouse_screen_space_position_overlay )
 					show_mouse_screen_space_position_overlay = false;
 				break;
+			case Platform::KeyCode::KEY_M:
+				if( key_action == Platform::KeyAction::PRESS )
+					show_mouse_screen_space_position_overlay = !show_mouse_screen_space_position_overlay;
+				break;
 			case Platform::KeyCode::KEY_F11:
 				if( key_action == Platform::KeyAction::PRESS )
 				{
