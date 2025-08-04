@@ -130,5 +130,4 @@ private:
 
 /* Other: */
 	bool ui_interaction_enabled;
-	bool show_imgui_demo_window;
 };

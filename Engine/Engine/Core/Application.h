@@ -84,9 +84,10 @@ namespace Engine
 		bool show_frame_statistics_overlay;
 		bool show_mouse_screen_space_position_overlay;
 		bool show_imgui;
+		bool show_imgui_demo_window;
 		bool show_gl_logger;
 
-		/* 4 bytes(s) of padding. */
+		/* 3 bytes(s) of padding. */
 
 		struct ViewportWindowInfo
 		{
@@ -99,6 +100,8 @@ namespace Engine
 			/* 3 bytes(s) of padding. */
 		};
 		ViewportWindowInfo viewport_info;
+
+		/* 4 bytes(s) of padding. */
 #endif // _EDITOR
 
 		std::unique_ptr< Renderer > renderer;

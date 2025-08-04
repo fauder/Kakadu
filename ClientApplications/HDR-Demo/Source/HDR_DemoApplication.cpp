@@ -45,8 +45,7 @@ HDR_DemoApplication::HDR_DemoApplication( const Engine::BitFlags< Engine::Creati
 	camera_rotation_speed( 5.0f ),
 	camera_move_speed( 5.0f ),
 	camera_controller( &camera, camera_rotation_speed ),
-	ui_interaction_enabled( true ),
-	show_imgui_demo_window( false )
+	ui_interaction_enabled( true )
 {
 	Initialize();
 }
@@ -391,10 +390,6 @@ void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, con
 				ui_interaction_enabled = !ui_interaction_enabled;
 				Platform::ResetMouseDeltas();
 			}
-			break;
-		case Platform::KeyCode::KEY_O:
-			if( key_action == Platform::KeyAction::PRESS )
-				show_imgui_demo_window = !show_imgui_demo_window;
 			break;
 		default:
 			break;

@@ -30,6 +30,7 @@ namespace Engine
 		show_frame_statistics_overlay( true ),
 		show_mouse_screen_space_position_overlay( false ),
 		show_imgui( not flags.IsSet( CreationFlags::OnStart_DisableImGui ) ),
+		show_imgui_demo_window( false ),
 		show_gl_logger( true ),
 #endif // _EDITOR
 		gamma_correction_is_enabled( renderer_description.enable_gamma_correction && not flags.IsSet( CreationFlags::OnStart_DisableGammaCorrection ) ),
@@ -174,6 +175,10 @@ namespace Engine
 			case Platform::KeyCode::KEY_ESCAPE:
 				if( show_mouse_screen_space_position_overlay )
 					show_mouse_screen_space_position_overlay = false;
+				break;
+			case Platform::KeyCode::KEY_I:
+				if( key_action == Platform::KeyAction::PRESS )
+					show_imgui_demo_window = !show_imgui_demo_window;
 				break;
 			case Platform::KeyCode::KEY_M:
 				if( key_action == Platform::KeyAction::PRESS )

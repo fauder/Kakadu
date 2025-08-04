@@ -82,7 +82,6 @@ SandboxApplication::SandboxApplication( const Engine::BitFlags< Engine::Creation
 	camera_move_speed( 5.0f ),
 	camera_controller( &camera, camera_rotation_speed ),
 	ui_interaction_enabled( true ),
-	show_imgui_demo_window( false ),
 	render_rear_view_cam_to_imgui( true )
 {
 	Initialize();
@@ -984,10 +983,6 @@ void SandboxApplication::OnKeyboardEvent( const Platform::KeyCode key_code, cons
 		case Platform::KeyCode::KEY_Y:
 			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
 				light_spot.data.cutoff_angle_inner = Engine::Math::Max( light_spot.data.cutoff_angle_inner - 0.33_deg, 0_deg );
-			break;
-		case Platform::KeyCode::KEY_O:
-			if( key_action == Platform::KeyAction::PRESS )
-				show_imgui_demo_window = !show_imgui_demo_window;
 			break;
 		default:
 			break;

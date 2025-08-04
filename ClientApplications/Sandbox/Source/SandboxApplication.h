@@ -257,7 +257,6 @@ private:
 	const static constexpr Vector3 CAMERA_ROTATION_ORIGIN = CUBES_ORIGIN;
 
 	bool ui_interaction_enabled;
-	bool show_imgui_demo_window;
 
 	bool render_rear_view_cam_to_imgui;
 };
