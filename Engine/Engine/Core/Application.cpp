@@ -147,6 +147,18 @@ namespace Engine
 
 	void Application::Update()
 	{
+		if( mouse_screen_space_position_overlay_is_active )
+		{
+			if( Platform::IsKeyPressedThisFrame( Platform::KeyCode::KEY_LEFT ) )
+				Platform::OffsetMouseCursorPosition( -1.0f, 0.0f );
+			if( Platform::IsKeyPressedThisFrame( Platform::KeyCode::KEY_RIGHT ) )
+				Platform::OffsetMouseCursorPosition( +1.0f, 0.0f );
+			if( Platform::IsKeyPressedThisFrame( Platform::KeyCode::KEY_DOWN ) )
+				Platform::OffsetMouseCursorPosition( 0.0f, +1.0f );
+			if( Platform::IsKeyPressedThisFrame( Platform::KeyCode::KEY_UP ) )
+				Platform::OffsetMouseCursorPosition( 0.0f, -1.0f );
+		}
+
 		morph_system.Execute( time_delta );
 	}
 
