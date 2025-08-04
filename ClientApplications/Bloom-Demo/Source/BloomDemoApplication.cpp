@@ -927,22 +927,6 @@ void BloomDemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, co
 				Platform::ResetMouseDeltas();
 			}
 			break;
-		case Platform::KeyCode::KEY_W:
-			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
-				camera_transform.OffsetTranslation( camera_transform.Forward() * +camera_move_speed * time_delta );
-			break;
-		case Platform::KeyCode::KEY_S:
-			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
-				camera_transform.OffsetTranslation( camera_transform.Forward() * -camera_move_speed * time_delta );
-			break;
-		case Platform::KeyCode::KEY_A:
-			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
-				camera_transform.OffsetTranslation( camera_transform.Right() * -camera_move_speed * time_delta );
-			break;
-		case Platform::KeyCode::KEY_D:
-			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
-				camera_transform.OffsetTranslation( camera_transform.Right() * +camera_move_speed * time_delta );
-			break;
 		case Platform::KeyCode::KEY_U:
 			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
 				light_spot.data.cutoff_angle_inner = Engine::Math::Min( light_spot.data.cutoff_angle_inner + 0.33_deg, light_spot.data.cutoff_angle_outer );
