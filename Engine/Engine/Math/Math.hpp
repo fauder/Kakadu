@@ -59,6 +59,19 @@ namespace Engine::Math
 	Value Round( const Value value ) { return std::round( value ); }
 
 	template< Concepts::Arithmetic Value >
+	constexpr Value Mod( Value a, Value b )
+	{
+		if constexpr( std::is_integral_v< Value > )
+			return a % b;
+		else if constexpr( std::same_as< Value, float > )
+			return std::fmodf( a, b );
+		else if constexpr( std::same_as< Value, double > )
+			return std::fmod( a, b );
+		else if constexpr( std::same_as< Value, long double > )
+			return std::fmodl( a, b );
+	}
+
+	template< Concepts::Arithmetic Value >
 	constexpr int Sign( const Value value ) { return ( Value( 0 ) < value ) - ( value < Value( 0 ) ); }
 
 	template< typename Value, std::floating_point PercentType >
