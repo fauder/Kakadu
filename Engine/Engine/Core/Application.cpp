@@ -423,8 +423,8 @@ namespace Engine
 
 	void Application::RenderImGui_MagnifierOverlay()
 	{
-		constexpr float window_size = 256.0f;
 		const float zoom = ( float )viewport_info.magnifier_zoom_factor;
+		const float window_size = Math::Clamp( zoom * 32.0f, 256.0f, 512.0f );
 
 		ASSERT( zoom >= 1.0f );
 
