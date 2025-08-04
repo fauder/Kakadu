@@ -1654,6 +1654,7 @@ namespace Engine
 		
 		SetIntrinsicsPerPass( render_pass_map[ PASS_ID_LIGHTING ] );
 		UploadIntrinsics();
+		UploadGlobals();
 
 		for( auto shader_index = 0; shader_index < 2; shader_index++ ) // First time is for not instanced geometry, second is for instanced.
 		{
