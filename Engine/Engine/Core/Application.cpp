@@ -377,7 +377,7 @@ namespace Engine
 	{
 		if( ImGuiUtility::BeginOverlay( "Viewport", "##ViewportControls", 
 										ImGuiUtility::HorizontalPosition::LEFT, ImGuiUtility::VerticalPosition::TOP, 
-										&show_frame_statistics_overlay, 0.65f ) )
+										&show_frame_statistics_overlay ) )
 		{
 			int editor_shading_mode = ( int )renderer->GetEditorShadingMode();
 			if( ImGuiUtility::DrawShadedSphereComboButton( "ShadingMode", reinterpret_cast< int* >( &editor_shading_mode ),
@@ -411,7 +411,7 @@ namespace Engine
 			viewport_info.mouse_screen_space_position = Vector2I( GetMouseScreenSpacePosition() );
 			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -( ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y * 2 ) );
 
-			if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, 0.65f ) )
+			if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
 			{
 				ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_screen_space_position.X(), viewport_info.mouse_screen_space_position.Y() );
 				ImGui::TextDisabled( "%d", ( int )viewport_info.magnifier_zoom_factor );
@@ -453,7 +453,7 @@ namespace Engine
 			viewport_info.mouse_screen_space_position = Vector2I( GetMouseScreenSpacePosition() );
 			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, 5 );
 
-			if( ImGuiUtility::BeginOverlay( "Viewport", "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, 0.65f ) )
+			if( ImGuiUtility::BeginOverlay( "Viewport", "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
 			{
 				static GLuint nearest_sampler = 0;
 				if( nearest_sampler == 0 ) // TODO: Put this inside its own class.

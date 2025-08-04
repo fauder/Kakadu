@@ -32,12 +32,14 @@ namespace Engine::ImGuiUtility
 
 	bool BeginOverlay( const char* window_name, const char* name, 
 					   const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
-					   bool* p_open = ( bool* )0, 
-					   const float alpha = 0.35f );
+					   bool* p_open = ( bool* )0,
+					   const bool allow_input = true,
+					   const float alpha = 0.65f );
 	bool BeginOverlay( const char* window_name, const char* name,
 					   const ImVec2 pos,
 					   bool* p_open = ( bool* )0,
-					   const float alpha = 0.35f );
+					   const bool allow_input = true,
+					   const float alpha = 0.65f );
 	void EndOverlay();
 
 	/* Only works with same width items. */

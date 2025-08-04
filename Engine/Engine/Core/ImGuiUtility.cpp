@@ -78,10 +78,15 @@ namespace Engine::ImGuiUtility
 
     bool BeginOverlay( const char* window_name, const char* name,
                        const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
-                       bool* p_open, const float alpha )
+                       bool* p_open,
+                       const bool allow_input,
+                       const float alpha )
     {
-		constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
             ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+        
+        if( not allow_input )
+            window_flags |= ImGuiWindowFlags_NoInputs;
 		
         const auto window = ImGui::FindWindowByName( window_name );
 
@@ -120,10 +125,13 @@ namespace Engine::ImGuiUtility
         return false;
     }
 
-    bool BeginOverlay( const char* window_name, const char* name, const ImVec2 pos, bool* p_open, const float alpha )
+    bool BeginOverlay( const char* window_name, const char* name, const ImVec2 pos, bool* p_open, const bool allow_input, const float alpha )
     {
-        constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | 
             ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+
+        if( not allow_input )
+            window_flags |= ImGuiWindowFlags_NoInputs;
 		
         const auto window = ImGui::FindWindowByName( window_name );
 
