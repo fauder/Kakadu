@@ -189,10 +189,6 @@ namespace Engine
 				if( key_action == Platform::KeyAction::PRESS )
 					show_imgui_demo_window = !show_imgui_demo_window;
 				break;
-			case Platform::KeyCode::KEY_M:
-				if( key_action == Platform::KeyAction::PRESS )
-					show_mouse_screen_space_position_overlay = !show_mouse_screen_space_position_overlay;
-				break;
 			case Platform::KeyCode::KEY_F11:
 				if( key_action == Platform::KeyAction::PRESS )
 				{
@@ -220,6 +216,10 @@ namespace Engine
 
 	void Application::OnMouseScrollEvent( const float x_offset, const float y_offset )
 	{
+		/* Activate/deactivate magnifier on zoom start/exit: */
+		if( ( y_offset > 0 ) != show_mouse_screen_space_position_overlay ) // Shorthand but not that legible.
+			show_mouse_screen_space_position_overlay = !show_mouse_screen_space_position_overlay;
+
 		if( show_mouse_screen_space_position_overlay )
 		{
 			OffsetViewportMagnifierZoom( y_offset );
