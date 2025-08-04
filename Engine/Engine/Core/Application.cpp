@@ -370,7 +370,7 @@ namespace Engine
 			const float magnified_pixel_multiplier = 1.0f / zoom;
 
 			// Calculate UV coordinates in the viewport texture:
-			ImVec2 mouse_pos = reinterpret_cast< ImVec2&& >( std::move( GetMouseScreenSpacePosition() ) );
+			ImVec2 mouse_pos = ToImVec2( GetMouseScreenSpacePosition() + Vector2{ 0.5f, 0.5f } );
 			ImVec2 uv_center = mouse_pos / viewport_info.framebuffer_size;
 			ImVec2 uv_radius = ImVec2( 0.5f * window_size * magnified_pixel_multiplier,
 									   0.5f * window_size * magnified_pixel_multiplier ) / viewport_info.framebuffer_size;
