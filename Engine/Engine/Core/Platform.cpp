@@ -426,12 +426,28 @@ namespace Platform
 		return KEYS_THAT_ARE_PRESSED[ ( int )key_code ];
 	}
 
+	bool IsKeyPressedThisFrame( const KeyCode key_code )
+	{
+		if( ImGui::GetIO().WantCaptureKeyboard )
+			return false;
+
+		return KEYS_THAT_ARE_PRESSED[ ( int )key_code ] && not KEYS_THAT_WERE_PRESSED[ ( int )key_code ];
+	}
+
 	bool IsKeyReleased( const KeyCode key_code )
 	{
 		if( ImGui::GetIO().WantCaptureKeyboard )
 			return false;
 
 		return !KEYS_THAT_ARE_PRESSED[ ( int )key_code ];
+	}
+
+	bool IsKeyReleasedThisFrame( const KeyCode key_code )
+	{
+		if( ImGui::GetIO().WantCaptureKeyboard )
+			return false;
+
+		return KEYS_THAT_WERE_PRESSED[ ( int )key_code ] && not KEYS_THAT_ARE_PRESSED[ ( int )key_code ];
 	}
 
 	bool IsKeyModifierHeldDown( const KeyMods key_mod )

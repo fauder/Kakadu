@@ -207,7 +207,9 @@ namespace Platform
 	/* Keyboard IO. */
 	void SetKeyboardEventCallback( std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods ) > callback = {} );
 	bool IsKeyPressed( const KeyCode key_code );
+	bool IsKeyPressedThisFrame( const KeyCode key_code );
 	bool IsKeyReleased( const KeyCode key_code );
+	bool IsKeyReleasedThisFrame( const KeyCode key_code );
 	bool IsKeyModifierHeldDown( const KeyMods key_mod );
 
 	/* Mouse IO. */
