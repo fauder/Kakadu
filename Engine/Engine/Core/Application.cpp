@@ -32,6 +32,7 @@ namespace Engine
 		show_imgui( not flags.IsSet( CreationFlags::OnStart_DisableImGui ) ),
 		show_imgui_demo_window( false ),
 		show_gl_logger( true ),
+		ui_interaction_enabled( true ),
 #endif // _EDITOR
 		gamma_correction_is_enabled( renderer_description.enable_gamma_correction && not flags.IsSet( CreationFlags::OnStart_DisableGammaCorrection ) ),
 		vsync_is_enabled( false ),
@@ -175,6 +176,14 @@ namespace Engine
 			case Platform::KeyCode::KEY_ESCAPE:
 				if( show_mouse_screen_space_position_overlay )
 					show_mouse_screen_space_position_overlay = false;
+				break;
+				/* Use the key below ESC to toggle between game & menu/UI. */
+			case Platform::KeyCode::KEY_GRAVE_ACCENT:
+				if( key_action == Platform::KeyAction::PRESS )
+				{
+					ui_interaction_enabled = !ui_interaction_enabled;
+					Platform::ResetMouseDeltas();
+				}
 				break;
 			case Platform::KeyCode::KEY_I:
 				if( key_action == Platform::KeyAction::PRESS )

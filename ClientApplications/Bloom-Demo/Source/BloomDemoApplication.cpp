@@ -70,8 +70,7 @@ BloomDemoApplication::BloomDemoApplication( const Engine::BitFlags< Engine::Crea
 	camera( &camera_transform, Platform::GetAspectRatio(), CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), Platform::GetAspectRatio() ) ),
 	camera_rotation_speed( 5.0f ),
 	camera_move_speed( 5.0f ),
-	camera_controller( &camera, camera_rotation_speed ),
-	ui_interaction_enabled( true )
+	camera_controller( &camera, camera_rotation_speed )
 {
 	Initialize();
 }
@@ -918,14 +917,6 @@ void BloomDemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, co
 	{
 		/*case Platform::KeyCode::KEY_ESCAPE:
 			break;*/
-		/* Use the key below ESC to toggle between game & menu/UI. */
-		case Platform::KeyCode::KEY_GRAVE_ACCENT:
-			if( key_action == Platform::KeyAction::PRESS )
-			{
-				ui_interaction_enabled = !ui_interaction_enabled;
-				Platform::ResetMouseDeltas();
-			}
-			break;
 		case Platform::KeyCode::KEY_U:
 			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
 				light_spot.data.cutoff_angle_inner = Engine::Math::Min( light_spot.data.cutoff_angle_inner + 0.33_deg, light_spot.data.cutoff_angle_outer );

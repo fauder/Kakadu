@@ -87,6 +87,8 @@ namespace Engine
 		bool show_imgui_demo_window;
 		bool show_gl_logger;
 
+		bool ui_interaction_enabled;
+
 		/* 3 bytes(s) of padding. */
 
 		struct ViewportWindowInfo

@@ -127,7 +127,4 @@ private:
 
 /* Frame statistics: */
 	Radians current_time_as_angle;
-
-/* Other: */
-	bool ui_interaction_enabled;
 };

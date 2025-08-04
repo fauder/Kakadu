@@ -44,8 +44,7 @@ HDR_DemoApplication::HDR_DemoApplication( const Engine::BitFlags< Engine::Creati
 	camera( &camera_transform, Platform::GetAspectRatio(), CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), Platform::GetAspectRatio() ) ),
 	camera_rotation_speed( 5.0f ),
 	camera_move_speed( 5.0f ),
-	camera_controller( &camera, camera_rotation_speed ),
-	ui_interaction_enabled( true )
+	camera_controller( &camera, camera_rotation_speed )
 {
 	Initialize();
 }
@@ -383,14 +382,6 @@ void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, con
 	{
 		/*case Platform::KeyCode::KEY_ESCAPE:
 			break;*/
-		/* Use the key below ESC to toggle between game & menu/UI. */
-		case Platform::KeyCode::KEY_GRAVE_ACCENT:
-			if( key_action == Platform::KeyAction::PRESS )
-			{
-				ui_interaction_enabled = !ui_interaction_enabled;
-				Platform::ResetMouseDeltas();
-			}
-			break;
 		default:
 			break;
 	}
