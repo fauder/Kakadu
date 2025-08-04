@@ -37,7 +37,7 @@ namespace Engine::Math
 	template< std::floating_point Value >
 	Value SquareOf( Value value ) { return std::pow( value, Value{ 2 } ); }
 
-	template< std::floating_point Value >
+	template< Concepts::Arithmetic Value >
 	Value Abs( const Value value ) { return std::abs( value ); }
 
 	template< typename Value >
