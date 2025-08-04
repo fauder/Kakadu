@@ -217,13 +217,15 @@ namespace Engine
 	void Application::OnMouseScrollEvent( const float x_offset, const float y_offset )
 	{
 		/* Activate/deactivate magnifier on zoom start/exit: */
-		if( ( y_offset > 0 ) != show_mouse_screen_space_position_overlay ) // Shorthand but not that legible.
-			show_mouse_screen_space_position_overlay = !show_mouse_screen_space_position_overlay;
-
-		if( show_mouse_screen_space_position_overlay )
+		if( y_offset > 0 && not show_mouse_screen_space_position_overlay )
 		{
-			OffsetViewportMagnifierZoom( y_offset );
+			show_mouse_screen_space_position_overlay = true;
+			viewport_info.magnifier_zoom_factor = ViewportWindowInfo::SMALLEST_MAGNIFIER_ZOOM_FACTOR;
 		}
+		else if( y_offset < 0 && show_mouse_screen_space_position_overlay && viewport_info.magnifier_zoom_factor == ViewportWindowInfo::SMALLEST_MAGNIFIER_ZOOM_FACTOR )
+			show_mouse_screen_space_position_overlay = false;
+		else if( show_mouse_screen_space_position_overlay )
+			OffsetViewportMagnifierZoomFactor( y_offset > 0 );
 	}
 
 	void Application::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
@@ -245,14 +247,16 @@ namespace Engine
 		return Vector2( mouse.x - viewport_info.position.x, viewport_info.framebuffer_size.y - ( mouse.y - viewport_info.position.y ) );
 	}
 
-	void Application::SetViewportMagnifierZoom( const float new_zoom_multiplier )
+	void Application::SetViewportMagnifierZoomFactor( const std::uint8_t new_zoom_factor )
 	{
-		viewport_info.magnifier_zoom_multiplier = Math::ClampMin( new_zoom_multiplier, 1.0f );
+		viewport_info.magnifier_zoom_factor = Math::Clamp( new_zoom_factor, ViewportWindowInfo::SMALLEST_MAGNIFIER_ZOOM_FACTOR, ViewportWindowInfo::LARGEST_MAGNIFIER_ZOOM_FACTOR );
 	}
 
-	void Application::OffsetViewportMagnifierZoom( const float delta_zoom_multiplier )
+	void Application::OffsetViewportMagnifierZoomFactor( const bool increment )
 	{
-		SetViewportMagnifierZoom( viewport_info.magnifier_zoom_multiplier + delta_zoom_multiplier );
+		SetViewportMagnifierZoomFactor( increment
+											? viewport_info.magnifier_zoom_factor << 1
+											: viewport_info.magnifier_zoom_factor >> 1 );
 	}
 #endif
 
@@ -317,7 +321,7 @@ namespace Engine
 		if( show_mouse_screen_space_position_overlay )
 		{
 			RenderImGui_CursorScreenSpacePositionOverlay();
-			RenderImGui_MagnifierOverlay( Math::Pow( 2.0f, viewport_info.magnifier_zoom_multiplier * viewport_info.magnifier_zoom_sensitivity ), 256.0f );
+			RenderImGui_MagnifierOverlay();
 		}
 
 		if( ImGui::Begin( "Viewport" ) )
@@ -410,14 +414,18 @@ namespace Engine
 			if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, 0.65f ) )
 			{
 				ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_screen_space_position.X(), viewport_info.mouse_screen_space_position.Y() );
+				ImGui::TextDisabled( "%d", ( int )viewport_info.magnifier_zoom_factor );
 			}
 
 			Engine::ImGuiUtility::EndOverlay();
 		}
 	}
 
-	void Application::RenderImGui_MagnifierOverlay( float zoom, float window_size, const bool show_center_pixel_outline )
+	void Application::RenderImGui_MagnifierOverlay()
 	{
+		constexpr float window_size = 256.0f;
+		const float zoom = ( float )viewport_info.magnifier_zoom_factor;
+
 		ASSERT( zoom >= 1.0f );
 
 		if( mouse_screen_space_position_overlay_is_active = IsMouseHoveringTheViewport() )
@@ -461,18 +469,16 @@ namespace Engine
 				ImGui::Image( ( ImTextureID )texture_id, ImVec2( window_size, window_size ), uv0, uv1 );
 				glBindSampler( 0, 0 );
 
-				if( show_center_pixel_outline )
-				{
-					ImDrawList* draw_list = ImGui::GetWindowDrawList();
+				/* Show center pixel outline: */
+				ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-					const auto center_pos = cursor_pos_before_image + ImVec2( window_size / 2, window_size / 2 );
-					const auto thickness = zoom / 8;
+				const auto center_pos = cursor_pos_before_image + ImVec2( window_size / 2, window_size / 2 );
+				const auto thickness = zoom / 8;
 
-					ImVec2 rect_min = center_pos - ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
-					ImVec2 rect_max = center_pos + ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
+				ImVec2 rect_min = center_pos - ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
+				ImVec2 rect_max = center_pos + ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
 
-					draw_list->AddRect( rect_min, rect_max, IM_COL32( 255, 0, 0, 255 ), zoom / 5, 0, zoom / 8 );
-				}
+				draw_list->AddRect( rect_min, rect_max, IM_COL32( 255, 0, 0, 255 ), zoom / 5, 0, zoom / 8 );
 			}
 
 			Engine::ImGuiUtility::EndOverlay();

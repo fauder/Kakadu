@@ -45,6 +45,19 @@ namespace Engine
 #endif // _EDITOR
 
 	protected:
+		struct ViewportWindowInfo
+		{
+			static constexpr std::uint8_t SMALLEST_MAGNIFIER_ZOOM_FACTOR = 4;
+			static constexpr std::uint8_t LARGEST_MAGNIFIER_ZOOM_FACTOR  = 32;
+
+			ImVec2 framebuffer_size; // The OpenGL framebuffer size.
+			ImVec2 position; // The ImGui window position.
+			Vector2I mouse_screen_space_position; // Screen-space position of the mouse, relative to OpenGL convention: the bottom-left of the viewport.
+			std::uint8_t magnifier_zoom_factor = SMALLEST_MAGNIFIER_ZOOM_FACTOR;
+			bool is_hovered = false;
+			/* 3 bytes(s) of padding. */
+		};
+
 		inline void FreezeTime()   { time_multiplier = 0.0f; }
 		inline void UnfreezeTime() { time_multiplier = 1.0f; }
 		inline bool TimeIsFrozen() { return Math::IsZero( time_multiplier ); }
@@ -55,8 +68,8 @@ namespace Engine
 		bool IsMouseHoveringTheViewport() const { return viewport_info.is_hovered; }
 		/* This returns the viewport coordinates (bottom-left origin for OpenGL). Beware: may return garbage when the mouse is outside the viewport. */
 		Vector2 GetMouseScreenSpacePosition() const;
-		void SetViewportMagnifierZoom( const float new_zoom_multiplier );
-		void OffsetViewportMagnifierZoom( const float delta_zoom_multiplier );
+		void SetViewportMagnifierZoomFactor( const std::uint8_t new_zoom_factor );
+		void OffsetViewportMagnifierZoomFactor( const bool increment );
 #endif
 
 	private:
@@ -71,7 +84,7 @@ namespace Engine
 		void RenderImGui_Viewport();
 		void RenderImGui_ViewportControls();
 		void RenderImGui_CursorScreenSpacePositionOverlay();
-		void RenderImGui_MagnifierOverlay( float zoom, float window_size = 128.0f, const bool show_center_pixel_outline = true );
+		void RenderImGui_MagnifierOverlay();
 		void RenderImGui_FrameStatistics();
 #endif // _EDITOR
 
@@ -91,16 +104,6 @@ namespace Engine
 
 		/* 3 bytes(s) of padding. */
 
-		struct ViewportWindowInfo
-		{
-			ImVec2 framebuffer_size; // The OpenGL framebuffer size.
-			ImVec2 position; // The ImGui window position.
-			Vector2I mouse_screen_space_position; // Screen-space position of the mouse, relative to OpenGL convention: the bottom-left of the viewport.
-			float magnifier_zoom_multiplier = 2.0f;
-			float magnifier_zoom_sensitivity = 0.1f;
-			bool is_hovered = false;
-			/* 3 bytes(s) of padding. */
-		};
 		ViewportWindowInfo viewport_info;
 
 		/* 4 bytes(s) of padding. */
