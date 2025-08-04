@@ -546,6 +546,16 @@ namespace Platform
 		return { MOUSE_CURSOR_X_DELTA, MOUSE_CURSOR_Y_DELTA };
 	}
 
+	void SetMouseCursorPosition( const float x_position, const float y_position )
+	{
+		glfwSetCursorPos( WINDOW, x_position, y_position );
+	}
+
+	void OffsetMouseCursorPosition( const float delta_x, const float delta_y )
+	{
+		SetMouseCursorPosition( MOUSE_CURSOR_X_POS + delta_x, MOUSE_CURSOR_Y_POS + delta_y );
+	}
+
 	std::pair< float, float > GetMouseCursorPositions()
 	{
 		return { MOUSE_CURSOR_X_POS, MOUSE_CURSOR_Y_POS };

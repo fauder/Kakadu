@@ -224,6 +224,8 @@ namespace Platform
 	float GetMouseSensitivity();
 	void SetMouseSensitivity( const float new_sensitivity );
 	std::pair< float, float > GetMouseCursorDeltas();
+	void SetMouseCursorPosition( const float x_position, const float y_position );
+	void OffsetMouseCursorPosition( const float delta_x, const float delta_y );
 	std::pair< float, float > GetMouseCursorPositions();
 	std::pair< float, float > GetMouseScrollOffsets();
 
