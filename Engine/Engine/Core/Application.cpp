@@ -244,7 +244,7 @@ namespace Engine
 
 		/* ImGui uses top-left as the origin for its windows while OpenGL's viewport conventions dictate bottom-left as the origin => flip Y.
 		 * Relative mouse pos: */
-		return Vector2( mouse.x - viewport_info.position.x, viewport_info.framebuffer_size.y - ( mouse.y - viewport_info.position.y ) );
+		return Vector2( mouse.x - viewport_info.position_absolute.x, viewport_info.framebuffer_size.y - ( mouse.y - viewport_info.position_absolute.y ) );
 	}
 
 	void Application::SetViewportMagnifierZoomFactor( const std::uint8_t new_zoom_factor )
@@ -363,7 +363,7 @@ namespace Engine
 			}
 
 			/* Collect information for mouse hover/pos. info detection OUTSIDE the Begin()/End() block here. */
-			viewport_info.position   = ImGui::GetCursorScreenPos();
+			viewport_info.position_absolute   = ImGui::GetCursorScreenPos();
 			viewport_info.is_hovered = ImGui::IsWindowHovered( ImGuiHoveredFlags_AllowWhenBlockedByActiveItem );
 
 			/* ImGui::Image() call below is moved to a later point, to make sure the image itself stays the same until ImGui actually renders it. */
@@ -408,12 +408,12 @@ namespace Engine
 	{
 		if( mouse_screen_space_position_overlay_is_active = IsMouseHoveringTheViewport() )
 		{
-			viewport_info.mouse_screen_space_position = Vector2I( GetMouseScreenSpacePosition() );
+			viewport_info.mouse_viewport_relative_position = Vector2I( GetMouseScreenSpacePosition() );
 			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -( ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y * 2 ) );
 
 			if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
 			{
-				ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_screen_space_position.X(), viewport_info.mouse_screen_space_position.Y() );
+				ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_viewport_relative_position.X(), viewport_info.mouse_viewport_relative_position.Y() );
 				ImGui::TextDisabled( "%d", ( int )viewport_info.magnifier_zoom_factor );
 			}
 
@@ -450,7 +450,7 @@ namespace Engine
 
 			std::swap( uv0.y, uv1.y );
 
-			viewport_info.mouse_screen_space_position = Vector2I( GetMouseScreenSpacePosition() );
+			viewport_info.mouse_viewport_relative_position = Vector2I( GetMouseScreenSpacePosition() );
 			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, 5 );
 
 			if( ImGuiUtility::BeginOverlay( "Viewport", "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )

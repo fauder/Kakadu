@@ -51,8 +51,8 @@ namespace Engine
 			static constexpr std::uint8_t LARGEST_MAGNIFIER_ZOOM_FACTOR  = 32;
 
 			ImVec2 framebuffer_size; // The OpenGL framebuffer size.
-			ImVec2 position; // The ImGui window position.
-			Vector2I mouse_screen_space_position; // Screen-space position of the mouse, relative to OpenGL convention: the bottom-left of the viewport.
+			ImVec2 position_absolute; // The ImGui window position_absolute.
+			Vector2I mouse_viewport_relative_position; // Screen-space position of the mouse, relative to OpenGL convention: the bottom-left of the viewport.
 			std::uint8_t magnifier_zoom_factor = SMALLEST_MAGNIFIER_ZOOM_FACTOR;
 			bool is_hovered = false;
 			/* 3 bytes(s) of padding. */
