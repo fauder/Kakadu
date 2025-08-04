@@ -24,6 +24,8 @@
 namespace Platform
 {
 	GLFWwindow* WINDOW = nullptr; // No need to expose this outside.
+	bool KEYS_THAT_ARE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
+	bool KEYS_THAT_WERE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
 	float MOUSE_CURSOR_X_POS = 0.0f, MOUSE_CURSOR_Y_POS = 0.0f;
 	float MOUSE_CURSOR_X_DELTA = 0.0f, MOUSE_CURSOR_Y_DELTA = 0.0f;
 	float MOUSE_SCROLL_X_OFFSET = 0.0f, MOUSE_SCROLL_Y_OFFSET = 0.0f;
@@ -384,6 +386,11 @@ namespace Platform
 			MOUSE_BUTTON_STATES[ button_index ] = action_this_frame; // Then update actual button state.
 		}
 
+		std::copy_n( KEYS_THAT_ARE_PRESSED, sizeof( KEYS_THAT_ARE_PRESSED ), KEYS_THAT_WERE_PRESSED );
+
+		for( auto i = 0; i < ( int )KeyCode::KEY_LAST + 1; i++ )
+			KEYS_THAT_ARE_PRESSED[ i ] = glfwGetKey( WINDOW, i ) == GLFW_PRESS;
+
 		glfwPollEvents();
 	}
 
@@ -416,7 +423,7 @@ namespace Platform
 		if( ImGui::GetIO().WantCaptureKeyboard )
 			return false;
 
-		return glfwGetKey( WINDOW, int( key_code ) ) == GLFW_PRESS;
+		return KEYS_THAT_ARE_PRESSED[ ( int )key_code ];
 	}
 
 	bool IsKeyReleased( const KeyCode key_code )
@@ -424,7 +431,7 @@ namespace Platform
 		if( ImGui::GetIO().WantCaptureKeyboard )
 			return false;
 
-		return glfwGetKey( WINDOW, int( key_code ) ) == GLFW_RELEASE;
+		return !KEYS_THAT_ARE_PRESSED[ ( int )key_code ];
 	}
 
 	bool IsKeyModifierHeldDown( const KeyMods key_mod )
