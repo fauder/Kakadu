@@ -382,13 +382,11 @@ void HDR_DemoApplication::OnMouseScrollEvent( const float x_offset, const float 
 
 void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 {
-	switch( key_code )
+	/*switch( key_code )
 	{
-		/*case Platform::KeyCode::KEY_ESCAPE:
-			break;*/
 		default:
 			break;
-	}
+	}*/
 
 	Application::OnKeyboardEvent( key_code, key_action, key_mods );
 }
