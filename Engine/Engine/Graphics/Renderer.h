@@ -63,6 +63,7 @@ namespace Engine
 		void Render();
 		void RenderImGui();
 		void OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels );
+		void OnFramebufferResize( const Vector2I new_resolution_in_pixels );
 
 #ifdef _EDITOR
 		/*

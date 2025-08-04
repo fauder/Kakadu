@@ -621,6 +621,11 @@ namespace Engine
 #endif // _EDITOR
 	}
 
+	void Renderer::OnFramebufferResize( const Vector2I new_resolution_in_pixels )
+	{
+		OnFramebufferResize( new_resolution_in_pixels.X(), new_resolution_in_pixels.Y() );
+	}
+
 #ifdef _EDITOR
 	void Renderer::SetEditorShadingMode( const EditorShadingMode new_editor_shading_mode )
 	{
