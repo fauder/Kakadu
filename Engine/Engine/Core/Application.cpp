@@ -184,7 +184,7 @@ namespace Engine
 	{
 		ImVec2 mouse = ImGui::GetMousePos();
 
-		/* ImGui uses top - left as the origin for its windows while OpenGL's viewport conventions dictate bottom-left as the origin => flip Y.
+		/* ImGui uses top-left as the origin for its windows while OpenGL's viewport conventions dictate bottom-left as the origin => flip Y.
 		 * Relative mouse pos: */
 		return Vector2( mouse.x - viewport_info.position.x, viewport_info.framebuffer_size.y - ( mouse.y - viewport_info.position.y ) );
 	}
@@ -349,7 +349,7 @@ namespace Engine
 		if( mouse_screen_space_position_overlay_is_active = IsMouseHoveringTheViewport() )
 		{
 			viewport_info.mouse_screen_space_position = Vector2I( GetMouseScreenSpacePosition() );
-			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -ImGui::GetTextLineHeightWithSpacing() );
+			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -( ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y * 2 ) );
 
 			if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, 0.65f ) )
 			{
@@ -360,7 +360,7 @@ namespace Engine
 		}
 	}
 
-	void Application::RenderImGui_MagnifierOverlay( float zoom, float window_size )
+	void Application::RenderImGui_MagnifierOverlay( float zoom, float window_size, const bool show_center_pixel_outline )
 	{
 		ASSERT( zoom >= 1.0f );
 
@@ -387,12 +387,12 @@ namespace Engine
 			std::swap( uv0.y, uv1.y );
 
 			viewport_info.mouse_screen_space_position = Vector2I( GetMouseScreenSpacePosition() );
-			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, +ImGui::GetTextLineHeightWithSpacing() );
+			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, 5 );
 
 			if( ImGuiUtility::BeginOverlay( "Viewport", "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, 0.65f ) )
 			{
 				static GLuint nearest_sampler = 0;
-				if( nearest_sampler == 0 )
+				if( nearest_sampler == 0 ) // TODO: Put this inside its own class.
 				{
 					glGenSamplers( 1, &nearest_sampler );
 					glSamplerParameteri( nearest_sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
@@ -400,9 +400,22 @@ namespace Engine
 				}
 
 				const auto texture_id = renderer->FinalFramebuffer().ColorAttachment().Id().Get();
-				glBindSampler( texture_id, nearest_sampler );
+				glBindSampler( 0, nearest_sampler );
+				const auto cursor_pos_before_image( ImGui::GetCursorScreenPos() );
 				ImGui::Image( ( ImTextureID )texture_id, ImVec2( window_size, window_size ), uv0, uv1 );
-				glBindSampler( texture_id, 0 );
+				glBindSampler( 0, 0 );
+
+				if( show_center_pixel_outline )
+				{
+					ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+					const auto center_pos = cursor_pos_before_image + ImVec2( window_size / 2, window_size / 2 );
+
+					ImVec2 rect_min = center_pos - ImVec2( zoom / 2, zoom / 2 );
+					ImVec2 rect_max = center_pos + ImVec2( zoom / 2, zoom / 2 );
+
+					draw_list->AddRect( rect_min, rect_max, IM_COL32( 255, 0, 0, 255 ), zoom / 5.0f, 0, zoom / 4 );
+				}
 			}
 
 			Engine::ImGuiUtility::EndOverlay();

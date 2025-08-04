@@ -70,7 +70,7 @@ namespace Engine
 		void RenderImGui_Viewport();
 		void RenderImGui_ViewportControls();
 		void RenderImGui_CursorScreenSpacePositionOverlay();
-		void RenderImGui_MagnifierOverlay( float zoom, float window_size = 128.0f );
+		void RenderImGui_MagnifierOverlay( float zoom, float window_size = 128.0f, const bool show_center_pixel_outline = true );
 		void RenderImGui_FrameStatistics();
 #endif // _EDITOR
 
