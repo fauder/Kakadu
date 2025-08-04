@@ -371,10 +371,14 @@ void HDR_DemoApplication::RenderImGui()
 }
 
 void HDR_DemoApplication::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
-{}
+{
+	Application::OnMouseButtonEvent( button, button_action, key_mods );
+}
 
 void HDR_DemoApplication::OnMouseScrollEvent( const float x_offset, const float y_offset )
-{}
+{
+	Application::OnMouseScrollEvent( x_offset, y_offset );
+}
 
 void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 {
@@ -385,6 +389,8 @@ void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, con
 		default:
 			break;
 	}
+
+	Application::OnKeyboardEvent( key_code, key_action, key_mods );
 }
 
 void HDR_DemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
@@ -397,6 +403,8 @@ void HDR_DemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, 
 	renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
 
 	RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
+
+	Application::OnFramebufferResizeEvent( width_new_pixels, height_new_pixels );
 }
 
 void HDR_DemoApplication::ResetInstanceData()
