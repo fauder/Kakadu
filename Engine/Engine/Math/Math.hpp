@@ -58,6 +58,9 @@ namespace Engine::Math
 	template< Concepts::Arithmetic Value >
 	Value Round( const Value value ) { return std::round( value ); }
 
+	template< Concepts::Arithmetic Value >
+	constexpr int Sign( const Value value ) { return ( Value( 0 ) < value ) - ( value < Value( 0 ) ); }
+
 	template< typename Value, std::floating_point PercentType >
 	constexpr Value Lerp( const Value value_a, const Value value_b, const PercentType t ) { return ( PercentType( 1 ) - t ) * value_a + t * value_b; }
 
