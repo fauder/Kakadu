@@ -3,6 +3,7 @@
 // Engine Includes.
 #include "Angle.hpp"
 #include "Concepts.h"
+#include "Core/Assertion.h"
 
 // std Includes.
 #include <cmath>
@@ -30,8 +31,6 @@ namespace Engine
 	using Matrix4x4 = Math::Matrix< float, 4, 4 >;
 }
 
-// TODO: Make suitable functions constexpr.
-
 namespace Engine::Math
 {
 /* Arithmetic. */
@@ -42,10 +41,10 @@ namespace Engine::Math
 	Value Abs( const Value value ) { return std::abs( value ); }
 
 	template< typename Value >
-	Value Min( const Value left, const Value right ) { return left < right ? left : right; }
+	constexpr Value Min( const Value left, const Value right ) { return left < right ? left : right; }
 
 	template< typename Value >
-	Value Max( const Value left, const Value right ) { return left > right ? left : right; }
+	constexpr Value Max( const Value left, const Value right ) { return left > right ? left : right; }
 
 	template< Concepts::Arithmetic Value >
 	auto Sqrt( const Value value ) { return std::sqrt( value ); }
@@ -60,19 +59,19 @@ namespace Engine::Math
 	Value Round( const Value value ) { return std::round( value ); }
 
 	template< typename Value, std::floating_point PercentType >
-	Value Lerp( const Value value_a, const Value value_b, const PercentType t ) { return ( PercentType( 1 ) - t ) * value_a + t * value_b; }
+	constexpr Value Lerp( const Value value_a, const Value value_b, const PercentType t ) { return ( PercentType( 1 ) - t ) * value_a + t * value_b; }
 
 	template< std::totally_ordered Value >
 	[[ nodiscard( "Clamped value is not assigned back to any variable." ) ]]
-	Value Clamp( const Value value, const Value minimum, const Value maximum ) { return value < minimum ? minimum : value > maximum ? maximum : value; }
+	constexpr Value Clamp( const Value value, const Value minimum, const Value maximum ) { return value < minimum ? minimum : value > maximum ? maximum : value; }
 
 	template< std::totally_ordered Value >
 	[[ nodiscard( "Clamped value is not assigned back to any variable." ) ]]
-	Value ClampMin( const Value value, const Value minimum ) { return value < minimum ? minimum : value; }
+	constexpr Value ClampMin( const Value value, const Value minimum ) { return value < minimum ? minimum : value; }
 
 	template< std::totally_ordered Value >
 	[[ nodiscard( "Clamped value is not assigned back to any variable." ) ]]
-	Value ClampMax( const Value value, const Value maximum ) { return value > maximum ? maximum : value; }
+	constexpr Value ClampMax( const Value value, const Value maximum ) { return value > maximum ? maximum : value; }
 
 	template< typename Component, std::size_t Size > requires( Size > 1 )
 	Component Distance( const Vector< Component, Size >& vector_a, const Vector< Component, Size >& vector_b )
@@ -81,12 +80,16 @@ namespace Engine::Math
 	}
 
 	template< typename Component, std::size_t Size > requires( Size > 1 )
-	Component DistanceSquared( const Vector< Component, Size >& vector_a, const Vector< Component, Size >& vector_b )
+	constexpr Component DistanceSquared( const Vector< Component, Size >& vector_a, const Vector< Component, Size >& vector_b )
 	{
 		return ( vector_a - vector_b ).MagnitudeSquared();
 	}
 
-	int RoundToMultiple_PowerOf2( const int value, const int multiple );
+	constexpr int RoundToMultiple_PowerOf2( const int value, const int multiple )
+	{
+		ASSERT_DEBUG_ONLY( multiple && ( ( multiple & ( multiple - 1 ) ) == 0 ) );
+		return ( value + multiple - 1 ) & -multiple;
+	}
 
 /* Trigonometry. */
 	template< std::floating_point Value >

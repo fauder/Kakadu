@@ -6,13 +6,6 @@
 
 namespace Engine::Math
 {
-/* Arithmetic. */
-	int RoundToMultiple_PowerOf2( const int value, const int multiple )
-	{
-		ASSERT_DEBUG_ONLY( multiple && ( ( multiple & ( multiple - 1 ) ) == 0 ) );
-		return ( value + multiple - 1 ) & -multiple;
-	}
-
 /* Conversions Between Rotation Representations. */
 
 	/* In row-major form. Results in counter-clockwise rotation.
