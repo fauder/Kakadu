@@ -917,10 +917,8 @@ void BloomDemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, co
 {
 	switch( key_code )
 	{
-		case Platform::KeyCode::KEY_ESCAPE:
-			if( key_action == Platform::KeyAction::PRESS )
-				Platform::SetShouldClose( true );
-			break;
+		/*case Platform::KeyCode::KEY_ESCAPE:
+			break;*/
 		/* Use the key below ESC to toggle between game & menu/UI. */
 		case Platform::KeyCode::KEY_GRAVE_ACCENT:
 			if( key_action == Platform::KeyAction::PRESS )

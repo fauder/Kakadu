@@ -159,8 +159,8 @@ namespace Engine
 		switch( key_code )
 		{
 			case Platform::KeyCode::KEY_ESCAPE:
-				/*if( key_action == Platform::KeyAction::PRESS )
-					Platform::SetShouldClose( true );*/
+				if( show_mouse_screen_space_position_overlay )
+					show_mouse_screen_space_position_overlay = false;
 				break;
 			default:
 				break;
