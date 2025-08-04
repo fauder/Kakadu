@@ -156,6 +156,7 @@ namespace Engine
 
 	void Application::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
+	#ifdef _EDITOR
 		switch( key_code )
 		{
 			case Platform::KeyCode::KEY_ESCAPE:
@@ -184,6 +185,7 @@ namespace Engine
 			default:
 				break;
 		}
+	#endif // _EDITOR
 	}
 
 	void Application::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
