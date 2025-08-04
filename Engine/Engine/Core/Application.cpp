@@ -440,11 +440,12 @@ namespace Engine
 					ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
 					const auto center_pos = cursor_pos_before_image + ImVec2( window_size / 2, window_size / 2 );
+					const auto thickness = zoom / 8;
 
-					ImVec2 rect_min = center_pos - ImVec2( zoom / 2, zoom / 2 );
-					ImVec2 rect_max = center_pos + ImVec2( zoom / 2, zoom / 2 );
+					ImVec2 rect_min = center_pos - ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
+					ImVec2 rect_max = center_pos + ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
 
-					draw_list->AddRect( rect_min, rect_max, IM_COL32( 255, 0, 0, 255 ), zoom / 5.0f, 0, zoom / 4 );
+					draw_list->AddRect( rect_min, rect_max, IM_COL32( 255, 0, 0, 255 ), zoom / 5, 0, zoom / 8 );
 				}
 			}
 
