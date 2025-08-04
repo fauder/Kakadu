@@ -38,10 +38,11 @@ namespace Engine
 		virtual void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
 		virtual void OnMouseScrollEvent( const float x_offset, const float y_offset );
 		virtual void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels );
+		void OnFramebufferResizeEvent( const Vector2I new_size_pixels ); // Convenience overload.
+		
 #ifdef _EDITOR
 		virtual void RenderImGui();
 #endif // _EDITOR
-
 
 	protected:
 		inline void FreezeTime()   { time_multiplier = 0.0f; }

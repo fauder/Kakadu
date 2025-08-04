@@ -179,6 +179,11 @@ namespace Engine
 	{
 	}
 
+	void Application::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
+	{
+		OnFramebufferResizeEvent( new_size_pixels.X(), new_size_pixels.Y() );
+	}
+
 #ifdef _EDITOR
 	Vector2 Application::GetMouseScreenSpacePosition() const
 	{
@@ -202,21 +207,21 @@ namespace Engine
 
 	void Application::OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
-		// No need to query ImGui::GetIO().WantCaptureKeyboard here because Platform already queries it before calling this function. 
+		// No need to query ImGui::GetIO().WantCaptureKeyboard here because Platform already queries it before calling this function.
 
 		OnKeyboardEvent( key_code, key_action, key_mods );
 	}
 
 	void Application::OnMouseButtonEventInternal( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
 	{
-		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function. 
+		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function.
 
 		OnMouseButtonEvent( button, button_action, key_mods );
 	}
 
 	void Application::OnMouseScrollEventInternal( const float x_offset, const float y_offset )
 	{
-		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function. 
+		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function.
 
 		OnMouseScrollEvent( x_offset, y_offset );
 	}

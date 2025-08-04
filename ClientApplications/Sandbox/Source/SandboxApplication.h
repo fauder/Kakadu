@@ -54,9 +54,10 @@ public:
 	virtual void Render() override;
 
 	virtual void RenderImGui() override;
+	virtual void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods ) override;
+	virtual void OnMouseScrollEvent( const float x_offset, const float y_offset ) override;
 	virtual void OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods ) override;
 	virtual void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels ) override;
-	void OnFramebufferResizeEvent( const Vector2I new_size_pixels ); // Convenience overload.
 	
 private:
 	void ResetLightingData();

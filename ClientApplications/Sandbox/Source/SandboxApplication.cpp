@@ -957,6 +957,12 @@ void SandboxApplication::RenderImGui()
 	renderer->RenderImGui();
 }
 
+void SandboxApplication::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
+{}
+
+void SandboxApplication::OnMouseScrollEvent( const float x_offset, const float y_offset )
+{}
+
 void SandboxApplication::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 {
 	switch( key_code )
@@ -1035,11 +1041,6 @@ void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, c
 	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
 
 	mirror_quad_material.SetTexture( "uniform_tex", &renderer->CustomFramebuffer( 0 ).ColorAttachment() );
-}
-
-void SandboxApplication::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
-{
-	OnFramebufferResizeEvent( new_size_pixels.X(), new_size_pixels.Y() );
 }
 
 void SandboxApplication::ResetLightingData()
