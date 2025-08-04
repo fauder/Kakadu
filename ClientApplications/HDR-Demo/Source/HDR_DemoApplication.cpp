@@ -392,21 +392,6 @@ void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, con
 				Platform::ResetMouseDeltas();
 			}
 			break;
-		case Platform::KeyCode::KEY_I:
-			if( key_action == Platform::KeyAction::PRESS )
-			{
-				show_imgui = !show_imgui;
-				if( show_imgui )
-				{
-					renderer->SetFinalPassToUseFinalFramebuffer();
-				}
-				else
-				{
-					renderer->SetFinalPassToUseDefaultFramebuffer();
-					OnFramebufferResizeEvent( Platform::GetFramebufferSizeInPixels() );
-				}
-			}
-			break;
 		case Platform::KeyCode::KEY_O:
 			if( key_action == Platform::KeyAction::PRESS )
 				show_imgui_demo_window = !show_imgui_demo_window;

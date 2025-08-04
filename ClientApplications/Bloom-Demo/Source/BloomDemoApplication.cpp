@@ -935,21 +935,6 @@ void BloomDemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, co
 			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
 				light_spot.data.cutoff_angle_inner = Engine::Math::Max( light_spot.data.cutoff_angle_inner - 0.33_deg, 0_deg );
 			break;
-		case Platform::KeyCode::KEY_I:
-			if( key_action == Platform::KeyAction::PRESS )
-			{
-				show_imgui = !show_imgui;
-				if( show_imgui )
-				{
-					renderer->SetFinalPassToUseFinalFramebuffer();
-				}
-				else
-				{
-					renderer->SetFinalPassToUseDefaultFramebuffer();
-					OnFramebufferResizeEvent( Platform::GetFramebufferSizeInPixels() );
-				}
-			}
-			break;
 		case Platform::KeyCode::KEY_O:
 			if( key_action == Platform::KeyAction::PRESS )
 				show_imgui_demo_window = !show_imgui_demo_window;
