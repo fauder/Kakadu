@@ -142,21 +142,21 @@ namespace Engine
 		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
 		void SetShaderGlobal( const std::string& buffer_name, const char* uniform_member_array_instance_name, const unsigned int array_index, const StructType& value )
 		{
-			uniform_buffer_management_global.Set( buffer_name, uniform_member_array_instance_name, array_index, value );
+			uniform_buffer_management_global.SetPartial_Array( buffer_name, uniform_member_array_instance_name, array_index, value );
 		}
 
 		/* For PARTIAL setting of STRUCT uniforms INSIDE a Uniform Buffer. */
 		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
 		void SetShaderGlobal( const std::string& buffer_name, const char* uniform_member_struct_instance_name, const StructType& value )
 		{
-			uniform_buffer_management_global.Set( buffer_name, uniform_member_struct_instance_name, value );
+			uniform_buffer_management_global.SetPartial_Struct( buffer_name, uniform_member_struct_instance_name, value );
 		}
 		
 		/* For PARTIAL setting of NON-AGGREGATE uniforms INSIDE a Uniform Buffer. */
 		template< typename UniformType >
 		void SetShaderGlobal( const std::string& buffer_name, const char* uniform_member_name, const UniformType& value )
 		{
-			uniform_buffer_management_global.Set( buffer_name, uniform_member_name, value );
+			uniform_buffer_management_global.SetPartial( buffer_name, uniform_member_name, value );
 		}
 
 		inline const std::unordered_set< Shader* > RegisteredShaders() const { return shaders_registered; }
