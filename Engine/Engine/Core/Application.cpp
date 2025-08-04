@@ -194,6 +194,10 @@ namespace Engine
 
 	void Application::OnMouseScrollEvent( const float x_offset, const float y_offset )
 	{
+		if( show_mouse_screen_space_position_overlay )
+		{
+			OffsetViewportMagnifierZoom( y_offset );
+		}
 	}
 
 	void Application::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
