@@ -114,6 +114,49 @@ namespace Engine::Math
 		{
 		}
 
+		/*
+		 * Construction from other vector types (perhaps from other libraries such as ImGui or glm):
+		 */
+
+		template< typename OtherVectorClass >
+			requires ( Size == 2 &&
+					   requires ( OtherVectorClass v )
+					   {
+					       { v.x } -> std::convertible_to< Component >;
+						   { v.y } -> std::convertible_to< Component >;
+					   } )
+			Vector( const OtherVectorClass& v )
+			:
+			data{ static_cast< Component >( v.x ), static_cast< Component >( v.y ) }
+		{}
+
+		template< typename OtherVectorClass >
+			requires ( Size == 3 &&
+					   requires ( OtherVectorClass v )
+					   {
+					       { v.x } -> std::convertible_to< Component >;
+						   { v.y } -> std::convertible_to< Component >;
+						   { v.z } -> std::convertible_to< Component >;
+					   } )
+			Vector( const OtherVectorClass& v )
+			:
+			data{ static_cast< Component >( v.x ), static_cast< Component >( v.y ), static_cast< Component >( v.z ) }
+		{}
+
+		template< typename OtherVectorClass >
+			requires ( Size == 4 &&
+					   requires ( OtherVectorClass v )
+					   {
+					       { v.x } -> std::convertible_to< Component >;
+						   { v.y } -> std::convertible_to< Component >;
+						   { v.z } -> std::convertible_to< Component >;
+						   { v.w } -> std::convertible_to< Component >;
+					   } )
+			Vector( const OtherVectorClass& v )
+			:
+			data{ static_cast< Component >( v.x ), static_cast< Component >( v.y ), static_cast< Component >( v.z ), static_cast< Component >( v.w ) }
+		{}
+
 	/* Comparison operators. */
 		bool operator ==( const Vector& right_hand_side ) const
 		{
