@@ -50,6 +50,7 @@ namespace Engine
 			static constexpr std::uint8_t SMALLEST_MAGNIFIER_ZOOM_FACTOR = 4;
 			static constexpr std::uint8_t LARGEST_MAGNIFIER_ZOOM_FACTOR  = 32;
 
+			std::string imgui_window_name;
 			ImVec2 framebuffer_size; // The OpenGL framebuffer size.
 			ImVec2 position_absolute; // The ImGui window position_absolute.
 			Vector2I mouse_viewport_relative_position; // Screen-space position of the mouse, relative to OpenGL convention: the bottom-left of the viewport.

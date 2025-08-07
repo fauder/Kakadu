@@ -319,7 +319,7 @@ namespace Engine
 		RenderImGui_Viewport();
 		RenderImGui_ViewportControls();
 
-		if( ImGui::Begin( "Viewport" ) )
+		if( ImGui::Begin( viewport_info.imgui_window_name.c_str() ) )
 		{
 			ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
 		}
@@ -339,7 +339,9 @@ namespace Engine
 			ImGui::SetNextWindowSize( Math::CopyToImVec2( framebuffer_size ), ImGuiCond_FirstUseEver );
 		}
 
-		if( ImGui::Begin( "Viewport" ) )
+		viewport_info.imgui_window_name = std::format( "Viewport {:d}x{:d}###Viewport", ( int )viewport_info.framebuffer_size.x, ( int )viewport_info.framebuffer_size.y );
+
+		if( ImGui::Begin( viewport_info.imgui_window_name.c_str() ) )
 		{
 			viewport_info.framebuffer_size = ImGui::GetContentRegionAvail();
 			const Vector2I viewport_available_size( ( int )viewport_info.framebuffer_size.x, ( int )viewport_info.framebuffer_size.y );
@@ -379,7 +381,7 @@ namespace Engine
 
 	void Application::RenderImGui_ViewportControls()
 	{
-		if( ImGuiUtility::BeginOverlay( "Viewport", "##ViewportControls", 
+		if( ImGuiUtility::BeginOverlay( viewport_info.imgui_window_name.c_str(), "##ViewportControls",
 										ImGuiUtility::HorizontalPosition::LEFT, ImGuiUtility::VerticalPosition::TOP, 
 										&show_frame_statistics_overlay ) )
 		{
@@ -413,7 +415,7 @@ namespace Engine
 		viewport_info.mouse_viewport_relative_position = Vector2I( GetMouseScreenSpacePosition() );
 		const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -( ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y * 2 ) );
 
-		if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
+		if( Engine::ImGuiUtility::BeginOverlay( viewport_info.imgui_window_name.c_str(), "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
 			ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_viewport_relative_position.X(), viewport_info.mouse_viewport_relative_position.Y() );
 
 		Engine::ImGuiUtility::EndOverlay();
@@ -449,7 +451,7 @@ namespace Engine
 		viewport_info.mouse_viewport_relative_position = Vector2I( GetMouseScreenSpacePosition() );
 		const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, 5 );
 
-		if( ImGuiUtility::BeginOverlay( "Viewport", "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
+		if( ImGuiUtility::BeginOverlay( viewport_info.imgui_window_name.c_str(), "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
 		{
 			static GLuint nearest_sampler = 0;
 			if( nearest_sampler == 0 ) // TODO: Put this inside its own class.
@@ -482,7 +484,7 @@ namespace Engine
 
 	void Application::RenderImGui_FrameStatistics()
 	{
-		if( ImGuiUtility::BeginOverlay( "Viewport", ICON_FA_CHART_LINE " Frame Statistics",
+		if( ImGuiUtility::BeginOverlay( viewport_info.imgui_window_name.c_str(), ICON_FA_CHART_LINE " Frame Statistics",
 										ImGuiUtility::HorizontalPosition::RIGHT, ImGuiUtility::VerticalPosition::TOP,
 										&show_frame_statistics_overlay ) )
 		{
@@ -555,9 +557,6 @@ namespace Engine
 			ImGui::SameLine();
 			if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Reset##time_multiplier", max_size_half_width ) )
 				time_multiplier = 1.0f;
-
-			if( show_mouse_screen_space_position_overlay )
-				ImGui::TextDisabled( "Viewport size: %dx%d", ( int )viewport_info.framebuffer_size.x, ( int )viewport_info.framebuffer_size.y );
 		}
 
 		ImGuiUtility::EndOverlay();
