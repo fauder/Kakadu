@@ -356,15 +356,15 @@ namespace Engine
 				OnFramebufferResizeEvent( viewport_available_size.X(), viewport_available_size.Y() );
 			}
 
-			if( ImGui::IsWindowHovered() )
+			/* Collect information for mouse hover/pos. info detection OUTSIDE the Begin()/End() block here. */
+			if( viewport_info.is_hovered = ImGui::IsWindowHovered() )
 			{
+				/* If the Viewport is hovered, ImGui should NOT consume input and let the Application handle it: */
 				ImGui::SetNextFrameWantCaptureMouse( false );
 				ImGui::SetNextFrameWantCaptureKeyboard( false );
 			}
 
-			/* Collect information for mouse hover/pos. info detection OUTSIDE the Begin()/End() block here. */
-			viewport_info.position_absolute   = ImGui::GetCursorScreenPos();
-			viewport_info.is_hovered = ImGui::IsWindowHovered( ImGuiHoveredFlags_AllowWhenBlockedByActiveItem );
+			viewport_info.position_absolute = ImGui::GetCursorScreenPos();
 
 			/* ImGui::Image() call below is moved to a later point, to make sure the image itself stays the same until ImGui actually renders it. */
 			//ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
