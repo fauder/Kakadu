@@ -412,10 +412,7 @@ namespace Engine
 			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -( ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y * 2 ) );
 
 			if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
-			{
 				ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_viewport_relative_position.X(), viewport_info.mouse_viewport_relative_position.Y() );
-				ImGui::TextDisabled( "%d", ( int )viewport_info.magnifier_zoom_factor );
-			}
 
 			Engine::ImGuiUtility::EndOverlay();
 		}
