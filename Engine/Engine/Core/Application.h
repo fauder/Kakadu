@@ -88,8 +88,6 @@ namespace Engine
 		void RenderImGui_FrameStatistics();
 #endif // _EDITOR
 
-		std::uint16_t CalculateFPS_RollingAverage( const float fps_this_frame ) const;
-
 	protected:
 #ifdef _EDITOR
 		GLLogger gl_logger;
