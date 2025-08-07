@@ -318,11 +318,6 @@ namespace Engine
 
 		RenderImGui_Viewport();
 		RenderImGui_ViewportControls();
-		if( show_mouse_screen_space_position_overlay )
-		{
-			RenderImGui_CursorScreenSpacePositionOverlay();
-			RenderImGui_MagnifierOverlay();
-		}
 
 		if( ImGui::Begin( "Viewport" ) )
 		{
@@ -366,6 +361,15 @@ namespace Engine
 
 			viewport_info.position_absolute = ImGui::GetCursorScreenPos();
 
+			if( show_mouse_screen_space_position_overlay )
+			{
+				if( mouse_screen_space_position_overlay_is_active = IsMouseHoveringTheViewport() && ImGui::IsWindowFocused( ImGuiFocusedFlags_ChildWindows ) )
+				{
+					RenderImGui_CursorScreenSpacePositionOverlay();
+					RenderImGui_MagnifierOverlay();
+				}
+			}
+
 			/* ImGui::Image() call below is moved to a later point, to make sure the image itself stays the same until ImGui actually renders it. */
 			//ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
 		}
@@ -406,16 +410,13 @@ namespace Engine
 
 	void Application::RenderImGui_CursorScreenSpacePositionOverlay()
 	{
-		if( mouse_screen_space_position_overlay_is_active = IsMouseHoveringTheViewport() )
-		{
-			viewport_info.mouse_viewport_relative_position = Vector2I( GetMouseScreenSpacePosition() );
-			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -( ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y * 2 ) );
+		viewport_info.mouse_viewport_relative_position = Vector2I( GetMouseScreenSpacePosition() );
+		const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -( ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y * 2 ) );
 
-			if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
-				ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_viewport_relative_position.X(), viewport_info.mouse_viewport_relative_position.Y() );
+		if( Engine::ImGuiUtility::BeginOverlay( "Viewport", "##Fragment Pos.", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
+			ImGui::TextDisabled( "(%d, %d)", viewport_info.mouse_viewport_relative_position.X(), viewport_info.mouse_viewport_relative_position.Y() );
 
-			Engine::ImGuiUtility::EndOverlay();
-		}
+		Engine::ImGuiUtility::EndOverlay();
 	}
 
 	void Application::RenderImGui_MagnifierOverlay()
@@ -425,61 +426,58 @@ namespace Engine
 
 		ASSERT( zoom >= 1.0f );
 
-		if( mouse_screen_space_position_overlay_is_active = IsMouseHoveringTheViewport() )
+		// Find out how many "original pixels" a magnifier pixel is:
+		const float magnified_pixel_multiplier = 1.0f / zoom;
+
+		// Calculate UV coordinates in the viewport texture:
+		ImVec2 mouse_pos = ToImVec2( GetMouseScreenSpacePosition() + Vector2{ 0.5f, 0.5f } );
+		ImVec2 uv_center = mouse_pos / viewport_info.framebuffer_size;
+		ImVec2 uv_radius = ImVec2( 0.5f * window_size * magnified_pixel_multiplier,
+								   0.5f * window_size * magnified_pixel_multiplier ) / viewport_info.framebuffer_size;
+
+		ImVec2 uv0 = uv_center - uv_radius;
+		ImVec2 uv1 = uv_center + uv_radius;
+
+		// Clamp to [0,1] to avoid wrapping:
+		uv0.x = Math::Clamp( uv0.x, 0.0f, 1.0f );
+		uv0.y = Math::Clamp( uv0.y, 0.0f, 1.0f );
+		uv1.x = Math::Clamp( uv1.x, 0.0f, 1.0f );
+		uv1.y = Math::Clamp( uv1.y, 0.0f, 1.0f );
+
+		std::swap( uv0.y, uv1.y );
+
+		viewport_info.mouse_viewport_relative_position = Vector2I( GetMouseScreenSpacePosition() );
+		const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, 5 );
+
+		if( ImGuiUtility::BeginOverlay( "Viewport", "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
 		{
-			// Find out how many "original pixels" a magnifier pixel is:
-			const float magnified_pixel_multiplier = 1.0f / zoom;
-
-			// Calculate UV coordinates in the viewport texture:
-			ImVec2 mouse_pos = ToImVec2( GetMouseScreenSpacePosition() + Vector2{ 0.5f, 0.5f } );
-			ImVec2 uv_center = mouse_pos / viewport_info.framebuffer_size;
-			ImVec2 uv_radius = ImVec2( 0.5f * window_size * magnified_pixel_multiplier,
-									   0.5f * window_size * magnified_pixel_multiplier ) / viewport_info.framebuffer_size;
-
-			ImVec2 uv0 = uv_center - uv_radius;
-			ImVec2 uv1 = uv_center + uv_radius;
-
-			// Clamp to [0,1] to avoid wrapping:
-			uv0.x = Math::Clamp( uv0.x, 0.0f, 1.0f );
-			uv0.y = Math::Clamp( uv0.y, 0.0f, 1.0f );
-			uv1.x = Math::Clamp( uv1.x, 0.0f, 1.0f );
-			uv1.y = Math::Clamp( uv1.y, 0.0f, 1.0f );
-
-			std::swap( uv0.y, uv1.y );
-
-			viewport_info.mouse_viewport_relative_position = Vector2I( GetMouseScreenSpacePosition() );
-			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, 5 );
-
-			if( ImGuiUtility::BeginOverlay( "Viewport", "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
+			static GLuint nearest_sampler = 0;
+			if( nearest_sampler == 0 ) // TODO: Put this inside its own class.
 			{
-				static GLuint nearest_sampler = 0;
-				if( nearest_sampler == 0 ) // TODO: Put this inside its own class.
-				{
-					glGenSamplers( 1, &nearest_sampler );
-					glSamplerParameteri( nearest_sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-					glSamplerParameteri( nearest_sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-				}
-
-				const auto texture_id = renderer->FinalFramebuffer().ColorAttachment().Id().Get();
-				glBindSampler( 0, nearest_sampler );
-				const auto cursor_pos_before_image( ImGui::GetCursorScreenPos() );
-				ImGui::Image( ( ImTextureID )texture_id, ImVec2( window_size, window_size ), uv0, uv1 );
-				glBindSampler( 0, 0 );
-
-				/* Show center pixel outline: */
-				ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-				const auto center_pos = cursor_pos_before_image + ImVec2( window_size / 2, window_size / 2 );
-				const auto thickness = zoom / 8;
-
-				ImVec2 rect_min = center_pos - ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
-				ImVec2 rect_max = center_pos + ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
-
-				draw_list->AddRect( rect_min, rect_max, IM_COL32( 255, 0, 0, 255 ), zoom / 5, 0, zoom / 8 );
+				glGenSamplers( 1, &nearest_sampler );
+				glSamplerParameteri( nearest_sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				glSamplerParameteri( nearest_sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			}
 
-			Engine::ImGuiUtility::EndOverlay();
+			const auto texture_id = renderer->FinalFramebuffer().ColorAttachment().Id().Get();
+			glBindSampler( 0, nearest_sampler );
+			const auto cursor_pos_before_image( ImGui::GetCursorScreenPos() );
+			ImGui::Image( ( ImTextureID )texture_id, ImVec2( window_size, window_size ), uv0, uv1 );
+			glBindSampler( 0, 0 );
+
+			/* Show center pixel outline: */
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+			const auto center_pos = cursor_pos_before_image + ImVec2( window_size / 2, window_size / 2 );
+			const auto thickness = zoom / 8;
+
+			ImVec2 rect_min = center_pos - ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
+			ImVec2 rect_max = center_pos + ImVec2( 1, 1 ) * ( ( zoom + thickness ) / 2 );
+
+			draw_list->AddRect( rect_min, rect_max, IM_COL32( 255, 0, 0, 255 ), zoom / 5, 0, zoom / 8 );
 		}
+
+		Engine::ImGuiUtility::EndOverlay();
 	}
 
 	void Application::RenderImGui_FrameStatistics()
