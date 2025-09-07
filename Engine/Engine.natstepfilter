@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+.natstepfilter file for Visual Studio debugger.
+Purpose: instruct debugger to skip some functions when using StepInto (F11)
+-->
+
+<StepFilter xmlns="http://schemas.microsoft.com/vstudio/debugger/natstepfilter/2010">
+    <!-- Disable stepping into most Math functions -->
+    <Function>
+        <Name>Engine::Math::Vector&lt;.+,.+&gt;::.*</Name>
+        <Action>NoStepInto</Action>
+    </Function>
+
+    <Function>
+        <Name>Engine::Math::Matrix&lt;.+,.+,.+&gt;::.*</Name>
+        <Action>NoStepInto</Action>
+    </Function>
+
+    <!-- Disable stepping into shader source paths -->
+    <Function>
+        <Name>Engine::ShaderSourcePath&lt;.+&gt;::.*</Name>
+        <Action>NoStepInto</Action>
+    </Function>
+
+    <!-- User-defined string literal operators -->
+    <Function>
+        <Name>Engine::Literals::operator\s*""\s*_(vert|frag|geom)</Name>
+        <Action>NoStepInto</Action>
+    </Function>
+</StepFilter>

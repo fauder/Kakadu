@@ -440,6 +440,9 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <Natvis Include="Engine.natvis" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Engine.natstepfilter">
+      <FileType>Document</FileType>
+    </None>
     <None Include="Engine\Asset\Shader\Color.frag" />
     <None Include="Engine\Asset\Shader\Color.vert" />
     <None Include="Engine\Asset\Shader\DebugTBN_AsColors.frag" />
