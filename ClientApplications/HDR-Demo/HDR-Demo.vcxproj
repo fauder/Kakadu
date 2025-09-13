@@ -128,7 +128,7 @@
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(ProjectDir)PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir $(ProjectDir)Asset\Shader --include-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='[ASAN]|x64'">
@@ -154,7 +154,7 @@
       </Path>
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(ProjectDir)PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir $(ProjectDir)Asset\Shader --include-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -182,7 +182,7 @@
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(ProjectDir)PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir $(ProjectDir)Asset\Shader --include-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Standalone|x64'">
@@ -211,7 +211,7 @@
       </Path>
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(ProjectDir)PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir $(ProjectDir)Asset\Shader --include-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -146,7 +146,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='[ASAN]|x64'">
@@ -194,7 +194,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       </Path>
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -244,7 +244,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Standalone|x64'">
@@ -295,7 +295,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       </Path>
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
