@@ -120,8 +120,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Bin\$(Configuration)-$(Platform)\Vendor\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy $(SolutionDir)Lib\$(Platform)-Debug\glfw3.pdb "$(OutDir)" /Y
-xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Command>
+      <Command>python "$(SolutionDir)PreBuild.py" --solution-dir "$(SolutionDir)." --outdir "$(OutDir)." --configuration "$(Configuration)"</Command>
       <Message>
       </Message>
     </PreBuildEvent>
@@ -167,8 +166,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       <AdditionalLibraryDirectories>$(SolutionDir)Bin\$(Configuration)-$(Platform)\Vendor\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy $(SolutionDir)Lib\$(Platform)-Debug\glfw3.pdb "$(OutDir)" /Y
-xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Command>
+      <Command>python "$(SolutionDir)PreBuild.py" --solution-dir "$(SolutionDir)." --outdir "$(OutDir)." --configuration "$(Configuration)"</Command>
       <Message>
       </Message>
     </PreBuildEvent>
