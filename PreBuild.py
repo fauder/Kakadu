@@ -4,7 +4,7 @@ import argparse, os, shlex, subprocess, sys
 from pathlib import Path
 
 step_index = 0
-step_count = 1
+step_count = 2
 
 def run(description, argv):
     global step_index, step_count
@@ -41,7 +41,18 @@ def main():
 
     outd = Path(args.outdir).resolve() if args.outdir else None
     
-    # Conditionally execute: Copy PDB files
+    # 1) Always execute: GenerateEngineAbsoluteAssetPath
+    gen_script       = sol / "PreBuild_GenerateEngineAbsoluteAssetPath.py"
+    engine_asset_dir = sol / "Engine" / "Engine" / "Asset"
+    
+    print()
+    
+    run(
+        "Generating engine absolute asset path.",
+        [args.python, str(gen_script), "--engine", str(engine_asset_dir)]
+    )
+
+    # 2) Conditionally execute: Copy PDB files
     cfg = (args.configuration or "").lower()
     if cfg == "debug" or "asan" in cfg:
         pdb_script = sol / "PreBuild_CopyPDBFiles.py"
