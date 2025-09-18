@@ -402,3 +402,4 @@ FodyWeavers.xsd
 **/config.ini
 *.cap
 *.trace
+Engine/Generated
