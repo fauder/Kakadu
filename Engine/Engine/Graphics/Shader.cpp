@@ -10,6 +10,7 @@
 #include "Core/Utility.hpp"
 #include "GLLogger.h"
 #include "Shader.hpp"
+#include "ShaderIncludePreprocessing.h"
 #include "ShaderTypeInformation.h"
 #include "UniformBlockBindingPointManager.h"
 
@@ -576,19 +577,16 @@ namespace Engine
 			shader_source_to_modify = shader_source_to_modify.substr( 0, first_new_line + 1 ) + define_directives_combined + shader_source_to_modify.substr( first_new_line + 1 );
 	}
 
-	bool Shader::PreProcessShaderStage_IncludeDirectives( const std::filesystem::path& shader_source_path, std::string& shader_source_to_modify, const ShaderType shader_type )
+	bool Shader::PreProcessShaderStage_IncludeDirectives( const std::filesystem::path& shader_source_path, std::string& shader_source_to_modify, 
+														  const ShaderType shader_type )
 	{
 		static char error_string[ 256 ];
 
 		const std::string shader_file_name( shader_source_path.filename().string() );
-		const std::filesystem::path directory_path( shader_source_path.parent_path() );
 
-		std::unique_ptr< char* > preprocessed_source = std::make_unique< char* >( stb_include_string( shader_source_to_modify.data(),
-																									  nullptr,
-																									  const_cast< char* >( directory_path.string().c_str() ),
-																									  const_cast< char* >( shader_file_name.c_str() ),
-																									  error_string ) );
-		if( not *preprocessed_source )
+		const auto preprocessed_source = ShaderIncludePreprocessing::Resolve( shader_source_path, { ENGINE_SHADER_ROOT_ABSOLUTE "/" } );
+
+		if( preprocessed_source.empty() )
 		{
 			const std::string error_prompt( std::string( "ERROR::SHADER::" ) + ShaderTypeString( shader_type ) + "::INCLUDE_FILE_NOT_SUCCESSFULLY_READ\n\tShader name: " + name + "\n\t" 
 											+ error_string );
@@ -596,7 +594,7 @@ namespace Engine
 			return false;
 		}
 
-		shader_source_to_modify = *preprocessed_source;
+		shader_source_to_modify = std::move( preprocessed_source );
 		return true;
 	}
 

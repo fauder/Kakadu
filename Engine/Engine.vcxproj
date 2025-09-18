@@ -330,6 +330,7 @@
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Sphere.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_UV_Sphere.hpp" />
     <ClInclude Include="Engine\Graphics\RenderPass.h" />
+    <ClInclude Include="Engine\Graphics\ShaderIncludePreprocessing.h" />
     <ClInclude Include="Engine\Graphics\ShaderSourcePath.hpp" />
     <ClInclude Include="Engine\Graphics\ShaderType.h" />
     <ClInclude Include="Engine\Math\OrthographicProjectionParameters.h" />
@@ -413,6 +414,7 @@
     <ClCompile Include="Engine\Graphics\ModelLoader.cpp" />
     <ClCompile Include="Engine\Graphics\Primitive\Primitive_Cube_FullScreen.h" />
     <ClCompile Include="Engine\Graphics\Renderer.cpp" />
+    <ClCompile Include="Engine\Graphics\ShaderIncludePreprocessing.cpp" />
     <ClCompile Include="Engine\Graphics\TextureLoader.cpp" />
     <ClCompile Include="Engine\Graphics\UniformBlockBindingPointManager.cpp" />
     <ClCompile Include="Engine\Graphics\UniformBufferManager.cpp" />
