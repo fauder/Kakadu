@@ -18,9 +18,6 @@
 #include <numeric> // std::iota.
 #include <charconv>
 
-// Vendor Includes.
-#include <stb/stb_include.h>
-
 namespace Engine
 {
 	/* Will be initialized later with FromFile(). */

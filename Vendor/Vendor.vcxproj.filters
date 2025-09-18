@@ -8,7 +8,6 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="stb\stb_image.cpp" />
-    <ClCompile Include="stb\std_include.cpp" />
     <ClCompile Include="ImGui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="ImGui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Tracy\TracyClient.cpp" />
@@ -25,7 +24,6 @@
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="KHR\khrplatform.h" />
     <ClInclude Include="stb\stb_image.h" />
-    <ClInclude Include="stb\stb_include.h" />
     <ClInclude Include="fastgltf\fastgltf\base64.hpp" />
     <ClInclude Include="fastgltf\fastgltf\core.hpp" />
     <ClInclude Include="fastgltf\fastgltf\dxmath_element_traits.hpp" />

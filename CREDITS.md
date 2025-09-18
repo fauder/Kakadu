@@ -10,7 +10,6 @@
 - [Graphics Programming Discord server](https://discord.gg/n6BdnYhX) and the awesome people there for their help.
 - [Lena Piquet](https://www.froyok.fr)'s awesome blog is used as reference for post-processing work, mainly the upcoming Bloom implementation.
 - [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) from the [stb](https://github.com/nothings/stb) library was used for texture i/o.
-- [stb_include](https://github.com/nothings/stb/blob/master/stb_include.h) from the [stb](https://github.com/nothings/stb) library was used to integrate #include support for shaders.
 - [Dear ImGui](https://github.com/ocornut/imgui) is used for the user interface.
 - [GLFW](https://www.glfw.org/) is used for windowing & other platform-specific needs.
 - [GLAD](https://github.com/Dav1dde/glad) is used as the loader for OpenGL functions.
