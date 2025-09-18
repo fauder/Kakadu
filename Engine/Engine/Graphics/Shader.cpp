@@ -5,7 +5,7 @@
 #endif // _WIN32
 
 // Engince Includes.
-#include "Asset/AssetDirectoryPath.h"
+#include "Asset/Paths.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Utility.hpp"
 #include "GLLogger.h"
@@ -456,7 +456,7 @@ namespace Engine
 			 maybe_next_token.has_value();
 			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" ) )
 		{
-			includes.emplace_back( std::string( Engine::ENGINE_ASSET_DIRECTORY_WITH_SEPARATOR ) + R"(Shader\)" + std::string( *maybe_next_token ) );
+			includes.emplace_back( std::string( ENGINE_SHADER_ROOT_ABSOLUTE "/" ) + std::string( *maybe_next_token ) );
 		}
 
 		return includes;
