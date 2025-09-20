@@ -525,8 +525,14 @@ private:
 		void PreProcessShaderStage_SetFeatures( std::string& shader_source_to_modify,
 												std::unordered_map< std::string, Feature >& defined_features,
 												const std::vector< std::string >& features_to_set );
-		bool PreProcessShaderStage_IncludeDirectives( const std::filesystem::path& shader_source_path, std::string& shader_source_to_modify, const ShaderType shader_type );
-		bool CompileShader( const char* source, unsigned int& shader_id, const ShaderType shader_type );
+		bool PreProcessShaderStage_IncludeDirectives( const std::filesystem::path& shader_source_path,
+													  std::string& shader_source_to_modify,
+													  const ShaderType shader_type,
+													  std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file );
+		bool CompileShader( const char* source,
+							unsigned int& shader_id,
+							const ShaderType shader_type,
+							std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file );
 		bool LinkProgram( const unsigned int vertex_shader_id, const unsigned int fragment_shader_id );
 		bool LinkProgram( const unsigned int vertex_shader_id, const unsigned int geometry_shader_id, const unsigned int fragment_shader_id );
 
@@ -556,9 +562,15 @@ private:
 /* Error Checking/Reporting: */
 
 		void LogErrors( const std::string& error_string ) const;
-		void LogErrors_Compilation( const int shader_id, const ShaderType shader_type ) const;
+		void LogErrors_Compilation( const int shader_id,
+									const ShaderType shader_type,
+									std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const;
 		void LogErrors_Linking() const;
 		std::string FormatErrorLog( const char* log ) const;
+		/* Replaces file IDs with actual file paths. */
+		std::string FormatErrorLog( const char* log,
+									const int log_length,
+									std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const;
 
 /* Editor: */
 

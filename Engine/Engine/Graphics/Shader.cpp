@@ -5,20 +5,18 @@
 #endif // _WIN32
 
 // Engince Includes.
-#include "Asset/AssetDirectoryPath.h"
+#include "Asset/Paths.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Utility.hpp"
 #include "GLLogger.h"
 #include "Shader.hpp"
+#include "ShaderIncludePreprocessing.h"
 #include "ShaderTypeInformation.h"
 #include "UniformBlockBindingPointManager.h"
 
 // std Includes.
 #include <numeric> // std::iota.
 #include <charconv>
-
-// Vendor Includes.
-#include <stb/stb_include.h>
 
 namespace Engine
 {
@@ -170,12 +168,14 @@ namespace Engine
 		{
 			auto& shader_source = *vertex_shader_source;
 
+			std::unordered_map< std::int16_t, std::filesystem::path > map_of_IDs_per_include_file;
+
 			vertex_source_include_path_array = PreprocessShaderStage_GetIncludeFilePaths( shader_source );
-			PreProcessShaderStage_IncludeDirectives( vertex_shader_source_path, shader_source, ShaderType::Vertex );
+			PreProcessShaderStage_IncludeDirectives( vertex_shader_source_path, shader_source, ShaderType::Vertex, map_of_IDs_per_include_file );
 			vertex_shader_features = PreProcessShaderStage_ParseFeatures( shader_source );
 			PreProcessShaderStage_SetFeatures( shader_source, vertex_shader_features, features_to_set );
 
-			if( !CompileShader( shader_source.c_str(), vertex_shader_id, ShaderType::Vertex ) )
+			if( !CompileShader( shader_source.c_str(), vertex_shader_id, ShaderType::Vertex, map_of_IDs_per_include_file ) )
 				return false;
 		}
 		else
@@ -190,12 +190,14 @@ namespace Engine
 			{
 				auto& shader_source = *geometry_shader_source;
 
+				std::unordered_map< std::int16_t, std::filesystem::path > map_of_IDs_per_include_file;
+
 				geometry_source_include_path_array = PreprocessShaderStage_GetIncludeFilePaths( shader_source );
-				PreProcessShaderStage_IncludeDirectives( geometry_shader_source_path, shader_source, ShaderType::Geometry );
+				PreProcessShaderStage_IncludeDirectives( geometry_shader_source_path, shader_source, ShaderType::Geometry, map_of_IDs_per_include_file );
 				geometry_shader_features = PreProcessShaderStage_ParseFeatures( shader_source );
 				PreProcessShaderStage_SetFeatures( shader_source, geometry_shader_features, features_to_set );
 
-				if( !CompileShader( shader_source.c_str(), geometry_shader_id, ShaderType::Geometry ) )
+				if( !CompileShader( shader_source.c_str(), geometry_shader_id, ShaderType::Geometry, map_of_IDs_per_include_file ) )
 				{
 					glDeleteShader( vertex_shader_id );
 					return false;
@@ -215,12 +217,14 @@ namespace Engine
 		{
 			auto& shader_source = *fragment_shader_source;
 
+			std::unordered_map< std::int16_t, std::filesystem::path > map_of_IDs_per_include_file;
+
 			fragment_source_include_path_array = PreprocessShaderStage_GetIncludeFilePaths( shader_source );
-			PreProcessShaderStage_IncludeDirectives( fragment_shader_source_path, shader_source, ShaderType::Fragment );
+			PreProcessShaderStage_IncludeDirectives( fragment_shader_source_path, shader_source, ShaderType::Fragment, map_of_IDs_per_include_file );
 			fragment_shader_features = PreProcessShaderStage_ParseFeatures( shader_source );
 			PreProcessShaderStage_SetFeatures( shader_source, fragment_shader_features, features_to_set );
 
-			if( !CompileShader( shader_source.c_str(), fragment_shader_id, ShaderType::Fragment ) )
+			if( !CompileShader( shader_source.c_str(), fragment_shader_id, ShaderType::Fragment, map_of_IDs_per_include_file ) )
 			{
 				glDeleteShader( vertex_shader_id );
 				if( geometry_shader_id > 0 )
@@ -435,7 +439,7 @@ namespace Engine
 
 	std::optional< std::string > Shader::ParseShaderFromFile( const char* file_path, const ShaderType shader_type )
 	{
-		const std::string error_prompt( std::string( "ERROR::SHADER::" ) + ShaderTypeString( shader_type ) + "::FILE_NOT_SUCCESSFULLY_READ\n\tShader name: " + name + "\n" );
+		const std::string error_prompt( std::string( "ERROR::SHADER::" ) + ShaderTypeString_Uppercase( shader_type ) + "::FILE_NOT_SUCCESSFULLY_READ\n\tShader name: \"" + name + "\"\n" );
 
 		if( const auto source = Engine::Utility::ReadFileIntoString( file_path, error_prompt.c_str() );
 			source )
@@ -456,7 +460,7 @@ namespace Engine
 			 maybe_next_token.has_value();
 			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" ) )
 		{
-			includes.emplace_back( std::string( Engine::ENGINE_ASSET_DIRECTORY_WITH_SEPARATOR ) + R"(Shader\)" + std::string( *maybe_next_token ) );
+			includes.emplace_back( std::string( ENGINE_SHADER_ROOT_ABSOLUTE "/" ) + std::string( *maybe_next_token ) );
 		}
 
 		return includes;
@@ -576,31 +580,33 @@ namespace Engine
 			shader_source_to_modify = shader_source_to_modify.substr( 0, first_new_line + 1 ) + define_directives_combined + shader_source_to_modify.substr( first_new_line + 1 );
 	}
 
-	bool Shader::PreProcessShaderStage_IncludeDirectives( const std::filesystem::path& shader_source_path, std::string& shader_source_to_modify, const ShaderType shader_type )
+	bool Shader::PreProcessShaderStage_IncludeDirectives( const std::filesystem::path& shader_source_path,
+														  std::string& shader_source_to_modify,
+														  const ShaderType shader_type,
+														  std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file )
 	{
-		static char error_string[ 256 ];
+		static char error_string[ 256 ] = { 0 }; // TODO: Utilize this.
 
 		const std::string shader_file_name( shader_source_path.filename().string() );
-		const std::filesystem::path directory_path( shader_source_path.parent_path() );
 
-		std::unique_ptr< char* > preprocessed_source = std::make_unique< char* >( stb_include_string( shader_source_to_modify.data(),
-																									  nullptr,
-																									  const_cast< char* >( directory_path.string().c_str() ),
-																									  const_cast< char* >( shader_file_name.c_str() ),
-																									  error_string ) );
-		if( not *preprocessed_source )
+		auto preprocessed_source( ShaderIncludePreprocessing::Resolve( shader_source_path, { ENGINE_SHADER_ROOT_ABSOLUTE "/" }, map_of_IDs_per_source_file ) );
+
+		if( preprocessed_source.empty() )
 		{
-			const std::string error_prompt( std::string( "ERROR::SHADER::" ) + ShaderTypeString( shader_type ) + "::INCLUDE_FILE_NOT_SUCCESSFULLY_READ\n\tShader name: " + name + "\n\t" 
+			const std::string error_prompt( std::string( "ERROR::SHADER::" ) + ShaderTypeString_Uppercase( shader_type ) + "::INCLUDE_FILE_NOT_SUCCESSFULLY_READ\n\tShader name: \"" + name + "\"\n\t" 
 											+ error_string );
 			LogErrors( error_prompt );
 			return false;
 		}
 
-		shader_source_to_modify = *preprocessed_source;
+		shader_source_to_modify = std::move( preprocessed_source );
 		return true;
 	}
 
-	bool Shader::CompileShader( const char* source, unsigned int& shader_id, const ShaderType shader_type )
+	bool Shader::CompileShader( const char* source,
+								unsigned int& shader_id,
+								const ShaderType shader_type,
+								std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file )
 	{
 		shader_id = glCreateShader( ShaderTypeID( shader_type ) );
 		glShaderSource( shader_id, /* how many strings: */ 1, &source, NULL );
@@ -610,7 +616,7 @@ namespace Engine
 		glGetShaderiv( shader_id, GL_COMPILE_STATUS, &success );
 		if( !success )
 		{
-			LogErrors_Compilation( shader_id, shader_type );
+			LogErrors_Compilation( shader_id, shader_type, map_of_IDs_per_source_file );
 			return false;
 		}
 
@@ -746,9 +752,9 @@ namespace Engine
 									if( auto iterator = uniform_info_map.find( uniform_name );
 										iterator != uniform_info_map.cend() && iterator->second.usage_hint != UsageHint::Unassigned && hint != iterator->second.usage_hint )
 									{
-										const std::string complete_error_string( std::string( "ERROR::SHADER::" ) + ShaderTypeString( shader_type ) +
-																				 "::POST-LINK::PARSE_UNIFORM_USAGE_HINTS:\nShader name: " + name +
-																				 "\nMismatched uniform usage hints detected." );
+										const std::string complete_error_string( std::string( "ERROR::SHADER::" ) + ShaderTypeString_Uppercase( shader_type ) +
+																				 "::POST-LINK::PARSE_UNIFORM_USAGE_HINTS:\nShader name: \"" + name +
+																				 "\"\nMismatched uniform usage hints detected." );
 
 										LogErrors( complete_error_string );
 									}
@@ -1226,12 +1232,16 @@ namespace Engine
 		ServiceLocator< GLLogger >::Get().Error( error_string );
 	}
 
-	void Shader::LogErrors_Compilation( const int shader_id, const ShaderType shader_type ) const
+	void Shader::LogErrors_Compilation( const int shader_id,
+										const ShaderType shader_type,
+										std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const
 	{
 		char info_log[ 512 ];
-		glGetShaderInfoLog( shader_id, 512, NULL, info_log );
+		int info_log_length;
+		glGetShaderInfoLog( shader_id, 512, &info_log_length, info_log );
 
-		const std::string complete_error_string( std::string( "ERROR::SHADER::" ) + ShaderTypeString( shader_type ) + "::COMPILE:\nShader name: " + name + FormatErrorLog( info_log ) );
+		const std::string complete_error_string( std::string( "ERROR::SHADER::" ) + ShaderTypeString_Uppercase( shader_type ) + "::COMPILE:\nShader name: \"" + name + "\"" +
+												 FormatErrorLog( info_log, info_log_length, map_of_IDs_per_source_file ) );
 		LogErrors( complete_error_string );
 	}
 
@@ -1240,7 +1250,7 @@ namespace Engine
 		char info_log[ 512 ];
 		glGetProgramInfoLog( program_id.Get(), 512, NULL, info_log );
 
-		const std::string complete_error_string( "ERROR::SHADER::PROGRAM::LINK:\nShader name: " + name + FormatErrorLog( info_log ) );
+		const std::string complete_error_string( "ERROR::SHADER::PROGRAM::LINK:\nShader name: \"" + name + "\"" + FormatErrorLog(info_log));
 		LogErrors( complete_error_string );
 	}
 
@@ -1252,6 +1262,31 @@ namespace Engine
 
 		Utility::String::Replace( error_log_string, "\n", "\n    " );
 		return "\n    " + error_log_string + "\n";
+	}
+
+	/* Replaces file IDs with actual file paths. */
+	std::string Shader::FormatErrorLog( const char* log,
+										const int log_length,
+										std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const
+	{
+		std::string info_log_str( "\n" );
+		info_log_str.reserve( log_length );
+		std::string_view info_log_view( log );
+		auto maybe_next_log_line = Utility::String::ParseNextLineAndAdvance( info_log_view );
+		while( maybe_next_log_line.has_value() )
+		{
+			const std::size_t paren_pos = maybe_next_log_line->find( "(" );
+
+			char file_ID_string[ 4 ];
+			strncpy_s( file_ID_string, maybe_next_log_line->data(), paren_pos );
+			const std::int16_t file_ID = std::atoi( file_ID_string );
+
+			info_log_str += '\t' + map_of_IDs_per_source_file[ file_ID ].string() + " -> line " + std::string( maybe_next_log_line->substr( paren_pos ) ) + ".\n";
+
+			maybe_next_log_line = Utility::String::ParseNextLineAndAdvance( info_log_view );
+		}
+
+		return info_log_str;
 	}
 
 	std::string Shader::UniformEditorName( const std::string_view original_name )

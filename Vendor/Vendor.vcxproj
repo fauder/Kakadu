@@ -276,7 +276,6 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="stb\stb_image.cpp" />
-    <ClCompile Include="stb\std_include.cpp" />
     <ClCompile Include="Tracy\TracyClient.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -311,7 +310,6 @@
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="KHR\khrplatform.h" />
     <ClInclude Include="stb\stb_image.h" />
-    <ClInclude Include="stb\stb_include.h" />
     <ClInclude Include="Tracy\Tracy\Tracy.hpp" />
   </ItemGroup>
   <ItemGroup>

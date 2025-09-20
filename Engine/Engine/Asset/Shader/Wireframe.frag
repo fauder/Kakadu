@@ -1,4 +1,5 @@
 #version 460 core
+#extension GL_ARB_shading_language_include : require
 
 #include "_Intrinsic_Other.glsl"
 

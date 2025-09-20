@@ -3,9 +3,7 @@
 #include "Renderer.h"
 #include "Core/AssetDatabase.hpp"
 #include "Core/Utility.hpp"
-#include "Asset/AssetDirectoryPath.h"
-
-#define FullTexturePath( file_path ) ENGINE_ASSET_PATH( "Texture/" file_path )
+#include "Asset/Paths.h"
 
 namespace Engine
 {
@@ -107,14 +105,14 @@ namespace Engine
 																									  } ) );
 		}
 
-		TEXTURE_MAP.try_emplace( "Missing", AssetDatabase< Texture >::CreateAssetFromFile( "Missing", FullTexturePath( "missing_texture.jpg" ),
+		TEXTURE_MAP.try_emplace( "Missing", AssetDatabase< Texture >::CreateAssetFromFile( "Missing", ENGINE_TEXTURE_PATH_ABSOLUTE( "missing_texture.jpg" ),
 																						   Texture::ImportSettings
 																						   {
 																							   .wrap_u = Texture::Wrapping::Repeat,
 																							   .wrap_v = Texture::Wrapping::Repeat
 																						   } ) );
 
-		TEXTURE_MAP.try_emplace( "UV Test", AssetDatabase< Texture >::CreateAssetFromFile( "UV Test", FullTexturePath( "uv_test.png" ),
+		TEXTURE_MAP.try_emplace( "UV Test", AssetDatabase< Texture >::CreateAssetFromFile( "UV Test", ENGINE_TEXTURE_PATH_ABSOLUTE( "uv_test.png" ),
 																						   Texture::ImportSettings
 																						   {
 																							   .wrap_u = Texture::Wrapping::Repeat,

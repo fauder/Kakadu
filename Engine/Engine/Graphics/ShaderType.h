@@ -29,6 +29,18 @@ namespace Engine
 		return shader_type_identifiers[ ( int )shader_type ];
 	}
 
+	constexpr const char* ShaderTypeString_Uppercase( const ShaderType shader_type )
+	{
+		constexpr std::array< const char*, ( int )ShaderType::_Count_ > shader_type_identifiers
+		{
+			"VERTEX",
+			"GEOMETRY",
+			"FRAGMENT"
+		};
+
+		return shader_type_identifiers[ ( int )shader_type ];
+	}
+
 	constexpr int ShaderTypeID( const ShaderType shader_type )
 	{
 		constexpr std::array< int, ( int )ShaderType::_Count_ > shader_type_identifiers

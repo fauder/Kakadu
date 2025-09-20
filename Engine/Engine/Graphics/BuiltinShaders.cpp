@@ -2,11 +2,11 @@
 #include "BuiltinShaders.h"
 #include "Renderer.h"
 #include "Core/Utility.hpp"
-#include "Asset/AssetDirectoryPath.h"
+#include "Asset/Paths.h"
 
-#define FullVertexShaderPath( file_path )	ENGINE_ASSET_PATH( "Shader/" file_path##_vert )
-#define FullGeometryShaderPath( file_path ) ENGINE_ASSET_PATH( "Shader/" file_path##_geom )
-#define FullFragmentShaderPath( file_path ) ENGINE_ASSET_PATH( "Shader/" file_path##_frag )
+#define FullVertexShaderPath( file_path )	ENGINE_SHADER_PATH_ABSOLUTE( file_path ) ""_vert
+#define FullGeometryShaderPath( file_path ) ENGINE_SHADER_PATH_ABSOLUTE( file_path ) ""_geom
+#define FullFragmentShaderPath( file_path ) ENGINE_SHADER_PATH_ABSOLUTE( file_path ) ""_frag
 
 namespace Engine
 {

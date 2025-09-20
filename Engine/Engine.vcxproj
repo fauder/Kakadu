@@ -120,8 +120,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Bin\$(Configuration)-$(Platform)\Vendor\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy $(SolutionDir)Lib\$(Platform)-Debug\glfw3.pdb "$(OutDir)" /Y
-xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Command>
+      <Command>python "$(SolutionDir)PreBuild.py" --solution-dir "$(SolutionDir)." --outdir "$(OutDir)." --configuration "$(Configuration)"</Command>
       <Message>
       </Message>
     </PreBuildEvent>
@@ -146,7 +145,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='[ASAN]|x64'">
@@ -167,8 +166,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       <AdditionalLibraryDirectories>$(SolutionDir)Bin\$(Configuration)-$(Platform)\Vendor\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy $(SolutionDir)Lib\$(Platform)-Debug\glfw3.pdb "$(OutDir)" /Y
-xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Command>
+      <Command>python "$(SolutionDir)PreBuild.py" --solution-dir "$(SolutionDir)." --outdir "$(OutDir)." --configuration "$(Configuration)"</Command>
       <Message>
       </Message>
     </PreBuildEvent>
@@ -194,7 +192,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       </Path>
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -244,7 +242,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Standalone|x64'">
@@ -295,13 +293,13 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
       </Path>
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)$(ProjectName)\PostBuild_ValidateShaders.py</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
-    <ClInclude Include="Engine\Asset\AssetDirectoryPath.h" />
     <ClInclude Include="Engine\Asset\Resource\Resource.h" />
+    <ClInclude Include="Engine\Asset\Paths.h" />
     <ClInclude Include="Engine\Core\Application.h" />
     <ClInclude Include="Engine\Core\Assertion.h" />
     <ClInclude Include="Engine\Core\AssetDatabase.hpp" />
@@ -332,6 +330,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Sphere.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_UV_Sphere.hpp" />
     <ClInclude Include="Engine\Graphics\RenderPass.h" />
+    <ClInclude Include="Engine\Graphics\ShaderIncludePreprocessing.h" />
     <ClInclude Include="Engine\Graphics\ShaderSourcePath.hpp" />
     <ClInclude Include="Engine\Graphics\ShaderType.h" />
     <ClInclude Include="Engine\Math\OrthographicProjectionParameters.h" />
@@ -415,6 +414,7 @@ xcopy $(SolutionDir)Bin\$(Platform)-Debug\Vendor\Vendor.pdb "$(OutDir)" /Y</Comm
     <ClCompile Include="Engine\Graphics\ModelLoader.cpp" />
     <ClCompile Include="Engine\Graphics\Primitive\Primitive_Cube_FullScreen.h" />
     <ClCompile Include="Engine\Graphics\Renderer.cpp" />
+    <ClCompile Include="Engine\Graphics\ShaderIncludePreprocessing.cpp" />
     <ClCompile Include="Engine\Graphics\TextureLoader.cpp" />
     <ClCompile Include="Engine\Graphics\UniformBlockBindingPointManager.cpp" />
     <ClCompile Include="Engine\Graphics\UniformBufferManager.cpp" />
