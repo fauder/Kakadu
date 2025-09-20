@@ -26,6 +26,7 @@ namespace Engine
 			std::optional< std::string_view > ParseNextTokenAndAdvance_WithPrefix( std::string_view& source,
 																				   std::initializer_list< const std::string_view > preceding_tokens,
 																				   const std::string_view opening_delimiters = " \t", const std::string_view closing_delimiters = " \t" );
+			std::optional< std::string_view > ParseNextLineAndAdvance( std::string_view& source );
 			void Replace( std::string& source, const std::string_view find_this, const std::string_view replace_with_this );
 
 			/* https://stackoverflow.com/a/75619411/4495751 */

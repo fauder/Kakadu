@@ -164,6 +164,11 @@ namespace Engine
 				return ParseNextTokenAndAdvance( source, opening_delimiters, closing_delimiters );
 			}
 
+			std::optional< std::string_view > ParseNextLineAndAdvance( std::string_view& source )
+			{
+				return ParseNextTokenAndAdvance( source, "", "\n" );
+			}
+
 #ifdef _WIN32
 			std::wstring ToWideString( const std::string& string )
 			{
