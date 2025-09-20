@@ -18,7 +18,7 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / VertexCount;
 
 		for( std::uint8_t i = 0; i < VertexCount; i++ )
-			positions[ i ] = Vector3( radius * Math::Cos( delta_angle * i ), 0.0f, radius * -Math::Sin( delta_angle * i ) );
+			positions[ i ] = Vector3( radius * Math::Cos( delta_angle * i ), radius * Math::Sin( delta_angle * i ), 0.0f );
 
 		return positions;
 	};
@@ -87,7 +87,7 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / VertexCount;
 
 		for( std::uint8_t i = 0; i < VertexCount; i++ )
-			uvs[ i ] = Vector2( Math::Cos( delta_angle * i ), -Math::Sin( delta_angle * i ) ) * 0.5f + 0.5f; // Remap unit circle to uv range: [-1,+1] => [0,+1].
+			uvs[ i ] = Vector2( -Math::Cos( delta_angle * i ), Math::Sin( delta_angle * i ) ) * 0.5f + 0.5f; // Remap unit circle to uv range: [-1,+1] => [0,+1].
 
 		return uvs;
 	};
@@ -96,7 +96,7 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 	constexpr std::array< Vector3, VertexCount > Normals()
 	{
 		std::array< Vector3, VertexCount > normals;
-		normals.fill( Vector3::Up() );
+		normals.fill( Vector3::Forward() );
 		return normals;
 	};
 
@@ -104,7 +104,7 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 	constexpr std::array< Vector3, VertexCount > Tangents()
 	{
 		std::array< Vector3, VertexCount > tangents;
-		tangents.fill( Vector3::Right() );
+		tangents.fill( Vector3::Left() );
 		return tangents;
 	};
 
@@ -112,7 +112,7 @@ namespace Engine::Primitive::Indexed::CircleTemplate
 	constexpr std::array< Vector3, VertexCount > Bitangents()
 	{
 		std::array< Vector3, VertexCount > bitangents;
-		bitangents.fill( Vector3::Forward() );
+		bitangents.fill( Vector3::Up() );
 		return bitangents;
 	};
 }
