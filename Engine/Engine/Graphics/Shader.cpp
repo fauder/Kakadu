@@ -595,11 +595,11 @@ namespace Engine
 														  const ShaderType shader_type,
 														  std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file )
 	{
-		static char error_string[ 256 ] = { 0 }; // TODO: Utilize this.
+		static char error_string[ 256 ] = { 0 };
 
 		const std::string shader_file_name( shader_source_path.filename().string() );
 
-		auto preprocessed_source( ShaderIncludePreprocessing::Resolve( shader_source_path, { ENGINE_SHADER_ROOT_ABSOLUTE "/" }, map_of_IDs_per_source_file ) );
+		auto preprocessed_source( ShaderIncludePreprocessing::Resolve( shader_source_path, { ENGINE_SHADER_ROOT_ABSOLUTE "/" }, map_of_IDs_per_source_file, error_string ) );
 
 		if( preprocessed_source.empty() )
 		{

@@ -2,26 +2,26 @@
 #include "ShaderIncludePreprocessing.h"
 #include "Core/Utility.hpp"
 
-// TODO: Pre-processing error logging via a char* error_log parameter.
-
 namespace Engine::ShaderIncludePreprocessing
 {
 	/* Implementation Function prototype: */
 	std::string Resolve( const std::filesystem::path& source_path,
 						 std::initializer_list< std::string > include_directories_with_trailing_slashes,
-						 std::unordered_map< std::filesystem::path, std::int16_t >& map_of_source_file_per_ID );
+						 std::unordered_map< std::filesystem::path, std::int16_t >& map_of_source_file_per_ID,
+						 std::span< char > error_log );
 
 	/* Public API: */
 	std::string Resolve( const std::filesystem::path& source_path,
 						 std::initializer_list< std::string > include_directories_with_trailing_slashes,
-						 std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file )
+						 std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file,
+						 std::span< char > error_log )
 	{
 		/* Map provided by the caller is for caller's use (i.e., they need to refer to the source file corresponding to the key in shader compilation error logs.). 
 		 * The implementation on the other hand needs the inverse map: To assign and look-up indices based on shader source file path. */
 		std::unordered_map< std::filesystem::path, std::int16_t > map_of_source_file_per_ID;
 		map_of_source_file_per_ID[ source_path ] = 0; // The main source file is always the ID 0.
 
-		const std::string resolved_source( Resolve( source_path, include_directories_with_trailing_slashes, map_of_source_file_per_ID ) );
+		const std::string resolved_source( Resolve( source_path, include_directories_with_trailing_slashes, map_of_source_file_per_ID, error_log ) );
 
 		/* Remap: */
 		for( auto& [ source_file_path, file_ID ] : map_of_source_file_per_ID )
@@ -33,13 +33,17 @@ namespace Engine::ShaderIncludePreprocessing
 	/* Implementation Function definition: */
 	std::string Resolve( const std::filesystem::path& source_path,
 						 std::initializer_list< std::string > include_directories_with_trailing_slashes,
-						 std::unordered_map< std::filesystem::path, std::int16_t >& map_of_source_file_per_ID )
+						 std::unordered_map< std::filesystem::path, std::int16_t >& map_of_source_file_per_ID,
+						 std::span< char > error_log )
 	{
 		std::string source;
 
 		if( auto maybe_file = Utility::ReadFileIntoString( source_path.string().c_str() );
 			not maybe_file )
+		{
+			std::snprintf( error_log.data(), error_log.size(), "File could not be opened." );
 			return ""; // File could not be opened.
+		}
 		else
 			source = std::move( *maybe_file );
 
@@ -114,7 +118,10 @@ namespace Engine::ShaderIncludePreprocessing
 			}
 
 			if( not include_file_found )
+			{
+				std::snprintf( error_log.data(), error_log.size(), "File not found." );
 				return ""; // File not found.
+			}
 
 			if( not map_of_source_file_per_ID.contains( include_file_path ) )
 			{
@@ -122,12 +129,15 @@ namespace Engine::ShaderIncludePreprocessing
 				map_of_source_file_per_ID.insert( { include_file_path, current_include_file_path_ID } );
 
 				/* The #include may have other #includes: */
-				const auto resolved = Resolve( include_file_path, include_directories_with_trailing_slashes, map_of_source_file_per_ID );
+				const auto resolved = Resolve( include_file_path, include_directories_with_trailing_slashes, map_of_source_file_per_ID, error_log );
 				if( resolved.empty() )
+				{
 					return ""; // #include inside the #include could not be resolved.
+					// Error log should be filled by the child recursive call.
+				}
 
 				// Insert #line for correct error reporting during validation & compilation.
-				line_count_cached += 1 + std::count( source.begin() + last_line_number_cache_pos, source.begin() + end_of_line_pos, '\n' ); // +1 for the current #include line.
+				line_count_cached += 1 + ( std::uint16_t )std::count( source.begin() + last_line_number_cache_pos, source.begin() + end_of_line_pos, '\n' ); // +1 for the current #include line.
 				last_line_number_cache_pos = end_of_line_pos + 1;
 
 				processed += "#line 0 " + std::to_string( current_include_file_path_ID ) + "\n";
