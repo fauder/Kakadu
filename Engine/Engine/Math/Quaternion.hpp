@@ -596,7 +596,7 @@ namespace Engine::Math
 	template< std::floating_point ComponentType >
 	constexpr void QuaternionToEuler( const Quaternion< ComponentType >& quaternion, Radians< ComponentType >& heading_around_y, Radians< ComponentType >& pitch_around_x, Radians< ComponentType >& bank_around_z )
 	{
-		/* Method is to convert a matrix to euler angles, where the matrix is the angle - axis rotation matrix re - arranged to use x, y, z, w of a Quaternion.
+		/* Method is to convert a matrix to euler angles, where the matrix is the angle-axis rotation matrix re-arranged to use x, y, z, w of a Quaternion.
 		 * So basically, it is kind it is QuaternionToMatrix() & then MatrixToEuler(). */
 
 		ASSERT_DEBUG_ONLY( quaternion.IsNormalized() && R"(Math::QuaternionToEuler(): The quaternion is not normalized!)" );
