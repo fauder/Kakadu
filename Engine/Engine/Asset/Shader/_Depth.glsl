@@ -1,5 +1,3 @@
-#extension GL_ARB_shading_language_include : require
-
 #include "_Intrinsic_Other.glsl"
 
 float LinearizeDepth( float screen_space_depth_value )
