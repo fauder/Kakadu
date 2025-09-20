@@ -149,10 +149,20 @@ namespace Engine
 		features_requested = features_to_set;
 
 		/* Even though the shader may fail the following compilation or linking stages, last write time should be set in order to make recompilation (due to user modification of sources) possible. */
-		last_write_time_map.emplace( vertex_source_path, std::filesystem::last_write_time( vertex_source_path ) );
+		auto SaveTimeIfValid = [ & ]( auto& path )
+		{
+			std::error_code error_code;
+			auto t = std::filesystem::last_write_time( path, error_code );
+			if( error_code )
+				std::cerr << "ERROR::SHADER::COMPILATION::LAST_WRITE_TIME_COULD_NOT_BE_OBTAINED\n\t" << error_code.message() << "\n";
+			else
+				last_write_time_map.emplace( path, t );
+		};
+
+		SaveTimeIfValid( vertex_source_path );
 		if( not geometry_shader_source_path.Empty() )
-			last_write_time_map.emplace( geometry_source_path, std::filesystem::last_write_time( geometry_source_path ) );
-		last_write_time_map.emplace( fragment_source_path, std::filesystem::last_write_time( fragment_source_path ) );
+			SaveTimeIfValid( geometry_source_path );
+		SaveTimeIfValid( fragment_source_path );
 
 		unsigned int vertex_shader_id = 0, geometry_shader_id = 0, fragment_shader_id = 0;
 
