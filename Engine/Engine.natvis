@@ -107,7 +107,7 @@
       <Parameter Name="val" Type="float"/>
     </Intrinsic>
     <Intrinsic Name="IsIdentity" Expression="IsNormalized()&amp;(Is0(x)&amp;Is0(y)&amp;Is0(z))||Is1(w)"></Intrinsic>
-    <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(Sandbox.exe!NatVis::Acos(w)*2),g}° | Axis: &lt;{(x/Sandbox.exe!NatVis::SinFromCos(w)),g},{(y/Sandbox.exe!NatVis::SinFromCos(w)),g},{(z/Sandbox.exe!NatVis::SinFromCos(w)),g}&gt;</DisplayString>
+    <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(NatVis::Acos(w)*2),g}° | Axis: &lt;{(x/NatVis::SinFromCos(w)),g},{(y/NatVis::SinFromCos(w)),g},{(z/NatVis::SinFromCos(w)),g}&gt;</DisplayString>
     <DisplayString Condition="IsIdentity()                     ">Identity Rotation</DisplayString>
     <DisplayString Condition="!IsNormalized()                  ">UNNORMALIZED->NOT A ROTATION x: {xyz.data[0],g} y: {xyz.data[1],g} z: {xyz.data[2],g} w: {w,g}</DisplayString>
   </Type>
@@ -123,7 +123,7 @@
       <Parameter Name="val" Type="float"/>
     </Intrinsic>
     <Intrinsic Name="IsIdentity" Expression="IsNormalized()&amp;(Is0(x)&amp;Is0(y)&amp;Is0(z))||Is1(w)"></Intrinsic>
-    <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(Sandbox.exe!NatVis::Acos(w)*2),g}° | Axis: &lt;{(x/Sandbox.exe!NatVis::SinFromCos(w)),g},{(y/Sandbox.exe!NatVis::SinFromCos(w)),g},{(z/Sandbox.exe!NatVis::SinFromCos(w)),g}&gt;</DisplayString>
+    <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(NatVis::Acos(w)*2),g}° | Axis: &lt;{(x/NatVis::SinFromCos(w)),g},{(y/NatVis::SinFromCos(w)),g},{(z/NatVis::SinFromCos(w)),g}&gt;</DisplayString>
     <DisplayString Condition="IsIdentity()                     ">Identity Rotation</DisplayString>
     <DisplayString Condition="!IsNormalized()                  ">UNNORMALIZED->NOT A ROTATION x: {xyz.data[0],g} y: {xyz.data[1],g} z: {xyz.data[2],g} w: {w,g}</DisplayString>
   </Type>
@@ -188,8 +188,8 @@
     </Intrinsic>
     <DisplayString Condition="IsIdentity()                      ">Identity | Matrix3x3</DisplayString>
     <DisplayString Condition="IsTranslationOnly()               ">Translates by x: {data[2][0],g} | y: {data[2][1],g} | Matrix3x3</DisplayString>
-    <DisplayString Condition="IsRotation()&amp;IsUniformScale() ">Rotates by {(Sandbox.exe!NatVis::Atan2(data[0][1],data[0][0])),g}° OR Scales by {data[0][0],g} | Matrix3x3</DisplayString>
-    <DisplayString Condition="IsRotation()                      ">Rotates by {(Sandbox.exe!NatVis::Atan2(data[0][1],data[0][0])),g}° | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsRotation()&amp;IsUniformScale() ">Rotates by {(NatVis::Atan2(data[0][1],data[0][0])),g}° OR Scales by {data[0][0],g} | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsRotation()                      ">Rotates by {(NatVis::Atan2(data[0][1],data[0][0])),g}° | Matrix3x3</DisplayString>
     <DisplayString Condition="IsUniformScale()                  ">Scales by {data[0][0],g} | Matrix3x3</DisplayString>
     <DisplayString Condition="IsNonUniformScale()               ">Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix3x3</DisplayString>
     <DisplayString Condition="IsDiagonalOnly()                  ">Diagonal ({data[0][0],g},{data[1][1],g},{data[2][2],g}) | Matrix3x3</DisplayString>
@@ -282,12 +282,12 @@
     </Intrinsic>
     <DisplayString Condition="IsIdentity()                              ">Identity | Matrix4x4</DisplayString>
     <DisplayString Condition="IsTranslationOnly()                       ">Translates by x: {data[3][0],g} | y: {data[3][1],g} | z: {data[3][2],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsXRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Sandbox.exe!NatVis::Atan2(data[1][2],data[1][1])),g}° around X OR Scales by y: {data[1][1],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsXRotationOnly()                         ">Rotates by {(Sandbox.exe!NatVis::Atan2(data[1][2],data[1][1])),g}° around X | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsYRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Sandbox.exe!NatVis::Atan2(data[2][0],data[0][0])),g}° around Y OR Scales by x: {data[0][0],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsYRotationOnly()                         ">Rotates by {(Sandbox.exe!NatVis::Atan2(data[2][0],data[0][0])),g}° around Y | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsZRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Sandbox.exe!NatVis::Atan2(data[0][1],data[0][0])),g}° around Z OR Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsZRotationOnly()                         ">Rotates by {(Sandbox.exe!NatVis::Atan2(data[0][1],data[0][0])),g}° around Z | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsXRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(NatVis::Atan2(data[1][2],data[1][1])),g}° around X OR Scales by y: {data[1][1],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsXRotationOnly()                         ">Rotates by {(NatVis::Atan2(data[1][2],data[1][1])),g}° around X | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsYRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(NatVis::Atan2(data[2][0],data[0][0])),g}° around Y OR Scales by x: {data[0][0],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsYRotationOnly()                         ">Rotates by {(NatVis::Atan2(data[2][0],data[0][0])),g}° around Y | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsZRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(NatVis::Atan2(data[0][1],data[0][0])),g}° around Z OR Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsZRotationOnly()                         ">Rotates by {(NatVis::Atan2(data[0][1],data[0][0])),g}° around Z | Matrix4x4</DisplayString>
     <DisplayString Condition="IsUniformScale()                          ">Scales by {data[0][0],g} | Matrix4x4</DisplayString>
     <DisplayString Condition="IsNonUniformScale()                       ">Scales by x: {data[0][0],g} | y: {data[1][1],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
     <DisplayString Condition="IsDiagonalOnly()                          ">Diagonal ({data[0][0],g},{data[1][1],g},{data[2][2],g},{data[3][3],g}) | Matrix4x4</DisplayString>

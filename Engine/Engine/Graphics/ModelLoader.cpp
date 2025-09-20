@@ -427,6 +427,7 @@ namespace Engine
 			if( !bool( gltfFile ) )
             {
 				std::cerr << "ERROR::MODELLOADER::FASTGLTF::Failed to open glTF file: " << fastgltf::getErrorMessage( gltfFile.error() ) << '\n';
+				ServiceLocator< GLLogger >::Get().Error( R"(Error: Could not open glTF file ".)" + file_path + "\." );
 				return std::nullopt;
 			}
 
@@ -443,7 +444,8 @@ namespace Engine
             if( maybe_gltf_asset.error() != fastgltf::Error::None )
             {
                 std::cerr << "ERROR::MODELLOADER::FASTGLTF::Failed to load glTF: " << fastgltf::getErrorMessage( maybe_gltf_asset.error() ) << '\n';
-				return std::nullopt;
+                ServiceLocator< GLLogger >::Get().Error( R"(Error: Could not load glTF file ".)" + file_path + "\." );
+                return std::nullopt;
 			}
 
             gltf_asset = std::move( maybe_gltf_asset.get() );

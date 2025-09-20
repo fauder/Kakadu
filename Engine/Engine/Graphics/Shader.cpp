@@ -149,10 +149,20 @@ namespace Engine
 		features_requested = features_to_set;
 
 		/* Even though the shader may fail the following compilation or linking stages, last write time should be set in order to make recompilation (due to user modification of sources) possible. */
-		last_write_time_map.emplace( vertex_source_path, std::filesystem::last_write_time( vertex_source_path ) );
+		auto SaveTimeIfValid = [ & ]( auto& path )
+		{
+			std::error_code error_code;
+			auto t = std::filesystem::last_write_time( path, error_code );
+			if( error_code )
+				std::cerr << "ERROR::SHADER::COMPILATION::LAST_WRITE_TIME_COULD_NOT_BE_OBTAINED\n\t" << error_code.message() << "\n";
+			else
+				last_write_time_map.emplace( path, t );
+		};
+
+		SaveTimeIfValid( vertex_source_path );
 		if( not geometry_shader_source_path.Empty() )
-			last_write_time_map.emplace( geometry_source_path, std::filesystem::last_write_time( geometry_source_path ) );
-		last_write_time_map.emplace( fragment_source_path, std::filesystem::last_write_time( fragment_source_path ) );
+			SaveTimeIfValid( geometry_source_path );
+		SaveTimeIfValid( fragment_source_path );
 
 		unsigned int vertex_shader_id = 0, geometry_shader_id = 0, fragment_shader_id = 0;
 
@@ -439,7 +449,7 @@ namespace Engine
 
 	std::optional< std::string > Shader::ParseShaderFromFile( const char* file_path, const ShaderType shader_type )
 	{
-		const std::string error_prompt( std::string( "ERROR::SHADER::" ) + ShaderTypeString_Uppercase( shader_type ) + "::FILE_NOT_SUCCESSFULLY_READ\n\tShader name: \"" + name + "\"\n" );
+		const std::string error_prompt( std::string( "Shader Error (parsing): " ) + ShaderTypeString( shader_type ) + " shader \"" + name + "\" could not be read successfully." );
 
 		if( const auto source = Engine::Utility::ReadFileIntoString( file_path, error_prompt.c_str() );
 			source )
@@ -593,7 +603,7 @@ namespace Engine
 
 		if( preprocessed_source.empty() )
 		{
-			const std::string error_prompt( std::string( "ERROR::SHADER::" ) + ShaderTypeString_Uppercase( shader_type ) + "::INCLUDE_FILE_NOT_SUCCESSFULLY_READ\n\tShader name: \"" + name + "\"\n\t" 
+			const std::string error_prompt( std::string( "Shader Error (pre-compilation): " ) + ShaderTypeString( shader_type ) + " shader \"" + name + "\" could not be pre-processed for #include files.\n\t" 
 											+ error_string );
 			LogErrors( error_prompt );
 			return false;
@@ -752,9 +762,8 @@ namespace Engine
 									if( auto iterator = uniform_info_map.find( uniform_name );
 										iterator != uniform_info_map.cend() && iterator->second.usage_hint != UsageHint::Unassigned && hint != iterator->second.usage_hint )
 									{
-										const std::string complete_error_string( std::string( "ERROR::SHADER::" ) + ShaderTypeString_Uppercase( shader_type ) +
-																				 "::POST-LINK::PARSE_UNIFORM_USAGE_HINTS:\nShader name: \"" + name +
-																				 "\"\nMismatched uniform usage hints detected." );
+										const std::string complete_error_string( std::string( "Shader Error (post-linking > parsing usage hints): " ) + ShaderTypeString( shader_type ) +
+																				 " shader \"" + name + "\" has mismatched uniform usage hints." );
 
 										LogErrors( complete_error_string );
 									}
@@ -1240,7 +1249,7 @@ namespace Engine
 		int info_log_length;
 		glGetShaderInfoLog( shader_id, 512, &info_log_length, info_log );
 
-		const std::string complete_error_string( std::string( "ERROR::SHADER::" ) + ShaderTypeString_Uppercase( shader_type ) + "::COMPILE:\nShader name: \"" + name + "\"" +
+		const std::string complete_error_string( std::string( "Shader Error (compilation): " ) + ShaderTypeString( shader_type ) + " shader \"" + name + "\"" +
 												 FormatErrorLog( info_log, info_log_length, map_of_IDs_per_source_file ) );
 		LogErrors( complete_error_string );
 	}
@@ -1250,7 +1259,7 @@ namespace Engine
 		char info_log[ 512 ];
 		glGetProgramInfoLog( program_id.Get(), 512, NULL, info_log );
 
-		const std::string complete_error_string( "ERROR::SHADER::PROGRAM::LINK:\nShader name: \"" + name + "\"" + FormatErrorLog(info_log));
+		const std::string complete_error_string( "Shader Error (linking): Shader \"" + name + "\"" + FormatErrorLog( info_log ) );
 		LogErrors( complete_error_string );
 	}
 

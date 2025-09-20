@@ -211,7 +211,7 @@ namespace Engine
 
 		ASSERT_DEBUG_ONLY( glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
 		if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
-			std::cerr << "ERROR::FRAMEBUFFER::Framebuffer is not complete!\n";
+			throw std::runtime_error( "ERROR::FRAMEBUFFER::Framebuffer is not complete!" );
 
 		Unbind();
 	}

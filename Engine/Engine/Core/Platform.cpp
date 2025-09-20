@@ -115,7 +115,7 @@ namespace Platform
 	void InitializeGLAD()
 	{
 		if( !gladLoadGLLoader( ( GLADloadproc )glfwGetProcAddress ) )
-			throw std::logic_error( "ERROR::GRAPHICS::GLAD::FAILED_TO_INITIALIZE!" );
+			throw std::runtime_error( "ERROR::GRAPHICS::GLAD::FAILED_TO_INITIALIZE!" );
 	}
 
 #ifdef _EDITOR
@@ -174,7 +174,7 @@ namespace Platform
 		if( WINDOW == nullptr )
 		{
 			glfwTerminate();
-			throw std::logic_error( "ERROR::PLATFORM::GLFW::FAILED TO CREATE GLFW WINDOW!" );
+			throw std::runtime_error( "ERROR::PLATFORM::GLFW::FAILED TO CREATE GLFW WINDOW!" );
 		}
 
 		CenterWindow( width_pixels, height_pixels );
