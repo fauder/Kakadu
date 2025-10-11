@@ -570,6 +570,8 @@ namespace Engine
 
 											 .width_in_pixels  = new_width_in_pixels,
 											 .height_in_pixels = new_height_in_pixels,
+
+											 .magnification_filter = Texture::Filtering::Nearest,
 #ifdef _EDITOR
 											 .color_format = ( editor_shading_mode == EditorShadingMode::Shaded || editor_shading_mode == EditorShadingMode::ShadedWireframe )
 												? Texture::Format::SRGBA : Texture::Format::RGBA,
