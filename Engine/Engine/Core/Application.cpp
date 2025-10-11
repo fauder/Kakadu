@@ -428,6 +428,8 @@ namespace Engine
 
 		ASSERT( zoom >= 1.0f );
 
+		const auto& style = ImGui::GetStyle();
+
 		// Find out how many "original pixels" a magnifier pixel is:
 		const float magnified_pixel_multiplier = 1.0f / zoom;
 
@@ -480,6 +482,25 @@ namespace Engine
 		}
 
 		Engine::ImGuiUtility::EndOverlay();
+
+		/* Display zoom level in a small centered overlay: */
+		{
+			char zoom_label[ 16 ];
+			sprintf_s( zoom_label, "%.0fx", zoom );
+
+			ImVec2 text_size = ImGui::CalcTextSize( zoom_label );
+
+			if( ImGuiUtility::BeginOverlay( viewport_info.imgui_window_name.c_str(),
+											"##MagnifierLabel",
+											imgui_mouse_pos + ImVec2( ( window_size - text_size.x ) * 0.5f, window_size + style.WindowPadding.y * 2.0f + 2 ),
+											nullptr,
+											false ) )
+			{
+				ImGui::TextUnformatted( zoom_label );
+			}
+
+			ImGuiUtility::EndOverlay();
+		}
 	}
 
 	void Application::RenderImGui_FrameStatistics()
