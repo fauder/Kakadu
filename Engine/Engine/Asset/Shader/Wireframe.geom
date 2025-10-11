@@ -5,39 +5,114 @@
 layout ( triangles ) in;
 layout ( triangle_strip, max_vertices = 3 ) out;
 
-/* Strategy: Convert bary coords (which are trivially defined as <1,0,0>, <0,1,0> & <0,0,1> for the triangle vertices/corners) to edge distances in screen-space pixels by:
- * Vertex pos. in clip space -> To NDC -> To pixels in screen space -> Calculate the distance from the edge midpoint to the vertex in screen space -> Multiply with bary coords for that vertex.
- *
- * Since the clip space is not Euclidian, geometric operations such as taking the midpoint do not make sense there semantically (and yields numerically incorrect results). */
-noperspective out vec3 varying_edge_distances_in_pixels; // Also make sure to disable hyperbolic interpolation as we directly calculated the screen-space values anyway.
+out VS_To_FS
+{
+    noperspective vec4 edge_info_A; /* Components: XY = Screen-space point A. ZW = Screen-space direction A-dir, pointing towards an off-frustum vertex. */
+    noperspective vec4 edge_info_B; /* Components: XY = Screen-space point B. ZW = Screen-space direction B-dir, pointing towards an off-frustum vertex. */
+    flat uint case_id;
+} vs_out;
+
+/*                              P0.z > 0:  T  T  T  T  F  F  F  F
+                                P1.z > 0:  T  T  F  F  T  T  F  F 
+                                P2.z > 0:  T  F  T  F  T  F  T  F
+                                           ----------------------
+                       Case ID: [EASY CASE 0] 1  2  3  4  5  6 [7 TRIANGLE NOT VISIBLE => CULLED] */
+const int TABLE_INDICES_FOR_A[ 8 ]     = { 0, 0, 0, 0, 1, 1, 2, 0 };
+const int TABLE_INDICES_FOR_B[ 8 ]     = { 0, 1, 2, 0, 2, 1, 2, 0 };
+const int TABLE_INDICES_FOR_A_DIR[ 8 ] = { 0, 2, 1, 1, 0, 0, 0, 0 };
+const int TABLE_INDICES_FOR_B_DIR[ 8 ] = { 0, 2, 1, 2, 0, 2, 1, 0 };
+
+vec2 TransformToScreenSpace( vec4 clip_space_point )
+{
+    return ( ( clip_space_point.xy / clip_space_point.w ) // Divide by w to convert to NDC.
+             * 0.5 + 0.5 )                                // Scale & Translate the origin
+           * _INTRINSIC_VIEWPORT_SIZE.xy;                 // Scale by the screen resolution.
+}
 
 void main()
 {
-    /*                                              Divide by w to convert to NDC               Scale & Translate the origin    Scale by the screen resolution. */
-    vec2 vertex_0_in_screen_space = ( ( gl_in[ 0 ].gl_Position.xy / gl_in[ 0 ].gl_Position.w )      * 0.5 + 0.5 )               * _INTRINSIC_VIEWPORT_SIZE.xy;
-    vec2 vertex_1_in_screen_space = ( ( gl_in[ 1 ].gl_Position.xy / gl_in[ 1 ].gl_Position.w )      * 0.5 + 0.5 )               * _INTRINSIC_VIEWPORT_SIZE.xy;
-    vec2 vertex_2_in_screen_space = ( ( gl_in[ 2 ].gl_Position.xy / gl_in[ 2 ].gl_Position.w )      * 0.5 + 0.5 )               * _INTRINSIC_VIEWPORT_SIZE.xy;
+    vec4 clip_space_points[ 3 ] =
+    {
+        gl_in[ 0 ].gl_Position,
+        gl_in[ 1 ].gl_Position,
+        gl_in[ 2 ].gl_Position
+    };
 
-    /* Vertex 1: */
-    gl_Position = gl_in[ 0 ].gl_Position;
+    vec2 screen_space_points[ 3 ] =
+    {
+        TransformToScreenSpace( gl_in[ 0 ].gl_Position ),
+        TransformToScreenSpace( gl_in[ 1 ].gl_Position ),
+        TransformToScreenSpace( gl_in[ 2 ].gl_Position )
+    };
 
-    varying_edge_distances_in_pixels = vec3( length( ( vertex_1_in_screen_space + vertex_2_in_screen_space ) * 0.5 - vertex_0_in_screen_space ), 0.0f, 0.0f );
+    /* Case determination: */
+    vs_out.case_id = uint( gl_in[ 0 ].gl_Position.z < 0 ) * 4 +
+                     uint( gl_in[ 1 ].gl_Position.z < 0 ) * 2 +
+                     uint( gl_in[ 2 ].gl_Position.z < 0 );
 
-    EmitVertex();
+    if( vs_out.case_id == 7 )
+        return; // Cull invisible triangles.
 
-    /* Vertex 2: */
-    gl_Position = gl_in[ 1 ].gl_Position;
+    if( vs_out.case_id != 0 )
+    {
+        /* Tricky case(s): Calculate edge info.: */
+        vs_out.edge_info_A.xy = screen_space_points[ TABLE_INDICES_FOR_A[ vs_out.case_id ] ];
+        vs_out.edge_info_B.xy = screen_space_points[ TABLE_INDICES_FOR_B[ vs_out.case_id ] ];
 
-    varying_edge_distances_in_pixels = vec3( 0.0f, length( ( vertex_0_in_screen_space + vertex_2_in_screen_space ) * 0.5 - vertex_1_in_screen_space ), 0.0f );
+        vs_out.edge_info_A.zw = normalize( vs_out.edge_info_A.xy - screen_space_points[ TABLE_INDICES_FOR_A_DIR[ vs_out.case_id ] ] );
+        vs_out.edge_info_B.zw = normalize( vs_out.edge_info_B.xy - screen_space_points[ TABLE_INDICES_FOR_B_DIR[ vs_out.case_id ] ] );
 
-    EmitVertex();
+        /* Emit vertices normally: */
 
-    /* Vertex 3: */
-    gl_Position = gl_in[ 2 ].gl_Position;
+        gl_Position = gl_in[ 0 ].gl_Position;
+        EmitVertex();
 
-    varying_edge_distances_in_pixels = vec3( 0.0f, 0.0f, length( ( vertex_0_in_screen_space + vertex_1_in_screen_space ) * 0.5 - vertex_2_in_screen_space ) );
+        gl_Position = gl_in[ 1 ].gl_Position;
+        EmitVertex();
 
-    EmitVertex();
+        gl_Position = gl_in[ 2 ].gl_Position;
+        EmitVertex();
 
-    EndPrimitive();
+        EndPrimitive();
+    }
+    else
+    {
+        /* The standard case: Do most of the work here in the geometry shader.
+         * A, B and C are the vertices 1, 2 and 3 respectively. */
+
+        vec2 AB = screen_space_points[ 1 ] - screen_space_points[ 0 ]; // Vector from A to B.
+        vec2 BC = screen_space_points[ 2 ] - screen_space_points[ 1 ]; // Vector from B to C.
+        vec2 CA = screen_space_points[ 0 ] - screen_space_points[ 2 ]; // Vector from C to A.
+
+        vec2 AB_dir = normalize( AB );
+        vec2 BC_dir = normalize( BC );
+        vec2 CA_dir = normalize( CA );
+
+        /* Use pythagorean theorem to calculate the missing pieces that are the heights of the triangles:
+         * Hypothenuse(s) are the edge lengths.
+         * Known edges are the projections of edges onto other edges. */
+        float projection_AC_onto_AB = abs( dot( CA, AB_dir ) );
+        float projection_AB_onto_AC = abs( dot( AB, CA_dir ) );
+        float projection_AB_onto_BC = abs( dot( AB, BC_dir ) );
+
+        float AB_height = sqrt( abs( dot( CA, CA ) - projection_AC_onto_AB * projection_AC_onto_AB ) );
+        float BC_height = sqrt( abs( dot( AB, AB ) - projection_AB_onto_BC * projection_AB_onto_BC ) );
+        float CA_height = sqrt( abs( dot( AB, AB ) - projection_AB_onto_AC * projection_AB_onto_AC ) );
+
+        /* Emit vertices and assign height values per vertex: */
+
+        gl_Position = gl_in[ 0 ].gl_Position;
+        vs_out.edge_info_A.xyz = vec3( 0.0f, BC_height, 0.0f );
+        EmitVertex();
+
+        gl_Position = gl_in[ 1 ].gl_Position;
+        vs_out.edge_info_A.xyz = vec3( 0.0f, 0.0f, CA_height );
+        EmitVertex();
+
+        gl_Position = gl_in[ 2 ].gl_Position;
+        vs_out.edge_info_A.xyz = vec3( AB_height, 0.0f, 0.0f );
+        EmitVertex();
+
+        EndPrimitive();
+    }
 }
