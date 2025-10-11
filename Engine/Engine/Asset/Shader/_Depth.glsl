@@ -1,3 +1,6 @@
+#ifndef _DEPTH_GLSL
+#define _DEPTH_GLSL
+
 #include "_Intrinsic_Other.glsl"
 
 float LinearizeDepth( float screen_space_depth_value )
@@ -25,3 +28,5 @@ float LinearizeDepth( float screen_space_depth_value )
 
 	return view_space_z;
 }
+
+#endif // _DEPTH_GLSL

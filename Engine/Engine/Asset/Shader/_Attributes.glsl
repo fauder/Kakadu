@@ -1,3 +1,6 @@
+#ifndef _ATTRIBUTES_GLSL
+#define _ATTRIBUTES_GLSL
+
 /*
  * Attribute Locations:
  */
@@ -27,3 +30,5 @@
 /* Instanced: */
 #define INSTANCE_WORLD_TRANSFORM	layout (location = INSTANCE_WORLD_TRANSFORM_LOCATION ) in
 #define INSTANCE_COLOR				layout (location = INSTANCE_COLOR_LOCATION ) in
+
+#endif // _ATTRIBUTES_GLSL

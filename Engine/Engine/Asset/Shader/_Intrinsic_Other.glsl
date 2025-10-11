@@ -1,3 +1,6 @@
+#ifndef _INTRINSIC_OTHER_GLSL
+#define _INTRINSIC_OTHER_GLSL
+
 layout ( row_major, std140 ) uniform _Intrinsic_Other
 {
     mat4x4 _INTRINSIC_TRANSFORM_VIEW;
@@ -13,3 +16,5 @@ layout ( row_major, std140 ) uniform _Intrinsic_Other
     vec2 _INTRINSIC_VIEWPORT_SIZE;
     //vec2 padding;
 };
+
+#endif // _INTRINSIC_OTHER_GLSL
