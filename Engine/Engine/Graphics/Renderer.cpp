@@ -473,6 +473,7 @@ namespace Engine
 		ImGuiDrawer::Draw( uniform_buffer_management_intrinsic, "Shader Intrinsics" );
 		ImGuiDrawer::Draw( uniform_buffer_management_global,	"Shader Globals" );
 
+#ifdef _EDITOR
 		/* Debug: */
 		if( ImGui::Begin( "Debug" ) )
 		{
@@ -489,6 +490,7 @@ namespace Engine
 		}
 
 		ImGui::End();
+#endif
 	}
 
 	void Renderer::OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels )

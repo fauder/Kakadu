@@ -71,6 +71,8 @@ namespace Engine
 		 */
 		inline EditorShadingMode GetEditorShadingMode() const { return editor_shading_mode; };
 		void SetEditorShadingMode( const EditorShadingMode new_editor_shading_mode );
+
+		float GetEditorWireframeThicknessInPixels() const { return editor_wireframe_thickness_in_pixels; }
 #endif // _EDITOR
 
 		/* 
@@ -438,8 +440,10 @@ namespace Engine
 		 * Editor:
 		 */
 
+#ifdef _EDITOR
 		EditorShadingMode editor_shading_mode;
 		float editor_wireframe_thickness_in_pixels;
 		Color4 editor_wireframe_color;
+#endif // _EDITOR
 	};
 }
