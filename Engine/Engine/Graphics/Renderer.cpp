@@ -1588,7 +1588,7 @@ namespace Engine
 #ifdef _EDITOR
 	void Renderer::RenderOtherEditorShadingModes()
 	{
-		ASSERT( editor_shading_mode != EditorShadingMode::Shaded );
+		ASSERT_EDITOR_ONLY( editor_shading_mode != EditorShadingMode::Shaded );
 
 		Shader* shader_not_instanced = nullptr;
 		Shader* shader_instanced     = nullptr;
@@ -1596,6 +1596,8 @@ namespace Engine
 		static constexpr RenderState render_state{};
 		static constexpr RenderState render_state_wireframe // Nearly the same as transparent queue's, i.e., uses alpha blending.
 		{
+			.face_culling_enable = false,
+
 			.depth_test_enable = false, // This may decrease fps a little, but it is vital to the idea of "wireframe mode": User needs to be able to see behind objects.
 
 			.blending_enable = true,
