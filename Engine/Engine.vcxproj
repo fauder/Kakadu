@@ -478,6 +478,7 @@
     <None Include="Engine\Asset\Shader\_Global.glsl" />
     <None Include="Engine\Asset\Shader\_Intrinsic_Lighting.glsl" />
     <None Include="Engine\Asset\Shader\_Intrinsic_Other.glsl" />
+    <None Include="Engine\Asset\Shader\_Math.glsl" />
     <None Include="Engine\Asset\Shader\_sRGB.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

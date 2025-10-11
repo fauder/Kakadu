@@ -2,6 +2,7 @@
 #extension GL_ARB_shading_language_include : require
 
 #include "_Intrinsic_Other.glsl"
+#include "_Math.glsl"
 
 uniform vec4 uniform_color; /* _hint_color4 */
 uniform float uniform_line_thickness; /* _hint_slider_in_pixels */
@@ -22,49 +23,10 @@ out vec4 out_color;
 
 vec2 MidpointOfClippedLine( const vec2 p1, const vec2 p2, bool is_infinite_line )
 {
-    /* Liang-Barsky algorithm.
-     * Edges are mapped to indices as:
-     * 0: Left
-     * 1: Right
-     * 2: Bottom
-     * 3: Top */
+    vec2 t_values = ClipLineAgainstNearPlane( p1, p2, is_infinite_line );
 
-    const float infinity = 1.0 / 0.0;
-
-    float t_enter = is_infinite_line ? -infinity : 0;
-    float t_exit  = is_infinite_line ? +infinity : 1;
-    const float p_values[ 4 ] = { p1.x - p2.x, p2.x - p1.x, p1.y - p2.y, p2.y - p1.y };
-    /* x_min and y_min are always 0 since the viewport is created at 0,0 in the first place. */
-    const float q_values[ 4 ] = { p1.x, _INTRINSIC_VIEWPORT_SIZE.x - p1.x, p1.y, _INTRINSIC_VIEWPORT_SIZE.y - p1.y };
-
-    for( int i = 0; i < 4; i++ )
-    {
-        #define pk p_values[ i ]
-        #define qk q_values[ i ]
-
-        if( pk == 0 )
-        {
-            if( qk < 0 )
-                /* Line is completely outside the viewport. Discard => return point at infinity to signal this, without breaking the math at client site. */
-                return vec2( infinity, infinity );
-
-            continue; // Avoid possible divide by zero and also qk > 0 means the line is parallel to this edge anyway.
-        }
-
-        const float t = qk / pk;
-
-        if( pk < 0 )
-            t_enter = max( t_enter, t );
-        else if( pk > 0 )
-            t_exit = min( t_exit, t );
-    }
-
-    if( t_enter > t_exit )
-        /* Line is completely outside the viewport. Discard => return point at infinity to signal this, without breaking the math at client site. */
-        return vec2( infinity, infinity );
-
-    vec2 entry_point = p1 + t_enter * ( p2 - p1 );
-    vec2  exit_point = p1 + t_exit  * ( p2 - p1 );
+    vec2 entry_point = p1 + t_values[ 0 ] * ( p2 - p1 );
+    vec2  exit_point = p1 + t_values[ 1 ] * ( p2 - p1 );
 
     return 0.5 * ( entry_point + exit_point );
 }
