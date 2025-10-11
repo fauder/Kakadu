@@ -126,7 +126,7 @@ namespace Engine::ImGuiSetup
         colors[ ImGuiCol_ScrollbarGrabActive ]       = GammaCorrectedColor( 0.51f, 0.51f, 0.51f, 1.00f );
         colors[ ImGuiCol_CheckMark ]                 = GammaCorrectedColor( 0.96f, 0.57f, 0.06f, 0.71f );
         colors[ ImGuiCol_SliderGrab ]                = GammaCorrectedColor( 0.83f, 0.60f, 0.00f, 0.75f );
-        colors[ ImGuiCol_SliderGrabActive ]          = GammaCorrectedColor( 1.00f, 0.78f, 0.09f, 0.75f );
+        colors[ ImGuiCol_SliderGrabActive ]          = colors[ ImGuiCol_SliderGrab ];
         colors[ ImGuiCol_Button ]                    = GammaCorrectedColor( 0.83f, 0.60f, 0.00f, 0.75f );
         colors[ ImGuiCol_ButtonHovered ]             = GammaCorrectedColor( 0.92f, 0.69f, 0.00f, 0.75f );
         colors[ ImGuiCol_ButtonActive ]              = GammaCorrectedColor( 1.00f, 0.78f, 0.09f, 0.75f );
