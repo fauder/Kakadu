@@ -333,7 +333,9 @@
     <ClInclude Include="Engine\Graphics\ShaderIncludePreprocessing.h" />
     <ClInclude Include="Engine\Graphics\ShaderSourcePath.hpp" />
     <ClInclude Include="Engine\Graphics\ShaderType.h" />
+    <ClInclude Include="Engine\Math\Intersect.h" />
     <ClInclude Include="Engine\Math\OrthographicProjectionParameters.h" />
+    <ClInclude Include="Engine\Math\Rect.h" />
     <ClInclude Include="Engine\Math\VectorConversion.hpp" />
     <ClInclude Include="Engine\Natvis\NatVis.h" />
     <ClInclude Include="Engine\Core\Optimization.h" />
@@ -429,6 +431,7 @@
     <ClCompile Include="Engine\Graphics\VertexArray.cpp" />
     <ClCompile Include="Engine\Math\Math.cpp" />
     <ClCompile Include="Engine\Math\Matrix.cpp" />
+    <ClCompile Include="Engine\Math\Intersect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vendor\Vendor.vcxproj">
