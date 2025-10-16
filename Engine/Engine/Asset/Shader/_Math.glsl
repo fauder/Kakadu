@@ -5,7 +5,7 @@
 
 /* Liang-Barsky algorithm.
  * Returns t-enter and t-exit values calculated. */
-vec2 ClipLineAgainstNearPlane( const vec2 p1, const vec2 p2, bool is_infinite_line )
+vec2 ClipLineAgainstViewport( const vec2 p1, const vec2 p2, bool is_infinite_line )
 {
     /* Edges are mapped to indices as:
      * 0: Left
@@ -26,7 +26,7 @@ vec2 ClipLineAgainstNearPlane( const vec2 p1, const vec2 p2, bool is_infinite_li
         #define pk p_values[ i ]
         #define qk q_values[ i ]
 
-        if( pk == 0 )
+        if( abs( pk ) < 1e-8 )
         {
             if( qk < 0 )
                 /* Line is completely outside the viewport. Discard => return point at infinity to signal this, without breaking the math at client site. */
@@ -48,6 +48,21 @@ vec2 ClipLineAgainstNearPlane( const vec2 p1, const vec2 p2, bool is_infinite_li
         return vec2( infinity, infinity );
 
     return vec2( t_enter, t_exit );
+}
+
+void ClipLineAgainstViewport_InPlace( inout vec2 p1, inout vec2 p2, bool is_infinite_line )
+{
+    vec2 start = p1;
+    vec2 end   = p2;
+
+    vec2 t_values = ClipLineAgainstViewport( p1, p2, is_infinite_line );
+
+    if( any( isinf( t_values ) ) )
+        // Entirely outside: do not modify anything.
+        return;
+
+    p1 = mix( start, end, t_values[ 0 ] );
+    p2 = mix( start, end, t_values[ 1 ] );
 }
 
 #endif // _MATH_GLSL
