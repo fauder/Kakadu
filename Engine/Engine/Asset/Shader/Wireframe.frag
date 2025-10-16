@@ -2,7 +2,6 @@
 #extension GL_ARB_shading_language_include : require
 
 #include "_Intrinsic_Other.glsl"
-#include "_Math.glsl"
 
 uniform vec4 uniform_color; /* _hint_color4 */
 uniform float uniform_line_thickness; /* _hint_slider_in_pixels */
@@ -14,22 +13,13 @@ uniform float uniform_line_thickness; /* _hint_slider_in_pixels */
 
 in VS_To_FS
 {
-    noperspective in vec4 edge_info_A;
-    noperspective in vec4 edge_info_B;
-    flat in uint case_id;
+    noperspective vec4 edge_info_A;
+    noperspective vec4 edge_info_B;
+    noperspective vec4 edge_info_AB;
+    flat uint case_id;
 } fs_in;
 
 out vec4 out_color;
-
-vec2 MidpointOfClippedLine( const vec2 p1, const vec2 p2, bool is_infinite_line )
-{
-    vec2 t_values = ClipLineAgainstNearPlane( p1, p2, is_infinite_line );
-
-    vec2 entry_point = p1 + t_values[ 0 ] * ( p2 - p1 );
-    vec2  exit_point = p1 + t_values[ 1 ] * ( p2 - p1 );
-
-    return 0.5 * ( entry_point + exit_point );
-}
 
 void main()
 {
@@ -62,17 +52,11 @@ void main()
          *
          * Refer to the figure 3 in NVIDIA's white paper "Solid Wireframe" (February 2007 WP-03014-001_v01) for further clarification. */
 
-         /* Unpack edge info. calculated in geometry shader: */
+        /* Unpack edge info. calculated in geometry shader: */
         vec2 A_dir = fs_in.edge_info_A.zw;
         vec2 B_dir = fs_in.edge_info_B.zw;
-        vec2 AF, BF;
-        
-        AF = fs_in.edge_info_A.x >= 0 && fs_in.edge_info_A.x <= _INTRINSIC_VIEWPORT_SIZE.x && fs_in.edge_info_A.y >= 0 && fs_in.edge_info_A.y <= _INTRINSIC_VIEWPORT_SIZE.y
-                    ? gl_FragCoord.xy - fs_in.edge_info_A.xy
-                    : gl_FragCoord.xy - MidpointOfClippedLine( fs_in.edge_info_A.xy, fs_in.edge_info_A.xy + A_dir, true );
-        BF = fs_in.edge_info_B.x >= 0 && fs_in.edge_info_B.x <= _INTRINSIC_VIEWPORT_SIZE.x && fs_in.edge_info_B.y >= 0 && fs_in.edge_info_B.y <= _INTRINSIC_VIEWPORT_SIZE.y
-                    ? gl_FragCoord.xy - fs_in.edge_info_B.xy
-                    : gl_FragCoord.xy - MidpointOfClippedLine( fs_in.edge_info_B.xy, fs_in.edge_info_B.xy + B_dir, true );
+        vec2 AF = gl_FragCoord.xy - fs_in.edge_info_A.xy; // Vector from A to F (fragment pos.).
+        vec2 BF = gl_FragCoord.xy - fs_in.edge_info_B.xy; // Vector from B to F (fragment pos.).
         
         /* Use pythagorean theorem to calculate the missing piece that is the minimum distance of the point F (fragment pos.) to the line(s).
          * Hypothenuse(s) are the distances from F to A and B respectively.
@@ -88,17 +72,9 @@ void main()
          * The completely visible edge AB: */
         if( fs_in.case_id == 1 || fs_in.case_id == 2 || fs_in.case_id == 4 )
         {
-            vec2 AB_dir = normalize( fs_in.edge_info_B.xy - fs_in.edge_info_A.xy );
+            vec2 XF = gl_FragCoord.xy - fs_in.edge_info_AB.xy; // Vector from AB to F (fragment pos.).
 
-            vec2 XF;
-
-            XF = fs_in.edge_info_A.x >= 0 && fs_in.edge_info_A.x <= _INTRINSIC_VIEWPORT_SIZE.x && fs_in.edge_info_A.y >= 0 && fs_in.edge_info_A.y <= _INTRINSIC_VIEWPORT_SIZE.y
-                ? AF
-                : fs_in.edge_info_B.x >= 0 && fs_in.edge_info_B.x <= _INTRINSIC_VIEWPORT_SIZE.x && fs_in.edge_info_B.y >= 0 && fs_in.edge_info_B.y <= _INTRINSIC_VIEWPORT_SIZE.y
-                    ? BF
-                    : gl_FragCoord.xy - MidpointOfClippedLine( fs_in.edge_info_A.xy, fs_in.edge_info_B.xy, false );
-
-            float projection_f_onto_AB_dir = dot( AB_dir, XF ); // Hypothenuse.
+            float projection_f_onto_AB_dir = dot( fs_in.edge_info_AB.zw, XF ); // Hypothenuse.
 
             float squared_distance_to_AB = abs( dot( XF, XF ) - projection_f_onto_AB_dir * projection_f_onto_AB_dir );
             min_squared_distance_to_edge = min( min_squared_distance_to_edge, squared_distance_to_AB );

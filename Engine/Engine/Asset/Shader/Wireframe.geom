@@ -1,14 +1,16 @@
 #version 460 core
 
 #include "_Intrinsic_Other.glsl"
+#include "_Math.glsl"
 
 layout ( triangles ) in;
 layout ( triangle_strip, max_vertices = 3 ) out;
 
 out VS_To_FS
 {
-    noperspective vec4 edge_info_A; /* Components: XY = Screen-space point A. ZW = Screen-space direction A-dir, pointing towards an off-frustum vertex. */
-    noperspective vec4 edge_info_B; /* Components: XY = Screen-space point B. ZW = Screen-space direction B-dir, pointing towards an off-frustum vertex. */
+    noperspective vec4 edge_info_A;  /* Components: XY = Screen-space point  A. ZW = Screen-space direction  A-dir, pointing toward an off-frustum vertex. */
+    noperspective vec4 edge_info_B;  /* Components: XY = Screen-space point  B. ZW = Screen-space direction  B-dir, pointing toward an off-frustum vertex. */
+    noperspective vec4 edge_info_AB; /* Components: XY = Screen-space point AB. ZW = Screen-space direction AB-dir. */
     flat uint case_id;
 } vs_out;
 
@@ -29,15 +31,18 @@ vec2 TransformToScreenSpace( vec4 clip_space_point )
            * _INTRINSIC_VIEWPORT_SIZE.xy;                 // Scale by the screen resolution.
 }
 
+vec2 MidpointOfClippedLine( const vec2 p1, const vec2 p2, bool is_infinite_line )
+{
+    vec2 t_values = ClipLineAgainstViewport( p1, p2, is_infinite_line );
+
+    vec2 entry_point = p1 + t_values[ 0 ] * ( p2 - p1 );
+    vec2  exit_point = p1 + t_values[ 1 ] * ( p2 - p1 );
+
+    return 0.5 * ( entry_point + exit_point );
+}
+
 void main()
 {
-    vec4 clip_space_points[ 3 ] =
-    {
-        gl_in[ 0 ].gl_Position,
-        gl_in[ 1 ].gl_Position,
-        gl_in[ 2 ].gl_Position
-    };
-
     vec2 screen_space_points[ 3 ] =
     {
         TransformToScreenSpace( gl_in[ 0 ].gl_Position ),
@@ -59,8 +64,26 @@ void main()
         vs_out.edge_info_A.xy = screen_space_points[ TABLE_INDICES_FOR_A[ vs_out.case_id ] ];
         vs_out.edge_info_B.xy = screen_space_points[ TABLE_INDICES_FOR_B[ vs_out.case_id ] ];
 
-        vs_out.edge_info_A.zw = normalize( vs_out.edge_info_A.xy - screen_space_points[ TABLE_INDICES_FOR_A_DIR[ vs_out.case_id ] ] );
-        vs_out.edge_info_B.zw = normalize( vs_out.edge_info_B.xy - screen_space_points[ TABLE_INDICES_FOR_B_DIR[ vs_out.case_id ] ] );
+        vs_out.edge_info_A.zw = normalize( screen_space_points[ TABLE_INDICES_FOR_A_DIR[ vs_out.case_id ] ] - vs_out.edge_info_A.xy  );
+        vs_out.edge_info_B.zw = normalize( screen_space_points[ TABLE_INDICES_FOR_B_DIR[ vs_out.case_id ] ] - vs_out.edge_info_B.xy  );
+
+        /* Before clipping A and B, calculate clipping for the AB edge, as it relies on unclipped A & B data. */
+        if( vs_out.case_id == 1 || vs_out.case_id == 2 || vs_out.case_id == 4 )
+        {
+            vs_out.edge_info_AB.zw = normalize( vs_out.edge_info_B.xy - vs_out.edge_info_A.xy );
+            
+            vs_out.edge_info_AB.xy = vs_out.edge_info_A.x >= 0 && vs_out.edge_info_A.x <= _INTRINSIC_VIEWPORT_SIZE.x && vs_out.edge_info_A.y >= 0 && vs_out.edge_info_A.y <= _INTRINSIC_VIEWPORT_SIZE.y
+                ? vs_out.edge_info_A.xy
+                : vs_out.edge_info_B.x >= 0 && vs_out.edge_info_B.x <= _INTRINSIC_VIEWPORT_SIZE.x && vs_out.edge_info_B.y >= 0 && vs_out.edge_info_B.y <= _INTRINSIC_VIEWPORT_SIZE.y
+                    ? vs_out.edge_info_B.xy
+                    : MidpointOfClippedLine( vs_out.edge_info_A.xy, vs_out.edge_info_B.xy, false );
+        }
+
+        /* Clip A and B edges: */
+        if( vs_out.edge_info_A.x < 0 || vs_out.edge_info_A.x > _INTRINSIC_VIEWPORT_SIZE.x || vs_out.edge_info_A.y < 0 || vs_out.edge_info_A.y > _INTRINSIC_VIEWPORT_SIZE.y )
+            vs_out.edge_info_A.xy = MidpointOfClippedLine( vs_out.edge_info_A.xy, vs_out.edge_info_A.xy + vs_out.edge_info_A.zw, true );
+        if( vs_out.edge_info_B.x < 0 || vs_out.edge_info_B.x > _INTRINSIC_VIEWPORT_SIZE.x || vs_out.edge_info_B.y < 0 || vs_out.edge_info_B.y > _INTRINSIC_VIEWPORT_SIZE.y )
+            vs_out.edge_info_B.xy = MidpointOfClippedLine( vs_out.edge_info_B.xy, vs_out.edge_info_B.xy + vs_out.edge_info_B.zw, true );
 
         /* Emit vertices normally: */
 
