@@ -1,3 +1,5 @@
+> 📄 Latest write-up: [Optimized Wireframe Rendering](https://fauder.github.io/posts/2025/10/17/optimized-wireframe-rendering-part-iii/)
+
 # Kakadu
 
 <p align="center">
