@@ -398,7 +398,10 @@ namespace Engine::ImGuiDrawer
 			const float separator_height( style.ItemSpacing.y * 2.0f );
 			const float line_height( ImGui::CalcTextSize( "A" ).y );
 
-			const ImVec2 child_size( region_available.x, region_available.y / 2.0f - separator_height - line_height );
+			const ImVec2 child_size( region_available.x, 
+									 selected_texture
+										? region_available.y / 2.0f - separator_height - line_height
+										: region_available.y );
 
 			if( ImGui::BeginChild( "Textures", child_size ) )
 			{
@@ -415,10 +418,10 @@ namespace Engine::ImGuiDrawer
 
 			ImGui::EndChild();
 
-			ImGui::Separator();
-
 			if( selected_texture )
 			{
+				ImGui::Separator();
+
 				const ImVec2 preview_area_size( ImGui::GetContentRegionAvail() - ImVec2( 0.0f, line_height ) );
 
 				const float image_width( ( float )selected_texture->Width() );
