@@ -303,10 +303,10 @@ namespace Engine
 
 		/* Using Unity defaults: Background is 1000, Geometry is 2000, AlphaTest is 2450, Transparent is 3000 and Overlay is 4000 */
 
-		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY                       = RenderQueue::ID(  2'000u );
-		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT                    = RenderQueue::ID(  2'450u );
-		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX                         = RenderQueue::ID(  2'900u );
-		static constexpr RenderQueue::ID QUEUE_ID_MSAA_RESOLVE                   = RenderQueue::ID(  3'000u );
+		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY                       = RenderQueue::ID( 2'000u );
+		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT                    = RenderQueue::ID( 2'450u );
+		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX                         = RenderQueue::ID( 2'900u );
+		static constexpr RenderQueue::ID QUEUE_ID_MSAA_RESOLVE                   = RenderQueue::ID( 3'000u );
 
 		static constexpr RenderQueue::ID QUEUE_ID_BEFORE_POSTPROCESSING          = RenderQueue::ID( 3'001u );
 		/* These are multi-step post-processing effects where each effect reads the previous effect's result and writes to a different framebuffer (ping-ponging). */

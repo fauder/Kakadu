@@ -536,7 +536,7 @@ namespace Engine
 											.msaa            = MSAA( framebuffer_main_msaa_sample_count )
 										} );
 
-		framebuffer_main.SetClearColor( Color4::Gray( 0.064f ) ); // Same as Unity's scene view, in linear color space.
+		framebuffer_main.SetClearColor( Color4::Gray( 0.064f ) ); // Same color as Unity's scene view, in linear color space.
 
 		/* Same parameters as the main FBO. */
 		framebuffer_postprocessing_A = Framebuffer( Framebuffer::Description
@@ -574,7 +574,8 @@ namespace Engine
 											 .magnification_filter = Texture::Filtering::Nearest,
 #ifdef _EDITOR
 											 .color_format = ( editor_shading_mode == EditorShadingMode::Shaded || editor_shading_mode == EditorShadingMode::ShadedWireframe )
-												? Texture::Format::SRGBA : Texture::Format::RGBA,
+												? Texture::Format::SRGBA
+												: Texture::Format::RGBA,
 #else
 											 .color_format = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
 #endif // _EDITOR
@@ -614,7 +615,7 @@ namespace Engine
 #ifdef _EDITOR
 		if( editor_shading_mode != EditorShadingMode::Shaded )
 		{
-			/* Any framebuffer resize means invalidation of the final pass' (tone-mapping) input texture.
+			/* Any framebuffer resize means invalidation of the final pass' (tone-mapping pass) input texture.
 			 *
 			 * Since anything else between MSAA and tone-mapping is effectively disabled for the purposes of editor rendering,
 			 * we can safely say that the last used framebuffer (prior to tone-mapping) is the MSAA one, which is the postprocessing framebuffer A.
