@@ -36,10 +36,10 @@ namespace Engine
 		unsigned int vertex_count_interleaved;
 		const auto interleaved_vertices = MeshUtility::Interleave( vertex_count_interleaved, positions, normals, uvs, tangents );
 
-		vertex_buffer = VertexBuffer( vertex_count_interleaved, std::span( interleaved_vertices ), name + " Vertex Buffer", usage );
+		vertex_buffer = VertexBuffer( vertex_count_interleaved, std::span( interleaved_vertices ), name, usage );
 		vertex_layout = VertexLayout( GatherAttributes( positions, normals, uvs, tangents ) );
-		index_buffer  = indices.empty() ? std::nullopt : std::optional< IndexBuffer >( std::in_place, std::span( indices ), name + " Index Buffer", usage );
-		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name + " VAO");
+		index_buffer  = indices.empty() ? std::nullopt : std::optional< IndexBuffer >( std::in_place, std::span( indices ), name, usage );
+		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name );
 	}
 
 	Mesh::Mesh( std::vector< Vector3 >&&		positions,
@@ -63,10 +63,10 @@ namespace Engine
 		unsigned int vertex_count_interleaved;
 		const auto interleaved_vertices = MeshUtility::Interleave( vertex_count_interleaved, positions, normals, uvs, tangents );
 
-		vertex_buffer = VertexBuffer( vertex_count_interleaved, std::span( interleaved_vertices ), name + " Vertex Buffer", usage );
+		vertex_buffer = VertexBuffer( vertex_count_interleaved, std::span( interleaved_vertices ), name, usage );
 		vertex_layout = VertexLayout( GatherAttributes( positions, normals, uvs, tangents ) );
-		index_buffer  = indices.empty() ? std::nullopt : std::optional< IndexBuffer >( std::in_place, std::span( indices ), name + " Index Buffer", usage );
-		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name + " VAO");
+		index_buffer  = indices.empty() ? std::nullopt : std::optional< IndexBuffer >( std::in_place, std::span( indices ), name, usage );
+		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name );
 	}
 
 	Mesh::Mesh( const Mesh& other,
@@ -75,7 +75,7 @@ namespace Engine
 				const int instance_count,
 				const GLenum instance_buffer_usage )
 		:
-		name( other.name + " (instanced)" ),
+		name( other.name + " (Instanced)" ),
 		indices( other.indices ),
 		positions( other.positions ),
 		normals( other.normals ),
@@ -90,9 +90,9 @@ namespace Engine
 		for( auto instanced_attribute_iterator = instanced_attributes.begin(); instanced_attribute_iterator != instanced_attributes.end(); instanced_attribute_iterator++ )
 			vertex_layout.Push( *instanced_attribute_iterator );
 
-		instance_buffer = std::optional< InstanceBuffer >( std::in_place, instance_count, std::span( instance_data ), name + " Instance Buffer", instance_buffer_usage );
+		instance_buffer = std::optional< InstanceBuffer >( std::in_place, instance_count, std::span( instance_data ), name, instance_buffer_usage );
 
-		vertex_array = VertexArray( vertex_buffer, vertex_layout, index_buffer, *instance_buffer, name + " VAO (instanced)");
+		vertex_array = VertexArray( vertex_buffer, vertex_layout, index_buffer, *instance_buffer, name );
 	}
 
 	Mesh::~Mesh()

@@ -191,6 +191,10 @@ namespace Engine
 		else
 			return false;
 
+#ifdef _EDITOR
+		ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, vertex_shader_id, "VTX_SHADER " + name );
+#endif // _EDITOR
+
 		feature_map.insert( vertex_shader_features.begin(), vertex_shader_features.end() );
 
 		if( not geometry_shader_source_path.Empty() )
@@ -220,6 +224,10 @@ namespace Engine
 			}
 
 			feature_map.insert( geometry_shader_features.begin(), geometry_shader_features.end() );
+
+#ifdef _EDITOR
+				ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, geometry_shader_id, "GEOM_SHADER " + name );
+#endif // _EDITOR
 		}
 
 		if( fragment_shader_source = ParseShaderFromFile( fragment_shader_source_path, ShaderType::Fragment );
@@ -251,6 +259,10 @@ namespace Engine
 			return false;
 		}
 
+#ifdef _EDITOR
+		ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, fragment_shader_id, "FRAG_SHADER " + name );
+#endif // _EDITOR
+
 		feature_map.insert( fragment_shader_features.begin(), fragment_shader_features.end() );
 
 		const bool link_result = LinkProgram( vertex_shader_id, geometry_shader_id, fragment_shader_id );
@@ -262,9 +274,9 @@ namespace Engine
 
 		if( link_result )
 		{
-		#ifdef _EDITOR
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_PROGRAM, program_id.Get(), name );
-		#endif // _EDITOR
+#ifdef _EDITOR
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_PROGRAM, program_id.Get(), "PROGRAM " + name );
+#endif // _EDITOR
 
 			QueryVertexAttributes();
 

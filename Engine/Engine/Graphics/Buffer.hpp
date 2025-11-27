@@ -47,7 +47,7 @@ namespace Engine
 
 #ifdef _EDITOR
 			if( not name.empty() )
-				ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.Get(), name );
+				ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.Get(), LabelPrefix() + name );
 #endif // _EDITOR
 		}
 
@@ -66,7 +66,7 @@ namespace Engine
 
 #ifdef _EDITOR
 			if( not name.empty() )
-				ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.Get(), name );
+				ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.Get(), LabelPrefix() + name );
 #endif // _EDITOR
 		}
 
@@ -89,7 +89,7 @@ namespace Engine
 
 #ifdef _EDITOR
 			if( not name.empty() )
-				ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.Get(), name );
+				ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.Get(), LabelPrefix() + name );
 #endif // _EDITOR
 		}
 
@@ -207,6 +207,18 @@ namespace Engine
 				REF_COUNT_MAP.erase( id );
 				id.Reset(); // OpenGL does not reset the id to zero.
 			}
+		}
+
+		static constexpr const char* LabelPrefix()
+		{
+			if constexpr( TargetType == GL_ARRAY_BUFFER )
+				return "VTX_BUF ";
+			else if constexpr( TargetType == GL_ELEMENT_ARRAY_BUFFER )
+				return "IDX_BUF ";
+			else if constexpr( TargetType == GL_UNIFORM_BUFFER )
+				return "UNI_BUF ";
+			else
+				return "UNKNOWNBUFFERTYPE ";
 		}
 
 	private:

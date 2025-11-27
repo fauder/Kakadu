@@ -151,7 +151,7 @@ namespace Engine
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), "VTX_ARR " +  name );
 #endif // _EDITOR
 
 		vertex_buffer.Bind();
@@ -165,7 +165,7 @@ namespace Engine
 
 	#ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), "VTX_ARR " + name );
 	#endif // _EDITOR
 
 		vertex_buffer.Bind();

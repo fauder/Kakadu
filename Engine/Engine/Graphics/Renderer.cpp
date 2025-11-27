@@ -507,7 +507,7 @@ namespace Engine
 		/* Shadow maps: */
 		framebuffer_shadow_map_light_directional = Framebuffer( Framebuffer::Description
 																{
-																	.name = "Shadow Map FB - Dir. Light",
+																	.name = "Shadow Map [Dir. Light]",
 
 																	.width_in_pixels  = new_width_in_pixels,
 																	.height_in_pixels = new_height_in_pixels,
@@ -526,7 +526,7 @@ namespace Engine
 		/* Main: */
 		framebuffer_main = Framebuffer( Framebuffer::Description
 										{
-											.name = "Main FB",
+											.name = "Main",
 
 											.width_in_pixels  = new_width_in_pixels,
 											.height_in_pixels = new_height_in_pixels,
@@ -541,7 +541,7 @@ namespace Engine
 		/* Same parameters as the main FBO. */
 		framebuffer_postprocessing_A = Framebuffer( Framebuffer::Description
 													{
-														.name = "Post-processing A FB",
+														.name = "Post-processing A",
 
 														.width_in_pixels  = new_width_in_pixels,
 														.height_in_pixels = new_height_in_pixels,
@@ -554,7 +554,7 @@ namespace Engine
 		/* Same parameters as the main FBO. */
 		framebuffer_postprocessing_B = Framebuffer( Framebuffer::Description
 													{
-														.name = "Post-processing B FB",
+														.name = "Post-processing B",
 
 														.width_in_pixels  = new_width_in_pixels,
 														.height_in_pixels = new_height_in_pixels,
@@ -566,7 +566,7 @@ namespace Engine
 		/* Editor: */
 		framebuffer_final = Framebuffer( Framebuffer::Description
 										 {
-											 .name = "Editor FB",
+											 .name = "Editor",
 
 											 .width_in_pixels  = new_width_in_pixels,
 											 .height_in_pixels = new_height_in_pixels,

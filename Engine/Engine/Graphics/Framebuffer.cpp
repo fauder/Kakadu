@@ -163,7 +163,10 @@ namespace Engine
 #ifdef _EDITOR
 		if( not name.empty() )
 		{
-			const std::string full_name( IsMultiSampled() ? this->name + " (MSAA " + std::to_string( msaa.sample_count ) + "x)" : this->name );
+			const std::string full_name( "FB " +
+										 ( IsMultiSampled()
+										   ? this->name + "_[MSAA_" + std::to_string( msaa.sample_count ) + "x]"
+										   : this->name ) );
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), full_name );
 		}
 #endif // _EDITOR
@@ -195,7 +198,10 @@ namespace Engine
 #ifdef _EDITOR
 		if( not name.empty() )
 		{
-			const std::string full_name( IsMultiSampled() ? this->name + " (MSAA " + std::to_string( msaa.sample_count ) + "x)" : this->name );
+			const std::string full_name( "FB " + 
+										 ( IsMultiSampled()
+											? this->name + "_[MSAA_" + std::to_string( msaa.sample_count ) + "x]"
+										    : this->name ) );
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), full_name );
 		}
 #endif // _EDITOR
