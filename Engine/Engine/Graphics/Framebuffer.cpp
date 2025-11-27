@@ -1,6 +1,7 @@
 // Engine Includes.
 #include "Graphics.h"
 #include "Framebuffer.h"
+#include "GLLabelPrefixes.h"
 #include "GLLogger.h"
 #include "Core/Assertion.h"
 #include "Core/AssetDatabase.hpp"
@@ -163,11 +164,10 @@ namespace Engine
 #ifdef _EDITOR
 		if( not name.empty() )
 		{
-			const std::string full_name( "FB " +
-										 ( IsMultiSampled()
-										   ? this->name + "_[MSAA_" + std::to_string( msaa.sample_count ) + "x]"
-										   : this->name ) );
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), KAKADU_LABEL_PREFIX + full_name );
+			const std::string full_name( IsMultiSampled()
+										   ? this->name + " [MSAA_" + std::to_string( msaa.sample_count ) + "x]"
+										   : this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
 		}
 #endif // _EDITOR
 
@@ -198,11 +198,10 @@ namespace Engine
 #ifdef _EDITOR
 		if( not name.empty() )
 		{
-			const std::string full_name( "FB " + 
-										 ( IsMultiSampled()
-											? this->name + "_[MSAA_" + std::to_string( msaa.sample_count ) + "x]"
-										    : this->name ) );
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), KAKADU_LABEL_PREFIX + full_name );
+			const std::string full_name( IsMultiSampled()
+											? this->name + " [MSAA_" + std::to_string( msaa.sample_count ) + "x]"
+										    : this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
 		}
 #endif // _EDITOR
 

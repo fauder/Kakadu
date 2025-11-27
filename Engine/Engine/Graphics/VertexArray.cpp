@@ -151,8 +151,8 @@ namespace Engine
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), KAKADU_LABEL_PREFIX "VTX_ARR " +  name );
-#endif // _EDITOR
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), GL_LABEL_PREFIX_VERTEX_ARRAY + name );
+	#endif // _EDITOR
 
 		vertex_buffer.Bind();
 		vertex_layout.SetAndEnableAttributes_NonInstanced();
@@ -165,7 +165,7 @@ namespace Engine
 
 	#ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), KAKADU_LABEL_PREFIX "VTX_ARR " + name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.Get(), GL_LABEL_PREFIX_VERTEX_ARRAY + name );
 	#endif // _EDITOR
 
 		vertex_buffer.Bind();

@@ -2,8 +2,8 @@
 
 // Engine Includes.
 #include "GLLogger.h"
+#include "GLLabelPrefixes.h"
 #include "Graphics.h"
-#include "GraphicsMacros.h"
 #include "ID.hpp"
 #include "Core/ServiceLocator.h"
 #include "Core/Assertion.h"
@@ -214,13 +214,13 @@ namespace Engine
 		static constexpr const char* LabelPrefix()
 		{
 			if constexpr( TargetType == GL_ARRAY_BUFFER )
-				return KAKADU_LABEL_PREFIX "VTX_BUF ";
+				return GL_LABEL_PREFIX_VERTEX_BUFFER;
 			else if constexpr( TargetType == GL_ELEMENT_ARRAY_BUFFER )
-				return KAKADU_LABEL_PREFIX "IDX_BUF ";
+				return GL_LABEL_PREFIX_INDEX_BUFFER;
 			else if constexpr( TargetType == GL_UNIFORM_BUFFER )
-				return KAKADU_LABEL_PREFIX "UNI_BUF ";
+				return GL_LABEL_PREFIX_UNIFORM_BUFFER;
 			else
-				return KAKADU_LABEL_PREFIX "UNKNOWNBUFFERTYPE ";
+				return GL_LABEL_PREFIX_UNKNOWN;
 		}
 #endif // EDITOR
 

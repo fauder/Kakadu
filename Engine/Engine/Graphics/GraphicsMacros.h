@@ -41,7 +41,3 @@ private:\
 		return instance;\
 	}\
 };
-
-#ifdef _EDITOR
-#define KAKADU_LABEL_PREFIX "\U0001F99C " // The parrot emoji for our Kakadu :)
-#endif // _EDITOR
