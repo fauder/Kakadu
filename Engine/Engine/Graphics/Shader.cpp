@@ -192,7 +192,7 @@ namespace Engine
 			return false;
 
 #ifdef _EDITOR
-		ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, vertex_shader_id, "VTX_SHADER " + name );
+		ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, vertex_shader_id, KAKADU_LABEL_PREFIX "VTX_SHADER " + name );
 #endif // _EDITOR
 
 		feature_map.insert( vertex_shader_features.begin(), vertex_shader_features.end() );
@@ -226,7 +226,7 @@ namespace Engine
 			feature_map.insert( geometry_shader_features.begin(), geometry_shader_features.end() );
 
 #ifdef _EDITOR
-				ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, geometry_shader_id, "GEOM_SHADER " + name );
+				ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, geometry_shader_id, KAKADU_LABEL_PREFIX "GEOM_SHADER " + name );
 #endif // _EDITOR
 		}
 
@@ -260,7 +260,7 @@ namespace Engine
 		}
 
 #ifdef _EDITOR
-		ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, fragment_shader_id, "FRAG_SHADER " + name );
+		ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, fragment_shader_id, KAKADU_LABEL_PREFIX "FRAG_SHADER " + name );
 #endif // _EDITOR
 
 		feature_map.insert( fragment_shader_features.begin(), fragment_shader_features.end() );
@@ -275,7 +275,7 @@ namespace Engine
 		if( link_result )
 		{
 #ifdef _EDITOR
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_PROGRAM, program_id.Get(), "PROGRAM " + name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_PROGRAM, program_id.Get(), KAKADU_LABEL_PREFIX "PROGRAM " + name );
 #endif // _EDITOR
 
 			QueryVertexAttributes();

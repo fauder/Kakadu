@@ -43,7 +43,7 @@ namespace Engine
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), "TEX " + this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), KAKADU_LABEL_PREFIX "TEX " + this->name );
 #endif // _EDITOR
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
@@ -80,7 +80,7 @@ namespace Engine
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), "TEX_MSAA_" + std::to_string( sample_count ) + "x " + this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), KAKADU_LABEL_PREFIX "TEX_MSAA_" + std::to_string( sample_count ) + "x " + this->name );
 #endif // _EDITOR
 
 		glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, sample_count, InternalFormat( format ), width, height, GL_TRUE );
@@ -111,7 +111,7 @@ namespace Engine
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), "TEX " + this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), KAKADU_LABEL_PREFIX "TEX " + this->name );
 #endif // _EDITOR
 
 
@@ -138,7 +138,7 @@ namespace Engine
 		type( std::move( donor.type ) ),
 #ifdef _DEBUG
 		name( std::exchange( donor.name, "<moved-from>" ) ),
-	#else
+#else
 		name( std::move( donor.name ) ),
 #endif // _DEBUG
 		msaa( std::exchange( donor.msaa, {} ) ),
@@ -155,7 +155,7 @@ namespace Engine
 		type = std::move( donor.type );
 #ifdef _DEBUG
 		name = std::exchange( donor.name, "<moved-from>" );
-	#else
+#else
 		name = std::move( donor.name );
 #endif // _DEBUG
 		msaa   = std::exchange( donor.msaa, {} );
@@ -243,7 +243,7 @@ namespace Engine
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), "TEX " + this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), KAKADU_LABEL_PREFIX "TEX " + this->name );
 #endif // _EDITOR
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
@@ -283,7 +283,7 @@ namespace Engine
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), "TEX " + this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), KAKADU_LABEL_PREFIX "TEX " + this->name );
 #endif // _EDITOR
 
 		for( auto i = 0; i < 6; i++ )

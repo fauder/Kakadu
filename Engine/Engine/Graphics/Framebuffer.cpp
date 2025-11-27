@@ -167,7 +167,7 @@ namespace Engine
 										 ( IsMultiSampled()
 										   ? this->name + "_[MSAA_" + std::to_string( msaa.sample_count ) + "x]"
 										   : this->name ) );
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), full_name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), KAKADU_LABEL_PREFIX + full_name );
 		}
 #endif // _EDITOR
 
@@ -202,7 +202,7 @@ namespace Engine
 										 ( IsMultiSampled()
 											? this->name + "_[MSAA_" + std::to_string( msaa.sample_count ) + "x]"
 										    : this->name ) );
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), full_name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), KAKADU_LABEL_PREFIX + full_name );
 		}
 #endif // _EDITOR
 

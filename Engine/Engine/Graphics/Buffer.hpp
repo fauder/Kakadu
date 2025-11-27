@@ -3,6 +3,7 @@
 // Engine Includes.
 #include "GLLogger.h"
 #include "Graphics.h"
+#include "GraphicsMacros.h"
 #include "ID.hpp"
 #include "Core/ServiceLocator.h"
 #include "Core/Assertion.h"
@@ -209,17 +210,19 @@ namespace Engine
 			}
 		}
 
+#ifdef _EDITOR
 		static constexpr const char* LabelPrefix()
 		{
 			if constexpr( TargetType == GL_ARRAY_BUFFER )
-				return "VTX_BUF ";
+				return KAKADU_LABEL_PREFIX "VTX_BUF ";
 			else if constexpr( TargetType == GL_ELEMENT_ARRAY_BUFFER )
-				return "IDX_BUF ";
+				return KAKADU_LABEL_PREFIX "IDX_BUF ";
 			else if constexpr( TargetType == GL_UNIFORM_BUFFER )
-				return "UNI_BUF ";
+				return KAKADU_LABEL_PREFIX "UNI_BUF ";
 			else
-				return "UNKNOWNBUFFERTYPE ";
+				return KAKADU_LABEL_PREFIX "UNKNOWNBUFFERTYPE ";
 		}
+#endif // EDITOR
 
 	private:
 		ID id;
