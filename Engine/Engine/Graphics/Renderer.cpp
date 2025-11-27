@@ -271,7 +271,7 @@ namespace Engine
 					if( not pass_has_content_to_render )
 						ImGuiUtility::BeginDisabledButInteractable();
 
-					ImGui::Checkbox( "", &pass.is_enabled );
+					ImGuiUtility::EyeCheckbox( "", &pass.is_enabled );
 
 					ImGui::PopID();
 					ImGui::SameLine();
@@ -294,7 +294,7 @@ namespace Engine
 								ImGuiUtility::BeginDisabledButInteractable();
 
 							ImGui::PushID( ( int )queue_id );
-							ImGui::Checkbox( "", &queue.is_enabled );
+							ImGuiUtility::EyeCheckbox( "", &queue.is_enabled );
 							ImGui::PopID();
 							ImGui::SameLine();
 							if( ImGui::TreeNodeEx( queue.name.c_str(), 0, ICON_FA_TRAFFIC_LIGHT " #%d %s", ( int )queue_id, queue.name.c_str() ) )
@@ -312,7 +312,7 @@ namespace Engine
 												if( renderable->material->Name() == material_name )
 												{
 													ImGui::PushID( renderable );
-													ImGui::Checkbox( "", &renderable->is_enabled );
+													ImGuiUtility::EyeCheckbox( "", &renderable->is_enabled );
 													ImGui::PopID();
 													ImGui::BeginDisabled( not renderable->is_enabled );
 													ImGui::SameLine(); ImGui::TextUnformatted( renderable->material->name.c_str() );
