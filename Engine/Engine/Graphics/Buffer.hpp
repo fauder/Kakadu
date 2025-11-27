@@ -241,11 +241,13 @@ namespace Engine
 #ifdef _EDITOR
 		static constexpr const char* LabelPrefix()
 		{
-			if constexpr( TargetType == GL_ARRAY_BUFFER )
+			if constexpr( Type == BufferType::Vertex )
 				return GL_LABEL_PREFIX_VERTEX_BUFFER;
-			else if constexpr( TargetType == GL_ELEMENT_ARRAY_BUFFER )
+			else if constexpr( Type == BufferType::Instance )
+				return GL_LABEL_PREFIX_INSTANCE_BUFFER;
+			else if constexpr( Type == BufferType::Index )
 				return GL_LABEL_PREFIX_INDEX_BUFFER;
-			else if constexpr( TargetType == GL_UNIFORM_BUFFER )
+			else if constexpr( Type == BufferType::Uniform )
 				return GL_LABEL_PREFIX_UNIFORM_BUFFER;
 			else
 				return GL_LABEL_PREFIX_UNKNOWN;
