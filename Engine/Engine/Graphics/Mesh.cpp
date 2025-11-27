@@ -75,7 +75,7 @@ namespace Engine
 				const int instance_count,
 				const GLenum instance_buffer_usage )
 		:
-		name( other.name + " (Instanced)" ),
+		name( other.name ),
 		indices( other.indices ),
 		positions( other.positions ),
 		normals( other.normals ),
