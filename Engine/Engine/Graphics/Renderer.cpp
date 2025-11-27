@@ -129,7 +129,7 @@ namespace Engine
 		{
 			if( PassHasContentToRender( pass ) )
 			{
-				const auto log_group( logger.TemporaryLogGroup( ( "[Pass]:" + pass.name ).c_str() ) );
+				const auto log_group( logger.TemporaryLogGroup( ( GL_LABEL_PREFIX_RENDER_PASS + pass.name ).c_str() ) );
 
 				SetIntrinsicsPerPass( pass );
 
@@ -148,7 +148,7 @@ namespace Engine
 					if( auto& queue = render_queue_map[ queue_id ]; 
 						QueueHasContentToRender( queue ) )
 					{
-						const auto log_group( logger.TemporaryLogGroup( ( "[Queue]:" + queue.name ).c_str() ) );
+						const auto log_group( logger.TemporaryLogGroup( ( GL_LABEL_PREFIX_RENDER_QUEUE + queue.name ).c_str() ) );
 
 						// TODO: Do not set render state for state that is not changing (i.e., dirty check).
 						if( pass.render_state_override_is_allowed )
@@ -1697,7 +1697,10 @@ namespace Engine
 					pass.target_framebuffer == &framebuffer_main &&
 					PassHasContentToRender( pass ) )
 				{
-					const auto log_group( logger.TemporaryLogGroup( ( shader_index == 0 ? "[Debug Pass]:" : "[Debug Pass (Instanced)]:" + pass.name ).c_str() ) );
+					const auto log_group( logger.TemporaryLogGroup( ( ( shader_index == 0
+																		? GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_PASS
+																		: GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_PASS "[INSTANCED] " )
+																	  + pass.name ).c_str() ) );
 
 					const Vector3 camera_position( Matrix::CameraWorldPositionFromViewMatrix( current_camera_info.view_matrix ) );
 
@@ -1706,7 +1709,10 @@ namespace Engine
 						if( auto& queue = render_queue_map[ queue_id ];
 							QueueHasContentToRender( queue ) )
 						{
-							const auto log_group( logger.TemporaryLogGroup( ( shader_index == 0 ? "[Debug Queue]:" : "[Debug Queue (Instanced)]:" + queue.name ).c_str() ) );
+							const auto log_group( logger.TemporaryLogGroup( ( ( shader_index == 0
+																				? GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_QUEUE
+																				: GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_QUEUE "[INSTANCED] " )
+																			  + queue.name ).c_str() ) );
 
 							SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override.sorting_mode );
 
