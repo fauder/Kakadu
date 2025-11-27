@@ -196,9 +196,9 @@ namespace Engine
 #ifdef _EDITOR
 				switch( TargetType )
 				{
-					case GL_ARRAY_BUFFER:			std::cout << "Deleting Vertex (or Instance) Buffer "; break;
-					case GL_ELEMENT_ARRAY_BUFFER:	std::cout << "Deleting Index Buffer "; break;
-					case GL_UNIFORM_BUFFER:			std::cout << "Deleting Uniform Buffer "; break;
+					case GL_ARRAY_BUFFER:			std::cout << "Deleting Vertex/Instance Buffer id #"; break;
+					case GL_ELEMENT_ARRAY_BUFFER:	std::cout << "Deleting Index Buffer id #"; break;
+					case GL_UNIFORM_BUFFER:			std::cout << "Deleting Uniform Buffer id #"; break;
 				}
 
 				std::cout << id.Get() << ".\n";
