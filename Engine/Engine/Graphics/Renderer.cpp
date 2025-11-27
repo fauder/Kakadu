@@ -246,12 +246,11 @@ namespace Engine
 
 			ImGuiUtility::ImmutableCheckbox( "Gamma Correction", gamma_correction_is_enabled );
 
-			ImGui::SeparatorText( "Passes & Queues" );
+			ImGui::SeparatorText( "Passes " ICON_FA_FLAG_CHECKERED " & Queues " ICON_FA_TRAFFIC_LIGHT  );
 
-			if( ImGui::BeginTable( "Passes & Queues", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
+			if( ImGui::BeginTable( "Passes & Queues", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 			{
-				ImGui::TableSetupColumn( "Rendering" );
-				ImGui::TableSetupColumn( "Pass" );
+				ImGui::TableSetupColumn( "Name" );
 				ImGui::TableSetupColumn( "Target" );
 
 				ImGui::TableNextRow( ImGuiTableRowFlags_Headers ); // Indicates that the header row will be modified
@@ -259,7 +258,7 @@ namespace Engine
 																			"A pass will not render if:\n"
 																			"\t" ICON_FA_ARROW_RIGHT " All its queues are empty/disabled, \n"
 																			"\t" ICON_FA_ARROW_RIGHT " AND/OR All renderables inside those queues are all disabled." );
-				ImGuiUtility::Table_Header_ManuallySubmit( std::array< int, 2 >{ 1, 2 } );
+				ImGuiUtility::Table_Header_ManuallySubmit( 1 );
 				ImGui::TableNextRow();
 
 				for( auto& [ pass_id, pass ] : render_pass_map )
@@ -272,16 +271,11 @@ namespace Engine
 					if( not pass_has_content_to_render )
 						ImGuiUtility::BeginDisabledButInteractable();
 
-					ImGuiUtility::CenterCheckbox();
-					ImGuiUtility::ImmutableCheckbox( "##p_active_checkb", pass_has_content_to_render );
-
-					ImGui::TableNextColumn();
-
 					ImGui::Checkbox( "", &pass.is_enabled );
 
 					ImGui::PopID();
 					ImGui::SameLine();
-					if( ImGui::TreeNodeEx( pass.name.c_str(), 0, "Pass [%d]: %s", ( int )pass_id, pass.name.c_str()) )
+					if( ImGui::TreeNodeEx( pass.name.c_str(), 0, ICON_FA_FLAG_CHECKERED " #%d %s", ( int )pass_id, pass.name.c_str()) )
 					{
 						// TODO: Display RenderState info as a collapseable header.
 						for( auto& queue_id : pass.queue_id_set )
@@ -290,7 +284,7 @@ namespace Engine
 
 							if( queue.renderable_list.empty() )
 							{
-								ImGui::TextDisabled( "Empty Queue [%d]: %s", ( int )queue_id, queue.name.c_str() );
+								ImGui::TextDisabled( ICON_FA_TRAFFIC_LIGHT " Empty #%d %s", ( int )queue_id, queue.name.c_str() );
 								continue;
 							}
 
@@ -303,7 +297,7 @@ namespace Engine
 							ImGui::Checkbox( "", &queue.is_enabled );
 							ImGui::PopID();
 							ImGui::SameLine();
-							if( ImGui::TreeNodeEx( queue.name.c_str(), 0, "Queue [%d]: %s", ( int )queue_id, queue.name.c_str() ) )
+							if( ImGui::TreeNodeEx( queue.name.c_str(), 0, ICON_FA_TRAFFIC_LIGHT " #%d %s", ( int )queue_id, queue.name.c_str() ) )
 							{
 								ImGui::BeginDisabled( not queue.is_enabled );
 
