@@ -4,6 +4,7 @@
 
 // Vendor Includes.
 #include <ImGui/imgui_internal.h>
+#include <IconFontCppHeaders/IconsFontAwesome6.h>
 
 namespace Engine::ImGuiUtility
 {
@@ -74,6 +75,36 @@ namespace Engine::ImGuiUtility
         bool enabled = is_enabled;
         ImGui::Checkbox( text, &enabled );
         ImGui::EndDisabled();
+    }
+
+    bool IconCheckbox( const char* label, bool* v, const char* icon_on, const char* icon_off )
+    {
+        ImGui::PushID( label );
+
+        // Invisible button to capture input:
+        bool clicked = ImGui::InvisibleButton( "##icon_checkbox", ImVec2( 20, 20 ) );
+        if( clicked )
+            *v = !*v;
+
+        ImVec2 pos            = ImGui::GetItemRectMin();
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        ImU32 col             = ImGui::GetColorU32( *v ? ImGuiCol_Text : ImGuiCol_TextDisabled );
+
+        // Center icons in the box:
+        const char* icon = *v ? icon_on : icon_off;
+        draw_list->AddText( ImGui::GetFont(), ImGui::GetFontSize(), pos, col, icon );
+
+        ImGui::SameLine();
+        ImGui::TextUnformatted( label );
+
+        ImGui::PopID();
+
+        return clicked;
+    }
+
+    bool EyeCheckbox( const char* label, bool* v )
+    {
+        return IconCheckbox( label, v, ICON_FA_EYE, ICON_FA_EYE_SLASH );
     }
 
     bool BeginOverlay( const char* window_name, const char* name,

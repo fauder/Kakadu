@@ -30,6 +30,9 @@ namespace Engine::ImGuiUtility
 
 	void ImmutableCheckbox( const char* text, const bool is_enabled );
 
+	bool IconCheckbox( const char* label, bool* v, const char* icon_on, const char* icon_off );
+	bool EyeCheckbox( const char* label, bool* v );
+
 	bool BeginOverlay( const char* window_name, const char* name, 
 					   const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
 					   bool* p_open = ( bool* )0,
