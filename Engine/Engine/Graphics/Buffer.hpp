@@ -5,8 +5,9 @@
 #include "GLLabelPrefixes.h"
 #include "Graphics.h"
 #include "ID.hpp"
-#include "Core/ServiceLocator.h"
 #include "Core/Assertion.h"
+#include "Core/Optimization.h"
+#include "Core/ServiceLocator.h"
 
 // std Includes.
 #include <map>
@@ -18,9 +19,35 @@
 
 namespace Engine
 {
-	template< GLenum TargetType >
+	/* This is so we can explicitly work with instance buffers in higher level code while it maps down to a vertex buffer behind the scenes. */
+	enum class BufferType
+	{
+		Vertex,
+		Instance,
+		Index,
+		Uniform
+	};
+
+	template< BufferType Type >
 	class Buffer
 	{
+		static constexpr GLenum TypeToGLenum( BufferType buffer_type )
+		{
+			switch( buffer_type )
+			{
+				case BufferType::Vertex:	return GL_ARRAY_BUFFER;
+				case BufferType::Index:		return GL_ELEMENT_ARRAY_BUFFER;
+				case BufferType::Instance:	return GL_ARRAY_BUFFER;
+				case BufferType::Uniform:	return GL_UNIFORM_BUFFER;
+
+				default:
+					UNREACHABLE();
+					break;
+			}
+		}
+
+		static constexpr GLenum TargetType = TypeToGLenum( Type );
+
 	public:
 		using ID = ID< Buffer >;
 
@@ -194,11 +221,12 @@ namespace Engine
 			if( IsValid() && --REF_COUNT_MAP[ id ] == 0 )
 			{
 #ifdef _EDITOR
-				switch( TargetType )
+				switch( Type )
 				{
-					case GL_ARRAY_BUFFER:			std::cout << "Deleting Vertex/Instance Buffer id #"; break;
-					case GL_ELEMENT_ARRAY_BUFFER:	std::cout << "Deleting Index Buffer id #"; break;
-					case GL_UNIFORM_BUFFER:			std::cout << "Deleting Uniform Buffer id #"; break;
+					case BufferType::Vertex:	std::cout << "Deleting Vertex Buffer id #";		break;
+					case BufferType::Instance:	std::cout << "Deleting Instance Buffer id #";	break;
+					case BufferType::Index:		std::cout << "Deleting Index Buffer id #";		break;
+					case BufferType::Uniform:	std::cout << "Deleting Uniform Buffer id #";	break;
 				}
 
 				std::cout << id.Get() << ".\n";
@@ -234,13 +262,13 @@ namespace Engine
 		static std::map< ID, unsigned int > REF_COUNT_MAP;
 	};
 
-	using VertexBuffer   = Buffer< GL_ARRAY_BUFFER >;
-	using InstanceBuffer = Buffer< GL_ARRAY_BUFFER >;
-	using IndexBuffer    = Buffer< GL_ELEMENT_ARRAY_BUFFER >;
-	using UniformBuffer  = Buffer< GL_UNIFORM_BUFFER >;
+	using VertexBuffer   = Buffer< BufferType::Vertex >;
+	using InstanceBuffer = Buffer< BufferType::Instance >;
+	using IndexBuffer    = Buffer< BufferType::Index >;
+	using UniformBuffer  = Buffer< BufferType::Uniform >;
 
 	/* Static member variable definitions: */
 
-	template< GLenum TargetType >
-	std::map< typename Buffer< TargetType >::ID, unsigned int > Buffer< TargetType >::REF_COUNT_MAP;
+	template< BufferType Type >
+	std::map< typename Buffer< Type >::ID, unsigned int > Buffer< Type >::REF_COUNT_MAP;
 }

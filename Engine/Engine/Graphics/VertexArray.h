@@ -28,7 +28,7 @@ namespace Engine
 					 const std::string& name = {} );
 		VertexArray( const VertexBuffer& vertex_buffer, const VertexLayout& vertex_layout,
 					 const std::optional< IndexBuffer >& index_buffer,
-					 const VertexBuffer& instance_buffer,
+					 const InstanceBuffer& instance_buffer,
 					 const std::string& name = {} );
 		~VertexArray();
 

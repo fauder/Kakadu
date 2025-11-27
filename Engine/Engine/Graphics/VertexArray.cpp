@@ -96,7 +96,7 @@ namespace Engine
 
 	VertexArray::VertexArray( const VertexBuffer& vertex_buffer, const VertexLayout& vertex_buffer_layout,
 							  const std::optional< IndexBuffer >& index_buffer,
-							  const VertexBuffer& instance_buffer,
+							  const InstanceBuffer& instance_buffer,
 							  const std::string& name )
 		:
 		id( -1 ),
