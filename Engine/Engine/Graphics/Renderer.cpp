@@ -246,7 +246,7 @@ namespace Engine
 
 			ImGuiUtility::ImmutableCheckbox( "Gamma Correction", gamma_correction_is_enabled );
 
-			ImGui::SeparatorText( "Passes " ICON_FA_FLAG_CHECKERED " & Queues " ICON_FA_TRAFFIC_LIGHT  );
+			ImGui::SeparatorText( "Passes " ICON_FA_FLAG_CHECKERED " & Queues " ICON_FA_BARS  );
 
 			if( ImGui::BeginTable( "Passes & Queues", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 			{
@@ -284,7 +284,7 @@ namespace Engine
 
 							if( queue.renderable_list.empty() )
 							{
-								ImGui::TextDisabled( ICON_FA_TRAFFIC_LIGHT " Empty #%d %s", ( int )queue_id, queue.name.c_str() );
+								ImGui::TextDisabled( ICON_FA_BARS " Empty #%d %s", ( int )queue_id, queue.name.c_str() );
 								continue;
 							}
 
@@ -297,7 +297,7 @@ namespace Engine
 							ImGuiUtility::EyeCheckbox( "", &queue.is_enabled );
 							ImGui::PopID();
 							ImGui::SameLine();
-							if( ImGui::TreeNodeEx( queue.name.c_str(), 0, ICON_FA_TRAFFIC_LIGHT " #%d %s", ( int )queue_id, queue.name.c_str() ) )
+							if( ImGui::TreeNodeEx( queue.name.c_str(), 0, ICON_FA_BARS " #%d %s", ( int )queue_id, queue.name.c_str() ) )
 							{
 								ImGui::BeginDisabled( not queue.is_enabled );
 
