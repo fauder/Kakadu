@@ -3,6 +3,11 @@
 
 #include "_Intrinsic_Other.glsl"
 
+float Max3( float x, float y, float z )
+{
+    return max( x, max( y, z ) );
+}
+
 /* Liang-Barsky algorithm.
  * Returns t-enter and t-exit values calculated. */
 vec2 ClipLineAgainstViewport( const vec2 p1, const vec2 p2, bool is_infinite_line )

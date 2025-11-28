@@ -562,6 +562,9 @@ namespace Engine
 		return features;
 	}
 
+	// TODO: Do not be lazy and change the line of the #defines as you please! This will make #line directives point to wrong lines.
+	// Keep track of where the #define to be modified is and simply do source = source_before_define_line + define_line + source_after_define_line.
+
 	void Shader::PreProcessShaderStage_SetFeatures( std::string& shader_source_to_modify,
 													std::unordered_map< std::string, Feature >& defined_features,
 													const std::vector< std::string >& features_to_set )
@@ -589,7 +592,7 @@ namespace Engine
 				if( splitted.size() > 1 )
 				{
 					const std::string feature_value( std::move( splitted[ 1 ] ) );
-					defined_feature.value  = feature_value;
+					defined_feature.value = feature_value;
 
 					define_directives_combined += "#define " + feature_name + " " + feature_value + "\n";
 				}

@@ -1551,7 +1551,10 @@ namespace Engine
 
 	void Renderer::InitializeBuiltinShaders()
 	{
-		shader_msaa_resolve = BuiltinShaders::Get( "MSAA Resolve" );
+		char buffer[ 48 ];
+		snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
+		shader_msaa_resolve = BuiltinShaders::Get( buffer );
+
 		shader_tone_mapping = BuiltinShaders::Get( "Tone Mapping" );
 	}
 
@@ -1560,7 +1563,6 @@ namespace Engine
 		// TODO: Handle No MSAA case.
 
 		msaa_resolve_material = Material( "[Renderer] MSAA Resolve", shader_msaa_resolve );
-		msaa_resolve_material.Set( "uniform_sample_count", ( int )framebuffer_main_msaa_sample_count );
 
 		// TODO: Handle no tone mapping case.
 

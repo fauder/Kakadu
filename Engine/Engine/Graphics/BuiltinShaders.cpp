@@ -146,10 +146,50 @@ namespace Engine
 								"Fullscreen Blit",
 								FullVertexShaderPath( "PassThrough.vert" ),
 								FullFragmentShaderPath( "FullScreenBlit.frag" ) );
-		SHADER_MAP.try_emplace( "MSAA Resolve",
-								"MSAA Resolve",
+		SHADER_MAP.try_emplace( "MSAA Resolve 2x",
+								"MSAA Resolve 2x",
 								FullVertexShaderPath( "PassThrough.vert" ),
-								FullFragmentShaderPath( "MSAA_Resolve.frag" ) );
+								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
+								Shader::Features{ "SAMPLE_COUNT 2" } );
+		SHADER_MAP.try_emplace( "MSAA Resolve 4x",
+								"MSAA Resolve 4x",
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
+								Shader::Features{ "SAMPLE_COUNT 4" } );
+		SHADER_MAP.try_emplace( "MSAA Resolve 8x",
+								"MSAA Resolve 8x",
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
+								Shader::Features{ "SAMPLE_COUNT 8" } );
+		SHADER_MAP.try_emplace( "MSAA Resolve 16x",
+								"MSAA Resolve 16x",
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
+								Shader::Features{ "SAMPLE_COUNT 16" } );
+		SHADER_MAP.try_emplace( "MSAA Resolve 2x (HDR-Aware)",
+								"MSAA Resolve 2x (HDR-Aware)",
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
+								Shader::Features{ "SAMPLE_COUNT 2",
+												  "HDR_AWARE" } );
+		SHADER_MAP.try_emplace( "MSAA Resolve 4x (HDR-Aware)",
+								"MSAA Resolve 4x (HDR-Aware)",
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
+								Shader::Features{ "SAMPLE_COUNT 4",
+												  "HDR_AWARE" } );
+		SHADER_MAP.try_emplace( "MSAA Resolve 8x (HDR-Aware)",
+								"MSAA Resolve 8x (HDR-Aware)",
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
+								Shader::Features{ "SAMPLE_COUNT 8",
+												  "HDR_AWARE" } );
+		SHADER_MAP.try_emplace( "MSAA Resolve 16x (HDR-Aware)",
+								"MSAA Resolve 16x (HDR-Aware)",
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
+								Shader::Features{ "SAMPLE_COUNT 16",
+												  "HDR_AWARE" } );
 		SHADER_MAP.try_emplace( "Tone Mapping",
 								"Tone Mapping",
 								FullVertexShaderPath( "PassThrough.vert" ),
