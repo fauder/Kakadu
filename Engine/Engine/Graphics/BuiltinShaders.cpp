@@ -161,11 +161,6 @@ namespace Engine
 								FullVertexShaderPath( "PassThrough.vert" ),
 								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
 								Shader::Features{ "SAMPLE_COUNT 8" } );
-		SHADER_MAP.try_emplace( "MSAA Resolve 16x",
-								"MSAA Resolve 16x",
-								FullVertexShaderPath( "PassThrough.vert" ),
-								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
-								Shader::Features{ "SAMPLE_COUNT 16" } );
 		SHADER_MAP.try_emplace( "MSAA Resolve 2x (HDR-Aware)",
 								"MSAA Resolve 2x (HDR-Aware)",
 								FullVertexShaderPath( "PassThrough.vert" ),
@@ -183,12 +178,6 @@ namespace Engine
 								FullVertexShaderPath( "PassThrough.vert" ),
 								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
 								Shader::Features{ "SAMPLE_COUNT 8",
-												  "HDR_AWARE" } );
-		SHADER_MAP.try_emplace( "MSAA Resolve 16x (HDR-Aware)",
-								"MSAA Resolve 16x (HDR-Aware)",
-								FullVertexShaderPath( "PassThrough.vert" ),
-								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
-								Shader::Features{ "SAMPLE_COUNT 16",
 												  "HDR_AWARE" } );
 		SHADER_MAP.try_emplace( "Tone Mapping",
 								"Tone Mapping",
