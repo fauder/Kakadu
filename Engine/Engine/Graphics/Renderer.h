@@ -211,6 +211,15 @@ namespace Engine
 		Framebuffer& CustomFramebuffer( const unsigned int framebuffer_index = 0 );
 
 		/*
+		 * MSAA:
+		 */
+
+		/* Sets the sample count for the main framebuffer MSAA. */
+		MSAA SetMSAASampleCount( const std::uint8_t new_sample_count );
+		/* Returns the MSAA info. for the main framebuffer MSAA. */
+		MSAA GetMSAAInfo() const;
+
+		/*
 		 * Color Space:
 		 */
 		void EnableFramebuffer_sRGBEncoding();

@@ -246,6 +246,19 @@ namespace Engine
 
 			ImGuiUtility::ImmutableCheckbox( "Gamma Correction", gamma_correction_is_enabled );
 
+			/* MSAA Setting: */
+			{
+				constexpr std::array< const char*, 5 > msaa_sample_counts = { "Off", "2", "4", "8", "16" };
+				int msaa_index = Math::Log2( framebuffer_main_msaa_sample_count );
+				const char* sample_count_string = ( msaa_index >= 0 && msaa_index < msaa_sample_counts.size() ) ? msaa_sample_counts[ msaa_index ] : "Unknown";
+				if( ImGui::SliderInt( "MSAA", &msaa_index, 0, ( int )msaa_sample_counts.size() - 1, sample_count_string ) )
+				{
+					framebuffer_main_msaa_sample_count = Math::Pow2( msaa_index );
+
+					SetMSAASampleCount( framebuffer_main_msaa_sample_count );
+				}
+			}
+
 			ImGui::SeparatorText( "Passes " ICON_FA_FLAG_CHECKERED " & Queues " ICON_FA_BARS  );
 
 			if( ImGui::BeginTable( "Passes & Queues", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
@@ -1113,6 +1126,35 @@ namespace Engine
 	Framebuffer& Renderer::CustomFramebuffer( const unsigned int framebuffer_index )
 	{
 		return framebuffer_custom_array[ framebuffer_index ];
+	}
+
+	/* Sets the sample count for main framebuffer MSAA. */
+	MSAA Renderer::SetMSAASampleCount( const std::uint8_t new_sample_count )
+	{
+		framebuffer_main_msaa_sample_count = new_sample_count;
+
+		MSAA new_msaa = MSAA( framebuffer_main_msaa_sample_count );
+
+		framebuffer_main = Framebuffer( Framebuffer::Description
+										{
+											.name = "Main",
+
+											.width_in_pixels  = framebuffer_main.Width(),
+											.height_in_pixels = framebuffer_main.Height(),
+
+											.color_format    = framebuffer_main_color_format,
+											.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
+											.msaa            = new_msaa
+										} );
+
+		msaa_resolve_material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
+
+		return new_msaa;
+	}
+
+	MSAA Renderer::GetMSAAInfo() const
+	{
+		return framebuffer_main.msaa;
 	}
 
 	void Renderer::EnableFramebuffer_sRGBEncoding()
