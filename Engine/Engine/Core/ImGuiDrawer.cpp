@@ -791,7 +791,7 @@ namespace Engine::ImGuiDrawer
 
 								ImGui::TableNextColumn();
 
-								const auto& current_texture_name( texture_pointer ? ICON_FA_IMAGE " " + texture_pointer->Name() : "<unassigned>");
+								const auto& current_texture_name( texture_pointer ? ICON_FA_IMAGE " " + texture_pointer->Name() : "<unassigned>" );
 								if( ImGui::BeginCombo( ( "##Texture Selection Combobox-" + uniform_sampler_name ).c_str(), current_texture_name.c_str(), ImGuiComboFlags_WidthFitPreview | ImGuiComboFlags_HeightLarge ) )
 								{
 									const auto& texture_map( AssetDatabase< Texture >::Assets() );

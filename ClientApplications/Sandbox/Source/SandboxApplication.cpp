@@ -224,7 +224,7 @@ void SandboxApplication::Initialize()
 			random_angles[ i ].inclination_angle = Engine::Math::Random::Generate( 0.0_rad, inclination_limit );
 		}
 
-		constexpr int thread_work_size = 1000 ; // Number of elements each thread should process
+		constexpr int thread_work_size = 1000;
 
 		// Ensure CUBE_COUNT is divisible by thread_work_size or adjust accordingly.
 		constexpr int thread_group_count = ( CUBE_COUNT + thread_work_size - 1 ) / thread_work_size;
