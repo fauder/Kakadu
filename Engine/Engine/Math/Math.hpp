@@ -52,6 +52,45 @@ namespace Engine::Math
 	template< std::floating_point Value >
 	Value Pow( const Value value, const Value exponent ) { return std::pow( value, exponent ); }
 
+	template< typename Value >
+	constexpr Value Pow2( const Value exponent )
+	{
+		if constexpr( std::is_floating_point_v< Value > )
+			return std::pow( static_cast< Value >( 2 ), exponent );
+		else if constexpr( std::is_integral_v< Value > )
+		{
+			ASSERT_DEBUG_ONLY( exponent >= 0 );
+			return static_cast< Value >( Value{ 1 } << exponent );
+		}
+	}
+
+	template< std::floating_point Value >
+	Value Log( const Value number ) { return std::log( number ); }
+
+	template< typename Value >
+	constexpr Value Log2( const Value number )
+	{
+		if constexpr( std::is_floating_point_v< Value > )
+			return std::log2( number );
+		else if constexpr( std::is_integral_v< Value > ) {
+			ASSERT_DEBUG_ONLY( number != 0 );
+
+		#if defined(_MSC_VER)
+			unsigned long index;
+			_BitScanReverse( &index, static_cast< unsigned long >( number ) );
+			return static_cast< Value >( index );
+		#elif defined(__clang__) || defined(__GNUC__)
+			return static_cast< Value >( 31u - __builtin_clz( number ) );
+		#else
+			// C++20 fallback if intrinsics aren't available:
+			return static_cast< Value >( std::bit_width( number ) - 1 );
+		#endif
+		}
+	}
+
+	template< std::floating_point Value >
+	Value Log10( const Value number ) { return std::log10( number ); }
+
 	template< std::floating_point Value >
 	Value Exp( const Value exponent ) { return std::exp( exponent ); }
 
