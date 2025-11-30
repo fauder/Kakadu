@@ -1154,7 +1154,10 @@ namespace Engine
 											.msaa            = new_msaa
 										} );
 
-		msaa_resolve_material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
+		TogglePass( PASS_ID_MSAA_RESOLVE, new_sample_count > 1 );
+
+		if( new_sample_count > 1 )
+			msaa_resolve_material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
 
 		return new_msaa;
 	}
