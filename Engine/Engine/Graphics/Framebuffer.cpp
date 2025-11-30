@@ -165,7 +165,7 @@ namespace Engine
 		if( not name.empty() )
 		{
 			const std::string full_name( IsMultiSampled()
-										   ? this->name + " [MSAA_" + std::to_string( msaa.sample_count ) + "x]"
+										   ? this->name + " (MSAA " + std::to_string( msaa.sample_count ) + "x)"
 										   : this->name );
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
 		}
@@ -199,7 +199,7 @@ namespace Engine
 		if( not name.empty() )
 		{
 			const std::string full_name( IsMultiSampled()
-											? this->name + " [MSAA_" + std::to_string( msaa.sample_count ) + "x]"
+											? this->name + " (MSAA " + std::to_string( msaa.sample_count ) + "x)"
 										    : this->name );
 			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
 		}
@@ -267,6 +267,9 @@ namespace Engine
 
 		if( IsMultiSampled() )
 		{
+			/* MSAA prefix/suffix here in the name is mandatory, 
+			 * otherwise code below may update an already existing texture instead of creating a new one! */
+
 			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) +
 								   " (MSAA " + std::to_string( msaa.sample_count ) + "x)" );
 			attachment_texture = Engine::AssetDatabase< Engine::Texture >::AddOrUpdateAsset( Engine::Texture( full_name,
