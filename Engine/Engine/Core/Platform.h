@@ -172,7 +172,6 @@ namespace Platform
 
 	/* Initialization. */
 	void InitializeAndCreateWindow( const int width_pixels = 800, const int height_pixels = 600, 
-									const std::optional< int > msaa_sample_count = std::nullopt,
 									const bool enable_vsync = false );
 
 	/* Window/Framebuffer. */

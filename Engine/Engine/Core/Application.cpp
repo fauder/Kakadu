@@ -63,7 +63,7 @@ namespace Engine
 		ServiceLocator< GLLogger >::Register( &gl_logger );
 		ServiceLocator< MorphSystem >::Register( &morph_system );
 
-		Platform::InitializeAndCreateWindow( 800, 600, msaa_sample_count, vsync_is_enabled );
+		Platform::InitializeAndCreateWindow( 800, 600, vsync_is_enabled );
 
 		const auto version = glGetString( GL_VERSION );
 		std::cout << version << "\n\n";

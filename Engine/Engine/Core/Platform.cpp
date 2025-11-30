@@ -147,8 +147,7 @@ namespace Platform
 	 * Initialization:
 	 */
 
-	void InitializeAndCreateWindow( const int width_pixels, const int height_pixels, 
-									const std::optional< int > msaa_sample_count,
+	void InitializeAndCreateWindow( const int width_pixels, const int height_pixels,
 									const bool enable_vsync )
 	{
 #ifdef _WIN32
@@ -167,8 +166,6 @@ namespace Platform
 		//glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE ); // Needed for Mac OS X.
 
 		glfwWindowHint( GLFW_VISIBLE, GLFW_FALSE ); // Start hidden as we will move it shortly.
-		if( msaa_sample_count.has_value() )
-			glfwWindowHint( GLFW_SAMPLES, *msaa_sample_count );
 
 		WINDOW = glfwCreateWindow( width_pixels, height_pixels, "Kakadu Application", nullptr, nullptr );
 		if( WINDOW == nullptr )
@@ -187,9 +184,6 @@ namespace Platform
 
 		// GLAD needs the created window's context made current BEFORE it is initialized.
 		InitializeGLAD();
-
-		if( msaa_sample_count.has_value() )
-			glEnable( GL_MULTISAMPLE );
 
 #ifdef _EDITOR
 		int gl_debug_context_flags = 0;
