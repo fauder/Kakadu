@@ -67,6 +67,8 @@ namespace Engine
 		BuiltinShaders::Initialize( *this );
 		BuiltinTextures::Initialize();
 
+		DetermineMSAASampleCountsPerFormat();
+
 		if( shaders_need_uniform_buffer_lighting )
 		{
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Lighting", "_INTRINSIC_SHADOW_BIAS_MIN_MAX_2_RESERVED", Vector4( 0.005f, 0.05f, 0.0f, 0.0f ) );
@@ -248,12 +250,17 @@ namespace Engine
 
 			/* MSAA Setting: */
 			{
-				constexpr std::array< const char*, 5 > msaa_sample_counts = { "Off", "2", "4", "8", "16" };
-				int msaa_index = Math::Log2( framebuffer_main_msaa_sample_count );
-				const char* sample_count_string = ( msaa_index >= 0 && msaa_index < msaa_sample_counts.size() ) ? msaa_sample_counts[ msaa_index ] : "Unknown";
-				if( ImGui::SliderInt( "MSAA", &msaa_index, 0, ( int )msaa_sample_counts.size() - 1, sample_count_string ) )
+				const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.color_attachment->PixelFormat() ];
+				const int   option_count                 = 1 + ( int )msaa_supported_sample_counts.size();
+
+				int msaa_sample_log_2 = Math::Log2( framebuffer_main_msaa_sample_count );
+
+				const auto sample_count_string = msaa_sample_log_2 == 0
+													? "Off"
+													: "MSAA " + std::to_string( msaa_supported_sample_counts[ msaa_sample_log_2 - 1 ] ) + 'x';
+				if( ImGui::SliderInt( "MSAA", &msaa_sample_log_2, 0, ( int )option_count - 1, sample_count_string.c_str() ) )
 				{
-					framebuffer_main_msaa_sample_count = Math::Pow2( msaa_index );
+					framebuffer_main_msaa_sample_count = Math::Pow2( msaa_sample_log_2 );
 
 					SetMSAASampleCount( framebuffer_main_msaa_sample_count );
 				}
@@ -1912,5 +1919,38 @@ namespace Engine
 	void Renderer::SetFrontFaceConvention( const WindingOrder winding_order_of_front_faces )
 	{
 		glFrontFace( ( GLenum )winding_order_of_front_faces );
+	}
+
+	void Renderer::DetermineMSAASampleCountsPerFormat()
+	{
+		GLint max_samples = 0;
+		GLint num_samples = 0;
+		GLint samples[ 16 ] = { 0 };
+
+		constexpr Texture::Format formats_of_interest[] =
+		{
+			Texture::Format::RGBA,
+			Texture::Format::RGBA_16F,
+			Texture::Format::RGBA_32F,
+			Texture::Format::R11G11B10F,
+			Texture::Format::DEPTH_STENCIL
+		};
+
+		for( const auto format : formats_of_interest )
+		{
+			const auto internal_format = Texture::InternalFormat( format );
+
+			// Get how many sample counts are supported
+			glGetInternalformativ( GL_RENDERBUFFER, internal_format, GL_NUM_SAMPLE_COUNTS, 1, &num_samples );
+
+			// Get the actual supported sample counts
+			glGetInternalformativ( GL_RENDERBUFFER, internal_format, GL_SAMPLES, num_samples, samples );
+
+			for( int i = 0; i < num_samples; ++i ) // Support up to 8x as beyond that is murky.
+				if( samples[ i ] <= 8 )
+					msaa_supported_sample_counts_per_format[ format ].push_back( samples[ i ] );
+
+			std::sort( msaa_supported_sample_counts_per_format[ format ].begin(), msaa_supported_sample_counts_per_format[ format ].end() );
+		}
 	}
 }

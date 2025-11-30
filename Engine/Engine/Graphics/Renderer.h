@@ -289,6 +289,12 @@ namespace Engine
 		void SetCullFace( const Face face );
 		void SetFrontFaceConvention( const WindingOrder winding_order_of_front_faces );
 
+		/*
+		 * MSAA:
+		 */
+
+		void DetermineMSAASampleCountsPerFormat();
+
 	public:
 		
 		/* Built-in Pass IDs: */
@@ -408,6 +414,8 @@ namespace Engine
 		Engine::Material msaa_resolve_material;
 		Engine::Renderable msaa_resolve_renderable;
 		Engine::Shader* shader_msaa_resolve;
+
+		std::map< Texture::Format, std::vector< std::uint8_t > > msaa_supported_sample_counts_per_format;
 
 		/*
 		 * Rendering/Tone Mapping:
