@@ -1198,6 +1198,20 @@ namespace Engine
 		return set_of_sample_counts_queried.contains( sample_count_to_query );
 	}
 
+	void Renderer::DisplayAvailableGLExtensions( std::vector< std::string >& list_of_strings )
+	{
+		GLint num_extensions = 0;
+		glGetIntegerv( GL_NUM_EXTENSIONS, &num_extensions );
+
+		list_of_strings.reserve( num_extensions );
+
+		for( GLint i = 0; i < num_extensions; ++i )
+		{
+			const char* ext = reinterpret_cast< const char* >( glGetStringi( GL_EXTENSIONS, i ) );
+			list_of_strings.emplace_back( ext );
+		}
+	}
+
 	void Renderer::InitializeBuiltinQueues()
 	{
 		AddQueue( QUEUE_ID_GEOMETRY,

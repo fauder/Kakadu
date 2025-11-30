@@ -231,6 +231,7 @@ namespace Engine
 
 		/* Logs a warning if the sample count in question is not available for the given format. */
 		static bool CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query );
+		static void DisplayAvailableGLExtensions( std::vector< std::string >& list_of_strings );
 
 	private:
 
