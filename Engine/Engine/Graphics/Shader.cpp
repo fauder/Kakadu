@@ -711,6 +711,31 @@ namespace Engine
 
 	void Shader::ParseShaderSource_UniformUsageHints( const std::string& shader_source, const ShaderType shader_type )
 	{
+		/* First, detect the start/end positions of all uniform blocks and cache them so we can use them in the main uniform hunting loop below. */
+
+		struct UniformBlockSpan { std::size_t begin, end; };
+		std::unordered_map< std::string, UniformBlockSpan > uniform_block_spans;
+
+		std::string_view source_view( shader_source );
+
+		for( auto maybe_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" );
+			 maybe_token.has_value();
+			 maybe_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" ) )
+		{
+			/* This is a valid shader semantically, so no need for error checking below. */
+			const std::string uniform_block_name( *maybe_token );
+
+			const std::size_t base = static_cast< std::size_t >( source_view.data() - shader_source.data() );
+
+			const std::size_t begin_pos = source_view.find( '{' );
+			const std::size_t end_pos   = source_view.find( '}' );
+
+			uniform_block_spans.emplace( uniform_block_name, UniformBlockSpan{ base + begin_pos, base + end_pos } );
+
+			source_view.remove_prefix( end_pos + 1 );
+		}
+			 
+		/* Main uniform hunting loop: */
 		std::size_t current_pos = 0;
 		do
 		{
@@ -784,6 +809,14 @@ namespace Engine
 									}
 									else
 									{
+										if( auto it = std::find_if( uniform_block_spans.cbegin(), uniform_block_spans.cend(), [ delimiter_whitespace_pos ]( const auto& pair )
+											{
+												return delimiter_whitespace_pos > pair.second.begin && delimiter_whitespace_pos < pair.second.end;
+											} ); it != uniform_block_spans.cend() )
+										{
+											uniform_name = it->first + '.' + uniform_name;
+										}
+
 										if( uniform_info_map.contains( uniform_name ) )
 										{
 											uniform_info_map[ uniform_name ].usage_hint = hint;
