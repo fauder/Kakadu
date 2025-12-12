@@ -22,7 +22,7 @@ namespace Engine
 		Framebuffer* framebuffer_override_source = nullptr; // Read.
 		Framebuffer* framebuffer_override_target = nullptr; // Write.
 
-		RenderState render_state_override;
+		std::optional< RenderState > render_state_override;
 
 		/* 4 bytes of padding. */
 

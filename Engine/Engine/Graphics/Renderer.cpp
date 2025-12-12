@@ -153,10 +153,13 @@ namespace Engine
 						const auto log_group( logger.TemporaryLogGroup( ( GL_LABEL_PREFIX_RENDER_QUEUE + queue.name ).c_str() ) );
 
 						// TODO: Do not set render state for state that is not changing (i.e., dirty check).
-						if( pass.render_state_override_is_allowed )
-							SetRenderState( queue.render_state_override, pass.target_framebuffer /* No clearing for queues. */ );
+						if( queue.render_state_override )
+						{
+							if( pass.render_state_override_is_allowed )
+								SetRenderState( *queue.render_state_override, pass.target_framebuffer /* No clearing for queues. */ );
 
-						SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override.sorting_mode );
+							SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override->sorting_mode );
+						}
 
 						switch( pass_id )
 						{
@@ -1263,7 +1266,7 @@ namespace Engine
 		AddQueue( QUEUE_ID_MSAA_RESOLVE,
 				  RenderQueue
 				  {
-					  .name = "MSAA Resolve",
+					  .name                  = "MSAA Resolve",
 					  .render_state_override = RenderState
 					  {
 						  .face_culling_enable = false,
@@ -1781,7 +1784,7 @@ namespace Engine
 																				: GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_QUEUE "[INSTANCED] " )
 																			  + queue.name ).c_str() ) );
 
-							SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override.sorting_mode );
+							SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override->sorting_mode );
 
 							for( auto& renderable : queue.renderable_list )
 							{

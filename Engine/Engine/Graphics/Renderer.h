@@ -95,7 +95,7 @@ namespace Engine
 
 		void AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to );
 		void RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from );
-		
+
 		void SetFinalPassToUseFinalFramebuffer();
 		void SetFinalPassToUseDefaultFramebuffer();
 
