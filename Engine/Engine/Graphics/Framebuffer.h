@@ -116,7 +116,7 @@ namespace Engine
 		void Bind() const;
 		void Unbind() const;
 		void SetName( const std::string& new_name );
-		static void Blit( const Framebuffer& source, const Framebuffer& destination );
+		static void Blit( const Framebuffer& source, const Framebuffer& destination, const Texture::Filtering filtering = Texture::Filtering::Nearest );
 
 		void Create();
 		void CreateAttachments();

@@ -181,13 +181,15 @@ namespace Engine
 		name = new_name;
 	}
 
-	void Framebuffer::Blit( const Framebuffer& source, const Framebuffer& destination )
+	void Framebuffer::Blit( const Framebuffer& source, const Framebuffer& destination, const Texture::Filtering filtering )
 	{
+		ASSERT_EDITOR_ONLY( filtering == Texture::Filtering::Nearest || filtering == Texture::Filtering::Linear );
+
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, source.Id().Get() );
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, destination.Id().Get() );
 		glBlitFramebuffer( 0, 0, source.Width(), source.Height(),
 						   0, 0, destination.Width(), destination.Height(),
-						   GL_COLOR_BUFFER_BIT, GL_LINEAR );
+						   GL_COLOR_BUFFER_BIT, ( int )filtering );
 	}
 
 	void Framebuffer::Create()
