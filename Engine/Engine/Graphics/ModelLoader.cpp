@@ -335,12 +335,16 @@ namespace Engine
 
                             const std::string path( file_path.uri.path().begin(), file_path.uri.path().end() );
 
-                            texture_to_load = AssetDatabase< Texture >::CreateAssetFromFile( std::string( gltf_image.name ), path, import_settings );
+                            texture_to_load = AssetDatabase< Texture >::CreateAssetFromFile( std::string( gltf_image.name ),
+                                                                                             path,
+                                                                                             import_settings );
                         },
                         [ & ]( const fastgltf::sources::Array& vector )
                         {
-                            texture_to_load = AssetDatabase< Texture >::CreateAssetFromMemory( std::string( gltf_image.name ), vector.bytes.data(), static_cast< int >( vector.bytes.size() ),
-																					           false, import_settings );
+                            texture_to_load = AssetDatabase< Texture >::CreateAssetFromFileBytes( std::string( gltf_image.name ), 
+                                                                                                  vector.bytes.data(), 
+																								  static_cast< int >( vector.bytes.size() ),
+                                                                                                  import_settings );
                         },
                         [ & ]( const fastgltf::sources::BufferView& view )
                         {
@@ -356,10 +360,10 @@ namespace Engine
                                             []( const auto& arg ) {},
                                             [ & ]( const fastgltf::sources::Array& vector )
                                             {
-												texture_to_load = AssetDatabase< Texture >::CreateAssetFromMemory( std::string( gltf_image.name ),
-																										           vector.bytes.data() + buffer_view.byteOffset,
-																										           static_cast< int >( buffer_view.byteLength ),
-																										           false, import_settings );
+												texture_to_load = AssetDatabase< Texture >::CreateAssetFromFileBytes( std::string( gltf_image.name ),
+                                                                                                                      vector.bytes.data() + buffer_view.byteOffset,
+                                                                                                                      static_cast< int >( buffer_view.byteLength ),
+                                                                                                                      import_settings );
                                             }
                                         }, buffer.data );
                         }

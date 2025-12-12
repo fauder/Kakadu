@@ -31,7 +31,8 @@ public:\
 	Loader& operator =( const Loader& ) = delete;\
 	static std::optional< class_name > FromFile( const std::string_view name, const std::string& file_path, const ImportSettings& import_settings );\
 	static std::optional< class_name > FromFile( const std::string_view name, const std::initializer_list< std::string > file_paths, const ImportSettings& import_settings );\
-	static std::optional< class_name > FromMemory( const std::string_view name, const std::byte* data, const int size, const bool data_is_raw_bytes_instead_of_file_contents, const ImportSettings& import_settings );\
+	static std::optional< class_name > FromFileBytes( const std::string_view name, const std::byte* data, const int length, const ImportSettings& import_settings );\
+	static std::optional< class_name > FromRawBytes( const std::string_view name, const std::byte* data, const SizeType size, const ImportSettings& import_settings );\
 private:\
 	Loader()\
 	{}\

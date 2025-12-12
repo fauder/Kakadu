@@ -226,7 +226,8 @@ namespace Engine
  * TEXTURE PRIVATE API
  */
 
-	/* Private regular constructor: Only the AssetDatabase< Texture > should be able to construct a Texture with data. */
+	/* Private regular constructor: Only the AssetDatabase< Texture > should be able to construct a Texture with data.
+	 * If data argument is nullptr, this is essentially the same as the public allocate-only constructor. */
 	Texture::Texture( const std::string_view name,
 					  const std::byte* data,
 					  const Format format, const int width, const int height,
@@ -259,7 +260,7 @@ namespace Engine
 
 		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), data );
 
-		if( generate_mipmaps )
+		if( data && generate_mipmaps )
 			glGenerateMipmap( GL_TEXTURE_2D );
 
 		Unbind();

@@ -16,6 +16,8 @@ namespace Engine
 	class Model
 	{
 	public:
+		using SizeType = int;
+
 		struct ImportSettings
 		{
 			GLenum usage = GL_STATIC_DRAW;

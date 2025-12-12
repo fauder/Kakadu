@@ -116,6 +116,8 @@ namespace Engine
 			Nearest_MipmapLinear  = GL_NEAREST_MIPMAP_LINEAR,
 			Linear_MipmapLinear	  = GL_LINEAR_MIPMAP_LINEAR
 		};
+		
+		using SizeType = Vector2I;
 
 		struct ImportSettings
 		{
