@@ -179,16 +179,29 @@ namespace Engine
 								FullFragmentShaderPath( "MSAA_Resolve.frag" ),
 								Shader::Features{ "SAMPLE_COUNT 8",
 												  "HDR_AWARE" } );
+		SHADER_MAP.try_emplace( "Post-Process Bloom Downsample",
+								"Post-Process Bloom Downsample",
+								FullVertexShaderPath( "PassThrough_UVs.vert" ),
+								FullFragmentShaderPath( "BloomDownsample.frag" ) );
+		SHADER_MAP.try_emplace( "Post-Process Bloom Upsample",
+								"Post-Process Bloom Upsample",
+								FullVertexShaderPath( "PassThrough_UVs.vert" ),
+								FullFragmentShaderPath( "BloomUpsample.frag" ) );
 		SHADER_MAP.try_emplace( "Tone Mapping",
 								"Tone Mapping",
 								FullVertexShaderPath( "PassThrough.vert" ),
 								FullFragmentShaderPath( "Tonemapping.frag" ) );
-		SHADER_MAP.try_emplace( "Post-process Grayscale",
-								"Post-process Grayscale",
+		SHADER_MAP.try_emplace( "Tone Mapping (Bloom)",
+								"Tone Mapping (Bloom)",
+								FullVertexShaderPath( "PassThrough.vert" ),
+								FullFragmentShaderPath( "Tonemapping.frag" ),
+								Shader::Features{ "BLOOM" } );
+		SHADER_MAP.try_emplace( "Post-Process Grayscale",
+								"Post-Process Grayscale",
 								FullVertexShaderPath( "PassThrough.vert" ),
 								FullFragmentShaderPath( "Grayscale.frag" ) );
-		SHADER_MAP.try_emplace( "Post-process Generic",
-								"Post-process Generic",
+		SHADER_MAP.try_emplace( "Post-Process Generic",
+								"Post-Process Generic",
 								FullVertexShaderPath( "PassThrough.vert" ),
 								FullFragmentShaderPath( "GenericPostprocess.frag" ) );
 		SHADER_MAP.try_emplace( "Shadow-map Write",

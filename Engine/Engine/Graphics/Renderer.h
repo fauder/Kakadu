@@ -67,6 +67,7 @@ namespace Engine
 		void UpdatePerPass( const RenderPass::ID pass_id_to_update, Camera& camera );
 		void Render();
 		void Render( const Mesh& mesh ) const;
+		void RenderPostProcessingEffectStep() const;
 		void RenderImGui();
 		void OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels );
 		void OnFramebufferResize( const Vector2I new_resolution_in_pixels );
@@ -416,6 +417,16 @@ namespace Engine
 		 */
 
 		std::map< std::string, FullscreenEffect* > post_processing_effect_map;
+
+		/* 
+		 * Builtin Post-processing Effects:
+		 */
+
+		std::uint8_t bloom_mip_chain_size = 3; // Denotes the step count for either downsampling or upsampling. Total step count is 2x that.
+		FullscreenEffect bloom_downsampling;
+		FullscreenEffect bloom_upsampling;
+		Shader* bloom_shader_downsample;
+		Shader* bloom_shader_upsample;
 
 		/*
 		 * Shadow Mapping:

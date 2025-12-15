@@ -1610,8 +1610,151 @@ namespace Engine
 		tone_mapping.material.Set( "uniform_bloom_intensity", 0.004f );
 	}
 
+	void Renderer::InitializeBuiltinPostprocessingEffects()
 	{
+		bloom_downsampling = FullscreenEffect
+		{
+			.name     = "Bloom | Downsampling",
+			.material = Material( "[Renderer] Bloom | Downsampling", bloom_shader_downsample ),
+		};
 
+		bloom_upsampling = FullscreenEffect
+		{
+			.name     = "Bloom | Upsampling",
+			.material = Material( "[Renderer] Bloom | Upsampling", bloom_shader_upsample ),
+		};
+
+		/* Upsampling steps will progressively combine resolution R textures with the upscaled R/2 resolution textures via additive blending. */
+		bloom_upsampling.render_state.blending_enable                   = true;
+		bloom_upsampling.render_state.blending_source_color_factor      = BlendingFactor::One;
+		bloom_upsampling.render_state.blending_destination_color_factor = BlendingFactor::One;
+		bloom_upsampling.render_state.blending_source_alpha_factor      = BlendingFactor::One;
+		bloom_upsampling.render_state.blending_destination_alpha_factor = BlendingFactor::One;
+
+		bloom_downsampling.steps.clear();
+		bloom_downsampling.steps.reserve( bloom_mip_chain_size );
+		bloom_upsampling.steps.clear();
+		bloom_upsampling.steps.reserve( bloom_mip_chain_size );
+
+		/* Upsample steps will utilize the Framebuffers of the downsample steps. */
+
+		bloom_downsampling.framebuffers.clear();
+		bloom_downsampling.framebuffers.reserve( bloom_mip_chain_size + 1 );
+
+		Vector2I output_texture_size = framebuffer_postprocessing.Size();
+
+		bloom_downsampling.framebuffers.emplace_back( Framebuffer::Description
+													  {
+														  .name = "[Renderer] Bloom Full Res.",
+
+														  .width_in_pixels  = output_texture_size.X(),
+														  .height_in_pixels = output_texture_size.Y(),
+
+														  .color_format = framebuffer_postprocessing.ColorAttachment().PixelFormat(),
+
+														  .attachment_bits = Framebuffer::AttachmentType::Color
+													  } );
+
+		const Texture* input_texture = &framebuffer_postprocessing.ColorAttachment();
+
+		for( int i = 0; i < bloom_mip_chain_size; i++ )
+		{
+			constexpr std::uint8_t buffer_size = 64;
+			char buffer[ buffer_size ];
+			std::snprintf( buffer, buffer_size, "[Renderer] Bloom 1/%d Res.", Math::Pow2( i + 1 ) );
+
+			output_texture_size /= 2;
+
+			bloom_downsampling.framebuffers.emplace_back( Framebuffer::Description
+														  {
+															  .name = buffer,
+
+															  .width_in_pixels  = output_texture_size.X(),
+															  .height_in_pixels = output_texture_size.Y(),
+
+															  .color_format = framebuffer_postprocessing.ColorAttachment().PixelFormat(),
+
+															  .attachment_bits = Framebuffer::AttachmentType::Color
+														  } );
+
+			FullscreenEffect::Step step
+			{
+				.framebuffer_target = &bloom_downsampling.framebuffers.back(),
+				.texture_input      = input_texture
+			};
+
+			input_texture = step.framebuffer_target->color_attachment;
+
+			bloom_downsampling.steps.push_back( std::move( step ) );
+		}
+
+		/* Upsampling: For upsample N:
+			*	The input  is the downsample [Mip Count - 1 - N]'s output.
+			*	The output is the downsample [Mip Count - 1 - N]'s input.
+			* "input_texture" pointer already holds the last downsample's output though, so no need to explicitly fetch that.
+			* We can use it and update it as we go.
+			* For the output, we do need to look it up explicitly from the downsample steps.
+			*/
+		for( int i = 0; i < bloom_mip_chain_size; i++ )
+		{
+			const int reverse_i = ( bloom_mip_chain_size - 1 ) - i;
+
+			constexpr std::uint8_t buffer_size = 64;
+			char buffer[ buffer_size ];
+			std::snprintf( buffer, buffer_size, "[Renderer] Bloom Upsample %d", i );
+
+			FullscreenEffect::Step step
+			{
+				.framebuffer_target = &bloom_downsampling.framebuffers[ reverse_i ],
+				.texture_input      = input_texture,
+			};
+
+			input_texture = step.framebuffer_target->color_attachment;
+
+			bloom_upsampling.steps.push_back( std::move( step ) );
+		}
+
+		bloom_upsampling.material.Set( "uniform_sample_radius", 0.004f );
+
+		bloom_downsampling.execution_routine = [ & ]( Renderer& renderer )
+		{
+			Framebuffer::Blit( framebuffer_postprocessing, bloom_downsampling.framebuffers.front() );
+
+			bloom_downsampling.material.Bind();
+
+			renderer.SetRenderState( bloom_downsampling.render_state );
+
+			for( auto& downsample_step : bloom_downsampling.steps )
+			{
+				renderer.SetCurrentFramebuffer( downsample_step.framebuffer_target );
+
+				bloom_downsampling.material.SetTexture( "uniform_tex_source", downsample_step.texture_input );
+				bloom_downsampling.material.Set( "uniform_source_resolution", downsample_step.texture_input->Size() );
+				bloom_downsampling.material.UploadUniforms();
+
+				renderer.RenderPostProcessingEffectStep();
+			}
+		};
+
+		bloom_upsampling.execution_routine = [ & ]( Renderer& renderer )
+		{
+			bloom_upsampling.material.Bind();
+
+			renderer.SetRenderState( bloom_upsampling.render_state );
+
+			for( auto& upsample_step : bloom_upsampling.steps )
+			{
+				SetCurrentFramebuffer( upsample_step.framebuffer_target );
+
+				bloom_upsampling.material.SetTexture( "uniform_tex_source", upsample_step.texture_input );
+				bloom_upsampling.material.UploadUniforms();
+
+				renderer.RenderPostProcessingEffectStep();
+			}
+		};
+
+		post_processing_effect_map[ bloom_downsampling.name ] = &bloom_downsampling;
+		post_processing_effect_map[ bloom_upsampling.name ]   = &bloom_upsampling;
 	}
 
 	void Renderer::SetPolygonMode( const PolygonMode mode )

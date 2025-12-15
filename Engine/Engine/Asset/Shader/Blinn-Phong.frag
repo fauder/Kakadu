@@ -30,17 +30,17 @@ out vec4 out_color;
 layout ( std140 ) uniform BlinnPhongMaterialData
 {
 /* These 2 are combined into a vec4 on cpu side. */
-	vec3 color_diffuse;
+	vec3 color_diffuse; /* _hint_color3 */
 	bool has_texture_diffuse;
 
+	vec3 color_emission; /* _hint_color3 */
 	float shininess;
-
-	vec3 padding;
 } uniform_blinn_phong_material_data;
 
 uniform sampler2D uniform_tex_diffuse;
 uniform sampler2D uniform_tex_specular;
 uniform sampler2D uniform_tex_normal;
+uniform sampler2D uniform_tex_emission;
 
 #ifdef SKYBOX_ENVIRONMENT_MAPPING
 uniform samplerCube uniform_tex_skybox;
@@ -276,9 +276,11 @@ void main()
 									CalculateColorFromDirectionalLight( normal_sample_view_space, viewing_direction_view_space,
 																		diffuse_sample, specular_sample );
 
+	vec3 emission = texture( uniform_tex_emission, uvs ).rgb;
+
 	vec3 from_point_light = vec3( 0 );																		
 	for( int i = 0; i < _INTRINSIC_POINT_LIGHT_ACTIVE_COUNT; i++ )
-		from_point_light += CalculateColorFromPointLight( i, 
+		from_point_light += CalculateColorFromPointLight( i,
 														  normal_sample_view_space, viewing_direction_view_space,
 														  diffuse_sample, specular_sample );
 
@@ -288,7 +290,9 @@ void main()
 														normal_sample_view_space, viewing_direction_view_space,
 														diffuse_sample, specular_sample );
 
-	out_color = vec4( from_directional_light + from_point_light + from_spot_light, 1.0 );
+	out_color = vec4( from_directional_light + from_point_light + from_spot_light +
+					  emission * uniform_blinn_phong_material_data.color_emission,
+					  1.0 );
 
 #ifdef SKYBOX_ENVIRONMENT_MAPPING
 	// TODO: Calculate the reflected vector in the vertex shader AND make sure it is in world space.

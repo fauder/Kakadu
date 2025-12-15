@@ -465,5 +465,7 @@
     <None Include="Engine\Asset\Shader\DebugUVs_AsColors.vert" />
     <None Include="Engine.natstepfilter" />
     <None Include="Engine\Asset\Shader\_Math.glsl" />
+    <None Include="Engine\Asset\Shader\BloomDownsample.frag" />
+    <None Include="Engine\Asset\Shader\BloomUpsample.frag" />
   </ItemGroup>
 </Project>

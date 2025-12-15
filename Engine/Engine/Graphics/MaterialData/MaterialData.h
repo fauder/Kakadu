@@ -12,6 +12,7 @@ namespace Engine::MaterialData
 		Color3 color_diffuse;
 		int has_texture_diffuse;
 
+		Color3 color_emission;
 		float shininess;
 	};
 

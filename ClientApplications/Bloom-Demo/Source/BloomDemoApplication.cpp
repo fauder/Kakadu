@@ -507,10 +507,10 @@ void BloomDemoApplication::Update()
 		light_point_transform_array[ i ].SetTranslation( point_light_position_world_space );
 
 		light_source_instance_data_array[ i ].transform = light_point_transform_array[ i ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
-		light_source_instance_data_array[ i ].color     = Engine::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
+		light_source_instance_data_array[ i ].color     = 400.0f * Engine::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
 	}
 
-	cube_mesh_instanced_with_color.UpdateInstanceData( light_source_instance_data_array.data() );
+	sphere_mesh_instanced_with_color.UpdateInstanceData( light_source_instance_data_array.data() );
 
 	/* Instanced cube's transform: */
 	{
@@ -1071,8 +1071,11 @@ void BloomDemoApplication::ResetMaterialData()
 	{
 		.color_diffuse       = {},
 		.has_texture_diffuse = 1,
+		.color_emission      = {},
 		.shininess           = 32.0f
 	};
+
+	cube_surface_data.color_emission = Engine::Color3( 1000.0f, 1000.0f, 1000.0f );
 
 	ground_material.Set( "BlinnPhongMaterialData", ground_quad_surface_data );
 	wall_material.Set( "BlinnPhongMaterialData", wall_surface_data );
