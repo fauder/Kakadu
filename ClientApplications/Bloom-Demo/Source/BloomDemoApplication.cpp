@@ -362,57 +362,57 @@ void BloomDemoApplication::Initialize()
 /* Renderer: */
 	light_sources_renderable = Engine::Renderable( &cube_mesh_instanced_with_color, &light_source_material, 
 												   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
-	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	cube_renderable = Engine::Renderable( &cube_mesh_instanced, &cube_material,
 										  nullptr /* => No Transform here, as we will provide the Transforms as instance data. */,
 										  true /* => has shadows. */,
 										  true /* => casts shadows. */ );
-	renderer->AddRenderable( &cube_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &cube_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	cube_parallax_renderable = Engine::Renderable( &cube_mesh, &wall_material,
 												   &cube_parallax_transform, 
 												   true /* => has shadows. */,
 												   true /* => casts shadows. */ );
-	renderer->AddRenderable( &cube_parallax_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &cube_parallax_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	cube_reflected_renderable = Engine::Renderable( &cube_reflected_mesh_instanced, &cube_reflected_material,
 													nullptr /* => No Transform here, as we will provide the Transforms as instance data. */,
 													true /* => has shadows. */,
 													true /* => casts shadows. */ );
-	renderer->AddRenderable( &cube_reflected_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &cube_reflected_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	ground_renderable = Engine::Renderable( &quad_mesh, &ground_material, 
 											&ground_transform, 
 											true /* => has shadows. */,
 											true /* => casts shadows. */ );
-	renderer->AddRenderable( &ground_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &ground_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	wall_front_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_front_transform, true /* => has shadows. */, true /* => casts shadows. */ );
 	wall_left_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_left_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
 	wall_right_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_right_transform, true /* => has shadows. */, true /* => casts shadows. */ );
 	wall_back_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_back_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
-	renderer->AddRenderable( &wall_front_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer->AddRenderable( &wall_left_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer->AddRenderable( &wall_right_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
-	renderer->AddRenderable( &wall_back_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_front_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_left_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_right_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_back_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	sphere_renderable = Engine::Renderable( &sphere_mesh, &sphere_material, &sphere_transform, false /* => does not have shadows. */, true /* => casts shadows. */ );
-	renderer->AddRenderable( &sphere_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &sphere_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	for( auto i = 0; i < WINDOW_COUNT; i++ )
 	{
 		window_renderable_array[ i ] = Engine::Renderable( &quad_mesh_uvs_only, &window_material, &window_transform_array[ i ] );
-		renderer->AddRenderable( &window_renderable_array[ i ], Engine::Renderer::QUEUE_ID_TRANSPARENT );
+		renderer->AddRenderable( &window_renderable_array[ i ], Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT );
 	}
 
 	skybox_renderable = Engine::Renderable( &cube_mesh_fullscreen, &skybox_material );
-	renderer->AddRenderable( &skybox_renderable, Engine::Renderer::QUEUE_ID_SKYBOX );
+	renderer->AddRenderable( &skybox_renderable, Engine::Renderer::RENDER_QUEUE_ID_SKYBOX );
 
 	// TODO: Do not create an explicit (or rather, Application-visible) Renderable for skybox; Make it Renderer-internal.
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
-	renderer->ToggleQueue( Engine::Renderer::QUEUE_ID_TRANSPARENT, false );
+	renderer->ToggleQueue( Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
 
 /* Camera: */
 	ResetCamera();
@@ -575,7 +575,7 @@ void BloomDemoApplication::Render()
 	Engine::Application::Render();
 
 	{
-		renderer->UpdatePerPass( Engine::Renderer::PASS_ID_LIGHTING, camera );
+		renderer->UpdatePerPass( Engine::Renderer::RENDER_PASS_ID_LIGHTING, camera );
 	}
 
 	// TODO: Outline pass.
@@ -631,7 +631,7 @@ void BloomDemoApplication::RenderImGui()
 					model_info.model_instance.ToggleShadowReceivingStatus( model_info.is_receiving_shadows );
 
 					for( auto& renderable : model_info.model_instance.Renderables() )
-						renderer->AddRenderable( &renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+						renderer->AddRenderable( &renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 				}
 				ImGui::SameLine();
 				if( ImGui::Checkbox( "Casts Shadows", &model_info.is_casting_shadows ) )
@@ -1181,7 +1181,7 @@ bool BloomDemoApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, cons
 															 Vector4{ 1.0f, 1.0f, 0.0f, 0.0f } );
 
 		for( auto& renderable_to_add : model_instance_to_load_into.Renderables() )
-			renderer->AddRenderable( &renderable_to_add, Engine::Renderer::QUEUE_ID_GEOMETRY );
+			renderer->AddRenderable( &renderable_to_add, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 		return true;
 	}

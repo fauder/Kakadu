@@ -1,9 +1,10 @@
 #pragma once
 
 // Engine Includes.
+#include "Framebuffer.h"
+#include "FullscreenEffect.h"
 #include "Renderable.h"
 #include "RenderPass.h"
-#include "Framebuffer.h"
 #include "Core/BitFlags.hpp"
 #include "Core/DirtyBlob.h"
 #include "Scene/Camera.h"
@@ -18,6 +19,10 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
+// TODO: Invert ownership between Renderer & client app. code:
+// For example, currently the client creates/stores Renderables and calls Renderer::AddRenderable( Renderable* ... ).
+// Instead client should request a new Renderable from the Renderer and keep a pointer to it.
 
 namespace Engine
 {
@@ -61,6 +66,7 @@ namespace Engine
 		void Update();
 		void UpdatePerPass( const RenderPass::ID pass_id_to_update, Camera& camera );
 		void Render();
+		void Render( const Mesh& mesh ) const;
 		void RenderImGui();
 		void OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels );
 		void OnFramebufferResize( const Vector2I new_resolution_in_pixels );
@@ -205,8 +211,7 @@ namespace Engine
 		bool DefaultFramebufferIsBound() const;
 		Framebuffer* CurrentFramebuffer();
 		Framebuffer& MainFramebuffer();
-		Framebuffer& PostProcessingFramebuffer_A();
-		Framebuffer& PostProcessingFramebuffer_B();
+		Framebuffer& PostProcessingFramebuffer();
 		Framebuffer& FinalFramebuffer();
 		Framebuffer& CustomFramebuffer( const unsigned int framebuffer_index = 0 );
 
@@ -242,13 +247,14 @@ namespace Engine
 		void InitializeBuiltinQueues();
 		void InitializeBuiltinPasses();
 
-		void Render( const Mesh& mesh );
-		void Render_Indexed( const Mesh& mesh );
-		void Render_NonIndexed( const Mesh& mesh );
+		void Render_Indexed( const Mesh& mesh ) const;
+		void Render_NonIndexed( const Mesh& mesh ) const;
 
-		void RenderInstanced( const Mesh& mesh );
-		void RenderInstanced_Indexed( const Mesh& mesh );
-		void RenderInstanced_NonIndexed( const Mesh& mesh );
+		void RenderInstanced( const Mesh& mesh ) const;
+		void RenderInstanced_Indexed( const Mesh& mesh ) const;
+		void RenderInstanced_NonIndexed( const Mesh& mesh ) const;
+
+		void RenderFullscreenEffect( FullscreenEffect& effect );
 	
 		void SetIntrinsicsPerPass( const RenderPass& pass );
 		void SetIntrinsics( const BitFlags< IntrinsicModifyTarget > targets = IntrinsicModifyTarget::None );
@@ -261,8 +267,8 @@ namespace Engine
 
 		void InitializeBuiltinMeshes();
 		void InitializeBuiltinShaders();
-		void InitializeBuiltinMaterials();
-		void InitializeBuiltinRenderables();
+		void InitializeBuiltinFullscreenEffects();
+		void InitializeBuiltinPostprocessingEffects();
 
 		void SetPolygonMode( const PolygonMode mode );
 
@@ -278,6 +284,7 @@ namespace Engine
 		 */
 
 		std::vector< RenderQueue* >& RenderQueuesContaining( const Renderable* renderable_of_interest );
+		void SetRenderState( const RenderState& render_state_to_set );
 		void SetRenderState( const RenderState& render_state_to_set, Framebuffer* target_framebuffer, const bool clear_framebuffer = false );
 		void SortRenderablesInQueue( const Vector3& camera_position, std::vector< Renderable* >& renderable_array_to_sort, const SortingMode sorting_mode );
 
@@ -300,45 +307,30 @@ namespace Engine
 		
 		/* Built-in Pass IDs: */
 
-		static constexpr RenderPass::ID PASS_ID_SHADOW_MAPPING = RenderPass::ID( 10u );
-		static constexpr RenderPass::ID PASS_ID_LIGHTING       = RenderPass::ID( 50u );
-		static constexpr RenderPass::ID PASS_ID_MSAA_RESOLVE   = RenderPass::ID( 220u );
-		static constexpr RenderPass::ID PASS_ID_POSTPROCESSING = RenderPass::ID( ( std::uint8_t )PASS_ID_MSAA_RESOLVE + 1u );
-		static constexpr RenderPass::ID PASS_ID_FINAL          = RenderPass::ID( std::numeric_limits< std::uint8_t >::max() );
+		static constexpr RenderPass::ID RENDER_PASS_ID_SHADOW_MAPPING = RenderPass::ID( 10u );
+		static constexpr RenderPass::ID RENDER_PASS_ID_LIGHTING       = RenderPass::ID( 50u );
 
-		static constexpr std::array< RenderPass::ID, 5 > BUILTIN_PASS_ID_LIST =
+		static constexpr std::array< RenderPass::ID, 2 > BUILTIN_RENDER_PASS_ID_LIST =
 		{
-			PASS_ID_SHADOW_MAPPING,
-			PASS_ID_LIGHTING,
-			PASS_ID_MSAA_RESOLVE,
-			PASS_ID_POSTPROCESSING,
-			PASS_ID_FINAL
+			RENDER_PASS_ID_SHADOW_MAPPING,
+			RENDER_PASS_ID_LIGHTING,
 		};
 
 		/* Built-in Queue IDs: */
 
 		/* Using Unity defaults: Background is 1000, Geometry is 2000, AlphaTest is 2450, Transparent is 3000 and Overlay is 4000 */
 
-		static constexpr RenderQueue::ID QUEUE_ID_GEOMETRY                       = RenderQueue::ID( 2'000u );
-		static constexpr RenderQueue::ID QUEUE_ID_TRANSPARENT                    = RenderQueue::ID( 2'450u );
-		static constexpr RenderQueue::ID QUEUE_ID_SKYBOX                         = RenderQueue::ID( 2'900u );
-		static constexpr RenderQueue::ID QUEUE_ID_MSAA_RESOLVE                   = RenderQueue::ID( 3'000u );
+		static constexpr RenderQueue::ID RENDER_QUEUE_ID_GEOMETRY              = RenderQueue::ID( 2'000u );
+		static constexpr RenderQueue::ID RENDER_QUEUE_ID_TRANSPARENT           = RenderQueue::ID( 2'450u );
+		static constexpr RenderQueue::ID RENDER_QUEUE_ID_SKYBOX                = RenderQueue::ID( 2'900u );
+		static constexpr RenderQueue::ID RENDER_QUEUE_ID_BEFORE_POSTPROCESSING = RenderQueue::ID( 2'905u ); // TODO: Remove this and move current usage to Post-fx.
 
-		static constexpr RenderQueue::ID QUEUE_ID_BEFORE_POSTPROCESSING          = RenderQueue::ID( 3'001u );
-		/* These are multi-step post-processing effects where each effect reads the previous effect's result and writes to a different framebuffer (ping-ponging). */
-		static constexpr RenderQueue::ID QUEUE_ID_POSTPROCESSING_BLOOM           = RenderQueue::ID( 3'002u );
-
-		static constexpr RenderQueue::ID QUEUE_ID_FINAL	                         = RenderQueue::ID( 5'000u );
-
-		static constexpr std::array< RenderQueue::ID, 7 > BUILTIN_QUEUE_ID_LIST =
+		static constexpr std::array< RenderQueue::ID, 4 > BUILTIN_RENDER_QUEUE_ID_LIST =
 		{
-			QUEUE_ID_GEOMETRY,
-			QUEUE_ID_TRANSPARENT,
-			QUEUE_ID_SKYBOX,
-			QUEUE_ID_MSAA_RESOLVE,
-			QUEUE_ID_BEFORE_POSTPROCESSING,
-			QUEUE_ID_POSTPROCESSING_BLOOM,
-			QUEUE_ID_FINAL
+			RENDER_QUEUE_ID_GEOMETRY,
+			RENDER_QUEUE_ID_TRANSPARENT,
+			RENDER_QUEUE_ID_SKYBOX,
+			RENDER_QUEUE_ID_BEFORE_POSTPROCESSING
 		};
 
 	private:
@@ -372,8 +364,7 @@ namespace Engine
 
 		Framebuffer framebuffer_shadow_map_light_directional;
 		Framebuffer framebuffer_main;
-		Framebuffer framebuffer_postprocessing_A; // Used in ping-pong fashion.
-		Framebuffer framebuffer_postprocessing_B; // Used in ping-pong fashion.
+		Framebuffer framebuffer_postprocessing;
 		Framebuffer framebuffer_final;
 
 		std::array< Framebuffer,								FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_array;
@@ -406,25 +397,25 @@ namespace Engine
 		std::unordered_set< Shader* > shaders_registered;
 		std::unordered_map< Shader*, Shader::ReferenceCount > shaders_registered_reference_count_map;
 
-		Engine::Mesh full_screen_quad_mesh;
-
 		/*
-		 * Rendering/MSAA:
+		 * Fullscreen Effects:
 		 */
 
-		Engine::Material msaa_resolve_material;
-		Engine::Renderable msaa_resolve_renderable;
-		Engine::Shader* shader_msaa_resolve;
+		Engine::Mesh full_screen_quad_mesh;
+
+		FullscreenEffect msaa_resolve;
+		Engine::Shader* msaa_resolve_shader;
 
 		std::map< Texture::Format, std::vector< std::uint8_t > > msaa_supported_sample_counts_per_format;
 
+		FullscreenEffect tone_mapping;
+		Engine::Shader* tone_mapping_shader;
+
 		/*
-		 * Rendering/Tone Mapping:
+		 * Post-Processing:
 		 */
 
-		Engine::Material tone_mapping_material;
-		Engine::Renderable tone_mapping_renderable;
-		Engine::Shader* shader_tone_mapping;
+		std::map< std::string, FullscreenEffect* > post_processing_effect_map;
 
 		/*
 		 * Shadow Mapping:

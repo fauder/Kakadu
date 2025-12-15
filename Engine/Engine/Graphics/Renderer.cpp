@@ -80,8 +80,6 @@ namespace Engine
 
 		InitializeBuiltinMeshes();
 		InitializeBuiltinShaders();
-		InitializeBuiltinMaterials();
-		InitializeBuiltinRenderables();
 	}
 
 	Renderer::~Renderer()
@@ -140,9 +138,6 @@ namespace Engine
 				UploadIntrinsics();
 				UploadGlobals();
 
-				if( pass_id == PASS_ID_FINAL )
-					tone_mapping_material.SetTexture( "uniform_tex", framebuffer_current->color_attachment );
-
 				SetRenderState( pass.render_state, pass.target_framebuffer, pass.clear_framebuffer );
 
 				for( auto& queue_id : pass.queue_id_set )
@@ -163,7 +158,7 @@ namespace Engine
 
 						switch( pass_id )
 						{
-							case PASS_ID_SHADOW_MAPPING:
+							case RENDER_PASS_ID_SHADOW_MAPPING:
 							{
 								static auto& shadow_map_write_shader           = *BuiltinShaders::Get( "Shadow-map Write" );
 								static auto& shadow_map_write_instanced_shader = *BuiltinShaders::Get( "Shadow-map Write (Instanced)" );
@@ -239,6 +234,33 @@ namespace Engine
 			RenderOtherEditorShadingModes();
 		}
 #endif // _EDITOR
+
+		// TODO: Find a prefix emoji for post-fx.
+
+		RenderFullscreenEffect( msaa_resolve );
+
+		const auto log_group( logger.TemporaryLogGroup( ( "[Post-Processing] " ) ) );
+
+		for( auto& [ post_fx_name, post_fx ] : post_processing_effect_map )
+			RenderFullscreenEffect( *post_fx );
+
+		RenderFullscreenEffect( tone_mapping );
+	}
+
+	void Renderer::Render( const Mesh& mesh ) const
+	{
+		mesh.HasInstancing()
+			? mesh.HasIndices()
+				? RenderInstanced_Indexed( mesh )
+				: RenderInstanced_NonIndexed( mesh )
+			: mesh.HasIndices()
+				? Render_Indexed( mesh )
+				: Render_NonIndexed( mesh );
+	}
+
+	void Renderer::RenderPostProcessingEffectStep() const
+	{
+		Render( full_screen_quad_mesh );
 	}
 
 	void Renderer::RenderImGui()
@@ -436,8 +458,9 @@ namespace Engine
 
 					DrawFramebufferImGui( framebuffer_shadow_map_light_directional );
 					DrawFramebufferImGui( framebuffer_main );
-					DrawFramebufferImGui( framebuffer_postprocessing_A );
-					DrawFramebufferImGui( framebuffer_postprocessing_B );
+					/*DrawFramebufferImGui( framebuffer_postprocessing_A );
+					DrawFramebufferImGui( framebuffer_postprocessing_B );*/
+					DrawFramebufferImGui( framebuffer_postprocessing );
 					DrawFramebufferImGui( framebuffer_final );
 
 					for( auto& custom_framebuffer : framebuffer_custom_array )
@@ -490,8 +513,10 @@ namespace Engine
 			ImGuiDrawer::Draw( *shader );
 
 		/* Materials: */
-		ImGuiDrawer::Draw( msaa_resolve_material, *this );
-		ImGuiDrawer::Draw( tone_mapping_material, *this );
+		ImGuiDrawer::Draw( msaa_resolve.material,		*this );
+		ImGuiDrawer::Draw( bloom_downsampling.material, *this );
+		ImGuiDrawer::Draw( bloom_upsampling.material,	*this );
+		ImGuiDrawer::Draw( tone_mapping.material,		*this );
 
 		/* Uniforms (Renderer-scope): */
 		ImGuiDrawer::Draw( uniform_buffer_management_intrinsic, "Shader Intrinsics" );
@@ -563,30 +588,18 @@ namespace Engine
 		framebuffer_main.SetClearColor( Color4::Gray( 0.064f ) ); // Same color as Unity's scene view, in linear color space.
 
 		/* Same parameters as the main FBO. */
-		framebuffer_postprocessing_A = Framebuffer( Framebuffer::Description
-													{
-														.name = "Post-processing A",
+		framebuffer_postprocessing = Framebuffer( Framebuffer::Description
+												  {
+													  .name = "Post-processing",
 
-														.width_in_pixels  = new_width_in_pixels,
-														.height_in_pixels = new_height_in_pixels,
+													  .width_in_pixels  = new_width_in_pixels,
+													  .height_in_pixels = new_height_in_pixels,
 
-														.color_format    = framebuffer_main_color_format,
-														.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
-													} );
+													  .color_format    = framebuffer_main_color_format,
+													  .attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
+												  } );
 
 	
-		/* Same parameters as the main FBO. */
-		framebuffer_postprocessing_B = Framebuffer( Framebuffer::Description
-													{
-														.name = "Post-processing B",
-
-														.width_in_pixels  = new_width_in_pixels,
-														.height_in_pixels = new_height_in_pixels,
-
-														.color_format    = framebuffer_main_color_format,
-														.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
-													} );
-
 		/* Editor: */
 		framebuffer_final = Framebuffer( Framebuffer::Description
 										 {
@@ -626,28 +639,13 @@ namespace Engine
 			}
 		}
 
-		msaa_resolve_material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
+		InitializeBuiltinFullscreenEffects();
+		InitializeBuiltinPostprocessingEffects();
 
 		for( const auto& [ queue_id, queue ]  : render_queue_map )
 			for( const auto& renderable : queue.renderable_list )
 				if( renderable->IsReceivingShadows() )
 					renderable->material->SetTexture( "uniform_tex_shadow", ShadowMapTexture() );
-
-		/* Tone-mapping is the final operation and it's input texture is assigned automatically in Render() every frame.
-		 * This is because it can change dynamically, due to the possible ping-ponging of post-processing framebuffers A & B, mainly utilized by post-processing. */
-
-#ifdef _EDITOR
-		if( editor_shading_mode != EditorShadingMode::Shaded )
-		{
-			/* Any framebuffer resize means invalidation of the final pass' (tone-mapping pass) input texture.
-			 *
-			 * Since anything else between MSAA and tone-mapping is effectively disabled for the purposes of editor rendering,
-			 * we can safely say that the last used framebuffer (prior to tone-mapping) is the MSAA one, which is the postprocessing framebuffer A.
-			 */
-
-			tone_mapping_material.SetTexture( "uniform_tex", &framebuffer_postprocessing_A.ColorAttachment() );
-		}
-#endif // _EDITOR
 	}
 
 	void Renderer::OnFramebufferResize( const Vector2I new_resolution_in_pixels )
@@ -744,7 +742,7 @@ namespace Engine
 
 	void Renderer::RemovePass( const RenderPass::ID pass_id_to_remove )
 	{
-		if( std::find( BUILTIN_PASS_ID_LIST.cbegin(), BUILTIN_PASS_ID_LIST.cend(), pass_id_to_remove ) != BUILTIN_PASS_ID_LIST.cend() )
+		if( std::find( BUILTIN_RENDER_PASS_ID_LIST.cbegin(), BUILTIN_RENDER_PASS_ID_LIST.cend(), pass_id_to_remove ) != BUILTIN_RENDER_PASS_ID_LIST.cend() )
 		{
 			CONSOLE_ERROR( "Removing a built-in pass is not allowed! Please use TogglePass( id, false ) to disable unwanted passes instead." );
 			return;
@@ -797,7 +795,7 @@ namespace Engine
 
 	void Renderer::RemoveQueue( const RenderQueue::ID queue_id_to_remove )
 	{
-		if( std::find( BUILTIN_QUEUE_ID_LIST.cbegin(), BUILTIN_QUEUE_ID_LIST.cend(), queue_id_to_remove ) != BUILTIN_QUEUE_ID_LIST.cend() )
+		if( std::find( BUILTIN_RENDER_QUEUE_ID_LIST.cbegin(), BUILTIN_RENDER_QUEUE_ID_LIST.cend(), queue_id_to_remove ) != BUILTIN_RENDER_QUEUE_ID_LIST.cend() )
 		{
 			CONSOLE_ERROR( "Removing a built-in queue is not allowed! Please use ToggleQueue( id, false ) to disable unwanted passes instead." );
 			return;
@@ -859,16 +857,12 @@ namespace Engine
 
 	void Renderer::SetFinalPassToUseFinalFramebuffer()
 	{
-		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseEditorFramebuffer", PASS_ID_FINAL );
-
-		render_pass_map[ PASS_ID_FINAL ].target_framebuffer = &framebuffer_final;
+		tone_mapping.steps.front().framebuffer_target = &framebuffer_final;
 	}
 
 	void Renderer::SetFinalPassToUseDefaultFramebuffer()
 	{
-		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "SetFinalPassToUseDefaultFramebuffer", PASS_ID_FINAL );
-
-		render_pass_map[ PASS_ID_FINAL ].target_framebuffer = &framebuffer_default;
+		tone_mapping.steps.front().framebuffer_target = &framebuffer_default;
 	}
 
 	void Renderer::AddDirectionalLight( DirectionalLight* light_to_add )
@@ -1125,14 +1119,9 @@ namespace Engine
 		return framebuffer_main;
 	}
 
-	Framebuffer& Renderer::PostProcessingFramebuffer_A()
+	Framebuffer& Renderer::PostProcessingFramebuffer()
 	{
-		return framebuffer_postprocessing_A;
-	}
-
-	Framebuffer& Renderer::PostProcessingFramebuffer_B()
-	{
-		return framebuffer_postprocessing_B;
+		return framebuffer_postprocessing;
 	}
 
 	Framebuffer& Renderer::FinalFramebuffer()
@@ -1164,10 +1153,10 @@ namespace Engine
 											.msaa            = new_msaa
 										} );
 
-		TogglePass( PASS_ID_MSAA_RESOLVE, new_sample_count > 1 );
+		// TODO: Toggle on/off based on sample count > 1.
 
 		if( new_sample_count > 1 )
-			msaa_resolve_material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
+			msaa_resolve.material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
 
 		return new_msaa;
 	}
@@ -1224,7 +1213,7 @@ namespace Engine
 
 	void Renderer::InitializeBuiltinQueues()
 	{
-		AddQueue( QUEUE_ID_GEOMETRY,
+		AddQueue( RENDER_QUEUE_ID_GEOMETRY,
 				  RenderQueue
 				  {
 					  .name                  = "Geometry",
@@ -1234,7 +1223,7 @@ namespace Engine
 					  }
 				  } );
 
-		AddQueue( QUEUE_ID_TRANSPARENT,
+		AddQueue( RENDER_QUEUE_ID_TRANSPARENT,
 				  RenderQueue
 				  {
 					  .name                  = "Transparent",
@@ -1251,7 +1240,7 @@ namespace Engine
 					  }
 				  } );
 
-		AddQueue( QUEUE_ID_SKYBOX,
+		AddQueue( RENDER_QUEUE_ID_SKYBOX,
 				  RenderQueue
 				  {
 					  .name                  = "Skybox",
@@ -1263,22 +1252,7 @@ namespace Engine
 					  }
 				  } );
 
-		AddQueue( QUEUE_ID_MSAA_RESOLVE,
-				  RenderQueue
-				  {
-					  .name                  = "MSAA Resolve",
-					  .render_state_override = RenderState
-					  {
-						  .face_culling_enable = false,
-
-						  .depth_test_enable  = false,
-						  .depth_write_enable = false,
-
-						  .sorting_mode = SortingMode::None // Preserve insertion order.
-					  }
-				  } );
-
-		AddQueue( QUEUE_ID_BEFORE_POSTPROCESSING,
+		AddQueue( RENDER_QUEUE_ID_BEFORE_POSTPROCESSING,
 				  RenderQueue
 				  {
 					  .name = "Before Post-processing",
@@ -1292,54 +1266,16 @@ namespace Engine
 						  .sorting_mode = SortingMode::None // Preserve effect insertion order.
                       }
 				  } );
-
-		AddQueue( QUEUE_ID_POSTPROCESSING_BLOOM,
-				  RenderQueue
-				  {
-					  .name = "Post-processing: Bloom",
-
-					  .framebuffer_override_source = &framebuffer_postprocessing_A,
-					  .framebuffer_override_target = &framebuffer_postprocessing_B,
-
-					  .render_state_override = RenderState
-					  {
-						  .face_culling_enable = false,
-
-				          .depth_test_enable  = false,
-						  .depth_write_enable = false,
-
-						  .sorting_mode = SortingMode::None // Preserve effect insertion order.
-                      }
-				  } );
-
-		AddQueue( QUEUE_ID_FINAL,
-				  RenderQueue
-				  {
-					  .name = "Final",
-
-					  /* Framebuffer overrides are not used here because this queue has its own pass; The Final pass.
-					   * Target framebuffer for the Final pass is automatically determined/set every frame before rendering it. */
-
-					  .render_state_override = RenderState
-					  {
-						  .face_culling_enable = false,
-
-						  .depth_test_enable  = false,
-						  .depth_write_enable = false,
-
-						  .sorting_mode = SortingMode::None // Preserve insertion order.
-					  }
-				  } );
 	}
 
 	void Renderer::InitializeBuiltinPasses()
 	{
-		AddPass( PASS_ID_SHADOW_MAPPING,
+		AddPass( RENDER_PASS_ID_SHADOW_MAPPING,
 				 RenderPass
 				 {
 					 .name               = "Shadow Mapping",
 					 .target_framebuffer = &framebuffer_shadow_map_light_directional,
-					 .queue_id_set       = { QUEUE_ID_GEOMETRY },
+					 .queue_id_set       = { RENDER_QUEUE_ID_GEOMETRY },
 					 .view_matrix		 = Matrix4x4{},
 					 .projection_matrix  = Matrix4x4{},
 					 .render_state       = RenderState
@@ -1350,76 +1286,67 @@ namespace Engine
 					 .clear_framebuffer                = true
 				 } );
 
-		AddPass( PASS_ID_LIGHTING,
+		AddPass( RENDER_PASS_ID_LIGHTING,
 				 RenderPass
 				 {
 					 .name               = "Lighting",
 					 .target_framebuffer = &framebuffer_main,
-					 .queue_id_set       = { QUEUE_ID_GEOMETRY, QUEUE_ID_TRANSPARENT, QUEUE_ID_SKYBOX },
+					 .queue_id_set       = { RENDER_QUEUE_ID_GEOMETRY, RENDER_QUEUE_ID_TRANSPARENT, RENDER_QUEUE_ID_SKYBOX },
 					 .clear_framebuffer  = true,
 				 } );
-
-		AddPass( PASS_ID_MSAA_RESOLVE,
-				 RenderPass
-				 {
-					 .name               = "MSAA Resolve",
-					 .target_framebuffer = &framebuffer_postprocessing_A,
-					 .queue_id_set       = { QUEUE_ID_MSAA_RESOLVE }
-				 } );
-
-		AddPass( PASS_ID_POSTPROCESSING,
-				 RenderPass
-				 {
-					 .name               = "Post-processing",
-					 .target_framebuffer = &framebuffer_postprocessing_B, // Does not matter; Will be overridden per-queue for each effect, to point to A or B.
-					 .queue_id_set       = { QUEUE_ID_POSTPROCESSING_BLOOM }
-				 } );
-
-		AddPass( PASS_ID_FINAL,
-				 RenderPass
-				 {
-					 .name               = "Final",
-					 .target_framebuffer = &framebuffer_final, // Does not matter; Will be set each frame to A or B, depending on what the last queue before this writes to.
-					 .queue_id_set       = { QUEUE_ID_FINAL }
-				 } );
 	}
 
-	void Renderer::Render( const Mesh& mesh )
-	{
-		mesh.HasInstancing()
-			? mesh.HasIndices()
-				? RenderInstanced_Indexed( mesh )
-				: RenderInstanced_NonIndexed( mesh )
-			: mesh.HasIndices()
-				? Render_Indexed( mesh )
-				: Render_NonIndexed( mesh );
-	}
-
-	void Renderer::Render_Indexed( const Mesh& mesh )
+	void Renderer::Render_Indexed( const Mesh& mesh ) const
 	{
 		glDrawElements( ( GLint )mesh.Primitive(), mesh.IndexCount(), mesh.IndexType(), 0 );
 	}
 
-	void Renderer::Render_NonIndexed( const Mesh& mesh )
+	void Renderer::Render_NonIndexed( const Mesh& mesh ) const
 	{
 		glDrawArrays( ( GLint )mesh.Primitive(), 0, mesh.VertexCount() );
 	}
 
-	void Renderer::RenderInstanced( const Mesh& mesh )
+	void Renderer::RenderInstanced( const Mesh& mesh ) const
 	{
 		mesh.HasIndices()
 			? RenderInstanced_Indexed( mesh )
 			: RenderInstanced_NonIndexed( mesh );
 	}
 
-	void Renderer::RenderInstanced_Indexed( const Mesh& mesh )
+	void Renderer::RenderInstanced_Indexed( const Mesh& mesh ) const
 	{
 		glDrawElementsInstanced( ( GLint )mesh.Primitive(), mesh.IndexCount(), mesh.IndexType(), 0, mesh.InstanceCount() );
 	}
 
-	void Renderer::RenderInstanced_NonIndexed( const Mesh& mesh )
+	void Renderer::RenderInstanced_NonIndexed( const Mesh& mesh ) const
 	{
 		glDrawArraysInstanced( ( GLint )mesh.Primitive(), 0, mesh.VertexCount(), mesh.InstanceCount() );
+	}
+
+	void Renderer::RenderFullscreenEffect( FullscreenEffect& effect )
+	{
+		const auto log_group( logger.TemporaryLogGroup( ( "[FULLSCREEN-FX-EMOJI] " + effect.name ).c_str() ) );
+
+		full_screen_quad_mesh.Bind();
+
+		if( effect.execution_routine )
+			effect.execution_routine( *this );
+		else // Default, bare-bones rendering logic.
+		{
+			effect.material.Bind();
+
+			SetRenderState( effect.render_state );
+
+			for( auto& step : effect.steps )
+			{
+				SetCurrentFramebuffer( step.framebuffer_target );
+
+				effect.material.SetTexture( "uniform_tex", step.texture_input );
+				effect.material.UploadUniforms();
+
+				RenderPostProcessingEffectStep();
+			}
+		}
 	}
 
 	void Renderer::SetIntrinsicsPerPass( const RenderPass& pass )
@@ -1562,7 +1489,7 @@ namespace Engine
 		// Use ortho. projection for directional light. For now, use big values for the projection volume:
 		const auto projection_matrix = Matrix::OrthographicProjection( shadow_mapping_projection_parameters );
 
-		auto& shadow_mapping_pass = render_pass_map[ PASS_ID_SHADOW_MAPPING ];
+		auto& shadow_mapping_pass = render_pass_map[ RENDER_PASS_ID_SHADOW_MAPPING ];
 		
 		bool recalculate_view_projection_matrix = false;
 
@@ -1629,28 +1556,62 @@ namespace Engine
 	{
 		char buffer[ 48 ];
 		snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
-		shader_msaa_resolve = BuiltinShaders::Get( buffer );
+		msaa_resolve_shader = BuiltinShaders::Get( buffer );
 
-		shader_tone_mapping = BuiltinShaders::Get( "Tone Mapping" );
+		bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample" );
+		bloom_shader_upsample   = BuiltinShaders::Get( "Post-Process Bloom Upsample" );
+
+		tone_mapping_shader = BuiltinShaders::Get( "Tone Mapping (Bloom)" );
 	}
 
-	void Renderer::InitializeBuiltinMaterials()
+	void Renderer::InitializeBuiltinFullscreenEffects()
 	{
-		msaa_resolve_material = Material( "[Renderer] MSAA Resolve", shader_msaa_resolve );
+		msaa_resolve = FullscreenEffect
+		{
+			.name  = "MSAA Resolve",
+			.steps = { 1, FullscreenEffect::Step
+			{
+				.framebuffer_target = &framebuffer_postprocessing,
+				.texture_input      = framebuffer_main.color_attachment
+			} },
+			.material = Material( "[Renderer] MSAA Resolve", msaa_resolve_shader )
+			
+			// Execution routine is defaulted.
+		};
+
+		tone_mapping = FullscreenEffect
+		{
+			.name = "Tonemapping",
+			.steps = { 1, FullscreenEffect::Step
+			{
+				.framebuffer_target = &framebuffer_final, // This is not set in stone; Can be configured via the Renderer API by the client app if desired.
+				.texture_input      = framebuffer_postprocessing.color_attachment
+			} },
+			.material = Material( "[Renderer] Tonemapping", tone_mapping_shader ),
+			.execution_routine = [ & ]( Renderer& renderer )
+			{
+				tone_mapping.material.Bind();
+
+				const auto step = tone_mapping.steps.front();
+
+				SetRenderState( tone_mapping.render_state, step.framebuffer_target );
+
+				tone_mapping.material.SetTexture( "uniform_tex_color", step.texture_input );
+				tone_mapping.material.SetTexture( "uniform_tex_bloom", bloom_downsampling.framebuffers.front().color_attachment );
+				tone_mapping.material.UploadUniforms();
+
+				RenderPostProcessingEffectStep();
+			}
+		};
 
 		// TODO: Handle no tone mapping case.
 
-		tone_mapping_material = Material( "[Renderer] Tone Mapping", shader_tone_mapping );
-		tone_mapping_material.Set( "uniform_exposure", 1.0f );
+		tone_mapping.material.Set( "uniform_exposure", 1.0f );
+		tone_mapping.material.Set( "uniform_bloom_intensity", 0.004f );
 	}
 
-	void Renderer::InitializeBuiltinRenderables()
 	{
-		msaa_resolve_renderable = Renderable( &full_screen_quad_mesh, &msaa_resolve_material );
-		AddRenderable( &msaa_resolve_renderable, QUEUE_ID_MSAA_RESOLVE );
 
-		tone_mapping_renderable = Renderable( &full_screen_quad_mesh, &tone_mapping_material );
-		AddRenderable( &tone_mapping_renderable, QUEUE_ID_FINAL );
 	}
 
 	void Renderer::SetPolygonMode( const PolygonMode mode )
@@ -1659,6 +1620,7 @@ namespace Engine
 	}
 
 #ifdef _EDITOR
+	// TODO: Make it work without MSAA as well.
 	void Renderer::RenderOtherEditorShadingModes()
 	{
 		ASSERT_EDITOR_ONLY( editor_shading_mode != EditorShadingMode::Shaded );
@@ -1729,7 +1691,7 @@ namespace Engine
 				return;
 		}
 		
-		SetIntrinsicsPerPass( render_pass_map[ PASS_ID_LIGHTING ] );
+		SetIntrinsicsPerPass( render_pass_map[ RENDER_PASS_ID_LIGHTING ] );
 		UploadIntrinsics();
 		UploadGlobals();
 
@@ -1760,10 +1722,7 @@ namespace Engine
 
 			for( auto& [ pass_id, pass ] : render_pass_map )
 			{
-				if( pass_id != PASS_ID_SHADOW_MAPPING &&
-					pass_id != PASS_ID_MSAA_RESOLVE &&
-					pass_id != PASS_ID_POSTPROCESSING &&
-					pass_id != PASS_ID_FINAL &&
+				if( pass_id != RENDER_PASS_ID_SHADOW_MAPPING &&
 					pass.target_framebuffer == &framebuffer_main &&
 					PassHasContentToRender( pass ) )
 				{
@@ -1804,22 +1763,9 @@ namespace Engine
 			}
 		}
 
-		/* MSAA Resolve: */
-		{
-			const auto& pass = render_pass_map[ PASS_ID_MSAA_RESOLVE ];
+		RenderFullscreenEffect( msaa_resolve );
 
-			SetRenderState( pass.render_state, &framebuffer_final, pass.clear_framebuffer );
-
-			const auto& queue      = render_queue_map[ QUEUE_ID_MSAA_RESOLVE ];
-			const auto& renderable = queue.renderable_list.front();
-
-			renderable->material->Bind();
-			renderable->material->UploadUniforms();
-
-			renderable->mesh->Bind();
-
-			Render( *renderable->mesh );
-		}
+		// No post-processing when non-shaded editor shading modes are active.
 	}
 #endif // _EDITOR
 
@@ -1835,27 +1781,10 @@ namespace Engine
 		return queues;
 	}
 
-	void Renderer::SetRenderState( const RenderState& render_state_to_set, Framebuffer* target_framebuffer, const bool clear_framebuffer )
+	void Renderer::SetRenderState( const RenderState& render_state_to_set )
 	{
-		ASSERT_DEBUG_ONLY( target_framebuffer );
-
-		if( framebuffer_current != target_framebuffer )
-			SetCurrentFramebuffer( target_framebuffer );
-
 		ToggleDepthWrite( render_state_to_set.depth_write_enable );
 		SetStencilWriteMask( render_state_to_set.stencil_write_mask );
-
-		if( clear_framebuffer )
-			framebuffer_current->Clear();
-
-		if( const auto framebuffer_uses_srgb_encoding = framebuffer_current->Is_sRGB();
-			framebuffer_uses_srgb_encoding != framebuffer_sRGB_encoding_is_enabled )
-		{
-			if( framebuffer_uses_srgb_encoding )
-				EnableFramebuffer_sRGBEncoding();
-			else
-				DisableFramebuffer_sRGBEncoding();
-		}
 
 		if( render_state_to_set.face_culling_enable )
 			EnableFaceCulling();
@@ -1890,6 +1819,28 @@ namespace Engine
 		SetBlendingFactors( render_state_to_set.blending_source_color_factor, render_state_to_set.blending_destination_color_factor,
 							render_state_to_set.blending_source_alpha_factor, render_state_to_set.blending_destination_alpha_factor );
 		SetBlendingFunction( render_state_to_set.blending_function );
+	}
+
+	void Renderer::SetRenderState( const RenderState& render_state_to_set, Framebuffer* target_framebuffer, const bool clear_framebuffer )
+	{
+		ASSERT_DEBUG_ONLY( target_framebuffer );
+
+		if( framebuffer_current != target_framebuffer )
+			SetCurrentFramebuffer( target_framebuffer );
+
+		if( const auto framebuffer_uses_srgb_encoding = framebuffer_current->Is_sRGB();
+			framebuffer_uses_srgb_encoding != framebuffer_sRGB_encoding_is_enabled )
+		{
+			if( framebuffer_uses_srgb_encoding )
+				EnableFramebuffer_sRGBEncoding();
+			else
+				DisableFramebuffer_sRGBEncoding();
+		}
+
+		if( clear_framebuffer )
+			framebuffer_current->Clear();
+
+		SetRenderState( render_state_to_set );
 	}
 
 	void Renderer::SortRenderablesInQueue( const Vector3& camera_position, std::vector< Renderable* >& renderable_array_to_sort, const SortingMode sorting_mode )

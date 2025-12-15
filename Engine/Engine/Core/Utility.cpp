@@ -149,9 +149,9 @@ namespace Engine
 				}
 			}
 
-			std::optional<std::string_view> ParseNextTokenAndAdvance_WithPrefix( std::string_view& source,
-																				 std::initializer_list< const std::string_view > preceding_tokens,
-																				 const std::string_view opening_delimiters, const std::string_view closing_delimiters )
+			std::optional< std::string_view > ParseNextTokenAndAdvance_WithPrefix( std::string_view& source,
+																				   std::initializer_list< const std::string_view > preceding_tokens,
+																				   const std::string_view opening_delimiters, const std::string_view closing_delimiters )
 			{
 				std::size_t preceding_token_pos = 0;
 				for( auto& preceding_token : preceding_tokens )

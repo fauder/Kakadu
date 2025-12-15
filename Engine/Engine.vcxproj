@@ -318,6 +318,7 @@
     <ClInclude Include="Engine\Core\Macros_SpaceshipOperator.h" />
     <ClInclude Include="Engine\Core\Morph.h" />
     <ClInclude Include="Engine\Core\MorphSystem.h" />
+    <ClInclude Include="Engine\Graphics\FullscreenEffect.h" />
     <ClInclude Include="Engine\Graphics\BuiltinTextures.h" />
     <ClInclude Include="Engine\Graphics\Enums.h" />
     <ClInclude Include="Engine\Graphics\Framebuffer.h" />

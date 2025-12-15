@@ -60,7 +60,7 @@ private:
 
 private:
 /* Renderer: */
-	static constexpr Engine::RenderQueue::ID QUEUE_ID_CUSTOM = Engine::RenderQueue::ID( ( uint16_t )Engine::Renderer::QUEUE_ID_GEOMETRY + 1u );
+	static constexpr Engine::RenderQueue::ID RENDER_QUEUE_ID_CUSTOM = Engine::RenderQueue::ID( ( uint16_t )Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY + 1u );
 
 	Engine::Renderable tunnel_renderable;
 

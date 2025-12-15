@@ -135,27 +135,27 @@ void HDR_DemoApplication::Initialize()
 	ResetMaterialData();
 
 /* Renderer: */
-	renderer->AddQueue( QUEUE_ID_CUSTOM,
-					   Engine::RenderQueue
-					   {
-						  .name = "Custom (Inverted)",
-						  .render_state_override = Engine::RenderState
-						  {
-							  .face_culling_face_to_cull = Engine::Face::Front
-						  }
-					   } );
+	renderer->AddQueue( RENDER_QUEUE_ID_CUSTOM,
+						Engine::RenderQueue
+						{
+						    .name = "Custom (Inverted)",
+						    .render_state_override = Engine::RenderState
+						    {
+							    .face_culling_face_to_cull = Engine::Face::Front
+						    }
+						} );
 
-	renderer->AddQueueToPass( QUEUE_ID_CUSTOM, Engine::Renderer::PASS_ID_LIGHTING );
+	renderer->AddQueueToPass( RENDER_QUEUE_ID_CUSTOM, Engine::Renderer::RENDER_PASS_ID_LIGHTING );
 
 	tunnel_renderable = Engine::Renderable( &cube_mesh_inverted, &wood_material, &tunnel_transform );
-	renderer->AddRenderable( &tunnel_renderable, QUEUE_ID_CUSTOM );
+	renderer->AddRenderable( &tunnel_renderable, RENDER_QUEUE_ID_CUSTOM );
 
 	light_sources_renderable = Engine::Renderable( &light_source_sphere_mesh, &light_source_material, nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
-	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
-	renderer->TogglePass( Engine::Renderer::PASS_ID_SHADOW_MAPPING, false ); // No shadows necessary for this demo.
-	renderer->ToggleQueue( Engine::Renderer::QUEUE_ID_TRANSPARENT, false );
+	renderer->TogglePass( Engine::Renderer::RENDER_PASS_ID_SHADOW_MAPPING, false ); // No shadows necessary for this demo.
+	renderer->ToggleQueue( Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
 
 /* Camera: */
 	ResetCamera();
@@ -218,7 +218,7 @@ void HDR_DemoApplication::Render()
 
 	/* Lighting: Render everything to the off-screen framebuffer 1: */
 	{
-		renderer->UpdatePerPass( Engine::Renderer::PASS_ID_LIGHTING, camera );
+		renderer->UpdatePerPass( Engine::Renderer::RENDER_PASS_ID_LIGHTING, camera );
 	}
 
 	/* Post-processing pass: Blit off-screen framebuffers to quads on the default or the final framebuffer to actually display them: */

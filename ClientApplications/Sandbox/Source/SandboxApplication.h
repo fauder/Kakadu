@@ -107,7 +107,7 @@ private:
 
 	Engine::Renderable mirror_quad_renderable;
 
-	static constexpr Engine::RenderPass::ID RENDER_PASS_ID_LIGHTING_REAR_VIEW = Engine::RenderPass::ID( ( unsigned int )Engine::Renderer::PASS_ID_LIGHTING - 1 );
+	static constexpr Engine::RenderPass::ID RENDER_PASS_ID_LIGHTING_REAR_VIEW = Engine::RenderPass::ID( ( unsigned int )Engine::Renderer::RENDER_PASS_ID_LIGHTING - 1 );
 
 /* Textures: */
 	Engine::Texture* skybox_texture;

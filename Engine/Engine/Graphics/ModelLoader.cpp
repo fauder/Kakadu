@@ -169,9 +169,9 @@ namespace Engine
 
 			fastgltf::iterateAccessorWithIndex< Vector3 >( gltf_asset, position_accessor,
 														   [ & ]( Vector3 position, std::size_t index )
-														   {
-                                                    	   	   positions[ index ] = position * coordinate_system_transform;
-														   } );
+			                                               {
+				                                               positions[ index ] = position * coordinate_system_transform;
+			                                               } );
 
             /*
              * Normals:
@@ -189,10 +189,10 @@ namespace Engine
                 normals.resize( normal_accessor.count, ZERO_INITIALIZATION );
 
                 fastgltf::iterateAccessorWithIndex< Vector3 >( gltf_asset, normal_accessor,
-														   [ & ]( Vector3 normal, std::size_t index )
-														   {
-                                                    	   	   normals[ index ] = normal * coordinate_system_transform;
-														   } );
+															   [ & ]( Vector3 normal, std::size_t index )
+				                                               {
+					                                               normals[ index ] = normal * coordinate_system_transform;
+				                                               } );
             }
 
             /*
@@ -229,10 +229,10 @@ namespace Engine
                 tangents.resize( tangent_accessor.count, ZERO_INITIALIZATION );
 
                 fastgltf::iterateAccessorWithIndex< Vector4 >( gltf_asset, tangent_accessor,
-														   [ & ]( Vector4 tangent, std::size_t index )
-														   {
-                                                    	   	   tangents[ index ] = tangent.XYZ() * coordinate_system_transform;
-														   } );
+															   [ & ]( Vector4 tangent, std::size_t index )
+				                                               {
+					                                               tangents[ index ] = tangent.XYZ() * coordinate_system_transform;
+				                                               } );
             }
 
             /*
