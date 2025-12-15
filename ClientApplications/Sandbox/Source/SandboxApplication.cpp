@@ -324,15 +324,6 @@ void SandboxApplication::Initialize()
 												  CUBE_REFLECTED_COUNT,
 												  GL_STATIC_DRAW );
 
-	cube_mesh_instanced_with_color = Engine::Mesh( cube_mesh,
-												   {
-													   Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }, // Transform.
-													   Engine::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }	// Color.
-												   },
-												   reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
-												   LIGHT_POINT_COUNT,
-												   GL_DYNAMIC_DRAW );
-
 
 	constexpr std::array< Vector3, 6 > quad_mesh_positions_ndc
 	( {
@@ -356,6 +347,22 @@ void SandboxApplication::Initialize()
 								Engine::Primitive::Indexed::UVSphereTemplate::UVs< 40 >(),
 								Engine::Primitive::Indexed::UVSphereTemplate::Indices< 40 >(),
 								Engine::Primitive::Indexed::UVSphereTemplate::Tangents< 40 >() );
+
+	sphere_mesh_lower_detail = Engine::Mesh( Engine::Primitive::Indexed::UVSphereTemplate::Positions(),
+											 "Sphere (Lower Detail)",
+											 Engine::Primitive::Indexed::UVSphereTemplate::Normals(),
+											 Engine::Primitive::Indexed::UVSphereTemplate::UVs(),
+											 Engine::Primitive::Indexed::UVSphereTemplate::Indices(),
+											 Engine::Primitive::Indexed::UVSphereTemplate::Tangents() );
+
+	sphere_mesh_instanced_with_color = Engine::Mesh( sphere_mesh_lower_detail,
+													 {
+														 Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }, // Transform.
+														 Engine::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }	// Color.
+													 },
+													 reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
+													 LIGHT_POINT_COUNT,
+													 GL_DYNAMIC_DRAW );
 
 /* Lighting: */
 	ResetLightingData();
@@ -384,7 +391,7 @@ void SandboxApplication::Initialize()
 					      .render_state_override_is_allowed = true
 					  } );
 	
-	light_sources_renderable = Engine::Renderable( &cube_mesh_instanced_with_color, &light_source_material, 
+	light_sources_renderable = Engine::Renderable( &sphere_mesh_instanced_with_color, &light_source_material, 
 												   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
 	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
@@ -539,7 +546,7 @@ void SandboxApplication::Update()
 		light_source_instance_data_array[ i ].color     = Engine::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
 	}
 
-	cube_mesh_instanced_with_color.UpdateInstanceData( light_source_instance_data_array.data() );
+	sphere_mesh_instanced_with_color.UpdateInstanceData( light_source_instance_data_array.data() );
 
 	/* Instanced cube's transform: */
 	{

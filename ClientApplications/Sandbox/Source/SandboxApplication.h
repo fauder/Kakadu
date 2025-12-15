@@ -127,8 +127,8 @@ private:
 	Engine::Mesh cube_mesh, cube_mesh_fullscreen, quad_mesh, quad_mesh_uvs_only, quad_mesh_fullscreen, quad_mesh_mirror;
 	Engine::Mesh cube_mesh_instanced;
 	Engine::Mesh cube_reflected_mesh_instanced;
-	Engine::Mesh cube_mesh_instanced_with_color; // For light sources.
-	Engine::Mesh sphere_mesh;
+	Engine::Mesh sphere_mesh_instanced_with_color; // For light sources.
+	Engine::Mesh sphere_mesh, sphere_mesh_lower_detail;
 
 /* Shaders: */
 	Engine::Shader* shader_skybox;
