@@ -622,7 +622,11 @@ namespace Engine::ImGuiDrawer
 								is_modified |= ImGui::SliderFloat( "##scalar_float", reinterpret_cast< float* >( uniform_memory ), 0.0f, 1.0f, "%.2f pixels" );
 								break;
 							case UsageHint::AsSlider_Normalized:
-								is_modified |= ImGui::SliderFloat( "##scalar_float", reinterpret_cast< float* >( uniform_memory ), 0.0f, 1.0f, GetFormat< float >() );
+							case UsageHint::AsSlider_Normalized_Logarithmic:
+								is_modified |= ImGui::SliderFloat( "##scalar_float", reinterpret_cast< float* >( uniform_memory ), 0.0f, 1.0f, GetFormat< float >(),
+																   usage_hint == UsageHint::AsSlider_Normalized_Logarithmic
+																   ? ImGuiSliderFlags_Logarithmic
+																   : ImGuiSliderFlags_None );
 								break;
 							case UsageHint::AsSlider_Normalized_Percentage:
 							case UsageHint::AsSlider_Normalized_Percentage_Logarithmic:

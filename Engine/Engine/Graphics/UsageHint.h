@@ -15,6 +15,7 @@ namespace Engine
 		AsArray,
 		AsSlider_In_Pixels,
 		AsSlider_Normalized,
+		AsSlider_Normalized_Logarithmic,
 		AsSlider_Normalized_Percentage,
 		AsSlider_Normalized_Percentage_Logarithmic
 	};
@@ -31,6 +32,8 @@ namespace Engine
 			return UsageHint::AsSlider_In_Pixels;
 		else if( string == "normalized" )
 			return UsageHint::AsSlider_Normalized;
+		else if( string == "normalized_logarithmic" )
+			return UsageHint::AsSlider_Normalized_Logarithmic;
 		else if( string == "normalized_percentage" )
 			return UsageHint::AsSlider_Normalized_Percentage;
 		else if( string == "normalized_percentage_logarithmic" )
