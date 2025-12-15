@@ -187,12 +187,12 @@ namespace Engine
 								"Post-Process Bloom Upsample",
 								FullVertexShaderPath( "PassThrough_UVs.vert" ),
 								FullFragmentShaderPath( "BloomUpsample.frag" ) );
-		SHADER_MAP.try_emplace( "Tone Mapping",
-								"Tone Mapping",
+		SHADER_MAP.try_emplace( "Tonemapping",
+								"Tonemapping",
 								FullVertexShaderPath( "PassThrough.vert" ),
 								FullFragmentShaderPath( "Tonemapping.frag" ) );
-		SHADER_MAP.try_emplace( "Tone Mapping (Bloom)",
-								"Tone Mapping (Bloom)",
+		SHADER_MAP.try_emplace( "Tonemapping (Bloom)",
+								"Tonemapping (Bloom)",
 								FullVertexShaderPath( "PassThrough.vert" ),
 								FullFragmentShaderPath( "Tonemapping.frag" ),
 								Shader::Features{ "BLOOM" } );

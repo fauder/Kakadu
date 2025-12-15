@@ -1561,7 +1561,7 @@ namespace Engine
 		bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample" );
 		bloom_shader_upsample   = BuiltinShaders::Get( "Post-Process Bloom Upsample" );
 
-		tone_mapping_shader = BuiltinShaders::Get( "Tone Mapping (Bloom)" );
+		tone_mapping_shader = BuiltinShaders::Get( "Tonemapping (Bloom)" );
 	}
 
 	void Renderer::InitializeBuiltinFullscreenEffects()
@@ -1604,7 +1604,7 @@ namespace Engine
 			}
 		};
 
-		// TODO: Handle no tone mapping case.
+		// TODO: Handle no tonemapping case.
 
 		tone_mapping.material.Set( "uniform_exposure", 1.0f );
 		tone_mapping.material.Set( "uniform_bloom_intensity", 0.004f );
