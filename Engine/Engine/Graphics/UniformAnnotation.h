@@ -3,9 +3,9 @@
 // std Includes.
 #include <string>
 
-namespace Engine
+namespace Engine::UniformAnnotation
 {
-	enum class UsageHint
+	enum class Type
 	{
 		Unassigned, // This is necessary to be able to have a None value & to be able to check whether there is a mismatch between multiple stages of the shader for a given parameter.
 
@@ -20,25 +20,25 @@ namespace Engine
 		AsSlider_Normalized_Percentage_Logarithmic
 	};
 
-	static UsageHint UsageHint_StringToEnum( const std::string& string )
+	static Type Type_StringToEnum( const std::string& string )
 	{
 		if( string == "color3" )
-			return UsageHint::AsColor3;
+			return Type::AsColor3;
 		else if( string == "color4" )
-			return UsageHint::AsColor4;
+			return Type::AsColor4;
 		else if( string.compare( 0, 5, "array", 5 ) == 0 )
-			return UsageHint::AsArray;
+			return Type::AsArray;
 		else if( string == "slider_in_pixels" )
-			return UsageHint::AsSlider_In_Pixels;
+			return Type::AsSlider_In_Pixels;
 		else if( string == "normalized" )
-			return UsageHint::AsSlider_Normalized;
+			return Type::AsSlider_Normalized;
 		else if( string == "normalized_logarithmic" )
-			return UsageHint::AsSlider_Normalized_Logarithmic;
+			return Type::AsSlider_Normalized_Logarithmic;
 		else if( string == "normalized_percentage" )
-			return UsageHint::AsSlider_Normalized_Percentage;
+			return Type::AsSlider_Normalized_Percentage;
 		else if( string == "normalized_percentage_logarithmic" )
-			return UsageHint::AsSlider_Normalized_Percentage_Logarithmic;
+			return Type::AsSlider_Normalized_Percentage_Logarithmic;
 		else
-			return UsageHint::None;
+			return Type::None;
 	}
 }

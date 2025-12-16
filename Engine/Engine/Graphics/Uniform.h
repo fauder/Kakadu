@@ -2,7 +2,7 @@
 
 // Engine Includes.
 #include "Graphics.h"
-#include "UsageHint.h"
+#include "UniformAnnotation.h"
 #include "Core/Blob.hpp"
 
 // std Includes.
@@ -34,8 +34,8 @@ namespace Engine
 			bool is_buffer_member;
 
 			std::string editor_name;
-			UsageHint usage_hint;
-			int usage_hint_array_dimensions[ 3 ];
+			UniformAnnotation::Type annotation_type;
+			int annotation_meta_data[ 3 ];
 		};
 
 		enum class BufferCategory

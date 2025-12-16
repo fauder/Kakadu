@@ -537,7 +537,7 @@ private:
 		bool LinkProgram( const unsigned int vertex_shader_id, const unsigned int geometry_shader_id, const unsigned int fragment_shader_id );
 
 		/*std::string ShaderSource_CommentsStripped( const std::string& shader_source );*/
-		void ParseShaderSource_UniformUsageHints( const std::string& shader_source, const ShaderType shader_type );
+		void ParseShaderSource_UniformAnnotations( const std::string& shader_source, const ShaderType shader_type );
 		void ParseShaderSource_VertexLayout( std::string shader_source );
 
 /* Shader Introspection: */

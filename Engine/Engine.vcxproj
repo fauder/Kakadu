@@ -365,7 +365,7 @@
     <ClInclude Include="Engine\Graphics\UniformBlockBindingPointManager.h" />
     <ClInclude Include="Engine\Graphics\Uniform.h" />
     <ClInclude Include="Engine\Graphics\UniformBufferManager.h" />
-    <ClInclude Include="Engine\Graphics\UsageHint.h" />
+    <ClInclude Include="Engine\Graphics\UniformAnnotation.h" />
     <ClInclude Include="Engine\Scene\Camera.h" />
     <ClInclude Include="Engine\Graphics\Color.hpp" />
     <ClInclude Include="Engine\Core\EntryPoint.h" />

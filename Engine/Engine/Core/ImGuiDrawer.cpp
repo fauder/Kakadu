@@ -579,31 +579,34 @@ namespace Engine::ImGuiDrawer
 
 					ImGui::TableNextRow();
 
-					auto DrawWithHints = [ & ]( UsageHint usage_hint, GLenum type, std::span< const int, 3 > usage_hint_array_dimensions, void* uniform_memory )
+					auto DrawUniformWithAnnotations = [ & ]( UniformAnnotation::Type annotation_type,
+															 GLenum type,
+															 std::span< const int, 3 > annotation_meta_data,
+															 void* uniform_memory )
 					{
-						switch( usage_hint )
+						switch( annotation_type )
 						{
-							case UsageHint::AsColor3:
+							case UniformAnnotation::Type::AsColor3:
 								is_modified |= Draw( *reinterpret_cast< Color3* >( uniform_memory ) );
 								break;
-							case UsageHint::AsColor4:
+							case UniformAnnotation::Type::AsColor4:
 								is_modified |= Draw( *reinterpret_cast< Color4* >( uniform_memory ) );
 								break;
-							case UsageHint::AsArray:
+							case UniformAnnotation::Type::AsArray:
 							{
 								// TODO: Handle different array ranks (currently hard-coded to 2).
 
 								void* address = uniform_memory;
 
 								const auto& style = ImGui::GetStyle();
-								ImGui::PushItemWidth( usage_hint_array_dimensions[ 1 ] * ImGui::CalcTextSize( " []" ).x + 
-													  ( usage_hint_array_dimensions[ 1 ] - 1 ) * style.ItemInnerSpacing.x );
+								ImGui::PushItemWidth( annotation_meta_data[ 1 ] * ImGui::CalcTextSize( " []" ).x + 
+													  ( annotation_meta_data[ 1 ] - 1 ) * style.ItemInnerSpacing.x );
 
-								for( int i = 0; i < usage_hint_array_dimensions[ 0 ]; i++ )
+								for( int i = 0; i < annotation_meta_data[ 0 ]; i++ )
 								{
-									for( int j = 0; j < usage_hint_array_dimensions[ 1 ]; j++ )
+									for( int j = 0; j < annotation_meta_data[ 1 ]; j++ )
 									{
-										void* element_address = GL::Type::AddressOf( type, address, + i * usage_hint_array_dimensions[ 1 ] + j );
+										void* element_address = GL::Type::AddressOf( type, address, + i * annotation_meta_data[ 1 ] + j );
 										ImGui::PushID( element_address );
 										is_modified |= Draw( type, element_address );
 										ImGui::PopID();
@@ -618,23 +621,23 @@ namespace Engine::ImGuiDrawer
 								ImGui::NewLine();
 							}
 								break;
-							case UsageHint::AsSlider_In_Pixels:
+							case UniformAnnotation::Type::AsSlider_In_Pixels:
 								is_modified |= ImGui::SliderFloat( "##scalar_float", reinterpret_cast< float* >( uniform_memory ), 0.0f, 1.0f, "%.2f pixels" );
 								break;
-							case UsageHint::AsSlider_Normalized:
-							case UsageHint::AsSlider_Normalized_Logarithmic:
+							case UniformAnnotation::Type::AsSlider_Normalized:
+							case UniformAnnotation::Type::AsSlider_Normalized_Logarithmic:
 								is_modified |= ImGui::SliderFloat( "##scalar_float", reinterpret_cast< float* >( uniform_memory ), 0.0f, 1.0f, GetFormat< float >(),
-																   usage_hint == UsageHint::AsSlider_Normalized_Logarithmic
+																   annotation_type == UniformAnnotation::Type::AsSlider_Normalized_Logarithmic
 																   ? ImGuiSliderFlags_Logarithmic
 																   : ImGuiSliderFlags_None );
 								break;
-							case UsageHint::AsSlider_Normalized_Percentage:
-							case UsageHint::AsSlider_Normalized_Percentage_Logarithmic:
+							case UniformAnnotation::Type::AsSlider_Normalized_Percentage:
+							case UniformAnnotation::Type::AsSlider_Normalized_Percentage_Logarithmic:
 							{
 								float& actual_uniform = *reinterpret_cast< float* >( uniform_memory );
 								float temp = actual_uniform * 100.0f;
 								if( ImGui::SliderFloat( "##scalar_float", &temp, 0.0f, 100.0f, "%.1f%%",
-														usage_hint == UsageHint::AsSlider_Normalized_Percentage_Logarithmic
+														annotation_type == UniformAnnotation::Type::AsSlider_Normalized_Percentage_Logarithmic
 															? ImGuiSliderFlags_Logarithmic
 															: ImGuiSliderFlags_None ) )
 								{
@@ -664,7 +667,7 @@ namespace Engine::ImGuiDrawer
 
 						/* No need to update the Material when the Draw() call below returns true; Memory from the blob is provided directly to Draw(), so the Material is updated. */
 						ImGui::PushID( ( void* )&uniform_info );
-						DrawWithHints( uniform_info.usage_hint, uniform_info.type, uniform_info.usage_hint_array_dimensions, material.Get( uniform_info ) );
+						DrawUniformWithAnnotations( uniform_info.annotation_type, uniform_info.type, uniform_info.annotation_meta_data, material.Get( uniform_info ) );
 						ImGui::PopID();
 					}
 
@@ -697,9 +700,9 @@ namespace Engine::ImGuiDrawer
 										std::byte* effective_offset = memory_blob + uniform_buffer_member_info->offset;
 
 										ImGui::PushID( ( void* )uniform_buffer_member_info );
-										DrawWithHints( uniform_buffer_member_info->usage_hint, uniform_buffer_member_info->type,
-													   uniform_buffer_member_info->usage_hint_array_dimensions, 
-													   effective_offset );
+										DrawUniformWithAnnotations( uniform_buffer_member_info->annotation_type, uniform_buffer_member_info->type,
+																	uniform_buffer_member_info->annotation_meta_data,
+																	effective_offset );
 										/* Draw() call in the above lambda modifies the memory provided but an explicit material.SetPartial_Struct() call is necessary for proper registration of the modification. */
 										if( is_modified )
 											material.SetPartial_Struct( uniform_buffer_name, uniform_buffer_member_struct_name.c_str(), effective_offset );
@@ -740,9 +743,9 @@ namespace Engine::ImGuiDrawer
 												std::byte* effective_offset = memory_blob + uniform_buffer_member_info->offset + array_index * uniform_buffer_member_array_info.stride;
 
 												ImGui::PushID( effective_offset );
-												DrawWithHints( uniform_buffer_member_info->usage_hint, uniform_buffer_member_info->type,
-															   uniform_buffer_member_info->usage_hint_array_dimensions,
-															   effective_offset );
+												DrawUniformWithAnnotations( uniform_buffer_member_info->annotation_type, uniform_buffer_member_info->type,
+																			uniform_buffer_member_info->annotation_meta_data,
+																			effective_offset );
 												/* Draw() call in the above lambda modifies the memory provided but an explicit material.SetPartial_Array() call is necessary for proper registration of the modification. */
 												if( is_modified )
 													material.SetPartial_Array( uniform_buffer_name, uniform_buffer_member_array_name.c_str(), array_index, effective_offset );
@@ -776,9 +779,9 @@ namespace Engine::ImGuiDrawer
 								std::byte* effective_offset = memory_blob + uniform_buffer_member_info->offset;
 
 								ImGui::PushID( ( void* )uniform_buffer_member_info );
-								DrawWithHints( uniform_buffer_member_info->usage_hint, uniform_buffer_member_info->type,
-											   uniform_buffer_member_info->usage_hint_array_dimensions,
-											   effective_offset );
+								DrawUniformWithAnnotations( uniform_buffer_member_info->annotation_type, uniform_buffer_member_info->type,
+															uniform_buffer_member_info->annotation_meta_data,
+															effective_offset );
 								ImGui::EndDisabled();
 								/* Draw() call in the above lambda modifies the memory provided but an explicit material.SetPartial() call is necessary for proper registration of the modification. */
 								if( is_modified )

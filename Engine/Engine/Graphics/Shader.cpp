@@ -287,10 +287,10 @@ namespace Engine
 			QueryUniformData();
 
 			ParseShaderSource_VertexLayout( *vertex_shader_source );
-			ParseShaderSource_UniformUsageHints( *vertex_shader_source, ShaderType::Vertex );
+			ParseShaderSource_UniformAnnotations( *vertex_shader_source, ShaderType::Vertex );
 			if( geometry_shader_source )
-				ParseShaderSource_UniformUsageHints( *geometry_shader_source, ShaderType::Geometry );
-			ParseShaderSource_UniformUsageHints( *fragment_shader_source, ShaderType::Fragment );
+				ParseShaderSource_UniformAnnotations( *geometry_shader_source, ShaderType::Geometry );
+			ParseShaderSource_UniformAnnotations( *fragment_shader_source, ShaderType::Fragment );
 
 			QueryUniformData_BlockIndexAndOffsetForBufferMembers();
 			QueryUniformBufferData( uniform_buffer_info_map_regular, Uniform::BufferCategory::Regular );
@@ -709,7 +709,7 @@ namespace Engine
 //	}
 #pragma endregion
 
-	void Shader::ParseShaderSource_UniformUsageHints( const std::string& shader_source, const ShaderType shader_type )
+	void Shader::ParseShaderSource_UniformAnnotations( const std::string& shader_source, const ShaderType shader_type )
 	{
 		/* First, detect the start/end positions of all uniform blocks and cache them so we can use them in the main uniform hunting loop below. */
 
@@ -772,7 +772,7 @@ namespace Engine
 							}
 							
 							const std::string hint_string( shader_source.substr( current_pos, token_end_pos - current_pos ) );
-							const auto hint = UsageHint_StringToEnum( hint_string );
+							const auto hint = UniformAnnotation::Type_StringToEnum( hint_string );
 
 							if( const auto semicolon_pos = std::string_view( shader_source ).rfind( ';', comment_block_start_token_pos);
 								semicolon_pos != std::string::npos )
@@ -782,7 +782,7 @@ namespace Engine
 								{
 									std::string uniform_name;
 
-									if( hint == UsageHint::AsArray )
+									if( hint == UniformAnnotation::Type::AsArray )
 									{
 										if( const auto first_square_bracket_pos = std::string_view( shader_source ).rfind( '[', delimiter_whitespace_pos );
 											first_square_bracket_pos != std::string::npos )
@@ -800,7 +800,7 @@ namespace Engine
 										uniform_name = shader_source.substr( delimiter_whitespace_pos + 1, semicolon_pos - delimiter_whitespace_pos - 1 );
 
 									if( auto iterator = uniform_info_map.find( uniform_name );
-										iterator != uniform_info_map.cend() && iterator->second.usage_hint != UsageHint::Unassigned && hint != iterator->second.usage_hint )
+										iterator != uniform_info_map.cend() && iterator->second.annotation_type != UniformAnnotation::Type::Unassigned && hint != iterator->second.annotation_type )
 									{
 										const std::string complete_error_string( std::string( "Shader Error (post-linking > parsing usage hints): " ) + ShaderTypeString( shader_type ) +
 																				 " shader \"" + name + "\" has mismatched uniform usage hints." );
@@ -819,8 +819,8 @@ namespace Engine
 
 										if( uniform_info_map.contains( uniform_name ) )
 										{
-											uniform_info_map[ uniform_name ].usage_hint = hint;
-											std::memcpy( uniform_info_map[ uniform_name ].usage_hint_array_dimensions, array_dimensions, sizeof( int ) * 3 );
+											uniform_info_map[ uniform_name ].annotation_type = hint;
+											std::memcpy( uniform_info_map[ uniform_name ].annotation_meta_data, array_dimensions, sizeof( int ) * 3 );
 										}
 									}
 								}
@@ -994,7 +994,7 @@ namespace Engine
 				.type                    = type,
 				.is_buffer_member		 = is_buffer_member,
 				.editor_name			 = UniformEditorName( uniform_book_keeping_info.name_holder ),
-				.usage_hint				 = UsageHint::Unassigned
+				.annotation_type         = UniformAnnotation::Type::Unassigned
 			};
 
 			offset += !is_buffer_member * size * array_element_count;

@@ -195,7 +195,7 @@
     <ClInclude Include="Engine\Graphics\MaterialData\MaterialData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\UsageHint.h">
+    <ClInclude Include="Engine\Graphics\UniformAnnotation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Core\AssetDatabase.hpp">
