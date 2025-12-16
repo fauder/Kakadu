@@ -478,9 +478,9 @@ namespace Engine
 
 		std::string_view shader_source_view( shader_source );
 
-		for( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" ) )
 		{
 			includes.emplace_back( std::string( ENGINE_SHADER_ROOT_ABSOLUTE "/" ) + std::string( *maybe_next_token ) );
 		}
@@ -499,7 +499,7 @@ namespace Engine
 			std::string_view shader_source_view( shader_source_to_modify );
 
 			shader_source_view.remove_prefix( hashtag_define_pos );
-			if( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t", " \t\r\n" );
+			if( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t", " \t\r\n" );
 				maybe_next_token.has_value() &&
 				/* Exclude macros; they must have parentheses at the end of the token => */ maybe_next_token->back() != ')' &&
 				std::find_if( features_to_set.begin(), features_to_set.end(), [ & ]( const std::string& feature )
@@ -528,17 +528,17 @@ namespace Engine
 		std::string_view shader_source_view( shader_source );
 
 		/* Parse declarations via "#pragma feature <feature_name>" syntax: */
-		for( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" ) )
 		{
 			features.try_emplace( std::string( *maybe_next_token ), std::nullopt, false );
 		}
 
 		/* Parse definitions via "#define <feature_name> <optional_value>" syntax: */
-		for( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" ) )
 		{
 			// TODO: The optional value may be another macro. That also needs to be replaced with the final value.
 			// TODO: Maybe it is best to prohibit declaring #define features directly:
@@ -718,9 +718,9 @@ namespace Engine
 
 		std::string_view source_view( shader_source );
 
-		for( auto maybe_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" );
+		for( auto maybe_token = Utility::String::ParseTokenAndAdvance_WithPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" );
 			 maybe_token.has_value();
-			 maybe_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" ) )
+			 maybe_token = Utility::String::ParseTokenAndAdvance_WithPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" ) )
 		{
 			/* This is a valid shader semantically, so no need for error checking below. */
 			const std::string uniform_block_name( *maybe_token );
@@ -860,15 +860,15 @@ namespace Engine
 
 		std::string_view shader_source_view( shader_source );
 
-		for( auto maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, { "layout", "location", "=" } );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, { "layout", "location", "=" } );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, { "layout", "location", "=" } ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, { "layout", "location", "=" } ) )
 		{
 			const std::string_view location_sv( *maybe_next_token );
 			unsigned int location;
 			if( std::from_chars( location_sv.data(), location_sv.data() + location_sv.size(), location ).ec == std::errc{} )
 			{
-				maybe_next_token = Utility::String::ParseNextTokenAndAdvance_WithPrefix( shader_source_view, "in" );
+				maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "in" );
 				if( maybe_next_token.has_value() )
 				{
 					std::string_view type_sv = *maybe_next_token;
