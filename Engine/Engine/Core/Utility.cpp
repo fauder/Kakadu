@@ -132,6 +132,36 @@ namespace Engine
 				return source; // Contains only white-space.
 			}
 
+			std::optional< std::string_view > ParseToken( const std::string_view source,
+														  const std::string_view opening_delimiters,
+														  const std::string_view closing_delimiters )
+			{
+				if( opening_delimiters.empty() )
+				{
+					if( const auto closing_delimiters_pos = source.find_first_of( closing_delimiters );
+						closing_delimiters_pos != std::string_view::npos )
+					{
+						std::string_view parsed_token = source.substr( 0, closing_delimiters_pos );
+						return parsed_token;
+					}
+				}
+				else
+				{
+					if( const auto token_start_pos = source.find_first_not_of( opening_delimiters );
+						token_start_pos != std::string_view::npos )
+					{
+						if( const auto token_end_pos = source.find_first_of( closing_delimiters, token_start_pos );
+							token_end_pos != std::string_view::npos )
+						{
+							std::string_view parsed_token = source.substr( token_start_pos, token_end_pos - token_start_pos );
+							return parsed_token;
+						}
+					}
+				}
+
+				return std::nullopt;
+			}
+
 			std::optional< std::string_view > ParseTokenAndAdvance( std::string_view& source_to_advance,
 																	const std::string_view opening_delimiters,
 																	const std::string_view closing_delimiters )
@@ -198,6 +228,30 @@ namespace Engine
 				source_to_advance.remove_prefix( preceding_token_pos + last_preceding_token_size );
 
 				return ParseTokenAndAdvance( source_to_advance, opening_delimiters, closing_delimiters );
+			}
+
+			std::vector< std::string_view > ParseAndSplitLine_SkipPrefix( std::string_view& source,
+																		  const std::string_view prefix_to_skip,
+																		  const std::string_view opening_delimiters,
+																		  const std::string_view closing_delimiters )
+			{
+				if( auto preceding_token_pos = source.find( prefix_to_skip );
+					preceding_token_pos != std::string_view::npos )
+				{
+					source.remove_prefix( preceding_token_pos + prefix_to_skip.size() );
+					if( auto maybe_rest_of_the_line = ParseNextLineAndAdvance( source );
+						maybe_rest_of_the_line.has_value() )
+					{
+						return Split( *maybe_rest_of_the_line, opening_delimiters, closing_delimiters );
+					}
+				}
+
+				return {};
+			}
+
+			std::optional< std::string_view > ParseNextLine( std::string_view& source, const std::string_view end_delimiter )
+			{
+				return ParseToken( source, "", end_delimiter );
 			}
 
 			std::optional< std::string_view > ParseNextLineAndAdvance( std::string_view& source, const std::string_view end_delimiter )

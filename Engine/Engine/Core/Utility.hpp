@@ -1,7 +1,12 @@
 #pragma once
 
+// Engine Includes.
+#include "Assertion.h"
+
 // std Includes.
 #include <array>
+#include <charconv>
+#include <iostream>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -20,6 +25,9 @@ namespace Engine
 			std::string_view RemoveWhitespace( const std::string_view source );
 			std::string_view FindPreviousWord( const std::string_view source, const std::size_t offset );
 
+			std::optional< std::string_view > ParseToken( const std::string_view source,
+														  const std::string_view opening_delimiters = " \t",
+														  const std::string_view closing_delimiters = " \t" );
 			std::optional< std::string_view > ParseTokenAndAdvance( std::string_view& source_to_advance,
 																	const std::string_view opening_delimiters = " \t",
 																	const std::string_view closing_delimiters = " \t" );
@@ -31,6 +39,11 @@ namespace Engine
 																			   std::initializer_list< const std::string_view > prefixes_to_skip,
 																			   const std::string_view opening_delimiters = " \t",
 																			   const std::string_view closing_delimiters = " \t" );
+			std::vector< std::string_view > ParseAndSplitLine_SkipPrefix( std::string_view& source,
+																		  const std::string_view prefix_to_skip,
+																		  const std::string_view opening_delimiters = " \t",
+																		  const std::string_view closing_delimiters = " \t" );
+			std::optional< std::string_view > ParseNextLine( std::string_view& source, const std::string_view end_delimiter = "\n" );
 			std::optional< std::string_view > ParseNextLineAndAdvance( std::string_view& source, const std::string_view end_delimiter = "\n" );
 
 			void Replace( std::string& source, const std::string_view find_this, const std::string_view replace_with_this );
@@ -85,6 +98,35 @@ namespace Engine
 				return result;
 			}
 
+			template< std::integral Type >
+			Type ConvertToNumber( const std::string_view as_string )
+			{
+				Type numeric_value{ 0 };
+#ifdef _EDITOR
+				auto [ ptr, ec ] = std::from_chars( as_string.data(), as_string.data() + as_string.size(), numeric_value );
+				if( ec == std::errc::invalid_argument )
+					std::cerr << "Engine::Utility::String::ConvertToNumber< " << typeid( Type ).name() << " >(): String \"" << as_string
+							  << "\" can not be converted to a number.\n";
+#else
+				std::from_chars( as_string.data(), as_string.data() + as_string.size(), numeric_value );
+#endif // _EDITOR
+				return numeric_value;
+			}
+
+			template< std::floating_point Type >
+			Type ConvertToNumber( const std::string_view as_string, const std::chars_format format = std::chars_format::general )
+			{
+				Type numeric_value{ 0 };
+#ifdef _EDITOR
+				auto [ ptr, ec ] = std::from_chars( as_string.data(), as_string.data() + as_string.size(), numeric_value, format );
+				if( ec == std::errc::invalid_argument )
+					std::cerr << "Engine::Utility::String::ConvertToNumber< " << typeid( Type ).name() << " >(): String \"" << as_string
+							  << "\" can not be converted to a number.\n";
+#else
+				std::from_chars( as_string.data(), as_string.data() + as_string.size(), numeric_value );
+#endif // _EDITOR
+				return numeric_value;
+			}
 
 #ifdef _WIN32
 			std::wstring ToWideString( const std::string& string );
