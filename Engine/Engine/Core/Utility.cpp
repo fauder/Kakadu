@@ -98,6 +98,20 @@ namespace Engine
 				return splitted;
 			}
 
+			std::vector< std::string_view > Split( std::string_view source, const std::string_view opening_delimiters, const std::string_view closing_delimiters )
+			{
+				std::vector< std::string_view > tokens;
+
+				std::optional< std::string_view > maybe_token;
+				while( maybe_token = ParseTokenAndAdvance( source, opening_delimiters, closing_delimiters ) )
+					tokens.push_back( *maybe_token );
+
+				if( !source.empty() && source.find_first_of( closing_delimiters ) == std::string::npos )
+					tokens.push_back( source );
+
+				return tokens;
+			}
+
 			std::string_view FindPreviousWord( const std::string_view source, const std::size_t offset )
 			{
 				const std::size_t last_char_pos = source.find_last_not_of( " \t", offset - 1 );

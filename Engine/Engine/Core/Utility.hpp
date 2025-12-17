@@ -38,6 +38,10 @@ namespace Engine
 			/* Returns either the multiple splitted string views or the source string in case delimiter was never found. */
 			std::vector< std::string_view > Split( std::string_view source, const char delimiter );
 
+			std::vector< std::string_view > Split( std::string_view source,
+												   const std::string_view opening_delimiters = " \t",
+												   const std::string_view closing_delimiters = " \t" );
+
 			/* https://stackoverflow.com/a/75619411/4495751 */
 			template< unsigned ... Length >
 			constexpr auto ConstexprConcatenate( const char( &...strings )[ Length ] )
