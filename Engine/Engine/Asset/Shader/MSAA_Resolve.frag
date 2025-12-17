@@ -10,6 +10,7 @@
 
 out vec4 out_color;
 
+#pragma driven
 uniform sampler2DMS uniform_tex;
 
 /* Below Tonemap operators are taken directly from Timothy Lottes' "Optimized Reversible Tonemapper for Resolve",

@@ -5,6 +5,7 @@
 
 out vec4 out_color;
 
+#pragma driven
 uniform sampler2D uniform_tex;
 
 void main()

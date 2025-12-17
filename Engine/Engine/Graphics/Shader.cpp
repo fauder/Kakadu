@@ -808,6 +808,7 @@ namespace Engine
 			{
 				case UniformAnnotation::Type::Color3:
 				case UniformAnnotation::Type::Color4:
+				case UniformAnnotation::Type::Driven:
 					break;
 				case UniformAnnotation::Type::Array:
 				{

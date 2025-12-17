@@ -18,6 +18,7 @@ namespace Engine::UniformAnnotation
 		Color4,
 		Array,
 		Slider,
+		Driven,
 	};
 
 	enum class SliderFlags : std::uint8_t
@@ -39,6 +40,8 @@ namespace Engine::UniformAnnotation
 			return Type::Array;
 		else if( string == "slider" )
 			return Type::Slider;
+		else if( string == "driven" )
+			return Type::Driven;
 		else
 			return Type::None;
 	}

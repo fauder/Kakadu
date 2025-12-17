@@ -7,6 +7,7 @@ out vec4 out_color;
 /* This texture needs:
  * 1) The wrapping mode to be set to clamp-to-edge.
  * 2) The filtering to be set to bilinear filtering. */
+#pragma driven
 uniform sampler2D uniform_tex_source;
 
 #pragma slider( 0, 0.1, logarithmic, "%.3f texels" )

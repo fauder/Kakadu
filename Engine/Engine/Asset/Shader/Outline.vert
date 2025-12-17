@@ -12,6 +12,7 @@ out vec4 varying_position_view_space;
 out vec4 varying_normal_view_space;
 out vec2 varying_tex_coords;
 
+#pragma driven
 uniform mat4x4 uniform_transform_world;
 uniform vec4 uniform_texture_scale_and_offset;
 

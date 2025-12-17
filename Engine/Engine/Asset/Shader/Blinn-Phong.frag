@@ -52,6 +52,7 @@ uniform float uniform_reflectivity;
 #endif
 
 #ifdef SHADOWS_ENABLED
+#pragma driven
 uniform sampler2D uniform_tex_shadow;
 #endif
 

@@ -667,7 +667,12 @@ namespace Engine::ImGuiDrawer
 
 								break;
 							}
-								
+							case UniformAnnotation::Type::Driven:
+								ImGui::BeginDisabled();
+								is_modified |= Draw( type, uniform_memory );
+								ImGui::EndDisabled();
+								break;
+
 							case UniformAnnotation::Type::None:
 							default:
 								is_modified |= Draw( type, uniform_memory );
@@ -838,12 +843,17 @@ namespace Engine::ImGuiDrawer
 						{
 							for( const auto& [ uniform_sampler_name, texture_pointer ] : texture_map )
 							{
-								ImGui::TableNextColumn(); ImGui::TextUnformatted( uniform_info_map.at( uniform_sampler_name ).editor_name.c_str() );
+								const auto& uniform_info = uniform_info_map.at( uniform_sampler_name );
+								ImGui::TableNextColumn(); ImGui::TextUnformatted( uniform_info.editor_name.c_str() );
 
 								ImGui::TableNextColumn();
 
 								const auto& current_texture_name( texture_pointer ? ICON_FA_IMAGE " " + texture_pointer->Name() : "<unassigned>" );
-								if( ImGui::BeginCombo( ( "##Texture Selection Combobox-" + uniform_sampler_name ).c_str(), current_texture_name.c_str(), ImGuiComboFlags_WidthFitPreview | ImGuiComboFlags_HeightLarge ) )
+								
+								ImGui::BeginDisabled( uniform_info.annotation_type == UniformAnnotation::Type::Driven );
+								if( ImGui::BeginCombo( ( "##Texture Selection Combobox-" + uniform_sampler_name ).c_str(),
+													   current_texture_name.c_str(),
+													   ImGuiComboFlags_WidthFitPreview | ImGuiComboFlags_HeightLarge ) )
 								{
 									const auto& texture_map( AssetDatabase< Texture >::Assets() );
 									for( const auto& [ texture_name, texture ] : texture_map )
@@ -854,6 +864,7 @@ namespace Engine::ImGuiDrawer
 									}
 									ImGui::EndCombo();
 								}
+								ImGui::EndDisabled();
 							}
 
 							ImGui::EndTable();

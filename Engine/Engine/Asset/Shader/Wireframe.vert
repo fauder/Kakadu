@@ -18,6 +18,7 @@ INSTANCE_WORLD_TRANSFORM    mat4 world_transform;
 #ifdef INSTANCING_ENABLED
 #define WORLD_TRANSFORM world_transform
 #else
+#pragma driven
 uniform mat4 uniform_transform_world;
 #define WORLD_TRANSFORM uniform_transform_world
 #endif

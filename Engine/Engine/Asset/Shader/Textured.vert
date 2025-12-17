@@ -9,6 +9,7 @@ TEXCOORDS vec2 tex_coords;
 
 out vec2 varying_tex_coords;
 
+#pragma driven
 uniform mat4x4 uniform_transform_world;
 uniform vec4 uniform_texture_scale_and_offset = vec4( 1, 1, 0, 0 );
 
