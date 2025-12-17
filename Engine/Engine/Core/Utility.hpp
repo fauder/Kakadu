@@ -17,6 +17,7 @@ namespace Engine
 		{
 			std::string_view RemoveLeadingWhitespace( const std::string_view source );
 			std::string_view RemoveTrailingWhitespace( const std::string_view source );
+			std::string_view RemoveWhitespace( const std::string_view source );
 			std::string_view FindPreviousWord( const std::string_view source, const std::size_t offset );
 			std::optional< std::string_view > ParseNextTokenAndAdvance( std::string_view& source, 
 																		const std::string_view opening_delimiters = " \t", const std::string_view closing_delimiters = " \t" );

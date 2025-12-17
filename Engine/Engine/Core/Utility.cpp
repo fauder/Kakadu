@@ -60,6 +60,11 @@ namespace Engine
 				return source;
 			}
 
+			std::string_view RemoveWhitespace( const std::string_view source )
+			{
+				return RemoveLeadingWhitespace( RemoveTrailingWhitespace( source ) );
+			}
+
 			void Replace( std::string& source, const std::string_view find_this, const std::string_view replace_with_this )
 			{
 				size_t start_pos = 0;
