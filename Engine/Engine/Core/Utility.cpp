@@ -38,17 +38,26 @@ namespace Engine
 
 		namespace String
 		{
-			std::string_view RemoveLeadingWhitespace( const std::string_view source )
+			std::string_view RemoveLeadingWhitespace( std::string_view source )
 			{
-				return std::string_view( source.cbegin() + source.find_first_not_of( " \t" ), source.cend() );
+				const auto pos = source.find_first_not_of( " \t" );
+				if( pos != std::string_view::npos )
+					source.remove_prefix( pos );
+				else
+					source.remove_prefix( source.size() ); // All whitespace.
+
+				return source;
 			}
 
-			std::string_view RemoveTrailingWhitespace( const std::string_view source )
+			std::string_view RemoveTrailingWhitespace( std::string_view source )
 			{
-				if( source.back() == ' ' || source.back() == '\t' )
-					return std::string_view( source.cbegin(), source.cbegin() + source.find_last_not_of( " \t" ) );
+				const auto pos = source.find_last_not_of( " \t" );
+				if( pos != std::string_view::npos )
+					source.remove_suffix( source.size() - ( pos + 1 ) );
+				else
+					source.remove_suffix( source.size() ); // All whitespace.
 
-				return source; // No trailing whitespace found.
+				return source;
 			}
 
 			void Replace( std::string& source, const std::string_view find_this, const std::string_view replace_with_this )
