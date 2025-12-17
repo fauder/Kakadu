@@ -19,16 +19,24 @@ namespace Engine
 			std::string_view RemoveTrailingWhitespace( const std::string_view source );
 			std::string_view RemoveWhitespace( const std::string_view source );
 			std::string_view FindPreviousWord( const std::string_view source, const std::size_t offset );
-			std::optional< std::string_view > ParseNextTokenAndAdvance( std::string_view& source, 
-																		const std::string_view opening_delimiters = " \t", const std::string_view closing_delimiters = " \t" );
-			std::optional< std::string_view > ParseTokenAndAdvance_WithPrefix( std::string_view& source,
-																			   const std::string_view preceding_token,
-																			   const std::string_view opening_delimiters = " \t", const std::string_view closing_delimiters = " \t" );
-			std::optional< std::string_view > ParseTokenAndAdvance_WithPrefix( std::string_view& source,
-																			   std::initializer_list< const std::string_view > preceding_tokens,
-																			   const std::string_view opening_delimiters = " \t", const std::string_view closing_delimiters = " \t" );
-			std::optional< std::string_view > ParseNextLineAndAdvance( std::string_view& source );
+
+			std::optional< std::string_view > ParseTokenAndAdvance( std::string_view& source_to_advance,
+																	const std::string_view opening_delimiters = " \t",
+																	const std::string_view closing_delimiters = " \t" );
+			std::optional< std::string_view > ParseTokenAndAdvance_SkipPrefix( std::string_view& source_to_advance,
+																			   const std::string_view prefix_to_skip,
+																			   const std::string_view opening_delimiters = " \t",
+																			   const std::string_view closing_delimiters = " \t" );
+			std::optional< std::string_view > ParseTokenAndAdvance_SkipPrefix( std::string_view& source_to_advance,
+																			   std::initializer_list< const std::string_view > prefixes_to_skip,
+																			   const std::string_view opening_delimiters = " \t",
+																			   const std::string_view closing_delimiters = " \t" );
+			std::optional< std::string_view > ParseNextLineAndAdvance( std::string_view& source, const std::string_view end_delimiter = "\n" );
+
 			void Replace( std::string& source, const std::string_view find_this, const std::string_view replace_with_this );
+
+			/* Returns either the multiple splitted string views or the source string in case delimiter was never found. */
+			std::vector< std::string_view > Split( std::string_view source, const char delimiter );
 
 			/* https://stackoverflow.com/a/75619411/4495751 */
 			template< unsigned ... Length >
@@ -73,8 +81,6 @@ namespace Engine
 				return result;
 			}
 
-			/* Returns either the multiple splitted string views or the source string in case delimiter was never found. */
-			std::vector< std::string_view > Split( std::string_view source, const char delimiter );
 
 #ifdef _WIN32
 			std::wstring ToWideString( const std::string& string );

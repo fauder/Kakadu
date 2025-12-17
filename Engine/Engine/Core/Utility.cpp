@@ -118,29 +118,30 @@ namespace Engine
 				return source; // Contains only white-space.
 			}
 
-			std::optional< std::string_view > ParseNextTokenAndAdvance( std::string_view& source, 
-																		const std::string_view opening_delimiters, const std::string_view closing_delimiters )
+			std::optional< std::string_view > ParseTokenAndAdvance( std::string_view& source_to_advance,
+																	const std::string_view opening_delimiters,
+																	const std::string_view closing_delimiters )
 			{
 				if( opening_delimiters.empty() )
 				{
-					if( const auto closing_delimiters_pos = source.find_first_of( closing_delimiters );
+					if( const auto closing_delimiters_pos = source_to_advance.find_first_of( closing_delimiters );
 						closing_delimiters_pos != std::string_view::npos )
 					{
-						std::string_view parsed_token = source.substr( 0, closing_delimiters_pos );
-						source.remove_prefix( closing_delimiters_pos + 1 );
+						std::string_view parsed_token = source_to_advance.substr( 0, closing_delimiters_pos );
+						source_to_advance.remove_prefix( closing_delimiters_pos + 1 );
 						return parsed_token;
 					}
 				}
 				else
 				{
-					if( const auto opening_delimiters_pos = source.find_first_of( opening_delimiters );
-						opening_delimiters_pos != std::string_view::npos )
+					if( const auto token_start_pos = source_to_advance.find_first_not_of( opening_delimiters );
+						token_start_pos != std::string_view::npos )
 					{
-						if( const auto closing_delimiters_pos = source.find_first_of( closing_delimiters, opening_delimiters_pos + 1 );
-							closing_delimiters_pos != std::string_view::npos )
+						if( const auto token_end_pos = source_to_advance.find_first_of( closing_delimiters, token_start_pos );
+							token_end_pos != std::string_view::npos )
 						{
-							std::string_view parsed_token = source.substr( opening_delimiters_pos + 1, closing_delimiters_pos - ( opening_delimiters_pos + 1 ) );
-							source.remove_prefix( closing_delimiters_pos + 1 );
+							std::string_view parsed_token = source_to_advance.substr( token_start_pos, token_end_pos - token_start_pos );
+							source_to_advance.remove_prefix( token_end_pos + 1 );
 							return parsed_token;
 						}
 					}
@@ -149,38 +150,45 @@ namespace Engine
 				return std::nullopt;
 			}
 
-			std::optional< std::string_view > ParseTokenAndAdvance_WithPrefix( std::string_view& source,
-																			   const std::string_view preceding_token,
-																			   const std::string_view opening_delimiters, const std::string_view closing_delimiters )
+			std::optional< std::string_view > ParseTokenAndAdvance_SkipPrefix( std::string_view& source_to_advance,
+																			   const std::string_view prefix_to_skip,
+																			   const std::string_view opening_delimiters,
+																			   const std::string_view closing_delimiters )
 			{
-				if( auto preceding_token_pos = source.find( preceding_token );
+				if( auto preceding_token_pos = source_to_advance.find( prefix_to_skip );
 					preceding_token_pos == std::string_view::npos )
 					return std::nullopt;
 				else
 				{
-					source.remove_prefix( preceding_token_pos + 1 );
-					return ParseNextTokenAndAdvance( source, opening_delimiters, closing_delimiters );
+					source_to_advance.remove_prefix( preceding_token_pos + 1 );
+					return ParseTokenAndAdvance( source_to_advance, opening_delimiters, closing_delimiters );
 				}
 			}
 
-			std::optional< std::string_view > ParseTokenAndAdvance_WithPrefix( std::string_view& source,
-																			   std::initializer_list< const std::string_view > preceding_tokens,
-																			   const std::string_view opening_delimiters, const std::string_view closing_delimiters )
+			std::optional< std::string_view > ParseTokenAndAdvance_SkipPrefix( std::string_view& source_to_advance,
+																			   std::initializer_list< const std::string_view > prefixes_to_skip,
+																			   const std::string_view opening_delimiters,
+																			   const std::string_view closing_delimiters )
 			{
 				std::size_t preceding_token_pos = 0;
-				for( auto& preceding_token : preceding_tokens )
-					if( preceding_token_pos = source.find( preceding_token, preceding_token_pos );
+				std::size_t last_preceding_token_size = 0;
+				for( auto& preceding_token : prefixes_to_skip )
+				{
+					if( preceding_token_pos = source_to_advance.find( preceding_token, preceding_token_pos );
 						preceding_token_pos == std::string_view::npos )
 						return std::nullopt;
 
-				source.remove_prefix( preceding_token_pos + 1 );
+					last_preceding_token_size = preceding_token.size();
+				}
 
-				return ParseNextTokenAndAdvance( source, opening_delimiters, closing_delimiters );
+				source_to_advance.remove_prefix( preceding_token_pos + last_preceding_token_size );
+
+				return ParseTokenAndAdvance( source_to_advance, opening_delimiters, closing_delimiters );
 			}
 
-			std::optional< std::string_view > ParseNextLineAndAdvance( std::string_view& source )
+			std::optional< std::string_view > ParseNextLineAndAdvance( std::string_view& source, const std::string_view end_delimiter )
 			{
-				return ParseNextTokenAndAdvance( source, "", "\n" );
+				return ParseTokenAndAdvance( source, "", end_delimiter );
 			}
 
 #ifdef _WIN32
