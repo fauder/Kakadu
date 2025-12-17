@@ -7,7 +7,8 @@ out vec4 out_color;
 #ifdef INSTANCING_ENABLED
 in vec4 varying_color;
 #else
-uniform vec4 uniform_color; /* _hint_color4 */
+#pragma color4
+uniform vec4 uniform_color;
 #endif
 
 void main()

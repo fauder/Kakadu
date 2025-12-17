@@ -3,8 +3,10 @@
 
 #include "_Intrinsic_Other.glsl"
 
-uniform vec4 uniform_color; /* _hint_color4 */
-uniform float uniform_line_thickness; /* _hint_slider_in_pixels */
+#pragma color4
+uniform vec4 uniform_color;
+#pragma slider( 0, 1, "%.1f Pixels" )
+uniform float uniform_line_thickness;
 
 #pragma feature OFFSET_DEPTH
 #ifdef OFFSET_DEPTH

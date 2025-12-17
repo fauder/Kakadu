@@ -15,6 +15,7 @@ out vec2 varying_tex_coords;
 uniform mat4x4 uniform_transform_world;
 uniform vec4 uniform_texture_scale_and_offset;
 
+#pragma slider( 0, 5, logarithmic )
 uniform float uniform_outline_thickness;
 
 void main()

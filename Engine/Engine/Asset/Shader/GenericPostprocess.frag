@@ -15,7 +15,8 @@ uniform sampler2D uniform_tex;
 //    float values[ KERNEL_WIDTH * KERNEL_HEIGHT ];
 //} uniform_kernel_data;
 
-uniform float uniform_kernel[ KERNEL_WIDTH * KERNEL_HEIGHT ]; /* _hint_array_3_3 */
+#pragma array( 3, 3 )
+uniform float uniform_kernel[ KERNEL_WIDTH * KERNEL_HEIGHT ];
 
 void main()
 {
@@ -31,7 +32,7 @@ void main()
         {
             int kernel_index_horizontal = column_index - kernel_to_texel_index_offset_horizontal;
             samples[ row_index * KERNEL_WIDTH + column_index ] = texture( uniform_tex, gl_FragCoord.xy + vec2( float( kernel_index_horizontal ) / _INTRINSIC_VIEWPORT_SIZE.x, 
-                                                                                                                        float( kernel_index_vertical   ) / _INTRINSIC_VIEWPORT_SIZE.y ) );
+                                                                                                               float( kernel_index_vertical   ) / _INTRINSIC_VIEWPORT_SIZE.y ) );
         }
     }
 	

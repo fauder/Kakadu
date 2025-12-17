@@ -10,7 +10,8 @@ out vec4 out_color;
 uniform sampler2D uniform_tex_color;
 #ifdef BLOOM
 uniform sampler2D uniform_tex_bloom;
-uniform float uniform_bloom_intensity; /* _hint_normalized_percentage_logarithmic */
+#pragma slider( 0, 1, logarithmic, percentage )
+uniform float uniform_bloom_intensity;
 #endif
 
 uniform float uniform_exposure;

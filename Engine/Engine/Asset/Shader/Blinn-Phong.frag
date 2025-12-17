@@ -30,10 +30,12 @@ out vec4 out_color;
 layout ( std140 ) uniform BlinnPhongMaterialData
 {
 /* These 2 are combined into a vec4 on cpu side. */
-	vec3 color_diffuse; /* _hint_color3 */
+	#pragma color3
+	vec3 color_diffuse;
 	bool has_texture_diffuse;
 
-	vec3 color_emission; /* _hint_color3 */
+	#pragma color3
+	vec3 color_emission;
 	float shininess;
 } uniform_blinn_phong_material_data;
 
@@ -45,7 +47,8 @@ uniform sampler2D uniform_tex_emission;
 #ifdef SKYBOX_ENVIRONMENT_MAPPING
 uniform samplerCube uniform_tex_skybox;
 uniform sampler2D uniform_tex_reflection;
-uniform float uniform_reflectivity; /* _hint_normalized_percentage */
+#pragma slider( 0, 100, percentage )
+uniform float uniform_reflectivity;
 #endif
 
 #ifdef SHADOWS_ENABLED
@@ -54,6 +57,7 @@ uniform sampler2D uniform_tex_shadow;
 
 #ifdef PARALLAX_MAPPING_ENABLED
 uniform sampler2D uniform_tex_parallax_height;
+#pragma slider( -1, 1, logarithmic )
 uniform float uniform_parallax_height_scale;
 uniform uvec2 uniform_parallax_depth_layer_count_min_max;
 #endif
