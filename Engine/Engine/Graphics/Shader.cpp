@@ -6,6 +6,7 @@
 
 // Engince Includes.
 #include "Asset/Paths.h"
+#include "Core/BitFlags.hpp"
 #include "Core/ServiceLocator.h"
 #include "Core/Utility.hpp"
 #include "GLLogger.h"
@@ -81,6 +82,8 @@ namespace Engine
 
 		uniform_book_keeping_info( std::move( donor.uniform_book_keeping_info ) ),
 
+		uniform_annotation_format_string_table( std::move( donor.uniform_annotation_format_string_table ) ),
+
 		vertex_layout_source( std::move( donor.vertex_layout_source ) ),
 		vertex_layout_active( std::move( donor.vertex_layout_active ) )
 	{
@@ -116,6 +119,8 @@ namespace Engine
 		last_write_time_map = std::exchange( donor.last_write_time_map, {} );
 
 		uniform_book_keeping_info = std::move( donor.uniform_book_keeping_info );
+
+		uniform_annotation_format_string_table = std::move( donor.uniform_annotation_format_string_table );
 
 		vertex_layout_source = std::move( donor.vertex_layout_source );
 		vertex_layout_active = std::move( donor.vertex_layout_active );
@@ -358,6 +363,13 @@ namespace Engine
 		return false;
 	}
 
+#ifdef _EDITOR
+	const char* Shader::GetAnnotationFormatString( const std::uint16_t annotation_format_string_id )
+	{
+		return uniform_annotation_format_string_table[ annotation_format_string_id ].c_str();
+	}
+#endif // _EDITOR
+
 	void Shader::SetUniform( const Uniform::Information& uniform_info, const void* value_pointer )
 	{
 		switch( uniform_info.type )
@@ -478,9 +490,9 @@ namespace Engine
 
 		std::string_view shader_source_view( shader_source );
 
-		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, "#include", R"(")", R"(")" );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#include", R"(")", R"(")" ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, "#include", R"(")", R"(")" ) )
 		{
 			includes.emplace_back( std::string( ENGINE_SHADER_ROOT_ABSOLUTE "/" ) + std::string( *maybe_next_token ) );
 		}
@@ -499,7 +511,7 @@ namespace Engine
 			std::string_view shader_source_view( shader_source_to_modify );
 
 			shader_source_view.remove_prefix( hashtag_define_pos );
-			if( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t", " \t\r\n" );
+			if( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, "#define", " \t", " \t\r\n" );
 				maybe_next_token.has_value() &&
 				/* Exclude macros; they must have parentheses at the end of the token => */ maybe_next_token->back() != ')' &&
 				std::find_if( features_to_set.begin(), features_to_set.end(), [ & ]( const std::string& feature )
@@ -528,17 +540,17 @@ namespace Engine
 		std::string_view shader_source_view( shader_source );
 
 		/* Parse declarations via "#pragma feature <feature_name>" syntax: */
-		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" ) )
 		{
 			features.try_emplace( std::string( *maybe_next_token ), std::nullopt, false );
 		}
 
 		/* Parse definitions via "#define <feature_name> <optional_value>" syntax: */
-		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, "#define", " \t\r\n", " \t\r\n" ) )
 		{
 			// TODO: The optional value may be another macro. That also needs to be replaced with the final value.
 			// TODO: Maybe it is best to prohibit declaring #define features directly:
@@ -552,7 +564,7 @@ namespace Engine
 			{
 				shader_source_view.remove_prefix( token_pos );
 				features.try_emplace( std::string( *maybe_next_token ),
-									  std::string( *Utility::String::ParseNextTokenAndAdvance( shader_source_view, "", " \t\r\n" ) ),
+									  std::string( *Utility::String::ParseTokenAndAdvance( shader_source_view, "", " \t\r\n" ) ),
 									  true );
 			}
 			else
@@ -718,9 +730,9 @@ namespace Engine
 
 		std::string_view source_view( shader_source );
 
-		for( auto maybe_token = Utility::String::ParseTokenAndAdvance_WithPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" );
+		for( auto maybe_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" );
 			 maybe_token.has_value();
-			 maybe_token = Utility::String::ParseTokenAndAdvance_WithPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" ) )
+			 maybe_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" ) )
 		{
 			/* This is a valid shader semantically, so no need for error checking below. */
 			const std::string uniform_block_name( *maybe_token );
@@ -734,117 +746,179 @@ namespace Engine
 
 			source_view.remove_prefix( end_pos + 1 );
 		}
-			 
-		/* Main uniform hunting loop: */
-		std::size_t current_pos = 0;
-		do
+
+		auto UniformIsInsideBlock = [ & ]( std::string& block_name )
 		{
-			if( const auto comment_block_start_token_pos = shader_source.find( "/*", current_pos );
-				comment_block_start_token_pos != std::string::npos )
+			if( auto it = std::find_if( uniform_block_spans.cbegin(), uniform_block_spans.cend(),
+										[ & ]( const auto& pair )
+										{
+											const std::size_t source_view_pos = std::size_t( source_view.data() - shader_source.data() );
+											return source_view_pos > pair.second.begin && source_view_pos < pair.second.end;
+										} );
+				it != uniform_block_spans.cend() )
 			{
-				current_pos = comment_block_start_token_pos;
-				if( const auto comment_block_end_token_pos = shader_source.find( "*/", current_pos );
-					comment_block_end_token_pos != std::string::npos )
-				{
-					if( const auto hint_token_pos = shader_source.find( "_hint_", current_pos );
-						hint_token_pos != std::string::npos && hint_token_pos < comment_block_end_token_pos )
-					{
-						if( const auto token_end_pos = shader_source.find( ' ', current_pos + 6 /* to get past "_hint_" */ );
-							token_end_pos != std::string::npos )
-						{
-							current_pos = hint_token_pos + 6 /* to get past "_hint_" */;
-
-							// TODO: Support parsing #defines from _hint_array_WIDTH_HEIGHT.
-
-							int array_dimensions[ 3 ] = { 0, 0, 0 };
-							auto dimension_current_pos = current_pos;
-							for( auto i = 0; i < 3; i++ )
-							{
-								if( const auto hint_array_dimensions_0_pos = shader_source.find( '_', dimension_current_pos );
-									hint_array_dimensions_0_pos != std::string::npos && hint_array_dimensions_0_pos < token_end_pos )
-								{
-									array_dimensions[ i ] = std::atoi( shader_source.data() + hint_array_dimensions_0_pos + 1 );
-
-									dimension_current_pos = hint_array_dimensions_0_pos + 1;
-								}
-								else
-									break;
-							}
-							
-							const std::string hint_string( shader_source.substr( current_pos, token_end_pos - current_pos ) );
-							const auto hint = UniformAnnotation::Type_StringToEnum( hint_string );
-
-							if( const auto semicolon_pos = std::string_view( shader_source ).rfind( ';', comment_block_start_token_pos);
-								semicolon_pos != std::string::npos )
-							{
-								if( const auto delimiter_whitespace_pos = std::string_view( shader_source ).rfind( ' ', semicolon_pos );
-									delimiter_whitespace_pos != std::string::npos )
-								{
-									std::string uniform_name;
-
-									if( hint == UniformAnnotation::Type::AsArray )
-									{
-										if( const auto first_square_bracket_pos = std::string_view( shader_source ).rfind( '[', delimiter_whitespace_pos );
-											first_square_bracket_pos != std::string::npos )
-										{
-											if( const auto delimiter_whitespace_before_bracket_pos = std::string_view( shader_source ).rfind( ' ', first_square_bracket_pos );
-												delimiter_whitespace_before_bracket_pos != std::string::npos )
-											{
-												uniform_name = shader_source.substr( delimiter_whitespace_before_bracket_pos + 1, first_square_bracket_pos - delimiter_whitespace_before_bracket_pos - 1 ) +
-																"[0]"; // GLSL array uniform naming convention.
-											}
-										}
-
-									}
-									else
-										uniform_name = shader_source.substr( delimiter_whitespace_pos + 1, semicolon_pos - delimiter_whitespace_pos - 1 );
-
-									if( auto iterator = uniform_info_map.find( uniform_name );
-										iterator != uniform_info_map.cend() && iterator->second.annotation_type != UniformAnnotation::Type::Unassigned && hint != iterator->second.annotation_type )
-									{
-										const std::string complete_error_string( std::string( "Shader Error (post-linking > parsing usage hints): " ) + ShaderTypeString( shader_type ) +
-																				 " shader \"" + name + "\" has mismatched uniform usage hints." );
-
-										LogErrors( complete_error_string );
-									}
-									else
-									{
-										if( auto it = std::find_if( uniform_block_spans.cbegin(), uniform_block_spans.cend(), [ delimiter_whitespace_pos ]( const auto& pair )
-											{
-												return delimiter_whitespace_pos > pair.second.begin && delimiter_whitespace_pos < pair.second.end;
-											} ); it != uniform_block_spans.cend() )
-										{
-											uniform_name = it->first + '.' + uniform_name;
-										}
-
-										if( uniform_info_map.contains( uniform_name ) )
-										{
-											uniform_info_map[ uniform_name ].annotation_type = hint;
-											std::memcpy( uniform_info_map[ uniform_name ].annotation_meta_data, array_dimensions, sizeof( int ) * 3 );
-										}
-									}
-								}
-							}
-						}
-					}
-					else
-						current_pos++; // To prevent endless loop on find() calls.
-				}
-				else
-					current_pos++; // To prevent endless loop on find() calls.
+				block_name = it->first;
+				return true;
 			}
-			else if( ( current_pos = shader_source.find( "//", current_pos ) ) != std::string::npos )
+
+			return false;
+		};
+
+		auto ParseFormatStringID = [ & ]( const std::string_view arg,
+										  decltype( Uniform::Information::annotation_format_string_id )& format_string_id )
+		{
+			if( arg.starts_with( '"' ) && arg.ends_with( '"' ) )
 			{
-				if( const auto hint_token_pos = shader_source.find( "_hint_", current_pos );
-					hint_token_pos != std::string::npos )
+				std::string_view format_string( arg.data() + 1, arg.size() - 2 ); // Strip double-quotes.
+				if( const auto it = std::find_if( uniform_annotation_format_string_table.cbegin(), uniform_annotation_format_string_table.cend(),
+												  [ & ]( const std::string& str )
+												  {
+													  return str.compare( format_string ) == 0;
+											      } );
+					it == uniform_annotation_format_string_table.cend() )
 				{
-					throw std::logic_error( "Not implemented yet!" );
+					format_string_id = ( std::uint16_t )uniform_annotation_format_string_table.size();
+					uniform_annotation_format_string_table.emplace_back( format_string );
 				}
 				else
-					current_pos++; // To prevent endless loop on find() calls.
+					format_string_id = ( std::uint16_t )std::distance( uniform_annotation_format_string_table.cbegin(), it );
+
+				return true;
+			}
+
+			return false;
+		};
+
+		/* Main uniform hunting loop; First parse the #pragma annotation line and determine the annotation type: */
+		std::vector< std::string_view > splitted_annotation_line;
+		source_view = std::string_view( shader_source ); // Rewind.
+		while( not ( splitted_annotation_line = Utility::String::ParseAndSplitLine_SkipPrefix( source_view, "#pragma", "(,|)", "(,|)" ) ).empty() )
+		{
+			decltype( Uniform::Information::annotation_meta_data ) meta_data = {};
+			decltype( Uniform::Information::annotation_format_string_id ) format_string_id = -1; // Sentinel value; indicates that no custom format is used.
+
+			for( auto& token : splitted_annotation_line )
+				token = Utility::String::RemoveWhitespace( token );
+
+			const UniformAnnotation::Type annotation_type = UniformAnnotation::StringToType( splitted_annotation_line[ 0 ] );
+
+			/* Parse meta-data for the annotation: */
+
+			switch( annotation_type )
+			{
+				case UniformAnnotation::Type::Color3:
+				case UniformAnnotation::Type::Color4:
+					break;
+				case UniformAnnotation::Type::Array:
+				{
+					const std::uint8_t available_dimension_count = Math::Min( 3, ( int )splitted_annotation_line.size() - 1 );
+					for( auto i = 0; i < available_dimension_count; i++ )
+					{
+						const auto parsed_number = Utility::String::ConvertToNumber< std::uint16_t >( splitted_annotation_line[ i + 1 ] );
+						std::memcpy( meta_data.data() + i * sizeof( std::uint16_t ), &parsed_number, sizeof( std::uint16_t ) );
+					}
+				}
+					break;
+				case UniformAnnotation::Type::Slider:
+				{
+					// Min. and max. values go to first 4 and 8 bytes respectively:
+					for( auto i = 0; i < 2; i++ )
+					{
+						const auto parsed_number = Utility::String::ConvertToNumber< float >( splitted_annotation_line[ i + 1 ] );
+						std::memcpy( meta_data.data() + i * sizeof( float ), &parsed_number, sizeof( float ) );
+					}
+
+					BitFlags< UniformAnnotation::SliderFlags > slider_flags;
+					for( auto i = 3; i < splitted_annotation_line.size(); i++ )
+					{
+						const auto& arg = splitted_annotation_line[ i ];
+						if( not ParseFormatStringID( arg, format_string_id ) )
+							slider_flags.Set( UniformAnnotation::StringToSliderFlags( splitted_annotation_line[ i ] ) );
+					}
+
+					meta_data[ 8 ] = slider_flags.ToBits();
+
+					break;
+				}
+				case UniformAnnotation::Type::None:
+				default:
+					continue;
+			}
+
+			/* Parse the uniform declaration line for the uniform name: */
+
+			std::string uniform_name, block_name;
+
+			const bool uniform_is_inside_block = UniformIsInsideBlock( block_name );
+
+			if( const auto maybe_uniform_declaration_line = Utility::String::ParseNextLine( source_view );
+				maybe_uniform_declaration_line.has_value() &&
+				( uniform_is_inside_block || maybe_uniform_declaration_line->find( "uniform" ) != std::string::npos ) ) // Peek, not advance.
+			{
+				std::string_view uniform_declaration_line = *maybe_uniform_declaration_line;
+
+				if( not uniform_is_inside_block )
+					uniform_declaration_line.remove_prefix( uniform_declaration_line.find( "uniform" ) + sizeof( "uniform" ) );
+
+				if( const auto semi_colon_pos = uniform_declaration_line.find( ';' );
+					semi_colon_pos != std::string::npos )
+				{
+					uniform_declaration_line.remove_suffix( uniform_declaration_line.size() - semi_colon_pos );
+
+					const auto square_bracket_pos = uniform_declaration_line.find( '[' );
+
+					if( square_bracket_pos == std::string::npos )
+						uniform_name = Utility::String::FindPreviousWord( uniform_declaration_line, uniform_declaration_line.size() );
+					else
+						uniform_name = std::string( Utility::String::FindPreviousWord( uniform_declaration_line, square_bracket_pos ) ) + "[0]";
+				}
+			}
+
+			/* Finally register the parsed information: */
+
+			if( not uniform_name.empty() )
+			{
+				// Name needs the block name prefix if inside a uniform block:
+				if( uniform_is_inside_block )
+					uniform_name = block_name + '.' + uniform_name;
+
+				if( auto iterator = uniform_info_map.find( uniform_name );
+					iterator != uniform_info_map.cend() )
+				{
+					if( annotation_type != iterator->second.annotation_type && iterator->second.annotation_type != UniformAnnotation::Type::Unassigned )
+					{
+						const std::string complete_error_string( std::string( "Shader Error (post-linking > parsing uniform annotations): " ) +
+																 " shader \"" + name + "\" has mismatched uniform annotations across its stages.\n" );
+
+						LogErrors( complete_error_string );
+					}
+					else // Finally register information:
+					{
+						uniform_info_map[ uniform_name ].annotation_type             = annotation_type;
+						uniform_info_map[ uniform_name ].annotation_format_string_id = format_string_id;
+						std::memcpy( uniform_info_map[ uniform_name ].annotation_meta_data.data(), meta_data.data(), sizeof( meta_data ) );
+					}
+				}
+				else // Uniform does not exist? Should not be possible unless the code above has logic errors. Better safe than sorry.
+				{
+					/* Actually, it IS possible due to #pragma feature functionality.For example, if the uniform declaration is inside a preprocessor block that is inactive for this shader variation,
+					 * then, the parsing code in this function will happily parse annotation data for it but the uniform itself will not be inside the map as the GL API will not report it.
+					 * Therefore, warning logs below are commented out as it would not be correct to log this warning for the scenario explained. */
+
+					/*const std::string complete_error_string( std::string( "Shader Error (post-linking > parsing uniform annotations): " ) + ShaderTypeString( shader_type ) +
+															 " shader \"" + name + "\" has an annotation declaration that can not be matched to a valid uniform.\n" );
+
+					LogErrors( complete_error_string );*/
+				}
+			}
+			else
+			{
+				const std::string complete_error_string( std::string( "Shader Error (post-linking > parsing uniform annotations): " ) + ShaderTypeString( shader_type ) +
+														 " shader \"" + name + "\" has an annotation declaration that is attached to a non-existing uniform.\n" );
+
+				LogErrors( complete_error_string );
 			}
 		}
-		while( current_pos != std::string::npos && current_pos != 0 );
 	}
 
 	void Shader::ParseShaderSource_VertexLayout( std::string shader_source )
@@ -860,15 +934,15 @@ namespace Engine
 
 		std::string_view shader_source_view( shader_source );
 
-		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, { "layout", "location", "=" } );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, { "layout", "location", "=" } );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, { "layout", "location", "=" } ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, { "layout", "location", "=" } ) )
 		{
 			const std::string_view location_sv( *maybe_next_token );
 			unsigned int location;
 			if( std::from_chars( location_sv.data(), location_sv.data() + location_sv.size(), location ).ec == std::errc{} )
 			{
-				maybe_next_token = Utility::String::ParseTokenAndAdvance_WithPrefix( shader_source_view, "in" );
+				maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, "in" );
 				if( maybe_next_token.has_value() )
 				{
 					std::string_view type_sv = *maybe_next_token;
@@ -993,8 +1067,8 @@ namespace Engine
 				.count_array             = array_element_count,
 				.type                    = type,
 				.is_buffer_member		 = is_buffer_member,
-				.editor_name			 = UniformEditorName( uniform_book_keeping_info.name_holder ),
-				.annotation_type         = UniformAnnotation::Type::Unassigned
+				.annotation_type         = UniformAnnotation::Type::Unassigned,
+				.editor_name			 = UniformEditorName( uniform_book_keeping_info.name_holder )
 			};
 
 			offset += !is_buffer_member * size * array_element_count;

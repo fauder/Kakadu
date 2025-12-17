@@ -30,12 +30,15 @@ namespace Engine
 			int size;
 			int offset;
 			int count_array; // Element count (>= 1) for arrays, 1 for non-arrays.
+
 			GLenum type;
 			bool is_buffer_member;
 
-			std::string editor_name;
 			UniformAnnotation::Type annotation_type;
-			int annotation_meta_data[ 3 ];
+			std::uint16_t annotation_format_string_id;
+			std::array< std::uint8_t, 16 > annotation_meta_data;
+
+			std::string editor_name;
 		};
 
 		enum class BufferCategory

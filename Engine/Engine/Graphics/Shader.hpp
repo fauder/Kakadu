@@ -13,6 +13,7 @@
 #include "Math/Vector.hpp"
 
 // std Includes.
+#include <deque>
 #include <filesystem>
 #include <optional>
 #include <string>
@@ -104,6 +105,10 @@ namespace Engine
 		inline const VertexLayout& GetActiveVertexLayout()	const { return vertex_layout_active; }
 
 		bool SourceFilesAreModified();
+
+#ifdef _EDITOR
+		const char* GetAnnotationFormatString( const std::uint16_t annotation_format_string_id );
+#endif // _EDITOR
 
 /* Uniform APIs: */
 
@@ -602,6 +607,9 @@ private:
 		std::unordered_map< std::string, std::filesystem::file_time_type > last_write_time_map;
 
 		Uniform::ActiveUniformBookKeepingInformation uniform_book_keeping_info;
+
+		// Expecting format string count to be < 100 so no de-dup map or anything. Keys will be looked-up before insertion.
+		std::deque< std::string > uniform_annotation_format_string_table;
 
 		VertexLayout vertex_layout_source;
 		VertexLayout vertex_layout_active;
