@@ -34,8 +34,9 @@ layout ( std140 ) uniform BlinnPhongMaterialData
 	vec3 color_diffuse;
 	bool has_texture_diffuse;
 
-	#pragma color3
+	#pragma color3( HDR )
 	vec3 color_emission;
+	#pragma slider( 0.01, 256, logarithmic ) 
 	float shininess;
 } uniform_blinn_phong_material_data;
 
