@@ -36,6 +36,10 @@ namespace Engine
 		constexpr float G() const { return data[ 1 ]; };
 		constexpr float B() const { return data[ 2 ]; };
 
+		constexpr float& R() { return data[ 0 ]; };
+		constexpr float& G() { return data[ 1 ]; };
+		constexpr float& B() { return data[ 2 ]; };
+
 		static constexpr Color3 Gray( float intensity = 0.55f )		{ return Color3( intensity, intensity, intensity ); }
 		static constexpr Color3 White()								{ return Color3(  1.0f,  1.0f,  1.0f ); }
 		static constexpr Color3 Black()								{ return Color3(  0.0f,  0.0f,  0.0f ); }
@@ -88,6 +92,11 @@ namespace Engine
 		constexpr float G() const { return data[ 1 ]; };
 		constexpr float B() const { return data[ 2 ]; };
 		constexpr float A() const { return data[ 3 ]; };
+
+		constexpr float& R() { return data[ 0 ]; };
+		constexpr float& G() { return data[ 1 ]; };
+		constexpr float& B() { return data[ 2 ]; };
+		constexpr float& A() { return data[ 3 ]; };
 
 		/* Because Microsoft is a JOKE company, Function name below has to be surrounded by parentheses to instruct preprocessor to not expand it, i.e., treat it as a macro. */
 		Color3& ( RGB )() { return reinterpret_cast< Color3& >( *this ); };
