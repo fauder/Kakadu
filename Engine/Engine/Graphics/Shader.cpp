@@ -808,6 +808,18 @@ namespace Engine
 			{
 				case UniformAnnotation::Type::Color3:
 				case UniformAnnotation::Type::Color4:
+				{
+					BitFlags< UniformAnnotation::ColorFlags > color_flags;
+					for( auto i = 1; i < splitted_annotation_line.size(); i++ )
+					{
+						const auto& arg = splitted_annotation_line[ i ];
+						if( not ParseFormatStringID( arg, format_string_id ) )
+							color_flags.Set( UniformAnnotation::StringToColorFlags( splitted_annotation_line[ i ] ) );
+					}
+
+					meta_data[ 0 ] = color_flags.ToBits();
+					break;
+				}
 				case UniformAnnotation::Type::Driven:
 					break;
 				case UniformAnnotation::Type::Array:

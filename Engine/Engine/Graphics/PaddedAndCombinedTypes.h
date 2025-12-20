@@ -6,7 +6,7 @@
 
 namespace Engine
 {
-	using Color3_Padded    = Color4;
+	using Color3_Padded = Color4;
 	
 	struct Color3_AndScalar
 	{

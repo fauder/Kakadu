@@ -30,6 +30,14 @@ namespace Engine::UniformAnnotation
 		// The rest are reserved.
 	};
 
+	enum class ColorFlags : std::uint8_t
+	{
+		None = 0,
+		HDR  = 1 << 0,
+
+		// The rest are reserved.
+	};
+
 	inline Type StringToType( const std::string_view string )
 	{
 		if( string == "color3" )
@@ -54,5 +62,13 @@ namespace Engine::UniformAnnotation
 			return SliderFlags::DisplayAsPercentage;
 		else
 			return SliderFlags::None;
+	}
+
+	inline ColorFlags StringToColorFlags( const std::string_view string )
+	{
+		if( string == "hdr" || string == "HDR" )
+			return ColorFlags::HDR;
+		else
+			return ColorFlags::None;
 	}
 }

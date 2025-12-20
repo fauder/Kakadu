@@ -531,7 +531,7 @@ namespace Engine
 			if( ImGui::Button( "Flash Main Framebuffer Clear Color" ) )
 				framebuffer_main.Debug_FlashClearColor( is_running = true );
 
-			ImGuiDrawer::Draw( framebuffer_main.clear_color );
+			ImGuiDrawer::Draw( framebuffer_main.clear_color, "Main Framebuffer Clear Color" );
 			ImGui::EndDisabled();
 
 			ImGui::SliderFloat( "Wireframe Thickness", &editor_wireframe_thickness_in_pixels, 0.0f, 100.0f, "%.1f pixels", ImGuiSliderFlags_Logarithmic );
@@ -539,7 +539,7 @@ namespace Engine
 		}
 
 		ImGui::End();
-#endif
+#endif // _EDITOR
 	}
 
 	void Renderer::OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels )

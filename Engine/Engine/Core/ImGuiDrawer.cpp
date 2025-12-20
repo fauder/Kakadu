@@ -6,6 +6,7 @@
 #include "ImGuiDrawer.hpp"
 #include "ImGuiUtility.h"
 #include "Graphics/ShaderTypeInformation.h"
+#include "Math/VectorConversion.hpp"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -199,41 +200,63 @@ namespace Engine::ImGuiDrawer
 		ImGui::PopStyleColor();
 	}
 
-	bool Draw( Color3& color, const char* name )
+	bool Draw( Color3& color, const char* name, const bool is_HDR )
 	{
 		const auto& style = ImGui::GetStyle();
+
 		ImGui::PushItemWidth( 3.0f * ImGui::CalcTextSize( "R:  255" ).x + 3.0f * style.ItemInnerSpacing.x + 2.0f * style.FramePadding.x );
-		return ImGui::ColorEdit3( name, color.Data() );
+
+		bool is_modified = false;
+
+		if( is_HDR )
+			is_modified = ImGuiUtility::HDR_ColorPicker3( name, color );
+		else
+			is_modified = ImGui::ColorEdit3( name, color.Data(), ImGuiColorEditFlags_NoInputs /* <== This hides the drag fields. */ );
+
 		ImGui::PopItemWidth();
+
+		return is_modified;
 	}
 
 	void Draw( const Color3& color, const char* name )
 	{
 		const auto& style = ImGui::GetStyle();
 		ImGui::PushItemWidth( 3.0f * ImGui::CalcTextSize( "R:  255" ).x + 3.0f * style.ItemInnerSpacing.x + 2.0f * style.FramePadding.x );
-		ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
+		ImGui::BeginDisabled();
 		/* Since the no inputs & no picker flags are passed, the passed pointer will not be modified. So this hack is safe to use here. */
-		ImGui::ColorEdit3( name, const_cast< float* >( color.Data() ), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoPicker );
-		ImGui::PopStyleColor();
+		ImVec4 color_for_button( color.R(), color.G(), color.B(), 1.0f );
+		ImGui::ColorButton( name, color_for_button, ImGuiColorEditFlags_NoInputs /* <== This hides the drag fields. */ | ImGuiColorEditFlags_NoPicker);
+		ImGui::EndDisabled();
 		ImGui::PopItemWidth();
 	}
 
-	bool Draw( Color4& color, const char* name )
+	bool Draw( Color4& color, const char* name, const bool is_HDR )
 	{
 		const auto& style = ImGui::GetStyle();
+
 		ImGui::PushItemWidth( 4.0f * ImGui::CalcTextSize( "R:  255" ).x + 4.0f * style.ItemInnerSpacing.x + 2.0f * style.FramePadding.x );
-		return ImGui::ColorEdit4( name, color.Data(), ImGuiColorEditFlags_AlphaPreviewHalf );
+
+		bool is_modified = false;
+
+		if( is_HDR )
+			is_modified |= ImGuiUtility::HDR_ColorPicker4( name, color );
+		else
+			is_modified = ImGui::ColorEdit4( name, color.Data(), ImGuiColorEditFlags_NoInputs /* <== This hides the drag fields. */ );
+
 		ImGui::PopItemWidth();
+
+		return is_modified;
 	}
 
 	void Draw( const Color4& color, const char* name )
 	{
 		const auto& style = ImGui::GetStyle();
 		ImGui::PushItemWidth( 4.0f * ImGui::CalcTextSize( "R:  255" ).x + 4.0f * style.ItemInnerSpacing.x + 2.0f * style.FramePadding.x );
-		ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
+		ImGui::BeginDisabled();
 		/* Since no inputs & no picker flags are passed, the passed pointer will not be modified. So this hack is safe to use here. */
-		ImGui::ColorEdit4( name, const_cast< float* >( color.Data() ), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreviewHalf );
-		ImGui::PopStyleColor();
+		ImGui::ColorButton( name, Math::ToImVec4( color ),
+							ImGuiColorEditFlags_NoInputs  /* <== This hides the drag fields. */ | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreviewHalf );
+		ImGui::EndDisabled();
 		ImGui::PopItemWidth();
 	}
 
@@ -588,11 +611,17 @@ namespace Engine::ImGuiDrawer
 						switch( annotation_type )
 						{
 							case UniformAnnotation::Type::Color3:
-								is_modified |= Draw( *reinterpret_cast< Color3* >( uniform_memory ) );
+							{
+								const bool is_HDR = ( UniformAnnotation::ColorFlags )annotation_meta_data[ 0 ] == UniformAnnotation::ColorFlags::HDR;
+								is_modified |= Draw( *reinterpret_cast< Color3* >( uniform_memory ), "##color3", is_HDR );
 								break;
+							}
 							case UniformAnnotation::Type::Color4:
-								is_modified |= Draw( *reinterpret_cast< Color4* >( uniform_memory ) );
+							{
+								const bool is_HDR = ( UniformAnnotation::ColorFlags )annotation_meta_data[ 0 ] == UniformAnnotation::ColorFlags::HDR;
+								is_modified |= Draw( *reinterpret_cast< Color4* >( uniform_memory ), "##color4", is_HDR );
 								break;
+							}
 							case UniformAnnotation::Type::Array:
 							{
 								// TODO: Handle different array ranks (currently hard-coded to 2).

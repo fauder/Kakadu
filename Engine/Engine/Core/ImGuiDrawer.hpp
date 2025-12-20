@@ -361,9 +361,9 @@ namespace Engine::ImGuiDrawer
 		return is_modified;
 	}
 
-	bool Draw(		 Color3& color, const char* name = "##color3" );
+	bool Draw(		 Color3& color, const char* name = "##color3", const bool is_HDR = false );
 	void Draw( const Color3& color, const char* name = "##color3" );
-	bool Draw(		 Color4& color, const char* name = "##color4" );
+	bool Draw(		 Color4& color, const char* name = "##color4", const bool is_HDR = false );
 	void Draw( const Color4& color, const char* name = "##color4" );
 
 	template< template< class > class AngleType, typename FloatType >
