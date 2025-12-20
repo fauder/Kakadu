@@ -1,6 +1,9 @@
 // Engine Includes.
 #include "Assertion.h"
 #include "ImGuiUtility.h"
+#include "ImGuiCustomColors.h"
+#include "Graphics/Color.hpp"
+#include "Math/VectorConversion.hpp"
 
 // Vendor Includes.
 #include <ImGui/imgui_internal.h>
@@ -105,6 +108,236 @@ namespace Engine::ImGuiUtility
     bool EyeCheckbox( const char* label, bool* v )
     {
         return IconCheckbox( label, v, ICON_FA_EYE, ICON_FA_EYE_SLASH );
+    }
+
+    /* Simple Reinhard tonemapping. */
+    Color4 ToneMapForUI( const Color3& c )
+    {
+        return Color4( c / ( 1 + c ), 1.0f );
+    }
+
+    bool DrawHDRColorExposureSwatches( const Color3& base_color, Color3& hdr_color, float& intensity, float& exposure )
+    {
+        bool is_modified = false;
+
+        /* Exposure swatches for quick edits: */
+        constexpr float ev_swatches[ 5 ] = { -2.0f, -1.0f, 0.0f, +1.0f, +2.0f };
+        const char* ev_swatch_strings[ 5 ] = { "-2", "-1", "##swatch_button", "+1", "+2" };
+
+        const float button_width = ImGui::CalcItemWidth() / 5.0f;
+
+        auto DrawColorPreviewSwatch = [ & ]( const std::uint8_t index, const bool is_clickable = true )
+        {
+            ImGui::PushID( index );
+
+            float preview_exposure = Math::Clamp( exposure + ev_swatches[ index ], -10.0f, +10.0f );
+            float preview_intensity = Math::Pow2( preview_exposure );
+            Color3 preview_hdr_color = base_color * preview_intensity;
+
+            const auto& preview_hdr_color_as_ImVec4 = Math::ToImVec4( ToneMapForUI( preview_hdr_color ) );
+            ImGui::PushStyleColor( ImGuiCol_Button,         preview_hdr_color_as_ImVec4 );
+            ImGui::PushStyleColor( ImGuiCol_ButtonHovered,  preview_hdr_color_as_ImVec4 );
+            ImGui::PushStyleColor( ImGuiCol_ButtonActive,   preview_hdr_color_as_ImVec4 );
+
+            const bool text_needs_to_be_black = not Math::IsZero( Math::Max( base_color.R(), base_color.G(), base_color.B() ) ) && preview_exposure >= 0.0f;
+            if( text_needs_to_be_black )
+                ImGui::PushStyleColor( ImGuiCol_Text, ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f } );
+
+            if( ImGui::Button( ev_swatch_strings[ index ], ImVec2( button_width, button_width ) ) && is_clickable )
+            {
+                exposure    = preview_exposure;
+                intensity   = preview_intensity;
+                hdr_color   = preview_hdr_color;
+                is_modified = true;
+            }
+
+            ImGui::PopStyleColor( 3 + ( int )text_needs_to_be_black ); // Button, ButtonHovered, ButtonActive.
+
+            ImGui::PopID();
+        };
+
+        ImGui::PushStyleVar( ImGuiStyleVar_FrameRounding, 0.0f );
+
+        DrawColorPreviewSwatch( 0 ); ImGui::SameLine( 0.0f, 0.0f );
+        DrawColorPreviewSwatch( 1 ); ImGui::SameLine( 0.0f, 0.0f );
+
+        DrawColorPreviewSwatch( 2, false ); ImGui::SameLine( 0.0f, 0.0f );
+        ImVec2 middle_swatch_rect_min, middle_swatch_rect_max;
+        middle_swatch_rect_min = ImGui::GetItemRectMin();
+		middle_swatch_rect_max = ImGui::GetItemRectMax();
+
+        DrawColorPreviewSwatch( 3 ); ImGui::SameLine( 0.0f, 0.0f );
+        DrawColorPreviewSwatch( 4 );
+
+        ImGui::PopStyleVar(); // Frame rounding.
+
+        // Draw a border around the middle swatch for emphasis:
+
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+		draw_list->AddRect( middle_swatch_rect_min,
+                            middle_swatch_rect_max,
+                            IM_COL32( 0, 0, 0, 255 ),
+							0.0f, /* rounding. */
+							ImDrawFlags_None,
+							2.0f  /* thickness. */ );
+
+        return is_modified;
+    }
+
+    bool HDR_ColorPicker3( const char* label, Color3& hdr_color, const bool show_label )
+    {
+        bool is_modified = false;
+
+        ImGui::PushID( label );
+
+        const Color4 preview_color = ToneMapForUI( hdr_color );
+
+		if( ImGui::ColorButton( "##clrpckr4btn", Math::ToImVec4( preview_color ), ImGuiColorEditFlags_NoAlpha ) )
+			ImGui::OpenPopup( "HDRColor3Popup" );
+
+        ImGui::SameLine();
+        ImGuiUtility::DrawRoundedRectText( "HDR", ImGuiCustomColors::COLOR_HDR );
+
+		if( ImGui::BeginPopup( "HDRColor3Popup" ) )
+		{
+			static float intensity, exposure;
+			static Color3 base_color;
+
+			if( ImGui::IsWindowAppearing() )
+			{
+				/* Upon popup opening: Clamp RGB data and calculate intensity. */
+
+				intensity = Math::Max( hdr_color.R(), hdr_color.G(), hdr_color.B() );
+
+				if( Math::IsZero( intensity ) )
+				{
+					/* Calculating exposure for black is meaningless, since the real value would be infinity.
+					 * Instead, set exposure as zero. When the user sets the base color, exposure will jump to a correct value.
+					 * If the user sets the exposure instead, that's also fine since base color is black (all zeroes) and the resulting HDR color will still be black (all zeroes). */
+					intensity  = exposure = 0.0f; // EV = 0 normally means an intensity of 1.0 but as mentioned, here we treat it as an exception.
+					base_color = hdr_color;
+				}
+				else
+				{
+					intensity = Math::Max( intensity, /* To prevent divide by zero below: */ 1e-6f );
+					// The min. value chosen for intensity is well outside the exposure slider range (~-20 EV), which acts as a guardrail.
+					exposure   = Math::Log2( intensity );
+					base_color = hdr_color / intensity;
+				}
+			}
+
+            if( ImGui::ColorPicker3( label, base_color.Data(), ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_NoSidePreview ) )
+			{
+				/* Unity does not clamp base color *during* color picker activity; It only clamps upon the color picker's first appearance.
+				 * That breaks roundtrip stability of the HDR color and introduces possible exposure drift on every launch.
+				 * Therefore, we will clamp the base color on modification as well to ensure that the base color is always representable in the color wheel. */
+
+				base_color.Clamp01();
+
+                hdr_color = base_color * intensity;
+
+				is_modified = true;
+			}
+
+			ImGui::Separator();
+
+			if( ImGui::SliderFloat( "##Exposure", &exposure, -10.0f, +10.0f, "%.1f EV", ImGuiSliderFlags_ClampOnInput ) )
+			{
+				intensity = Math::Pow2( exposure );
+                hdr_color = base_color * intensity;
+
+				is_modified = true;
+			}
+
+			is_modified |= DrawHDRColorExposureSwatches( base_color, hdr_color, intensity, exposure );
+
+			ImGui::EndPopup();
+		}
+
+        ImGui::PopID();
+
+        return is_modified;
+    }
+
+    bool HDR_ColorPicker4( const char* label, Color4& hdr_color, const bool show_label )
+    {
+        bool is_modified = false;
+
+        ImGui::PushID( label );
+
+        const Color4 preview_color = ToneMapForUI( hdr_color.RGB() );
+
+		if( ImGui::ColorButton( "##clrpckr4btn", Math::ToImVec4( preview_color ) ) )
+            ImGui::OpenPopup( "HDRColor4Popup" );
+
+        ImGui::SameLine();
+        ImGuiUtility::DrawRoundedRectText( "HDR", ImGuiCustomColors::COLOR_HDR );
+
+        ImGui::SameLine();
+        ImGui::TextUnformatted( label );
+
+        if( ImGui::BeginPopup( "HDRColor4Popup" ) )
+        {
+            static float intensity, exposure;
+            static Color4 base_color;
+
+            if( ImGui::IsWindowAppearing() )
+            {
+                /* Upon popup opening: Clamp RGB data and calculate intensity. */
+
+                intensity = Math::Max( hdr_color.R(), hdr_color.G(), hdr_color.B() );
+
+                if( Math::IsZero( intensity ) )
+                {
+                    /* Calculating exposure for black is meaningless, since the real value would be infinity.
+                     * Instead, set exposure as zero. When the user sets the base color, exposure will jump to a correct value.
+                     * If the user sets the exposure instead, that's also fine since base color is black (all zeroes) and the resulting HDR color will still be black (all zeroes). */
+                    intensity  = exposure = 0.0f; // EV = 0 normally means an intensity of 1.0 but as mentioned, here we treat it as an exception.
+                    base_color = hdr_color;
+                }
+                else
+                {
+                    intensity = Math::Max( intensity, /* To prevent divide by zero below: */ 1e-6f );
+                    // The min. value chosen for intensity is well outside the exposure slider range (~-20 EV), which acts as a guardrail.
+                    exposure         = Math::Log2( intensity );
+                    base_color.RGB() = hdr_color.RGB() / intensity;
+                    base_color.A()   = hdr_color.A();
+                }
+            }
+
+            if( ImGui::ColorPicker4( label, base_color.Data(), ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoSidePreview ) )
+            {
+                /* Unity does not clamp base color *during* color picker activity; It only clamps upon the color picker's first appearance.
+                 * That breaks roundtrip stability of the HDR color and introduces possible exposure drift on every launch.
+                 * Therefore, we will clamp the base color on modification as well to ensure that the base color is always representable in the color wheel. */
+
+                base_color.RGB().Clamp01();
+
+                hdr_color.RGB() = base_color.RGB() * intensity;
+                hdr_color.A()   = base_color.A();
+
+                is_modified = true;
+            }
+
+            ImGui::Separator();
+
+            if( ImGui::SliderFloat( "##Exposure", &exposure, -10.0f, +10.0f, "%.1f EV", ImGuiSliderFlags_ClampOnInput ) )
+            {
+                intensity       = Math::Pow2( exposure );
+                hdr_color.RGB() = base_color.RGB() * intensity;
+
+                is_modified = true;
+            }
+
+            is_modified |= DrawHDRColorExposureSwatches( base_color.RGB(), hdr_color.RGB(), intensity, exposure );
+
+            ImGui::EndPopup();
+        }
+
+        ImGui::PopID();
+
+        return is_modified;
     }
 
     bool BeginOverlay( const char* window_name, const char* name,

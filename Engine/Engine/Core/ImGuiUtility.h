@@ -7,6 +7,12 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <ImGui/imgui.h>
 
+namespace Engine
+{
+	class Color3;
+	class Color4;
+};
+
 namespace Engine::ImGuiUtility
 {
 	enum class HorizontalPosition	{ LEFT, CENTER, RIGHT };
@@ -32,6 +38,9 @@ namespace Engine::ImGuiUtility
 
 	bool IconCheckbox( const char* label, bool* v, const char* icon_on, const char* icon_off );
 	bool EyeCheckbox( const char* label, bool* v );
+
+	bool HDR_ColorPicker3( const char* label, Color3& hdr_color, const bool show_label = true );
+	bool HDR_ColorPicker4( const char* label, Color4& hdr_color, const bool show_label = true );
 
 	bool BeginOverlay( const char* window_name, const char* name, 
 					   const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
