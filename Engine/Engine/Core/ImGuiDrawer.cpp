@@ -1218,9 +1218,9 @@ namespace Engine::ImGuiDrawer
 
 		ImGui::PushID( light_name );
 
-		is_modified |= Draw( directional_light.data.ambient,  "Ambient"  );
-		is_modified |= Draw( directional_light.data.diffuse,  "Diffuse"  );
-		is_modified |= Draw( directional_light.data.specular, "Specular" );
+		is_modified |= Draw( directional_light.data.ambient.RGB(),  "Ambient",  true );
+		is_modified |= Draw( directional_light.data.diffuse.RGB(),  "Diffuse",  true );
+		is_modified |= Draw( directional_light.data.specular.RGB(), "Specular", true );
 
 		is_modified |= Draw( *directional_light.transform, Transform::Mask::NoScale, "Transform" );
 
@@ -1238,9 +1238,9 @@ namespace Engine::ImGuiDrawer
 
 		ImGui::PushID( light_name );
 
-		Draw( directional_light.data.ambient,  "Ambient" );
-		Draw( directional_light.data.diffuse,  "Diffuse" );
-		Draw( directional_light.data.specular, "Specular" );
+		Draw( directional_light.data.ambient.RGB(),  "Ambient"  );
+		Draw( directional_light.data.diffuse.RGB(),  "Diffuse"  );
+		Draw( directional_light.data.specular.RGB(), "Specular" );
 
 		Draw( *directional_light.transform, Transform::Mask::Rotation, "Transform" );
 
@@ -1259,9 +1259,9 @@ namespace Engine::ImGuiDrawer
 
 		ImGui::PushID( light_name );
 
-		is_modified |= Draw( point_light.data.ambient_and_attenuation_constant.color, "Ambient"  );
-		is_modified |= Draw( point_light.data.diffuse_and_attenuation_linear.color,	  "Diffuse"  );
-		is_modified |= Draw( point_light.data.specular_attenuation_quadratic.color,	  "Specular" );
+		is_modified |= Draw( point_light.data.ambient_and_attenuation_constant.color, "Ambient",  true );
+		is_modified |= Draw( point_light.data.diffuse_and_attenuation_linear.color,	  "Diffuse",  true );
+		is_modified |= Draw( point_light.data.specular_attenuation_quadratic.color,	  "Specular", true );
 
 		if( !hide_position )
 			is_modified |= Draw( *point_light.transform, Transform::Mask::Translation, "Transform" );
@@ -1310,9 +1310,9 @@ namespace Engine::ImGuiDrawer
 
 		ImGui::PushID( light_name );
 
-		is_modified |= Draw( spot_light.data.ambient,  "Ambient"  );
-		is_modified |= Draw( spot_light.data.diffuse,  "Diffuse"  );
-		is_modified |= Draw( spot_light.data.specular, "Specular" );
+		is_modified |= Draw( spot_light.data.ambient.RGB(),  "Ambient",  true );
+		is_modified |= Draw( spot_light.data.diffuse.RGB(),  "Diffuse" , true );
+		is_modified |= Draw( spot_light.data.specular.RGB(), "Specular", true );
 
 		is_modified |= Draw( *spot_light.transform, BitFlags< Transform::Mask >( Transform::Mask::Translation, Transform::Mask::Rotation ), "Transform" );
 
@@ -1333,9 +1333,9 @@ namespace Engine::ImGuiDrawer
 
 		ImGui::PushID( light_name );
 
-		Draw( spot_light.data.ambient,	"Ambient"  );
-		Draw( spot_light.data.diffuse,	"Diffuse"  );
-		Draw( spot_light.data.specular,	"Specular" );
+		Draw( spot_light.data.ambient.RGB(),	"Ambient"  );
+		Draw( spot_light.data.diffuse.RGB(),	"Diffuse"  );
+		Draw( spot_light.data.specular.RGB(),	"Specular" );
 
 		Draw( const_cast< const Transform& >( *spot_light.transform ), BitFlags< Transform::Mask >( Transform::Mask::Translation, Transform::Mask::Rotation ), "Transform" );
 
