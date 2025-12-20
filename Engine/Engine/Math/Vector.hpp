@@ -513,6 +513,24 @@ namespace Engine::Math
 			return *this;
 		}
 
+		/* Clamps every component of the vector to the given range. */
+		constexpr Vector& Clamp( const Component minimum, const Component maximum )
+		{
+			for( auto i = 0; i < Size; i++ )
+				data[ i ] = Math::Clamp( data[ i ], minimum, maximum );
+
+			return *this;
+		}
+
+		/* Clamps every component of the vector to the [0,1] range. */
+		constexpr Vector& Clamp01()
+		{
+			for( auto i = 0; i < Size; i++ )
+				data[ i ] = Math::Clamp( data[ i ], Component{ 0 }, Component{ 1 } );
+
+			return *this;
+		}
+
 	protected:
 		Component data[ Size ];
 	};
