@@ -1606,7 +1606,7 @@ namespace Engine
 
 		// TODO: Handle no tonemapping case.
 
-		tone_mapping.material.Set( "uniform_exposure", 1.0f );
+		tone_mapping.material.Set( "uniform_exposure_ev", 1.0f );
 		tone_mapping.material.Set( "uniform_bloom_intensity", 0.004f );
 	}
 

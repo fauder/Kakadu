@@ -7,14 +7,17 @@
 
 out vec4 out_color;
 
+#pragma driven
 uniform sampler2D uniform_tex_color;
 #ifdef BLOOM
+#pragma driven
 uniform sampler2D uniform_tex_bloom;
 #pragma slider( 0, 1, logarithmic, percentage )
 uniform float uniform_bloom_intensity;
 #endif
 
-uniform float uniform_exposure;
+#pragma slider( -10, 10, "%.1f EV" )
+uniform float uniform_exposure_ev;
 
 void main()
 {
@@ -27,7 +30,8 @@ void main()
 #endif
 
     // Exposure tone-mapping:
-    out_color.rgb = vec3( 1.0 ) - exp( -out_color.rgb * uniform_exposure );
+    float exposure_scale = exp2( uniform_exposure_ev );
+    out_color.rgb = vec3( 1.0 ) - exp( -( out_color.rgb * exposure_scale ) );
 
     out_color.a = 1.0f;
 }
