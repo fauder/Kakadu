@@ -44,7 +44,19 @@ namespace Engine::Math
 	constexpr Value Min( const Value left, const Value right ) { return left < right ? left : right; }
 
 	template< typename Value >
+	constexpr Value Min( const Value first, const Value second, const Value third ) { return Min( first, Min( second, third ) ); }
+
+	template< typename Value >
+	constexpr Value Min( const Value first, const Value second, const Value third, const Value fourth ) { return Min( first, Min( second, third, fourth ) ); }
+
+	template< typename Value >
 	constexpr Value Max( const Value left, const Value right ) { return left > right ? left : right; }
+
+	template< typename Value >
+	constexpr Value Max( const Value first, const Value second, const Value third ) { return Max( first, Max( second, third ) ); }
+
+	template< typename Value >
+	constexpr Value Max( const Value first, const Value second, const Value third, const Value fourth ) { return Max( first, Max( second, third, fourth ) ); }
 
 	template< Concepts::Arithmetic Value >
 	auto Sqrt( const Value value ) { return std::sqrt( value ); }
@@ -119,6 +131,10 @@ namespace Engine::Math
 	template< std::totally_ordered Value >
 	[[ nodiscard( "Clamped value is not assigned back to any variable." ) ]]
 	constexpr Value Clamp( const Value value, const Value minimum, const Value maximum ) { return value < minimum ? minimum : value > maximum ? maximum : value; }
+
+	template< std::totally_ordered Value >
+	[[ nodiscard( "Clamped value is not assigned back to any variable." ) ]]
+	constexpr Value Clamp01( const Value value ) { return value < Value{ 0 } ? Value{ 0 } : value > Value{ 1 } ? Value{ 1 } : value; }
 
 	template< std::totally_ordered Value >
 	[[ nodiscard( "Clamped value is not assigned back to any variable." ) ]]
