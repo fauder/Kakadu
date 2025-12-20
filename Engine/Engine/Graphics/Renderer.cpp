@@ -681,23 +681,25 @@ namespace Engine
 
 	void Renderer::RemoveRenderable( Renderable* renderable_to_remove )
 	{
-		auto& queues_containing_renderable = RenderQueuesContaining( renderable_to_remove );
-		for( auto& queue : queues_containing_renderable )
+		for( auto& [ queue_id, queue ] : render_queue_map )
 		{
-			// For now, stick to removing elements from a vector, which is sub-par performance but should be OK for the time being.
-			std::erase( queue->renderable_list, renderable_to_remove );
-
-			const auto& shader = renderable_to_remove->material->shader;
-
-			if( --queue->shader_reference_counts[ shader ] == 0 )
+			if( std::find( queue.renderable_list.cbegin(), queue.renderable_list.cend(), renderable_to_remove ) != queue.renderable_list.cend() )
 			{
-				queue->shaders_in_flight.erase( shader->name );
-				queue->shader_reference_counts.erase( shader );
-				if( --shaders_registered_reference_count_map[ shader ] == 0 )
-					UnregisterShader( *shader );
-			}
+				// For now, stick to removing elements from a vector, which is sub-par performance but should be OK for the time being.
+				std::erase( queue.renderable_list, renderable_to_remove );
 
-			queue->materials_in_flight.erase( renderable_to_remove->material->Name() );
+				const auto& shader = renderable_to_remove->material->shader;
+
+				if( --queue.shader_reference_counts[ shader ] == 0 )
+				{
+					queue.shaders_in_flight.erase( shader->name );
+					queue.shader_reference_counts.erase( shader );
+					if( --shaders_registered_reference_count_map[ shader ] == 0 )
+						UnregisterShader( *shader );
+				}
+
+				queue.materials_in_flight.erase( renderable_to_remove->material->Name() );
+			}
 		}
 	}
 
@@ -1911,18 +1913,6 @@ namespace Engine
 		// No post-processing when non-shaded editor shading modes are active.
 	}
 #endif // _EDITOR
-
-	std::vector< RenderQueue* >& Renderer::RenderQueuesContaining( const Renderable* renderable_of_interest )
-	{
-		static std::vector< RenderQueue* > queues;
-		queues.clear();
-
-		for( auto& [ queue_id, queue ] : render_queue_map )
-			if( std::find( queue.renderable_list.cbegin(), queue.renderable_list.cend(), renderable_of_interest ) != queue.renderable_list.cend() )
-				queues.push_back( &queue );
-
-		return queues;
-	}
 
 	void Renderer::SetRenderState( const RenderState& render_state_to_set )
 	{
