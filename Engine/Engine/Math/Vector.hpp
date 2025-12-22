@@ -23,19 +23,10 @@ namespace Engine
 namespace Engine::Math
 {
 	template< typename Component, std::size_t Size > requires( Size > 1 )
-	class Vector
+	struct Vector
 	{
-		template< Concepts::Arithmetic, std::size_t RowSize, std::size_t ColumnSize >
-			requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
-		friend class Matrix;
-
-		template< typename, std::size_t Size > requires( Size > 1 )
-		friend class Vector; // For example, needed in the conversion constructor.
-
-	public:
 		using ComponentType = Component;
 
-	public:
 	/* Constructors. */
 		constexpr Vector() : data{} {} // Same as the one with Initialization::ZeroInitialization parameter.
 
@@ -387,26 +378,32 @@ namespace Engine::Math
 			return *this;
 		}
 
-	/* Arithmetic Operations: Binary operators (with a scalar), of the the form scalar-operator-vector. */
-		constexpr friend Vector operator + ( const Component scalar, const Vector& vector )
+	/* Arithmetic Operations: Binary operators (with a scalar), of the the form scalar-operator-vector.
+	 *
+	 * Why friend instead of free functions, even though all data is public?
+	 * Because:
+	 *	1) This keeps symmetry (vector operator scalar vs. scalar operator vector) by keeping BOTH inside the struct.
+	 *  2) Eliminates the need to re-define these for other inheriting structs. */
+
+		friend constexpr Vector operator + ( const Component scalar, const Vector& vector )
 		{
 			const Vector result( UNIFORM_INITIALIZATION, scalar );
 			return result + vector; // Leverage already defined operator +( scalar ).
 		}
 
-		constexpr friend Vector operator - ( const Component scalar, const Vector& vector )
+		friend constexpr Vector operator - ( const Component scalar, const Vector& vector )
 		{
 			const Vector result( UNIFORM_INITIALIZATION, scalar );
 			return result - vector; // Leverage already defined operator -( scalar ).
 		}
 
-		constexpr friend Vector operator * ( const Component scalar, const Vector& vector )
+		friend constexpr Vector operator * ( const Component scalar, const Vector& vector )
 		{
 			const Vector result( UNIFORM_INITIALIZATION, scalar );
 			return result * vector; // Leverage already defined operator *( scalar ).
 		}
 
-		constexpr friend Vector operator / ( const Component scalar, const Vector& vector )
+		friend constexpr Vector operator / ( const Component scalar, const Vector& vector )
 		{
 			const Vector result( UNIFORM_INITIALIZATION, scalar );
 			return result / vector; // Leverage already defined operator /( scalar ).
@@ -484,14 +481,6 @@ namespace Engine::Math
 			return result;
 		}
 
-		// This should not be needed for vectors other than 3D & 4D in theory, but no need to restrict.
-		template< Concepts::Arithmetic Component_, std::size_t Size_ > // Have to use different template parameters here because C++...
-		friend constexpr Component_ Dot( const Vector< Component_, Size_ >& u, const Vector< Component_, Size_ >& v );
-
-		// Cross product is only defined for vectors of 3 & 7 dimensions apparently, but practically we only need it for 3D.
-		template< Concepts::Arithmetic Component_ > // Have to use different template parameters here because C++...
-		friend constexpr Vector< Component_, 3 > Cross( const Vector< Component_, 3 >& u, const Vector< Component_, 3 >& v );
-
 		constexpr Component MagnitudeSquared() const { return Dot(); }
 		Component Magnitude() const requires( std::floating_point< Component > ) { return Math::Sqrt( MagnitudeSquared() ); }
 
@@ -531,7 +520,6 @@ namespace Engine::Math
 			return *this;
 		}
 
-	protected:
 		Component data[ Size ];
 	};
 

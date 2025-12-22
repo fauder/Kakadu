@@ -12,23 +12,21 @@ namespace Engine::Math
 {
 /* Forward Declarations. */
 	template< std::floating_point ComponentType >
-	class Quaternion;
+	struct Quaternion;
 
 	template< std::floating_point ComponentType >
 	constexpr ComponentType Dot( const Quaternion< ComponentType >& q1, const Quaternion< ComponentType >& q2 );
 
 	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
 		requires Concepts::NonZero< RowSize > && Concepts::NonZero< ColumnSize >
-	class Matrix;
+	struct Matrix;
 
 	template< std::floating_point ComponentType >
-	class Quaternion
+	struct Quaternion
 	{
-	private:
 		using VectorType  = Math::Vector< ComponentType, 3 >;
 		using RadiansType = Math::Radians< ComponentType >;
 
-	public:
 	/* Constructors. */
 		/* Identity quaternion w=1 & n=<0,0,0>. */
 		constexpr Quaternion()
@@ -195,13 +193,6 @@ namespace Engine::Math
 			return *this;
 		}
 
-	/* Arithmetic Operations: Binary operators (with a scalar), of the the form scalar-operator-quaternion. */
-		template< std::floating_point ComponentType_ >
-		friend constexpr Quaternion< ComponentType_ > operator* ( const ComponentType_ scalar, Quaternion< ComponentType_ > quaternion );
-
-		template< std::floating_point ComponentType_ >
-		friend constexpr Quaternion< ComponentType_ > operator/ ( const ComponentType_ scalar, Quaternion< ComponentType_ > quaternion );
-
 	/* Other Arithmetic Operations. */
 		constexpr Quaternion operator* ( const Quaternion& other ) const
 		{
@@ -250,9 +241,6 @@ namespace Engine::Math
 
 			return w * w + xyz.Dot();
 		}
-
-		template< std::floating_point ComponentType_ >
-		friend constexpr ComponentType_ Dot( const Quaternion< ComponentType_ >& q1, const Quaternion< ComponentType_ >& q2 );
 
 		constexpr Quaternion Conjugate() const
 		{
@@ -323,41 +311,6 @@ namespace Engine::Math
 			return result;
 		}
 
-		template< std::floating_point ComponentType_ >
-		friend constexpr Quaternion< ComponentType_ > Lerp( const Quaternion< ComponentType_ > q1, const Quaternion< ComponentType_ >& q2, const ComponentType_ t );
-
-		template< std::floating_point ComponentType_ >
-		friend constexpr Quaternion< ComponentType_ > Nlerp( const Quaternion< ComponentType_ > q1, const Quaternion< ComponentType_ >& q2, const ComponentType_ t );
-
-		/* The algebraic derivation. Included for completion. Not to be used in production code, as it is quite inefficient. */
-		template< std::floating_point ComponentType_ >
-		friend constexpr Quaternion< ComponentType_ > Slerp_Naive( const Quaternion< ComponentType_ >& q1, const Quaternion< ComponentType_ >& q2, const ComponentType_ t );
-
-		/* Geometric derivation. Computationally more efficient than the naive (algebraic) derivation. */
-		template< std::floating_point ComponentType_ >
-		friend constexpr Quaternion< ComponentType_ > Slerp( const Quaternion< ComponentType_ >& q1, Quaternion< ComponentType_ > q2, const ComponentType_ t );
-
-		template< std::floating_point ComponentType_ >
-		friend constexpr Matrix< ComponentType_, 4, 4 > QuaternionToMatrix( const Quaternion< ComponentType_ >& quaternion );
-
-		template< std::floating_point ComponentType_ >
-		friend constexpr Matrix< ComponentType_, 3, 3 > QuaternionToMatrix3x3( const Quaternion< ComponentType_ >& quaternion );
-
-		/* Source: https://gamemath.com/book/orient.html#euler_to_matrix. */
-		template< std::floating_point ComponentType_, std::size_t MatrixSize_ > requires( MatrixSize_ > 3 )
-			friend constexpr Quaternion< ComponentType_ > MatrixToQuaternion( const Matrix< ComponentType_, MatrixSize_, MatrixSize_ >& matrix );
-
-			/* Source: https://gamemath.com/book/orient.html#quaternion_to_euler_angles. */
-		template< std::floating_point ComponentType_ >
-		friend constexpr void QuaternionToEuler( const Quaternion< ComponentType_ >& quaternion,
-												 Radians< ComponentType_ >& heading_around_y, Radians< ComponentType_ >& pitch_around_x, Radians< ComponentType_ >& bank_around_z );
-
-		template< std::floating_point ComponentType_ >
-		friend constexpr Quaternion< ComponentType_ > EulerToQuaternion( const Radians< ComponentType_ > heading_around_y, const Radians< ComponentType_ > pitch_around_x, const Radians< ComponentType_ > bank_around_z );
-
-		template< std::floating_point ComponentType_ >
-		friend constexpr Quaternion< ComponentType_ > EulerToQuaternion( const Degrees< ComponentType_ > heading_around_y, const Degrees< ComponentType_ > pitch_around_x, const Degrees< ComponentType_ > bank_around_z );
-
 		template< std::floating_point ComponentType >
 		static constexpr Quaternion< ComponentType > LookRotation_Naive( const Vector< ComponentType, 3 >& to_target_normalized, const Vector< ComponentType, 3 >& world_up_normalized = Vector< ComponentType, 3 >::Up() )
 		{
@@ -386,7 +339,6 @@ namespace Engine::Math
 			return MatrixToQuaternion( Matrix< ComponentType, 3, 3 >( to_right_normalized, to_up_normalized, to_target_normalized ) ).Normalized();
 		}
 
-	private:
 		union
 		{
 			struct { VectorType xyz; };
@@ -395,6 +347,7 @@ namespace Engine::Math
 		ComponentType w;
 	};
 
+	/* Arithmetic Operations: Binary operators (with a scalar), of the the form scalar-operator-quaternion. */
 	template< std::floating_point ComponentType >
 	constexpr Quaternion< ComponentType > operator* ( const ComponentType scalar, Quaternion< ComponentType > quaternion )
 	{

@@ -15,11 +15,11 @@ namespace Engine::Math
 	class Polar3_Spherical_Game;
 
 	template< typename Component, std::size_t Size > requires( Size > 1 ) 
-	class Vector;
+	struct Vector;
 
 	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
 		requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
-	class Matrix;
+	struct Matrix;
 }
 
 namespace Engine
