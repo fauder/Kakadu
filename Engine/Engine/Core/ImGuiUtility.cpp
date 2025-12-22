@@ -640,6 +640,25 @@ namespace Engine::ImGuiUtility
             ImGui::SetCursorScreenPos( pos + ImVec2{ size, 0.0f } );
     }
 
+    bool DrawClickableText( const char* text )
+    {
+        ImGui::TextUnformatted( text );
+
+        if( ImGui::IsItemHovered() )
+        {
+            ImGui::SetMouseCursor( ImGuiMouseCursor_Hand );
+
+            // Underline:
+            const ImVec2 min = ImGui::GetItemRectMin();
+            const ImVec2 max = ImGui::GetItemRectMax();
+            ImGui::GetWindowDrawList()->AddLine( ImVec2( min.x, max.y ),
+												 ImVec2( max.x, max.y ),
+												 ImGui::GetColorU32( ImGuiCol_Text ) );
+        }
+
+        return ImGui::IsItemClicked();
+    }
+
     void DrawShadedSphere( ImDrawList* draw_list, const ImU32 shade_color, const ImU32 specular_color, const float radius, const bool advance_cursor )
     {
         const auto& style = ImGui::GetStyle();

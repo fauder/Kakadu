@@ -73,6 +73,8 @@ namespace Engine::ImGuiUtility
 
 	void DrawArrow( ImDrawList* draw_list, float size = -1.0f, const ImU32 color = ImColor{ 0.75f, 0.75f, 0.75f, 1.0f }, const bool advance_cursor = true );
 
+	bool DrawClickableText( const char* text );
+
 	void DrawShadedSphere( ImDrawList* draw_list, const ImU32 shade_color, const ImU32 specular_color, const float radius, const bool advance_cursor = true );
 	bool DrawShadedSphereComboButton( const char* name,
 									  int* current_index,
