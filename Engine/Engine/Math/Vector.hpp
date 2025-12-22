@@ -415,14 +415,14 @@ namespace Engine::Math
 		static consteval Vector Zero()		{ return Vector{ ZERO_INITIALIZATION }; }
 		static consteval Vector One()		{ return Vector{ UNIFORM_INITIALIZATION, Component( 1 ) }; }
 
-		static consteval Vector Left()		requires( Size >= 1 ) { return Vector{ -Component( 1 ) }; }
-		static consteval Vector Right()		requires( Size >= 1 ) { return Vector{ +Component( 1 ) }; }
-		static consteval Vector Down()		requires( Size >= 2 ) { return Vector{ Component( 0 ), -Component( 1 ) }; }
-		static consteval Vector Up()		requires( Size >= 2 ) { return Vector{ Component( 0 ), +Component( 1 ) }; }
+		static consteval Vector Left()		requires( std::floating_point< Component > && Size >= 1 ) { return Vector{ -Component( 1 ) }; }
+		static consteval Vector Right()		requires( std::floating_point< Component > && Size >= 1 ) { return Vector{ +Component( 1 ) }; }
+		static consteval Vector Down()		requires( std::floating_point< Component > && Size >= 2 ) { return Vector{ Component( 0 ), -Component( 1 ) }; }
+		static consteval Vector Up()		requires( std::floating_point< Component > && Size >= 2 ) { return Vector{ Component( 0 ), +Component( 1 ) }; }
 		/* Using left-handed coordinate system. */
-		static consteval Vector Backward()	requires( Size >= 3 ) { return Vector{ Component( 0 ), Component( 0 ), -Component( 1 ) }; }
+		static consteval Vector Backward()	requires( std::floating_point< Component > && Size >= 3 ) { return Vector{ Component( 0 ), Component( 0 ), -Component( 1 ) }; }
 		/* Using left-handed coordinate system. */
-		static consteval Vector Forward()	requires( Size >= 3 ) { return Vector{ Component( 0 ), Component( 0 ), +Component( 1 ) }; }
+		static consteval Vector Forward()	requires( std::floating_point< Component > && Size >= 3 ) { return Vector{ Component( 0 ), Component( 0 ), +Component( 1 ) }; }
 
 		constexpr bool IsZero() const
 		{
