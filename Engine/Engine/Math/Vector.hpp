@@ -471,7 +471,7 @@ namespace Engine::Math
 
 	/* Other Arithmetic Operations. */
 		/* With self. */
-		constexpr Component Dot() const
+		constexpr Component Dot() const requires( std::floating_point< Component > )
 		{
 			Component result( 0 );
 
@@ -481,8 +481,15 @@ namespace Engine::Math
 			return result;
 		}
 
-		constexpr Component MagnitudeSquared() const { return Dot(); }
-		Component Magnitude() const requires( std::floating_point< Component > ) { return Math::Sqrt( MagnitudeSquared() ); }
+		constexpr Component MagnitudeSquared() const requires( std::floating_point< Component > )
+		{
+			return Dot();
+		}
+
+		Component Magnitude() const requires( std::floating_point< Component > )
+		{
+			return Math::Sqrt( MagnitudeSquared() );
+		}
 
 		Vector Normalized() const requires( std::floating_point< Component > )
 		{
