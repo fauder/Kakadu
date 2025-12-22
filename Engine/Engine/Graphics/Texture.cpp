@@ -52,7 +52,7 @@ namespace Engine
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	   ( GLenum )wrap_v );
 
 		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder )
-			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color.Data() );
+			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color.data );
 
 		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), nullptr );
 
@@ -129,7 +129,7 @@ namespace Engine
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 ( GLenum )wrap_w );
 
 		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder || wrap_w == Wrapping::ClampToBorder )
-			glTexParameterfv( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, border_color.Data() );
+			glTexParameterfv( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, border_color.data );
 
 		Unbind();
 	}
@@ -256,7 +256,7 @@ namespace Engine
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	   ( GLenum )wrap_v );
 
 		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder )
-			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color.Data() );
+			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color.data );
 
 		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), data );
 
@@ -301,7 +301,7 @@ namespace Engine
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 ( GLenum )wrap_w );
 
 		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder || wrap_w == Wrapping::ClampToBorder )
-			glTexParameterfv( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, border_color.Data() );
+			glTexParameterfv( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, border_color.data );
 
 		Unbind();
 	}

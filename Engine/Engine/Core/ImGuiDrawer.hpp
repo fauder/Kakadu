@@ -80,7 +80,7 @@ namespace Engine::ImGuiDrawer
 
 		ImGui::PushItemWidth( Size * ImGui::CalcTextSize( ".-999.99" ).x + ( Size - 1 ) * style.ItemInnerSpacing.x );
 		/* Since the read-only flag is passed, the passed pointer will not be modified. So this hack is safe to use here. */
-		ImGui::InputScalarN( name, GetImGuiDataType< Component >(), const_cast< Component* >( vector.Data() ), Size, NULL, NULL, GetFormat< Component >(), ImGuiInputTextFlags_ReadOnly );
+		ImGui::InputScalarN( name, GetImGuiDataType< Component >(), const_cast< Component* >( vector.data ), Size, NULL, NULL, GetFormat< Component >(), ImGuiInputTextFlags_ReadOnly );
 		ImGui::PopItemWidth();
 
 		ImGui::PopStyleColor();
@@ -95,7 +95,7 @@ namespace Engine::ImGuiDrawer
 		const auto& style = ImGui::GetStyle();
 
 		ImGui::PushItemWidth( Size * ImGui::CalcTextSize( ".-999.99" ).x + ( Size - 1 ) * style.ItemInnerSpacing.x );
-		is_modified |= ImGui::DragScalarN( name, GetImGuiDataType< Component >(), vector.Data(), Size, 1.0f, NULL, NULL, GetFormat< Component >() );
+		is_modified |= ImGui::DragScalarN( name, GetImGuiDataType< Component >(), vector.data, Size, 1.0f, NULL, NULL, GetFormat< Component >() );
 		ImGui::PopItemWidth();
 
 		return is_modified;
@@ -269,7 +269,7 @@ namespace Engine::ImGuiDrawer
 
 		ImGui::PushItemWidth( 3.0f * ImGui::CalcTextSize( ".-999.99" ).x + 2.0f * style.ItemInnerSpacing.x );
 		/* Since the read-only flag is passed, the passed pointer will not be modified. So this hack is safe to use here. */
-		ImGui::InputScalarN( name, GetImGuiDataType< Component >(), euler.Data(), euler.Dimension(), NULL, NULL, GetFormat< Component >(), ImGuiInputTextFlags_ReadOnly );
+		ImGui::InputScalarN( name, GetImGuiDataType< Component >(), euler.data, euler.Dimension(), NULL, NULL, GetFormat< Component >(), ImGuiInputTextFlags_ReadOnly );
 		ImGui::PopItemWidth();
 
 		ImGui::PopStyleColor();
@@ -284,7 +284,7 @@ namespace Engine::ImGuiDrawer
 		const auto& style = ImGui::GetStyle();
 
 		ImGui::PushItemWidth( 3.0f * ImGui::CalcTextSize( ".-999.99" ).x + 2.0f * style.ItemInnerSpacing .x );
-		const bool is_modified = ImGui::DragScalarN( name, GetImGuiDataType< Component >(), euler.Data(), euler.Dimension(), 1.0f, NULL, NULL, GetFormat< Component >() );
+		const bool is_modified = ImGui::DragScalarN( name, GetImGuiDataType< Component >(), euler.data, euler.Dimension(), 1.0f, NULL, NULL, GetFormat< Component >() );
 		if( is_modified )
 			quaternion = Math::EulerToQuaternion( euler );
 		ImGui::PopItemWidth();

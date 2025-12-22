@@ -211,7 +211,7 @@ namespace Engine::ImGuiDrawer
 		if( is_HDR )
 			is_modified = ImGuiUtility::HDR_ColorPicker3( name, color );
 		else
-			is_modified = ImGui::ColorEdit3( name, color.Data(), ImGuiColorEditFlags_NoInputs /* <== This hides the drag fields. */ );
+			is_modified = ImGui::ColorEdit3( name, color.data, ImGuiColorEditFlags_NoInputs /* <== This hides the drag fields. */ );
 
 		ImGui::PopItemWidth();
 
@@ -241,7 +241,7 @@ namespace Engine::ImGuiDrawer
 		if( is_HDR )
 			is_modified |= ImGuiUtility::HDR_ColorPicker4( name, color );
 		else
-			is_modified = ImGui::ColorEdit4( name, color.Data(), ImGuiColorEditFlags_NoInputs /* <== This hides the drag fields. */ );
+			is_modified = ImGui::ColorEdit4( name, color.data, ImGuiColorEditFlags_NoInputs /* <== This hides the drag fields. */ );
 
 		ImGui::PopItemWidth();
 

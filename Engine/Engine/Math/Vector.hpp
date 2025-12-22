@@ -168,8 +168,6 @@ namespace Engine::Math
 		}
 
 	/* Getters & Setters. */
-		Component* Data() { return data; };
-		const Component* Data() const { return data; };
 		constexpr Component& operator[] ( const std::size_t index ) { return data[ index ]; }
 		constexpr const Component& operator[] ( const std::size_t index ) const { return data[ index ]; }
 

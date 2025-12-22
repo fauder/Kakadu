@@ -172,15 +172,15 @@ namespace Engine
 			{
 				if constexpr( Size == 2 )
 				{
-					glUniform2fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+					glUniform2fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.data );
 				}
 				if constexpr( Size == 3 )
 				{
-					glUniform3fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+					glUniform3fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.data );
 				}
 				if constexpr( Size == 4 )
 				{
-					glUniform4fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+					glUniform4fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.data );
 				}
 			}
 
@@ -188,15 +188,15 @@ namespace Engine
 			{
 				if constexpr( Size == 2 )
 				{
-					glUniform2iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+					glUniform2iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.data );
 				}
 				if constexpr( Size == 3 )
 				{
-					glUniform3iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+					glUniform3iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.data );
 				}
 				if constexpr( Size == 4 )
 				{
-					glUniform4iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+					glUniform4iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.data );
 				}
 			}
 
@@ -204,15 +204,15 @@ namespace Engine
 			{
 				if constexpr( Size == 2 )
 				{
-					glUniform2uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+					glUniform2uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.data );
 				}
 				if constexpr( Size == 3 )
 				{
-					glUniform3uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+					glUniform3uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.data );
 				}
 				if constexpr( Size == 4 )
 				{
-					glUniform4uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+					glUniform4uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.data );
 				}
 			}
 		}

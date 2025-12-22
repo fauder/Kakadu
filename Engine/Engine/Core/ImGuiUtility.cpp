@@ -227,7 +227,7 @@ namespace Engine::ImGuiUtility
 				}
 			}
 
-            if( ImGui::ColorPicker3( label, base_color.Data(), ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_NoSidePreview ) )
+            if( ImGui::ColorPicker3( label, base_color.data, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_NoSidePreview ) )
 			{
 				/* Unity does not clamp base color *during* color picker activity; It only clamps upon the color picker's first appearance.
 				 * That breaks roundtrip stability of the HDR color and introduces possible exposure drift on every launch.
@@ -306,7 +306,7 @@ namespace Engine::ImGuiUtility
                 }
             }
 
-            if( ImGui::ColorPicker4( label, base_color.Data(), ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoSidePreview ) )
+            if( ImGui::ColorPicker4( label, base_color.data, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoSidePreview ) )
             {
                 /* Unity does not clamp base color *during* color picker activity; It only clamps upon the color picker's first appearance.
                  * That breaks roundtrip stability of the HDR color and introduces possible exposure drift on every launch.
