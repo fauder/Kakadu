@@ -32,8 +32,8 @@ namespace Engine
 		 * Queries:
 		 */
 
-		inline bool IsReceivingShadows()	const { return node_renderable_array.front().IsReceivingShadows(); }
-		inline bool IsCastingShadows()		const { return node_renderable_array.front().IsCastingShadows(); }
+		bool IsReceivingShadows()	const { return node_renderable_array.front().IsReceivingShadows(); }
+		bool IsCastingShadows()		const { return node_renderable_array.front().IsCastingShadows(); }
 
 		void SetMaterialData( Engine::Shader* const shader, const Vector4 texture_scale_and_offset = Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
@@ -41,8 +41,8 @@ namespace Engine
 		void ToggleShadowCastingStatus( const bool cast_shadows );
 
 	/* Queries: */
-		inline		 std::vector< Engine::Renderable >& Renderables()		{ return node_renderable_array; }
-		inline const std::vector< Engine::Material	 >& Materials() const	{ return node_material_array; }
+			  std::vector< Engine::Renderable >& Renderables()		 { return node_renderable_array; }
+		const std::vector< Engine::Material	  >& Materials()   const { return node_material_array; }
 
 	private:
 		const Engine::Model* model;

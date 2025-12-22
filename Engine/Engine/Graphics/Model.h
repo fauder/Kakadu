@@ -80,18 +80,18 @@ namespace Engine
 		~Model();
 
 	/* Queries: */
-		inline const std::string& Name() const { return name; }
+		const std::string& Name() const { return name; }
 
-		inline int NodeCount()			const { return ( int )nodes.size(); }
-		inline int MeshCount()			const { return ( int )meshes.size(); }
-		inline int MeshInstanceCount()	const { return mesh_instance_count; }
-		inline int MeshGroupCount()		const { return ( int )mesh_groups.size(); }
+		int NodeCount()			const { return ( int )nodes.size(); }
+		int MeshCount()			const { return ( int )meshes.size(); }
+		int MeshInstanceCount()	const { return mesh_instance_count; }
+		int MeshGroupCount()	const { return ( int )mesh_groups.size(); }
 		
-		inline const std::vector< std::size_t >& TopLevelNodeIndices() const { return node_indices_top_level; }
+		const std::vector< std::size_t >& TopLevelNodeIndices() const { return node_indices_top_level; }
 
-		inline const std::vector< Node		>& Nodes()		const { return nodes; }
-		inline const std::vector< Mesh		>& Meshes()		const { return meshes; }
-		inline const std::vector< Texture*	>& Textures()	const { return textures; }
+		const std::vector< Node		>& Nodes()		const { return nodes; }
+		const std::vector< Mesh		>& Meshes()		const { return meshes; }
+		const std::vector< Texture*	>& Textures()	const { return textures; }
 
 	private:
 		std::string name;

@@ -48,7 +48,7 @@ namespace Engine
 			Intrinsic	// Data known & set by the Renderer such as camera details; view & projection matrices. Same for every shader.
 		};
 
-		inline static BufferCategory DetermineBufferCategory( std::string_view buffer_name )
+		static BufferCategory DetermineBufferCategory( std::string_view buffer_name )
 		{
 			if( buffer_name.find( "_Global" ) != std::string_view::npos )
 				return BufferCategory::Global;
@@ -94,13 +94,13 @@ namespace Engine
 			std::unordered_map< std::string, BufferMemberInformation_Array		> members_array_map;	// Key is the uniform name alone. Example: "point_lights".
 			std::unordered_map< std::string, Information*						> members_single_map;	// Key is the uniform name alone. Example: "color_modulation".
 
-			inline bool IsRegular()		const { return category == BufferCategory::Regular;		}
-			inline bool IsGlobal()		const { return category == BufferCategory::Global;		}
-			inline bool IsIntrinsic()	const { return category == BufferCategory::Intrinsic;	}
+			bool IsRegular()		const { return category == BufferCategory::Regular;		}
+			bool IsGlobal()		const { return category == BufferCategory::Global;		}
+			bool IsIntrinsic()	const { return category == BufferCategory::Intrinsic;	}
 
-			inline bool IsGlobalOrIntrinsic() const { return IsGlobal() || IsIntrinsic(); }
+			bool IsGlobalOrIntrinsic() const { return IsGlobal() || IsIntrinsic(); }
 			
-			inline static const char* CategoryString( const BufferCategory category )
+			static const char* CategoryString( const BufferCategory category )
 			{
 				switch( category )
 				{
@@ -122,8 +122,8 @@ namespace Engine
 			int intrinsic_block_count, global_block_count, regular_block_count;
 			//int padding;
 
-			inline std::size_t TotalSize_ForMaterialBlob() const { return default_block_size + regular_total_size; }
-			inline std::size_t TotalSize_Blocks() const { return regular_total_size + global_total_size + intrinsic_total_size; }
+			std::size_t TotalSize_ForMaterialBlob() const { return default_block_size + regular_total_size; }
+			std::size_t TotalSize_Blocks() const { return regular_total_size + global_total_size + intrinsic_total_size; }
 		};
 
 		class BindingPointBookKeeping
@@ -135,29 +135,29 @@ namespace Engine
 				maximum_allowed( maximum_allowed )
 			{}
 
-			inline bool HasRoom() const
+			bool HasRoom() const
 			{ 
 				return ( in_use + 1 ) < maximum_allowed;
 			}
 
-			inline BindingPoint Assign( const std::string& block_name )
+			BindingPoint Assign( const std::string& block_name )
 			{
 				return binding_point_map[ block_name ] = start_offset + in_use++;
 			}
 
-			inline int InUseCount() const { return in_use; }
+			int InUseCount() const { return in_use; }
 
-			inline bool IsAssigned( const std::string& block_name ) const
+			bool IsAssigned( const std::string& block_name ) const
 			{
 				return binding_point_map.contains( block_name );
 			}
 
-			/*inline Uniform::BindingPoint BindingPoint( const std::string& block_name ) const
+			/*Uniform::BindingPoint BindingPoint( const std::string& block_name ) const
 			{
 				return binding_point_map.at( block_name );
 			}*/
 
-			inline std::optional< const Uniform::BindingPoint > Find( const std::string& block_name ) const
+			std::optional< const Uniform::BindingPoint > Find( const std::string& block_name ) const
 			{
 				if( const auto iterator = binding_point_map.find( block_name );
 					iterator != binding_point_map.cend() )

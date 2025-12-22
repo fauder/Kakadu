@@ -112,8 +112,8 @@ namespace Engine
 						};
 					}
 
-					static const auto default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
-					static const auto white_texture              = Engine::BuiltinTextures::Get( "White" );
+					const Texture* default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
+					const Texture* white_texture              = Engine::BuiltinTextures::Get( "White" );
 
 					material.SetTexture( "uniform_tex_normal", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
 					material.SetTexture( "uniform_tex_specular", white_texture );
@@ -178,8 +178,8 @@ namespace Engine
 						};
 					}
 
-					static const auto default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
-					static const auto white_texture              = Engine::BuiltinTextures::Get( "White" );
+					const Texture* default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
+					const Texture* white_texture              = Engine::BuiltinTextures::Get( "White" );
 
 					material.SetTexture( "uniform_tex_normal", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
 					material.SetTexture( "uniform_tex_specular", white_texture );

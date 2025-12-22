@@ -4,51 +4,50 @@
 namespace NatVis
 {
 /* Float: */
-	inline float SinFromCos( const float value )
+	header_function float SinFromCos( const float value )
 	{
 		return Engine::Math::SinFromCos( value );
 	}
 
-	inline float Acos( const float value )
+	header_function float Acos( const float value )
 	{
 		return ( float )Engine::Degrees( Engine::Math::Acos( value ) );
 	}
 
-	inline float Asin( const float value )
+	header_function float Asin( const float value )
 	{
 		return ( float )Engine::Degrees( Engine::Math::Asin( value ) );
 	}
 
-	inline float Atan2( const float y, const float x )
+	header_function float Atan2( const float y, const float x )
 	{
 		return ( float )Engine::Degrees( Engine::Math::Atan2( y, x ) );
 	}
 
 /* Double: */
 
-	inline double SinFromCos( const double value )
+	header_function double SinFromCos( const double value )
 	{
 		return Engine::Math::SinFromCos( value );
 	}
 
-	inline double Acos( const double value )
+	header_function double Acos( const double value )
 	{
 		return ( double )Engine::DegreesD( Engine::Math::Acos( value ) );
 	}
 
-	inline double Asin( const double value )
+	header_function double Asin( const double value )
 	{
 		return ( double )Engine::DegreesD( Engine::Math::Asin( value ) );
 	}
 
-	inline double Atan2( const double y, const double x )
+	header_function double Atan2( const double y, const double x )
 	{
 		return ( double )Engine::DegreesD( Engine::Math::Atan2( y, x ) );
 	}
 
-
 	/* Since *actual* code never uses this namespace (only the .natvis does), we need to include this call somewhere. */
-	inline void ForceIncludeInBuild()
+	header_function void ForceIncludeInBuild()
 	{
 /* Float: */
 		SinFromCos( 1.0f );

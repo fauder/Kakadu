@@ -411,7 +411,7 @@ namespace Engine::ImGuiDrawer
 
 	void Draw( const std::map< std::string, Texture >& texture_map, const Vector2& window_size )
 	{
-		static const Texture* selected_texture = nullptr;
+		local_persist const Texture* selected_texture = nullptr;
 
 		ImGui::SetNextWindowSize( reinterpret_cast< const ImVec2& >( window_size ) );
 		if( ImGui::Begin( ICON_FA_IMAGE " Textures" ) )
@@ -790,7 +790,7 @@ namespace Engine::ImGuiDrawer
 									{
 										ImGui::TableNextColumn();
 
-										static char array_member_name_string[ 255 ];
+										char array_member_name_string[ 255 ];
 										std::snprintf( array_member_name_string, 255, "%s[%d]", uniform_buffer_member_array_info.editor_name.c_str(), array_index );
 
 										if( ImGui::TreeNodeEx( array_member_name_string, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed ) )

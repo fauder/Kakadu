@@ -89,20 +89,20 @@ namespace Engine
 
 /* Queries: */
 
-		inline		 ID								Id()							const { return program_id;							}
-		inline const std::string&					Name()							const { return name;								}
-		inline bool									HasGeometryStage()				const { return not geometry_source_path.empty();	}
-		inline const std::string&					VertexSourcePath()				const { return vertex_source_path;					}
-		inline const std::string&					GeometrySourcePath()			const { return geometry_source_path;				}
-		inline const std::string&					FragmentSourcePath()			const { return fragment_source_path;				}
-		inline const std::vector< std::string >&	VertexSourceIncludePaths()		const { return vertex_source_include_path_array;	}
-		inline const std::vector< std::string >&	GeometrySourceIncludePaths()	const { return geometry_source_include_path_array;	}
-		inline const std::vector< std::string >&	FragmentSourceIncludePaths()	const { return fragment_source_include_path_array;	}
+			 ID								Id()							const { return program_id;							}
+		const std::string&					Name()							const { return name;								}
+		bool								HasGeometryStage()				const { return not geometry_source_path.empty();	}
+		const std::string&					VertexSourcePath()				const { return vertex_source_path;					}
+		const std::string&					GeometrySourcePath()			const { return geometry_source_path;				}
+		const std::string&					FragmentSourcePath()			const { return fragment_source_path;				}
+		const std::vector< std::string >&	VertexSourceIncludePaths()		const { return vertex_source_include_path_array;	}
+		const std::vector< std::string >&	GeometrySourceIncludePaths()	const { return geometry_source_include_path_array;	}
+		const std::vector< std::string >&	FragmentSourceIncludePaths()	const { return fragment_source_include_path_array;	}
 
-		inline const std::unordered_map< std::string, Feature >& GetFeatures() const { return feature_map; }
+		const std::unordered_map< std::string, Feature >& GetFeatures() const { return feature_map; }
 
-		inline const VertexLayout& GetSourceVertexLayout()	const { return vertex_layout_source; }
-		inline const VertexLayout& GetActiveVertexLayout()	const { return vertex_layout_active; }
+		const VertexLayout& GetSourceVertexLayout()	const { return vertex_layout_source; }
+		const VertexLayout& GetActiveVertexLayout()	const { return vertex_layout_active; }
 
 		bool SourceFilesAreModified();
 
@@ -112,27 +112,27 @@ namespace Engine
 
 /* Uniform APIs: */
 
-		inline const std::unordered_map< std::string, Uniform::Information >& GetUniformInfoMap() const { return uniform_info_map; }
+		const std::unordered_map< std::string, Uniform::Information >& GetUniformInfoMap() const { return uniform_info_map; }
 
-		inline const std::unordered_map< std::string, Uniform::BufferInformation	>& GetUniformBufferInfoMap_Regular()	const { return uniform_buffer_info_map_regular;		}
-		inline const std::unordered_map< std::string, Uniform::BufferInformation	>& GetUniformBufferInfoMap_Global()		const { return uniform_buffer_info_map_global;		}
-		inline const std::unordered_map< std::string, Uniform::BufferInformation	>& GetUniformBufferInfoMap_Intrinsic()	const { return uniform_buffer_info_map_intrinsic;	}
+		const std::unordered_map< std::string, Uniform::BufferInformation	>& GetUniformBufferInfoMap_Regular()	const { return uniform_buffer_info_map_regular;		}
+		const std::unordered_map< std::string, Uniform::BufferInformation	>& GetUniformBufferInfoMap_Global()		const { return uniform_buffer_info_map_global;		}
+		const std::unordered_map< std::string, Uniform::BufferInformation	>& GetUniformBufferInfoMap_Intrinsic()	const { return uniform_buffer_info_map_intrinsic;	}
 
-		inline std::size_t GetTotalUniformSize_DefaultBlockOnly()	const { return uniform_book_keeping_info.default_block_size;			}
-		inline std::size_t GetTotalUniformSize_UniformBlocksOnly()	const { return uniform_book_keeping_info.TotalSize_Blocks();			}
-		inline std::size_t GetTotalUniformSize_ForMaterial()		const { return uniform_book_keeping_info.TotalSize_ForMaterialBlob();	}
-		inline std::size_t GetTotalUniformSize()					const { return uniform_book_keeping_info.total_size;					}
+		std::size_t GetTotalUniformSize_DefaultBlockOnly()	const { return uniform_book_keeping_info.default_block_size;			}
+		std::size_t GetTotalUniformSize_UniformBlocksOnly()	const { return uniform_book_keeping_info.TotalSize_Blocks();			}
+		std::size_t GetTotalUniformSize_ForMaterial()		const { return uniform_book_keeping_info.TotalSize_ForMaterialBlob();	}
+		std::size_t GetTotalUniformSize()					const { return uniform_book_keeping_info.total_size;					}
 
-		inline bool HasDefaultUniforms()		const { return uniform_book_keeping_info.default_block_size > 0;	}
-		inline bool HasIntrinsicUniformBlocks()	const { return uniform_book_keeping_info.intrinsic_block_count;		}
-		inline bool HasGlobalUniformBlocks()	const { return uniform_book_keeping_info.global_block_count;		}
-		inline bool HasRegularUniformBlocks()	const { return uniform_book_keeping_info.regular_block_count;		}
+		bool HasDefaultUniforms()			const { return uniform_book_keeping_info.default_block_size > 0;	}
+		bool HasIntrinsicUniformBlocks()	const { return uniform_book_keeping_info.intrinsic_block_count;		}
+		bool HasGlobalUniformBlocks()		const { return uniform_book_keeping_info.global_block_count;		}
+		bool HasRegularUniformBlocks()		const { return uniform_book_keeping_info.regular_block_count;		}
 		
-		inline bool HasUniformBlocks() const { return HasIntrinsicUniformBlocks() || HasGlobalUniformBlocks() || HasRegularUniformBlocks(); }
+		bool HasUniformBlocks() const { return HasIntrinsicUniformBlocks() || HasGlobalUniformBlocks() || HasRegularUniformBlocks(); }
 
-		inline bool HasIntrinsicUniformBlock( const std::string& block_name )	const { return uniform_buffer_info_map_intrinsic.contains( block_name ); }
-		inline bool HasGlobalUniformBlock( const std::string& block_name )		const { return uniform_buffer_info_map_global.contains( block_name ); }
-		inline bool HasRegularUniformBlock( const std::string& block_name )		const { return uniform_buffer_info_map_regular.contains( block_name ); }
+		bool HasIntrinsicUniformBlock( const std::string& block_name )	const { return uniform_buffer_info_map_intrinsic.contains( block_name ); }
+		bool HasGlobalUniformBlock( const std::string& block_name )		const { return uniform_buffer_info_map_global.contains( block_name ); }
+		bool HasRegularUniformBlock( const std::string& block_name )	const { return uniform_buffer_info_map_regular.contains( block_name ); }
 
 /* Uniform Upload; Non-array types: */
 
@@ -519,7 +519,7 @@ private:
 
 /* Queries: */
 
-		inline bool IsValid() const { return program_id.IsValid(); }
+		bool IsValid() const { return program_id.IsValid(); }
 
 /* Compilation & Linkage: */
 

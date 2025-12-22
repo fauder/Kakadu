@@ -201,8 +201,8 @@ namespace Engine::ImGuiUtility
 
 		if( ImGui::BeginPopup( "HDRColor3Popup" ) )
 		{
-			static float intensity, exposure;
-			static Color3 base_color;
+            local_persist float intensity, exposure;
+            local_persist Color3 base_color;
 
 			if( ImGui::IsWindowAppearing() )
 			{
@@ -279,8 +279,8 @@ namespace Engine::ImGuiUtility
 
         if( ImGui::BeginPopup( "HDRColor4Popup" ) )
         {
-            static float intensity, exposure;
-            static Color4 base_color;
+            local_persist float intensity, exposure;
+            local_persist Color4 base_color;
 
             if( ImGui::IsWindowAppearing() )
             {
@@ -445,7 +445,7 @@ namespace Engine::ImGuiUtility
 		ImGui::SetNextWindowPos( { horizontal_position, vertical_position }, condition, { horizontal_pivot, vertical_pivot } );
 	}
 
-    static ImVector<ImRect> s_GroupPanelLabelStack;
+    global_variable ImVector< ImRect > GroupPanelLabelStack;
 
     /* https://github.com/ocornut/imgui/issues/1496#issuecomment-655048353 */
     void BeginGroupPanel( const char* name, bool* is_enabled, const ImVec2& size )
@@ -501,7 +501,7 @@ namespace Engine::ImGuiUtility
         const auto itemWidth = ImGui::CalcItemWidth();
         ImGui::PushItemWidth( ImMax( 0.0f, itemWidth - frameHeight ) );
 
-        s_GroupPanelLabelStack.push_back( ImRect( labelMin, labelMax ) );
+        GroupPanelLabelStack.push_back( ImRect( labelMin, labelMax ) );
     }
 
     /* https://github.com/ocornut/imgui/issues/1496#issuecomment-655048353 */
@@ -535,8 +535,8 @@ namespace Engine::ImGuiUtility
         auto itemMax = ImGui::GetItemRectMax();
         //ImGui::GetWindowDrawList()->AddRectFilled(itemMin, itemMax, IM_COL32(255, 0, 0, 64), 4.0f);
 
-        auto labelRect = s_GroupPanelLabelStack.back();
-        s_GroupPanelLabelStack.pop_back();
+        auto labelRect = GroupPanelLabelStack.back();
+        GroupPanelLabelStack.pop_back();
 
         ImVec2 halfFrame = ImVec2( frameHeight * 0.25f, frameHeight ) * 0.5f;
         ImRect frameRect = ImRect( itemMin + halfFrame, itemMax - ImVec2( halfFrame.x, 0.0f ) );

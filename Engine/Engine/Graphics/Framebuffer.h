@@ -79,32 +79,32 @@ namespace Engine
 	/* Queries: */
 		bool IsValid() const { return id.IsValid(); } // Technically, this fails for the default framebuffer which has id 0, but it's not needed there anyway.
 
-		inline const ID				Id()				const { return id;	 }
+		const ID Id() const { return id; }
 		
-		inline const Vector2I&		Size()				const { return size; }
-		inline int					Width()				const { return size.X(); }
-		inline int					Height()			const { return size.Y(); }
+		const Vector2I&	Size()	 const { return size; }
+		int				Width()	 const { return size.X(); }
+		int				Height() const { return size.Y(); }
 
-		inline int					SampleCount()		const { return msaa.sample_count; }
-		inline bool					IsMultiSampled()	const { return msaa.IsEnabled(); }
+		int	 SampleCount()	  const { return msaa.sample_count; }
+		bool IsMultiSampled() const { return msaa.IsEnabled(); }
 
 		/* Default framebuffer always uses sRGB Encoding. */
-		inline bool					Is_sRGB()			const { return id.Get() == 0 || ( HasColorAttachment() && color_attachment->Is_sRGB() ); }
-		inline bool					IsHDR()				const { return HasColorAttachment() && color_attachment->IsHDR(); }
+		bool Is_sRGB() const { return id.Get() == 0 || ( HasColorAttachment() && color_attachment->Is_sRGB() ); }
+		bool IsHDR()   const { return HasColorAttachment() && color_attachment->IsHDR(); }
 
-		inline const std::string&	Name()				const { return name; }
+		const std::string&	Name() const { return name; }
 
 	/* Attachment Queries: */
 
-		inline bool HasColorAttachment()				const { return color_attachment; }
-		inline bool HasSeparateDepthAttachment()		const { return depth_attachment && not stencil_attachment; }
-		inline bool HasSeparateStencilAttachment()		const { return stencil_attachment && not depth_attachment; }
-		inline bool HasCombinedDepthStencilAttachment()	const { return depth_stencil_attachment; }
+		bool HasColorAttachment()				 const { return color_attachment; }
+		bool HasSeparateDepthAttachment()		 const { return depth_attachment && not stencil_attachment; }
+		bool HasSeparateStencilAttachment()		 const { return stencil_attachment && not depth_attachment; }
+		bool HasCombinedDepthStencilAttachment() const { return depth_stencil_attachment; }
 
-		inline const Texture& ColorAttachment()			const { return *color_attachment; }
-		inline const Texture& DepthStencilAttachment()	const { return *depth_stencil_attachment; }
-		inline const Texture& DepthAttachment()			const { return *depth_attachment; }
-		inline const Texture& StencilAttachment()		const { return *stencil_attachment; }
+		const Texture& ColorAttachment()		 const { return *color_attachment; }
+		const Texture& DepthStencilAttachment()	 const { return *depth_stencil_attachment; }
+		const Texture& DepthAttachment()		 const { return *depth_attachment; }
+		const Texture& StencilAttachment()		 const { return *stencil_attachment; }
 
 	private:
 		struct DefaultFramebuferConstructorTag {};

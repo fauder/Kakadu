@@ -455,7 +455,7 @@ namespace Engine
 
 		if( ImGuiUtility::BeginOverlay( viewport_info.imgui_window_name.c_str(), "##Magnifier", imgui_mouse_pos, &mouse_screen_space_position_overlay_is_active, false ) )
 		{
-			static GLuint nearest_sampler = 0;
+			local_persist GLuint nearest_sampler = 0;
 			if( nearest_sampler == 0 ) // TODO: Put this inside its own class.
 			{
 				glGenSamplers( 1, &nearest_sampler );
@@ -513,18 +513,18 @@ namespace Engine
 			const float frame_time = time_delta_real * 1000.0f;
 
 			constexpr std::uint8_t rolling_avg_fps_frame_count = 144;
-			static std::array< float, rolling_avg_fps_frame_count > last_N_fps_values = {};
-			static std::array< float, rolling_avg_fps_frame_count > last_N_frame_times = {};
+			local_persist std::array< float, rolling_avg_fps_frame_count > last_N_fps_values = {};
+			local_persist std::array< float, rolling_avg_fps_frame_count > last_N_frame_times = {};
 			std::uint16_t rolling_avg_fps;
 			float rolling_avg_frame_time;
-			static int rolling_avg_index = 0;
+			local_persist int rolling_avg_index = 0;
 
 			/* Calculate rolling avg. fps & frame time: */
 			{
 				/* Since only 1 value in the ring buffer changes every frame, no need to re-calculate the total sum. Just add the difference between current value and
 				 * the element at the current index in the ring buffer to the total sum. */
-				static float last_N_fps_values_sum = 0;
-				static float last_N_frame_times_sum = 0;
+				local_persist float last_N_fps_values_sum = 0;
+				local_persist float last_N_frame_times_sum = 0;
 
 				const float previous_fps_at_this_index = last_N_fps_values[ rolling_avg_index ];
 				last_N_fps_values_sum += fps - previous_fps_at_this_index;
@@ -548,14 +548,14 @@ namespace Engine
 			const float  max_width = max_size.x;
 
 			ImGui::SetWindowFontScale( 1.2f );
-			static char text[ 255 ] = {};
+			char text[ 255 ] = {};
 			sprintf_s( text,
 					   "Avg. FPS:        %hu fps\n"
 					   "Avg. Frame Time: %.2f ms\n"
 					   "Time:            %.1f s\n"
 					   "Frame:           #%-8lld",
 					   rolling_avg_fps, rolling_avg_frame_time, time_since_start, frame_count );
-			static float refresh_rate = Platform::GetMainMonitorRefreshRate();
+			local_persist float refresh_rate = Platform::GetMainMonitorRefreshRate();
 			ImGui::PushStyleColor( ImGuiCol_PlotLines, Math::ToImVec4( Math::Lerp( Color4::Red(), Color4::Green(), ( float )rolling_avg_fps / refresh_rate ) ) );
 			ImGui::PlotLines( "##FPS", last_N_fps_values.data(), rolling_avg_fps_frame_count, rolling_avg_index, text,
 							  rolling_avg_fps * 0.9f, rolling_avg_fps * 1.2f, ImVec2{ -1.0f, ImGui::GetTextLineHeight() * 6 } );

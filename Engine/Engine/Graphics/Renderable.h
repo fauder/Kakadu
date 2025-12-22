@@ -32,9 +32,9 @@ namespace Engine
 		void SetMaterial( Material* material );
 
 	/* Queries: */
-		inline bool IsEnabled()				const { return is_enabled; }
-		inline bool IsReceivingShadows()	const { return is_receiving_shadows; }
-		inline bool IsCastingShadows()		const { return is_casting_shadows; }
+		bool IsEnabled()			const { return is_enabled; }
+		bool IsReceivingShadows()	const { return is_receiving_shadows; }
+		bool IsCastingShadows()		const { return is_casting_shadows; }
 
 	/* Toggling: */
 		void Enable();

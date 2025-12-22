@@ -39,12 +39,12 @@ namespace Engine
 
 	/* Queries: */
 
-		inline bool IsValid() const { return id.IsValid(); }
+		bool IsValid() const { return id.IsValid(); }
 
-		inline ID			Id()			const { return id;				}
-		inline unsigned int VertexCount()	const { return vertex_count;	}
-		inline unsigned int IndexCount()	const { return index_count;		}
-		inline unsigned int InstanceCount()	const { return instance_count;  }
+		ID			 Id()				const { return id;				}
+		unsigned int VertexCount()		const { return vertex_count;	}
+		unsigned int IndexCount()		const { return index_count;		}
+		unsigned int InstanceCount()	const { return instance_count;  }
 
 	private:
 

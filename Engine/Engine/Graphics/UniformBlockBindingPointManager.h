@@ -31,7 +31,7 @@ namespace Engine
 	/* Singleton related: */
 		static UniformBlockBindingPointManager& Instance()
 		{
-			static UniformBlockBindingPointManager instance;
+			local_persist UniformBlockBindingPointManager instance;
 			return instance;
 		}
 

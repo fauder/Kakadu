@@ -43,7 +43,7 @@ namespace Engine::Primitive::Indexed::UVSphereTemplate
 		/* NOTE: Instead of using a Polar3_Spherical_Game here, the individual heading/pitch and their corresponding sin/cos values can be tracked & modified manually. 
 		 * While this would potentially be faster due to caching the sin/cos of the pitch & the xz_projection_of_r values [per ring],
 		 * the performance gains would be minimal for the default longitude/latitude of 20 (nano-micro seconds probably).
-		 * Also, as the returned positions & other attributes are cached as a static variable for the default sphere, this optimization is not necessary,
+		 * Also, as the returned positions & other attributes are cached as a local_persist variable for the default sphere, this optimization is not necessary,
 		 * and the explicit and longer LOC nature of the code is a negative here. */
 
 		/* Non-pole rings: */

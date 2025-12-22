@@ -129,7 +129,7 @@ namespace Engine
 
 	std::string GLLogger::GetLabel( const GLenum object_type, const GLuint object_id ) const
 	{
-		static char OBJECT_LABEL_STORAGE[ GL_MAX_LABEL_LENGTH ];
+		char OBJECT_LABEL_STORAGE[ GL_MAX_LABEL_LENGTH ];
 		int label_length;
 		glGetObjectLabel( object_type, object_id, GL_MAX_LABEL_LENGTH, &label_length, OBJECT_LABEL_STORAGE );
 		return OBJECT_LABEL_STORAGE;
@@ -201,7 +201,7 @@ namespace Engine
 			13 + 1 + 1 +		// Type     ( max length = 13 ) + 1 space + 1 vertical line.
 			1 + 4;				// Colon + 4 spaces.
 
-		static std::vector< char > full_message( fixed_portion_length + 255, ' ' ); // Initial max. message length of 255 reserved.
+		local_persist std::vector< char > full_message( fixed_portion_length + 255, ' ' ); // Initial max. message length of 255 reserved.
 
 		if( length > 255 )
 			full_message.resize( fixed_portion_length + length );

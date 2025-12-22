@@ -187,18 +187,18 @@ namespace Engine
 	/* Queries: */
 		bool IsValid() const { return id.Get(); }
 
-		inline ID					Id()				const { return id;															}
-		inline const Vector2I&		Size()				const { return size;														}
-		inline int					Width()				const { return size.X();													}
-		inline int					Height()			const { return size.Y();													}
-		inline TextureType			Type()				const { return type;														}
-		inline const std::string&	Name()				const { return name;														}
-		inline int					SampleCount()		const { return msaa.sample_count;											}
-		inline bool					IsMultiSampled()	const { return msaa.IsEnabled();											}
-		inline bool					Is_sRGB()			const { return format == Format::SRGB || format == Format::SRGBA;			}
-		inline bool					IsHDR()				const { return format == Format::RGBA_16F || format == Format::RGBA_32F ||
-																	   format == Format::R11G11B10F; }
-		inline Format				PixelFormat()		const { return format;														}
+		ID					Id()				const { return id;															}
+		const Vector2I&		Size()				const { return size;														}
+		int					Width()				const { return size.X();													}
+		int					Height()			const { return size.Y();													}
+		TextureType			Type()				const { return type;														}
+		const std::string&	Name()				const { return name;														}
+		int					SampleCount()		const { return msaa.sample_count;											}
+		bool				IsMultiSampled()	const { return msaa.IsEnabled();											}
+		bool				Is_sRGB()			const { return format == Format::SRGB || format == Format::SRGBA;			}
+		bool				IsHDR()				const { return format == Format::RGBA_16F || format == Format::RGBA_32F ||
+															   format == Format::R11G11B10F;								}
+		Format				PixelFormat()		const { return format;														}
 
 	/* Usage: */
 		void SetName( const std::string& new_name );

@@ -83,8 +83,8 @@ namespace Engine
 	/* Dirty Flags: */
 
 		/* This must be reset via ResetDirtyFlag() at the beginning of every frame, IF is_dirty flag/behaviour is desired. */
-		inline bool IsDirty() const { return is_dirty; }
-		inline bool ResetDirtyFlag() { return is_dirty = false; }
+		bool IsDirty() const { return is_dirty; }
+		bool ResetDirtyFlag() { return is_dirty = false; }
 
 	private:
 		void UpdateScalingMatrixIfDirty();

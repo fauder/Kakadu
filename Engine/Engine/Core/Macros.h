@@ -3,6 +3,14 @@
 // std Includes.
 #include <string_view>
 
+// Typedefs:
+#define internal_function static
+#define local_persist     static
+/* This is used for static global variables, with internal linkage.
+ * For global variables intended to be shared across translation units, simply use the extern keyword and define it inside a translation unit. */
+#define global_variable	  static
+#define header_function   inline
+
 /*
  * Default Constructors:
  */

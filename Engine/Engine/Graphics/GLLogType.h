@@ -2,6 +2,7 @@
 
 // Engine Includes.
 #include "Graphics.h"
+#include "Core/Macros.h"
 
 // std Includes.
 #include <iostream>
@@ -22,7 +23,7 @@ namespace Engine
 		INVALID
 	};
 
-	inline GLLogType GLenumToGLLogType( GLenum value )
+	header_function GLLogType GLenumToGLLogType( GLenum value )
 	{
 		switch( value )
 		{

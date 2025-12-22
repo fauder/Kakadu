@@ -160,8 +160,8 @@ namespace Engine
 						{
 							case RENDER_PASS_ID_SHADOW_MAPPING:
 							{
-								static auto& shadow_map_write_shader           = *BuiltinShaders::Get( "Shadow-map Write" );
-								static auto& shadow_map_write_instanced_shader = *BuiltinShaders::Get( "Shadow-map Write (Instanced)" );
+								Shader& shadow_map_write_shader           = *BuiltinShaders::Get( "Shadow-map Write" );
+								Shader& shadow_map_write_instanced_shader = *BuiltinShaders::Get( "Shadow-map Write (Instanced)" );
 								
 								shadow_map_write_shader.Bind();
 
@@ -526,7 +526,7 @@ namespace Engine
 		/* Debug: */
 		if( ImGui::Begin( "Debug" ) )
 		{
-			static bool is_running = false;
+			local_persist bool is_running = false;
 			ImGui::BeginDisabled( is_running );
 			if( ImGui::Button( "Flash Main Framebuffer Clear Color" ) )
 				framebuffer_main.Debug_FlashClearColor( is_running = true );
@@ -1182,7 +1182,7 @@ namespace Engine
 
 	bool Renderer::CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query )
 	{
-		static std::unordered_map< Texture::Format, std::unordered_set< std::uint8_t > > SAMPLE_COUNTS_BY_FORMAT_MAP;
+		local_persist std::unordered_map< Texture::Format, std::unordered_set< std::uint8_t > > SAMPLE_COUNTS_BY_FORMAT_MAP;
 
 		if( const auto iterator = SAMPLE_COUNTS_BY_FORMAT_MAP.find( format ); iterator != SAMPLE_COUNTS_BY_FORMAT_MAP.cend() )
 			return iterator->second.contains( sample_count_to_query );
@@ -1517,7 +1517,7 @@ namespace Engine
 	void Renderer::RecompileModifiedShaders()
 	{
 		/* Shader Recompilation: */
-		static std::vector< Shader* > shaders_to_recompile;
+		local_persist std::vector< Shader* > shaders_to_recompile;
 
 		/* Have to do two passes as shaders to be recompiled need to be removed from shaders_registered, which we can not do while traversing the container. */
 
@@ -1773,8 +1773,8 @@ namespace Engine
 		Shader* shader_not_instanced = nullptr;
 		Shader* shader_instanced     = nullptr;
 
-		static constexpr RenderState render_state{};
-		static constexpr RenderState render_state_wireframe // Nearly the same as transparent queue's, i.e., uses alpha blending.
+		constexpr RenderState render_state{};
+		constexpr RenderState render_state_wireframe // Nearly the same as transparent queue's, i.e., uses alpha blending.
 		{
 			.face_culling_enable = true, // Makes for more distinguishable features.
 
@@ -1789,7 +1789,7 @@ namespace Engine
 			.blending_source_alpha_factor      = BlendingFactor::SourceAlpha,
 			.blending_destination_alpha_factor = BlendingFactor::OneMinusSourceAlpha
 		};
-		static constexpr RenderState render_state_shaded_wireframe
+		constexpr RenderState render_state_shaded_wireframe
 		{
 			.blending_enable = true,
 

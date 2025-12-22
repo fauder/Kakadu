@@ -76,7 +76,7 @@ namespace Engine
 		/*
 		 * Editor:
 		 */
-		inline EditorShadingMode GetEditorShadingMode() const { return editor_shading_mode; };
+		EditorShadingMode GetEditorShadingMode() const { return editor_shading_mode; };
 		void SetEditorShadingMode( const EditorShadingMode new_editor_shading_mode );
 
 		float GetEditorWireframeThicknessInPixels() const { return editor_wireframe_thickness_in_pixels; }
@@ -132,7 +132,7 @@ namespace Engine
 		 * Shadow-mapping:
 		 */
 
-		inline const Texture* ShadowMapTexture() const { return &framebuffer_shadow_map_light_directional.DepthAttachment(); }
+		const Texture* ShadowMapTexture() const { return &framebuffer_shadow_map_light_directional.DepthAttachment(); }
 
 		/*
 		 * Shaders:
@@ -168,7 +168,7 @@ namespace Engine
 			uniform_buffer_management_global.SetPartial( buffer_name, uniform_member_name, value );
 		}
 
-		inline const std::unordered_set< Shader* > RegisteredShaders() const { return shaders_registered; }
+		const std::unordered_set< Shader* > RegisteredShaders() const { return shaders_registered; }
 		void RegisterShader( Shader& shader );
 		void UnregisterShader( Shader& shader );
 

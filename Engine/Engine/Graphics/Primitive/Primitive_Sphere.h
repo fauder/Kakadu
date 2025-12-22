@@ -5,16 +5,16 @@
 
 namespace Engine::Primitive::Indexed::Sphere
 {
-	static const auto& Positions()
+	header_function const auto& Positions()
 	{
-		static auto positions = UVSphereTemplate::Positions();
+		local_persist auto positions = UVSphereTemplate::Positions();
 
 		return positions;
 	}
 
-	static const auto& Indices()
+	header_function const auto& Indices()
 	{
-		static auto indices = UVSphereTemplate::Indices();
+		local_persist auto indices = UVSphereTemplate::Indices();
 
 		return indices;
 	}
@@ -24,23 +24,23 @@ namespace Engine::Primitive::Indexed::Sphere
 		return UVSphereTemplate::UVs();
 	}
 
-	static const auto& Normals()
+	header_function const auto& Normals()
 	{
-		static auto normals = UVSphereTemplate::Normals();
+		local_persist auto normals = UVSphereTemplate::Normals();
 
 		return normals;
 	}
 
-	static const auto& Tangents()
+	header_function const auto& Tangents()
 	{
-		static auto tangents = UVSphereTemplate::Tangents();
+		local_persist auto tangents = UVSphereTemplate::Tangents();
 
 		return tangents;
 	}
 
-	static const auto& Bitangents()
+	header_function const auto& Bitangents()
 	{
-		static auto bitangents = UVSphereTemplate::Bitangents();
+		local_persist auto bitangents = UVSphereTemplate::Bitangents();
 
 		return bitangents;
 	}

@@ -212,7 +212,7 @@ namespace Engine
 
 		static AssetDatabase& Instance()
 		{
-			static AssetDatabase instance;
+			local_persist AssetDatabase instance;
 			return instance;
 		}
 

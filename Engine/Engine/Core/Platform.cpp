@@ -615,7 +615,7 @@ namespace Platform
 	std::optional< std::string > BrowseDirectory( const std::string& title, const std::string& directory_path )
 	{
 #ifdef _WIN32
-		static auto co_initialized = SUCCEEDED( CoInitializeEx( NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE ) );
+		local_persist auto co_initialized = SUCCEEDED( CoInitializeEx( NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE ) );
 
 		IFileOpenDialog* file_open_dialog;
 

@@ -74,7 +74,7 @@ namespace Engine
 
 		{
 			/* Source: http://www.anisopteragames.com/how-to-fix-color-banding-with-dithering/. */
-			static const char bayer_dither_matrix[] =
+			constexpr std::uint8_t bayer_dither_matrix[] =
 			{
 				0, 32,  8, 40,  2, 34, 10, 42,   /* 8x8 Bayer ordered dithering  */
 				48, 16, 56, 24, 50, 18, 58, 26,  /* pattern.  Each input pixel   */

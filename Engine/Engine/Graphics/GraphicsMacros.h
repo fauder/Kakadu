@@ -18,7 +18,7 @@ private:\
 	{}\
 	static Loader& Instance()\
 	{\
-		static Loader instance;\
+		local_persist Loader instance;\
 		return instance;\
 	}\
 };
@@ -38,7 +38,7 @@ private:\
 	{}\
 	static Loader& Instance()\
 	{\
-		static Loader instance;\
+		local_persist Loader instance;\
 		return instance;\
 	}\
 };

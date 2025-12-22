@@ -23,7 +23,7 @@ namespace Engine
 		/* Singleton related: */
 		static UniformBufferManager& Instance()
 		{
-			static UniformBufferManager instance;
+			local_persist UniformBufferManager instance;
 			return instance;
 		}
 

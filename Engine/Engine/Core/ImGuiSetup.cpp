@@ -58,7 +58,7 @@ namespace Engine::ImGuiSetup
 
         // The ranges array is not copied by the AddFont* functions and is used lazily so it NEEDS TO BE available at the time of building or calling GetTexDataAsRGBA32().
 
-        static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 }; // Will not be copied by AddFont* so keep in scope.
+        local_persist const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 }; // Will not be copied by AddFont* so keep in scope.
         ImFontConfig icons_config;
         icons_config.MergeMode            = true;
         icons_config.PixelSnapH           = true;
@@ -68,7 +68,7 @@ namespace Engine::ImGuiSetup
         ImFontGlyphRangesBuilder font_glyph_ranges_builder;
         //font_glyph_ranges_builder.AddChar( 0x00A6 ); // Left here as example, for future reference.
         font_glyph_ranges_builder.AddRanges( io.Fonts->GetGlyphRangesDefault() );
-        static ImVector< ImWchar > glyph_ranges;
+        local_persist ImVector< ImWchar > glyph_ranges;
         font_glyph_ranges_builder.BuildRanges( &glyph_ranges );
 
         io.Fonts->Clear();

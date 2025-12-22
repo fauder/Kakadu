@@ -16,8 +16,8 @@ namespace Engine
 
 		CameraController_Flight& Invert();
 
-		inline const Radians GetHeading()	const { return orientation_spherical.Heading(); }
-		inline const Radians GetPitch()		const { return orientation_spherical.Pitch(); }
+		const Radians GetHeading()	const { return orientation_spherical.Heading(); }
+		const Radians GetPitch()	const { return orientation_spherical.Pitch(); }
 
 		CameraController_Flight& SetHeading( const Radians new_heading );
 		CameraController_Flight& SetHeading( const Radians new_heading, const Radians clamp_minimum, const Radians clamp_maximum );

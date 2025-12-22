@@ -22,11 +22,11 @@ namespace Engine
 		constexpr bool operator ==( const VertexAttribute& other ) const = default;
 		constexpr bool operator !=( const VertexAttribute& other ) const = default;
 
-		inline bool Empty() const { return count == 0; }
+		bool Empty() const { return count == 0; }
 
 		/* Comparison operators. */
 
-		inline unsigned int Size() const { return count * GL::Type::SizeOf( type ); }
+		unsigned int Size() const { return count * GL::Type::SizeOf( type ); }
 	};
 
 	struct VertexInstanceAttribute
@@ -39,11 +39,11 @@ namespace Engine
 		constexpr bool operator ==( const VertexInstanceAttribute& other ) const = default;
 		constexpr bool operator !=( const VertexInstanceAttribute& other ) const = default;
 
-		inline bool Empty() const { return count == 0; }
+		bool Empty() const { return count == 0; }
 
 		/* Comparison operators. */
 
-		inline unsigned int Size() const { return count * GL::Type::SizeOf( type ); }
+		unsigned int Size() const { return count * GL::Type::SizeOf( type ); }
 	};
 
 	class VertexLayout
@@ -73,7 +73,7 @@ namespace Engine
 		unsigned int Stride_NonInstanced() const;
 		unsigned int Stride_Instanced() const;
 		
-		inline unsigned int Count() const { return ( unsigned int )attributes.size(); }
+		unsigned int Count() const { return ( unsigned int )attributes.size(); }
 
 		bool IsCompatibleWith( const VertexLayout& other ) const;
 

@@ -38,7 +38,7 @@ namespace Engine::UniformAnnotation
 		// The rest are reserved.
 	};
 
-	inline Type StringToType( const std::string_view string )
+	header_function Type StringToType( const std::string_view string )
 	{
 		if( string == "color3" )
 			return Type::Color3;
@@ -54,7 +54,7 @@ namespace Engine::UniformAnnotation
 			return Type::None;
 	}
 	
-	inline SliderFlags StringToSliderFlags( const std::string_view string )
+	header_function SliderFlags StringToSliderFlags( const std::string_view string )
 	{
 		if( string == "logarithmic" )
 			return SliderFlags::Logarithmic;
@@ -64,7 +64,7 @@ namespace Engine::UniformAnnotation
 			return SliderFlags::None;
 	}
 
-	inline ColorFlags StringToColorFlags( const std::string_view string )
+	header_function ColorFlags StringToColorFlags( const std::string_view string )
 	{
 		if( string == "hdr" || string == "HDR" )
 			return ColorFlags::HDR;

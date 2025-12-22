@@ -31,30 +31,30 @@ namespace Engine
 		~Material();
 
 	/* Queries: */
-		inline const std::string& Name() const { return name; }
+		const std::string& Name() const { return name; }
 
 	/* Main: */
 		const Shader* Bind() const;
 
 	/* Shader: */
-		inline const std::string& GetShaderName() const
+		const std::string& GetShaderName() const
 		{
 			ASSERT_DEBUG_ONLY( HasShaderAssigned() && "Material::GetShaderName() called with nullptr shader!" );
 			return shader->Name();
 		}
-		inline bool HasShaderAssigned() const { return shader; }
+		bool HasShaderAssigned() const { return shader; }
 
 		Shader* GetShader();
 		void SetShader( Shader* shader );
 
 	/* Uniforms: */
-		inline const std::unordered_map< std::string, Uniform::Information				>& GetUniformInfoMap()			const { return *uniform_info_map; }
-		inline const std::unordered_map< std::string, const Uniform::BufferInformation	>& GetUniformBufferInfoMap()	const { return uniform_buffer_management_regular
-																																			.GetBufferInformationMap();	}
-		inline const std::unordered_map< std::string, const Texture*					>& GetTextureMap()				const { return texture_map; }
+		const std::unordered_map< std::string, Uniform::Information				>& GetUniformInfoMap()			const { return *uniform_info_map; }
+		const std::unordered_map< std::string, const Uniform::BufferInformation	>& GetUniformBufferInfoMap()	const { return uniform_buffer_management_regular
+																																	.GetBufferInformationMap();	}
+		const std::unordered_map< std::string, const Texture*					>& GetTextureMap()				const { return texture_map; }
 
-		inline bool HasUniform( const std::string& uniform_name ) const { return uniform_info_map->contains( uniform_name ); }
-		inline bool HasUniformBuffer( const std::string& uniform_buffer_name ) const { return uniform_buffer_management_regular.GetBufferInformationMap().contains( uniform_buffer_name ); }
+		bool HasUniform( const std::string& uniform_name ) const { return uniform_info_map->contains( uniform_name ); }
+		bool HasUniformBuffer( const std::string& uniform_buffer_name ) const { return uniform_buffer_management_regular.GetBufferInformationMap().contains( uniform_buffer_name ); }
 
 		const void* Get( const Uniform::Information& uniform_info ) const;
 			  void* Get( const Uniform::Information& uniform_info );
@@ -160,7 +160,7 @@ namespace Engine
 
 	private:
 	/* Shader: */
-		inline const Shader* GetShader() const { return shader; };
+		const Shader* GetShader() const { return shader; };
 
 	/* Uniform: */
 		const Uniform::Information& GetUniformInformation( const std::string& uniform_name ) const;

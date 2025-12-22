@@ -33,7 +33,7 @@ namespace Engine::GL::Type
 							Matrix3x2D,	Matrix3x4D,
 							Matrix4x2D,	Matrix4x3D >;
 
-	inline int SizeOf( const GLenum type )
+	header_function	int SizeOf( const GLenum type )
 	{
 		switch( type )
 		{
@@ -130,7 +130,7 @@ namespace Engine::GL::Type
 		throw std::runtime_error( "ERROR::SHADER_TYPE::SizeOf() called with an unknown GL type!" );
 	}
 
-	inline int CountOf( const GLenum type )
+	header_function int CountOf( const GLenum type )
 	{
 		switch( type )
 		{
@@ -188,7 +188,7 @@ namespace Engine::GL::Type
 		throw std::runtime_error( "ERROR::SHADER_TYPE::CountOf() called with an unknown GL type!" );
 	}
 
-	inline std::pair< int, int > RowAndColumnCountOf( const GLenum type )
+	header_function	std::pair< int, int > RowAndColumnCountOf( const GLenum type )
 	{
 		switch( type )
 		{
@@ -246,7 +246,7 @@ namespace Engine::GL::Type
 		throw std::runtime_error( "ERROR::SHADER_TYPE::RowAndColumnCountOf() called with an unknown GL type!" );
 	}
 
-	inline const char* NameOf( const GLenum type )
+	header_function const char* NameOf( const GLenum type )
 	{
 		switch( type )
 		{
@@ -366,9 +366,9 @@ namespace Engine::GL::Type
 		throw std::runtime_error( "ERROR::SHADER_TYPE::NameOf() called with an unknown GL type!" );
 	}
 
-	inline const GLenum TypeOf( const char* name )
+	header_function const GLenum TypeOf( const char* name )
 	{
-		static std::unordered_map< std::string, GLenum > lookUp_table =
+		local_persist std::unordered_map< std::string, GLenum > lookUp_table =
 		{
 			/* Scalars & vectors: */
 			{ "float",					GL_FLOAT },
@@ -486,7 +486,7 @@ namespace Engine::GL::Type
 		return lookUp_table[ name ];
 	}
 
-	inline GLenum ComponentTypeOf( const GLenum type )
+	header_function GLenum ComponentTypeOf( const GLenum type )
 	{
 		switch( type )
 		{
@@ -544,12 +544,12 @@ namespace Engine::GL::Type
 		throw std::runtime_error( "ERROR::SHADER_TYPE::ComponentTypeOf() called with an unknown GL type!" );
 	}
 
-	inline void* AddressOf( const GLenum type, void* address, const int element_index )
+	header_function void* AddressOf( const GLenum type, void* address, const int element_index )
 	{
 		return ( void* )( ( uintptr_t )address + element_index * SizeOf( type ) );
 	}
 
-	inline const void* AddressOf( const GLenum type, const void* address, const int element_index )
+	header_function const void* AddressOf( const GLenum type, const void* address, const int element_index )
 	{
 		return ( const void* )( ( uintptr_t )address + element_index * SizeOf( type ) );
 	}

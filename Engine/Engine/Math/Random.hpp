@@ -87,7 +87,7 @@ namespace Engine::Math
 
 		static Random& Instance( const unsigned int seed = std::default_random_engine::default_seed )
 		{
-			static Random instance( seed );
+			local_persist Random instance( seed );
 			return instance;
 		}
 

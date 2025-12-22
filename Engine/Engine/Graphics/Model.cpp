@@ -45,7 +45,7 @@ namespace Engine
 
 	Model::~Model()
 	{
-		static auto& asset_database = ServiceLocator< AssetDatabase< Texture > >::Get();
+		auto& asset_database = ServiceLocator< AssetDatabase< Texture > >::Get();
 
 		for( auto& texture : textures )
 			if( texture )

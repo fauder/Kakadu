@@ -483,7 +483,7 @@ namespace Engine::ImGuiDrawer
 								{
 									ImGui::TableNextColumn();
 
-									static char array_member_name_string[ 255 ];
+									char array_member_name_string[ 255 ];
 									std::snprintf( array_member_name_string, 255, "%s[%d]", uniform_buffer_member_array_info.editor_name.c_str(), array_index );
 
 									if( ImGui::TreeNodeEx( array_member_name_string, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed ) )
@@ -626,7 +626,7 @@ namespace Engine::ImGuiDrawer
 								{
 									ImGui::TableNextColumn();
 
-									static char array_member_name_string[ 255 ];
+									char array_member_name_string[ 255 ];
 									std::snprintf( array_member_name_string, 255, "%s[%d]", uniform_buffer_member_array_info.editor_name.c_str(), array_index );
 
 									if( ImGui::TreeNodeEx( array_member_name_string, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed ) )

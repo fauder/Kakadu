@@ -42,10 +42,10 @@ namespace Engine
 		void Clear();
 		
 	/* Dirty API: */
-		inline bool IsDirty() const { return not dirty_sections.empty(); }
+		bool IsDirty() const { return not dirty_sections.empty(); }
 		void MergeConsecutiveDirtySections();
 		void ClearDirtySections();
-		inline const std::vector< Section >& DirtySections() const { return dirty_sections; }
+		const std::vector< Section >& DirtySections() const { return dirty_sections; }
 		std::span< std::byte > SpanFromSection( const Section& section );
 
 	private:

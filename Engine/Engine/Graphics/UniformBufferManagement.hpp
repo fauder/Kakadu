@@ -25,7 +25,7 @@ namespace Engine
 		~UniformBufferManagement() = default;
 
 	/* Queries: */
-		inline const std::unordered_map< std::string, const Uniform::BufferInformation >& GetBufferInformationMap() const { return buffer_info_map; }
+		const std::unordered_map< std::string, const Uniform::BufferInformation >& GetBufferInformationMap() const { return buffer_info_map; }
 
 	/* Register/Unregister Buffer API: */
 		void RegisterBuffer( const std::string& buffer_name, const Uniform::BufferInformation buffer_info )

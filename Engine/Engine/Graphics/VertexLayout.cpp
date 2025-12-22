@@ -25,7 +25,7 @@ namespace Engine
 			.type         = attribute.type,
 			.is_instanced = true,
 			.location     = attribute.location
-			//.location     = previous_attribute.location + previous_attribute_occupied_slot_count
+			//.location     = s_attribute.location + previous_attribute_occupied_slot_count
 		} );
 	}
 

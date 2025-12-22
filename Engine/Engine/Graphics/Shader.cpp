@@ -622,7 +622,7 @@ namespace Engine
 														  const ShaderType shader_type,
 														  std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file )
 	{
-		static char error_string[ 256 ] = { 0 };
+		char error_string[ 256 ] = { 0 };
 
 		const std::string shader_file_name( shader_source_path.filename().string() );
 
@@ -989,7 +989,7 @@ namespace Engine
 		int active_attribute_count;
 		glGetProgramiv( program_id.Get(), GL_ACTIVE_ATTRIBUTES, &active_attribute_count );
 
-		static char attribute_name[ 255 ];
+		char attribute_name[ 255 ];
 
 		std::vector< VertexAttribute > attributes;
 		attributes.reserve( active_attribute_count );

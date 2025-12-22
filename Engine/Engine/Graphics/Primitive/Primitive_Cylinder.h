@@ -5,23 +5,23 @@
 
 namespace Engine::Primitive::Indexed::Cylinder
 {
-	static const auto& Positions()
+	header_function const auto& Positions()
 	{
-		static auto positions = CylinderTemplate::Positions();
+		local_persist auto positions = CylinderTemplate::Positions();
 
 		return positions;
 	}
 
-	static const auto& Indices()
+	header_function const auto& Indices()
 	{
-		static auto indices = CylinderTemplate::Indices();
+		local_persist auto indices = CylinderTemplate::Indices();
 
 		return indices;
 	}
 
-	static const auto& UVs()
+	header_function const auto& UVs()
 	{
-		static auto uvs = CylinderTemplate::UVs();
+		local_persist auto uvs = CylinderTemplate::UVs();
 
 		return uvs;
 	}

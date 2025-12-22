@@ -59,11 +59,11 @@ namespace Engine
 			/* 3 bytes(s) of padding. */
 		};
 
-		inline void FreezeTime()   { time_multiplier = 0.0f; }
-		inline void UnfreezeTime() { time_multiplier = 1.0f; }
-		inline bool TimeIsFrozen() { return Math::IsZero( time_multiplier ); }
+		void FreezeTime()   { time_multiplier = 0.0f; }
+		void UnfreezeTime() { time_multiplier = 1.0f; }
+		bool TimeIsFrozen() { return Math::IsZero( time_multiplier ); }
 
-		inline bool MSAAIsEnabled() { return msaa_sample_count.has_value(); }
+		bool MSAAIsEnabled() { return msaa_sample_count.has_value(); }
 
 #ifdef _EDITOR
 		bool IsMouseHoveringTheViewport() const { return viewport_info.is_hovered; }

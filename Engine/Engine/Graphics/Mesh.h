@@ -61,7 +61,7 @@ namespace Engine
 	 * Usage:
 	 */
 
-		inline void Bind() const { vertex_array.Bind(); }
+		void Bind() const { vertex_array.Bind(); }
 		void Upload( const void* data ) const;
 		void Upload_Partial( const std::span< std::byte > data_span, const std::size_t offset_from_buffer_start ) const;
 		void UpdateInstanceData( const void* data ) const;
@@ -79,41 +79,41 @@ namespace Engine
 	 * Queries:
 	 */
 
-		inline const std::string& Name() const { return name; }
+		const std::string& Name() const { return name; }
 
-		inline PrimitiveType Primitive() const { return primitive_type; }
+		PrimitiveType Primitive() const { return primitive_type; }
 
-		inline int VertexCount() const { return vertex_buffer.Count(); }
-		inline int IndexCount()  const { return index_buffer.has_value() ? index_buffer->Count() : 0; }
+		int VertexCount() const { return vertex_buffer.Count(); }
+		int IndexCount()  const { return index_buffer.has_value() ? index_buffer->Count() : 0; }
 
-		inline bool HasIndices() const { return IndexCount(); }
+		bool HasIndices() const { return IndexCount(); }
 
-		inline bool HasInstancing() const { return ( bool )instance_buffer; }
-		inline int InstanceCount() const { return instance_count; }
+		bool HasInstancing() const { return ( bool )instance_buffer; }
+		int InstanceCount()  const { return instance_count; }
 
-		inline bool IsCompatibleWith( const VertexLayout& other_vertex_layout ) const { return vertex_layout.IsCompatibleWith( other_vertex_layout ); }
+		bool IsCompatibleWith( const VertexLayout& other_vertex_layout ) const { return vertex_layout.IsCompatibleWith( other_vertex_layout ); }
 
 	/*
 	 * Index Data:
 	 */
 
-		inline const std::vector< std::uint32_t >&	Indices()		const { return indices; };
-		inline const std::uint32_t*					Indices_Raw()	const { return indices.data(); };
-		inline constexpr GLenum						IndexType()		const { return GL_UNSIGNED_INT; }
+		const std::vector< std::uint32_t >&	Indices()		const { return indices; };
+		const std::uint32_t*				Indices_Raw()	const { return indices.data(); };
+		constexpr GLenum					IndexType()		const { return GL_UNSIGNED_INT; }
 
 	/*
 	 * Vertex Data:
 	 */
 
-		inline const std::vector< Vector3 >& Positions()	const { return positions;	};
-		inline const std::vector< Vector3 >& Normals()		const { return normals;		};
-		inline const std::vector< Vector3 >& Tangents()		const { return tangents;	};
-		inline const std::vector< Vector2 >& Uvs()			const { return uvs;		};
+		const std::vector< Vector3 >& Positions()	const { return positions;	};
+		const std::vector< Vector3 >& Normals()		const { return normals;		};
+		const std::vector< Vector3 >& Tangents()	const { return tangents;	};
+		const std::vector< Vector2 >& Uvs()			const { return uvs;		};
 
-		inline const float* Positions_Raw()		const { return reinterpret_cast< const float* >( positions.data()	); };
-		inline const float* Normals_Raw()		const { return reinterpret_cast< const float* >( normals.data()		); };
-		inline const float* Tangents_Raw()		const { return reinterpret_cast< const float* >( tangents.data()	); };
-		inline const float* Uvs_Raw()			const { return reinterpret_cast< const float* >( uvs.data()			); };
+		const float* Positions_Raw()	const { return reinterpret_cast< const float* >( positions.data()	); };
+		const float* Normals_Raw()		const { return reinterpret_cast< const float* >( normals.data()		); };
+		const float* Tangents_Raw()		const { return reinterpret_cast< const float* >( tangents.data()	); };
+		const float* Uvs_Raw()			const { return reinterpret_cast< const float* >( uvs.data()			); };
 
 	private:
 		static std::array< VertexAttribute, 4 > GatherAttributes( const std::span< const Vector3 >& positions,

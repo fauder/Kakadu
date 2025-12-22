@@ -1,27 +1,27 @@
 #pragma once
 
 // Project Includes.
-#include "Primitive_Circle.hpp"
+#include "Primitive_Circle_Template.hpp"
 
 namespace Engine::Primitive::Indexed::Circle
 {
-	static const auto& Positions()
+	header_function const auto& Positions()
 	{
-		static auto positions = CircleTemplate::Positions();
+		local_persist auto positions = CircleTemplate::Positions();
 
 		return positions;
 	}
 
-	static const auto& Indices()
+	header_function const auto& Indices()
 	{
-		static auto indices = CircleTemplate::Indices();
+		local_persist auto indices = CircleTemplate::Indices();
 
 		return indices;
 	}
 
-	static const auto& UVs()
+	header_function const auto& UVs()
 	{
-		static auto uvs = CircleTemplate::UVs();
+		local_persist auto uvs = CircleTemplate::UVs();
 
 		return uvs;
 	}

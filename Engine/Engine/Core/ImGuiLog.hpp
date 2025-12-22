@@ -37,7 +37,7 @@ namespace Engine
 
 			Type type;
 
-			inline std::uint16_t LineCount() const { return ( std::uint16_t )line_start_offsets.size() + 1; /* + 1 for the first line. */ };
+			std::uint16_t LineCount() const { return ( std::uint16_t )line_start_offsets.size() + 1; /* + 1 for the first line. */ };
 		};
 
 	public:
@@ -128,7 +128,7 @@ namespace Engine
 
 		void AddLogFormatted( const Type type, const char* fmt, ... ) IM_FMTARGS( 2 )
 		{
-			static char text[ 255 ];
+			char text[ 255 ];
 			va_list args;
 			va_start( args, fmt );
 			vsprintf_s( text, fmt, args );
@@ -225,7 +225,7 @@ namespace Engine
 
 					if( group )
 					{
-						static char temp[ 25 ];
+						char temp[ 25 ];
 
 						if( local_line_index == 0 )
 							snprintf( temp, 25, "(%d)", unique_entry.repeat_count );

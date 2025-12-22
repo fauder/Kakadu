@@ -157,9 +157,9 @@ namespace Engine
 
             /* glTF uses a right-handed coordinate system where x points to right, y points to up & z points from the screen to the user.
 	         * Compared to the coordinate system used in this engine, only the Z component is the inverse, x & y are the same. */
-	        static Matrix3x3 coordinate_system_transform( Vector3::Right(),
-														  Vector3::Up(),
-														  Vector3::Backward() );
+	        constexpr Matrix3x3 coordinate_system_transform( Vector3::Right(),
+															 Vector3::Up(),
+															 Vector3::Backward() );
 
 			const auto& position_accessor = gltf_asset.accessors[ position_iterator->accessorIndex ];
 			if( !position_accessor.bufferViewIndex.has_value() )
@@ -380,14 +380,14 @@ namespace Engine
          
          * To transform matrices, not vectors, we need the inverse of this transform, which happens to be the same exact matrix.
          * So, to transform transformation matrices to our coordinate system, we need to "sandwich" the transformation matrix between 2 of this same matrix. */
-		static Matrix4x4 coordinate_system_transform( Vector4::Right(),
-													  Vector4::Up(),
-													  Vector4::Backward(),
-													  Vector4( 0.0f, 0.0f, 0.0f, 1.0f ) );
+		constexpr Matrix4x4 coordinate_system_transform( Vector4::Right(),
+														 Vector4::Up(),
+														 Vector4::Backward(),
+														 Vector4( 0.0f, 0.0f, 0.0f, 1.0f ) );
 
         const Matrix4x4 node_transform = std::visit( fastgltf::visitor
                                                      {
-                                                         []( const fastgltf::TRS& trs ) -> Matrix4x4
+                                                         [ & ]( const fastgltf::TRS& trs ) -> Matrix4x4
                                                          {
                                                              return
                                                                  coordinate_system_transform *
@@ -396,7 +396,7 @@ namespace Engine
                                                                       Matrix::Translation( reinterpret_cast< const Vector3&     >( trs.translation ) ) *
                                                                  coordinate_system_transform;
                                                          },
-                                                         []( const fastgltf::math::fmat4x4& matrix ) -> Matrix4x4
+                                                         [ & ]( const fastgltf::math::fmat4x4& matrix ) -> Matrix4x4
                                                          {
                                                              // Need to transpose because fastgltf has column-major matrices.
                                                              return coordinate_system_transform * reinterpret_cast< const Matrix4x4& >( matrix ).Transposed() * coordinate_system_transform;
@@ -414,7 +414,7 @@ namespace Engine
 
         // Parse the glTF file and get the constructed asset:
         {
-            static constexpr auto supported_extensions =
+            constexpr auto supported_extensions =
                 fastgltf::Extensions::KHR_mesh_quantization |
                 fastgltf::Extensions::KHR_texture_transform |
                 fastgltf::Extensions::KHR_materials_variants;
