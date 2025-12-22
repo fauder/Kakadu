@@ -462,9 +462,9 @@ namespace Engine::Math
 			}
 		}
 
-		constexpr bool IsNormalized() const requires( std::is_integral_v< Component > == false )
+		constexpr bool IsNormalized() const requires( std::floating_point< Component > )
 		{
-			return Math::IsEqualSquared( MagnitudeSquared(), Component( 1 ) );
+			return Math::Abs( MagnitudeSquared() - Component( 1 ) ) < TypeTraits< Component >::Epsilon();
 		}
 
 		// TODO: Equality operator etc.

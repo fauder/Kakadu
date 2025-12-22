@@ -77,12 +77,6 @@ namespace Engine
 		}
 
 		template< std::floating_point Value >
-		bool IsEqualSquared( Value lhs, Value rhs, const float epsilon = TypeTraits< Value >::TwoEpsilon() )
-		{
-			return IsEqual( lhs, rhs, epsilon );
-		}
-
-		template< std::floating_point Value >
 		constexpr bool IsGreaterThan( Value lhs, Value rhs, const float epsilon = TypeTraits< Value >::Epsilon() ) { return lhs - rhs > epsilon; }
 
 		template< std::floating_point Value >
