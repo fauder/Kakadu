@@ -5,6 +5,7 @@
 #include "ImGuiCustomColors.h"
 #include "ImGuiDrawer.hpp"
 #include "ImGuiUtility.h"
+#include "Platform.h"
 #include "Graphics/ShaderTypeInformation.h"
 #include "Math/VectorConversion.hpp"
 
@@ -922,9 +923,47 @@ namespace Engine::ImGuiDrawer
 
 		return is_modified;
 	}
-
+	
 	void Draw( const Shader& shader, ImGuiWindowFlags window_flags )
 	{
+		auto DrawClickableShaderPath = []( const char* source_path )
+		{
+			if( ImGuiUtility::DrawClickableText( source_path ) )
+				Platform::LaunchWithDefaultProgram( source_path );
+		};
+
+		auto DrawSourceFiles = [ & ]( const std::string& tree_node_name, const std::string& source_path, const std::vector< std::string >& include_paths )
+		{
+			if( not source_path.empty() && ImGui::TreeNodeEx( tree_node_name.c_str()/*, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed*/ ) )
+			{
+				if( ImGui::BeginTable( "Source Files", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
+				{
+					ImGui::TableSetupColumn( "Type" );
+					ImGui::TableSetupColumn( "Path" );
+
+					ImGui::TableHeadersRow();
+					ImGui::TableNextRow();
+
+					ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
+
+					ImGui::TableNextColumn(); ImGui::TextUnformatted( "Source" );
+					ImGui::TableNextColumn(); DrawClickableShaderPath( source_path.c_str() );
+
+					for( auto& include_path : include_paths )
+					{
+						ImGui::TableNextColumn(); ImGui::TextUnformatted( "Include" );
+						ImGui::TableNextColumn(); DrawClickableShaderPath( include_path.c_str() );
+					}
+
+					ImGui::PopStyleColor();
+
+					ImGui::EndTable();
+				}
+
+				ImGui::TreePop();
+			}
+		};
+
 		if( ImGui::Begin( ICON_FA_CODE " Shaders", nullptr, window_flags | ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
 			const auto& uniform_info_map = shader.GetUniformInfoMap();
@@ -934,36 +973,6 @@ namespace Engine::ImGuiDrawer
 				ImGuiUtility::BeginGroupPanel();
 
 				ImGui::SeparatorText( "Source Files" );
-				auto DrawSourceFiles = [ & ]( const std::string& tree_node_name, const std::string& source_path, const std::vector< std::string >& include_paths )
-				{
-					if( not source_path.empty() && ImGui::TreeNodeEx( tree_node_name.c_str()/*, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed*/ ) )
-					{
-						if( ImGui::BeginTable( "Source Files", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
-						{
-							ImGui::TableSetupColumn( "Type" );
-							ImGui::TableSetupColumn( "Path" );
-
-							ImGui::TableHeadersRow();
-							ImGui::TableNextRow();
-
-							ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
-
-							ImGui::TableNextColumn(); ImGui::TextUnformatted( "Source" );
-							ImGui::TableNextColumn(); ImGui::TextUnformatted( source_path.c_str() );
-							for( auto& include_path : include_paths )
-							{
-								ImGui::TableNextColumn(); ImGui::TextUnformatted( "Include" );
-								ImGui::TableNextColumn(); ImGui::TextUnformatted( include_path.c_str() );
-							}
-
-							ImGui::PopStyleColor();
-
-							ImGui::EndTable();
-						}
-
-						ImGui::TreePop();
-					}
-				};
 
 				DrawSourceFiles( "Vertex Shader##"   + shader.Name(), shader.VertexSourcePath(),   shader.VertexSourceIncludePaths()   );
 				DrawSourceFiles( "Geometry Shader##" + shader.Name(), shader.GeometrySourcePath(), shader.GeometrySourceIncludePaths() );
