@@ -10,16 +10,6 @@
 // std Includes.
 #include <algorithm>
 
-namespace Engine
-{
-	namespace Initialization
-	{
-		struct HomogeneousVectorInitialization {};
-	}
-
-	inline constexpr Initialization::HomogeneousVectorInitialization HOMOGENEOUS_VECTOR_INITIALIZATION;
-}
-
 namespace Engine::Math
 {
 	template< typename Component, std::size_t Size > requires( Size > 1 )
@@ -90,12 +80,20 @@ namespace Engine::Math
 			std::copy( &vector_of_smaller_dimension[ 0 ], &vector_of_smaller_dimension[ 0 ] + SmallerVectorType::Dimension(), data );
 		}
 
-		template< typename SmallerVectorType > requires( Size == 4 && SmallerVectorType::Dimension() > 1 && SmallerVectorType::Dimension() < Size )
-		constexpr Vector( const SmallerVectorType& vector_of_smaller_dimension, Initialization::HomogeneousVectorInitialization )
-			:
-			data{ Component( 0 ), Component( 0 ), Component( 0 ), Component( 1 ) }
+		template< std::size_t OtherSize, typename... Scalars >
+			requires ( OtherSize < Size &&
+					   sizeof...( Scalars ) == Size - OtherSize &&
+					   ( std::same_as< Scalars, Component > && ... ) )
+		constexpr Vector( const Vector< Component, OtherSize>& smaller_dimension_vector, Scalars... scalars )
 		{
-			std::copy( &vector_of_smaller_dimension[ 0 ], &vector_of_smaller_dimension[ 0 ] + SmallerVectorType::Dimension(), data );
+			// Copy vector part:
+			for( std::size_t i = 0; i < OtherSize; ++i )
+				data[ i ] = smaller_dimension_vector[ i ];
+
+			// Append scalars:
+			Component tail[] = { scalars... };
+			for( std::size_t i = 0; i < Size - OtherSize; ++i )
+				data[ OtherSize + i ] = tail[ i ];
 		}
 
 		template< typename ... Values >
