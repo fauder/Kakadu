@@ -707,4 +707,17 @@ namespace Platform
 	{
 		return reinterpret_cast< void* >( WINDOW );
 	}
+
+	void LaunchWithDefaultProgram( const std::string& file_path )
+	{
+#ifdef _WIN32
+		ShellExecute( nullptr, L"open",
+					  Engine::Utility::String::ToWideString( file_path ).c_str(),
+					  nullptr,
+					  nullptr,
+					  SW_SHOWNORMAL );
+#else
+		throw std::logic_error( "LaunchWithDefaultProgram() is not implemented for OSes other than Windows yet!" );
+#endif // _WIN32
+	}
 }

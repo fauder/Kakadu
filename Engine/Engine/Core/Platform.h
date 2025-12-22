@@ -243,4 +243,5 @@ namespace Platform
 	void SetShouldClose( const bool value );
 	bool ShouldClose();
 	void* GetWindowHandle();
+	void LaunchWithDefaultProgram( const std::string& file_path );
 }
