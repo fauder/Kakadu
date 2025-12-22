@@ -1433,7 +1433,7 @@ namespace Engine
 				if( point_light->is_enabled )
 				{
 					/* Shaders expect the lights' position & direction in view space. */
-					point_light->data.position_view_space = Vector4( point_light->transform->GetTranslation() ).SetW( 1.0f ) * view_matrix;
+					point_light->data.position_view_space = Vector4( point_light->transform->GetTranslation(), 1.0f ) * view_matrix;
 					uniform_buffer_management_intrinsic.SetPartial_Array( "_Intrinsic_Lighting", "_INTRINSIC_POINT_LIGHTS", lights_point_active_count++, point_light->data );
 				}
 			}
@@ -1448,7 +1448,7 @@ namespace Engine
 				{
 					/* Shaders expect the lights' position & direction in view space. */
 
-					spot_light->data.position_view_space_and_cos_cutoff_angle_inner.vector = ( Vector4( spot_light->transform->GetTranslation() ).SetW( 1.0f ) * view_matrix ).XYZ();
+					spot_light->data.position_view_space_and_cos_cutoff_angle_inner.vector = ( Vector4( spot_light->transform->GetTranslation(), 1.0f ) * view_matrix ).XYZ();
 					spot_light->data.position_view_space_and_cos_cutoff_angle_inner.scalar = Math::Cos( Radians( spot_light->data.cutoff_angle_inner ) );
 
 					spot_light->data.direction_view_space_and_cos_cutoff_angle_outer.vector = spot_light->transform->Forward() * view_matrix_3x3;
