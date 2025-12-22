@@ -59,9 +59,9 @@ namespace Engine::ImGuiDrawer
 			case GL_UNSIGNED_INT_VEC3		: return Draw( *reinterpret_cast< Vector3U*		>( value_pointer ), name );
 			case GL_UNSIGNED_INT_VEC4		: return Draw( *reinterpret_cast< Vector4U*		>( value_pointer ), name );
 			case GL_BOOL					: return Draw( *reinterpret_cast< bool*			>( value_pointer ), name );
-			case GL_BOOL_VEC2				: return Draw( *reinterpret_cast< Vector2B*		>( value_pointer ), name );
-			case GL_BOOL_VEC3				: return Draw( *reinterpret_cast< Vector3B*		>( value_pointer ), name );
-			case GL_BOOL_VEC4				: return Draw( *reinterpret_cast< Vector4B*		>( value_pointer ), name );
+			//case GL_BOOL_VEC2				: return Draw( *reinterpret_cast< NOT DEFINED	>( value_pointer ), name );
+			//case GL_BOOL_VEC3				: return Draw( *reinterpret_cast< NOT DEFINED	>( value_pointer ), name );
+			//case GL_BOOL_VEC4				: return Draw( *reinterpret_cast< NOT DEFINED	>( value_pointer ), name );
 			
 			/* Matrices: */
 			case GL_FLOAT_MAT2 				: return Draw( *reinterpret_cast< Matrix2x2*	>( value_pointer ), name );
@@ -104,9 +104,9 @@ namespace Engine::ImGuiDrawer
 			case GL_UNSIGNED_INT_VEC3		: return Draw( *reinterpret_cast< const Vector3U*		>( value_pointer ), name );
 			case GL_UNSIGNED_INT_VEC4		: return Draw( *reinterpret_cast< const Vector4U*		>( value_pointer ), name );
 			case GL_BOOL					: return Draw( *reinterpret_cast< const bool*			>( value_pointer ), name );
-			case GL_BOOL_VEC2				: return Draw( *reinterpret_cast< const Vector2B*		>( value_pointer ), name );
-			case GL_BOOL_VEC3				: return Draw( *reinterpret_cast< const Vector3B*		>( value_pointer ), name );
-			case GL_BOOL_VEC4				: return Draw( *reinterpret_cast< const Vector4B*		>( value_pointer ), name );
+			//case GL_BOOL_VEC2				: return Draw( *reinterpret_cast< const NOT DEFINED		>( value_pointer ), name );
+			//case GL_BOOL_VEC3				: return Draw( *reinterpret_cast< const NOT DEFINED		>( value_pointer ), name );
+			//case GL_BOOL_VEC4				: return Draw( *reinterpret_cast< const NOT DEFINED		>( value_pointer ), name );
 
 			/* Matrices: */
 			case GL_FLOAT_MAT2 				: return Draw( *reinterpret_cast< const Matrix2x2*		>( value_pointer ), name );

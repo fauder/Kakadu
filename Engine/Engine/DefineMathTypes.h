@@ -25,9 +25,6 @@ using Vector4I = Engine::Math::Vector< int,				4 >; \
 using Vector2U = Engine::Math::Vector< unsigned int,	2 >; \
 using Vector3U = Engine::Math::Vector< unsigned int,	3 >; \
 using Vector4U = Engine::Math::Vector< unsigned int,	4 >; \
-using Vector2B = Engine::Math::Vector< bool,			2 >; \
-using Vector3B = Engine::Math::Vector< bool,			3 >; \
-using Vector4B = Engine::Math::Vector< bool,			4 >; \
 \
 using Matrix2x2  = Engine::Math::Matrix< float,		2, 2 >; \
 using Matrix3x3  = Engine::Math::Matrix< float,		3, 3 >; \

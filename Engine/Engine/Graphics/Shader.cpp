@@ -389,9 +389,9 @@ namespace Engine
 			case GL_UNSIGNED_INT_VEC3		: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector3U*		>( value_pointer ) ); return;
 			case GL_UNSIGNED_INT_VEC4		: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector4U*		>( value_pointer ) ); return;
 			case GL_BOOL					: SetUniform( uniform_info.location_or_block_index, *static_cast< const bool*			>( value_pointer ) ); return;
-			case GL_BOOL_VEC2				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector2B*		>( value_pointer ) ); return;
-			case GL_BOOL_VEC3				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector3B*		>( value_pointer ) ); return;
-			case GL_BOOL_VEC4				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector4B*		>( value_pointer ) ); return;
+			//case GL_BOOL_VEC2				: SetUniform( uniform_info.location_or_block_index, *static_cast< const NOT DEFINED		>( value_pointer ) ); return;
+			//case GL_BOOL_VEC3				: SetUniform( uniform_info.location_or_block_index, *static_cast< const NOT DEFINED		>( value_pointer ) ); return;
+			//case GL_BOOL_VEC4				: SetUniform( uniform_info.location_or_block_index, *static_cast< const NOT DEFINED		>( value_pointer ) ); return;
 			/* Matrices: */
 			case GL_FLOAT_MAT2				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Matrix2x2*		>( value_pointer ) ); return;
 			case GL_FLOAT_MAT3				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Matrix3x3*		>( value_pointer ) ); return;
@@ -432,9 +432,9 @@ namespace Engine
 			case GL_UNSIGNED_INT_VEC3		: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector3U*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_UNSIGNED_INT_VEC4		: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector4U*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_BOOL					: SetUniformArray( uniform_info.location_or_block_index, static_cast< const bool*			>( value_pointer ), uniform_info.count_array ); return;
-			case GL_BOOL_VEC2				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector2B*		>( value_pointer ), uniform_info.count_array ); return;
-			case GL_BOOL_VEC3				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector3B*		>( value_pointer ), uniform_info.count_array ); return;
-			case GL_BOOL_VEC4				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector4B*		>( value_pointer ), uniform_info.count_array ); return;
+			//case GL_BOOL_VEC2				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const NOT DEFINED		>( value_pointer ), uniform_info.count_array ); return;
+			//case GL_BOOL_VEC3				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const NOT DEFINED		>( value_pointer ), uniform_info.count_array ); return;
+			//case GL_BOOL_VEC4				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const NOT DEFINED		>( value_pointer ), uniform_info.count_array ); return;
 			/* Matrices: */
 			case GL_FLOAT_MAT2				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Matrix2x2*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_FLOAT_MAT3				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Matrix3x3*		>( value_pointer ), uniform_info.count_array ); return;

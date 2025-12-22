@@ -566,9 +566,6 @@ namespace Engine
 	using Vector2U = Math::Vector< unsigned int,	2 >;
 	using Vector3U = Math::Vector< unsigned int,	3 >;
 	using Vector4U = Math::Vector< unsigned int,	4 >;
-	using Vector2B = Math::Vector< bool,			2 >;
-	using Vector3B = Math::Vector< bool,			3 >;
-	using Vector4B = Math::Vector< bool,			4 >;
 
 	namespace Concepts
 	{

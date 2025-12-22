@@ -18,7 +18,6 @@ namespace Engine
 	using Vector3D_Padded = Vector4D;
 	using Vector3I_Padded = Vector4I;
 	using Vector3U_Padded = Vector4U;
-	using Vector3B_Padded = Vector4B;
 
 	struct Vector3_AndScalar
 	{
@@ -42,11 +41,5 @@ namespace Engine
 	{
 		Vector3I vector;
 		int scalar;
-	};
-
-	struct Vector3B_AndScalar
-	{
-		Vector3B vector;
-		bool scalar;
 	};
 }

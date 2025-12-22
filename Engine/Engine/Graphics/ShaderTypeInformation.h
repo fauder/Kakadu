@@ -12,27 +12,6 @@
 
 namespace Engine::GL::Type
 {
-	using ShaderTypesVariant = 
-		std::variant<
-			/* Scalars & vectors: */
-			float,			Vector2,	Vector3,	Vector4,
-			double,			Vector2D,	Vector3D,	Vector4D,
-			int,			Vector2I,	Vector3I,	Vector4I,
-			unsigned int,	Vector2U,	Vector3U,	Vector4U,
-			bool,			Vector2B,	Vector3B,	Vector4B,
-		
-			/* Float matrices: */
-							Matrix2x2,	Matrix3x3,	Matrix4x4,
-							Matrix2x3,	Matrix2x4,
-							Matrix3x2,	Matrix3x4,
-							Matrix4x2,	Matrix4x3,
-
-			/* Double matrices: */
-							Matrix2x2D,	Matrix3x3D,	Matrix4x4D,
-							Matrix2x3D,	Matrix2x4D,
-							Matrix3x2D,	Matrix3x4D,
-							Matrix4x2D,	Matrix4x3D >;
-
 	header_function	int SizeOf( const GLenum type )
 	{
 		switch( type )
@@ -59,9 +38,9 @@ namespace Engine::GL::Type
 			case GL_UNSIGNED_INT_VEC4	: return sizeof( Vector4U );
 
 			case GL_BOOL				: return sizeof( bool );
-			case GL_BOOL_VEC2			: return sizeof( Vector2B );
-			case GL_BOOL_VEC3			: return sizeof( Vector3B );
-			case GL_BOOL_VEC4			: return sizeof( Vector4B );
+			case GL_BOOL_VEC2			: return sizeof( bool ) * 2;
+			case GL_BOOL_VEC3			: return sizeof( bool ) * 3;
+			case GL_BOOL_VEC4			: return sizeof( bool ) * 4;
 
 			/* Float matrices: */
 			case GL_FLOAT_MAT2 			: return sizeof( Matrix2x2 );

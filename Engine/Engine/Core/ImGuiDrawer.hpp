@@ -70,7 +70,7 @@ namespace Engine::ImGuiDrawer
 	bool Draw( bool& value,					const char* name = "##bool" );
 	void Draw( const bool& value,			const char* name = "##bool" );
 
-	template< Concepts::Arithmetic Component, std::size_t Size >
+	template< Concepts::Arithmetic_NotBool Component, std::size_t Size >
 		requires( Size > 1 )
 	void Draw( const Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
 	{
@@ -78,37 +78,15 @@ namespace Engine::ImGuiDrawer
 
 		const auto& style = ImGui::GetStyle();
 
-		if constexpr( std::is_same_v< Component, bool > )
-		{
-			ImGui::PushItemWidth( Size * ImGui::CalcTextSize( " []" ).x + ( Size - 1 ) * style.ItemInnerSpacing.x );
-			if constexpr( Size >= 2 )
-			{
-				bool x = vector.X(), y = vector.Y();
-				ImGui::Checkbox( "##x", &x ); ImGui::SameLine(); ImGui::Checkbox( "##y", &y );
-			}
-			if constexpr( Size >= 3 )
-			{
-				bool value = vector.Z();
-				ImGui::SameLine(); ImGui::Checkbox( "##z", &value );
-			}
-			if constexpr( Size >= 4 )
-			{
-				bool value = vector.W();
-				ImGui::SameLine(); ImGui::Checkbox( "##w", &value );
-			}
-		}
-		else
-		{
-			ImGui::PushItemWidth( Size * ImGui::CalcTextSize( ".-999.99" ).x + ( Size - 1 ) * style.ItemInnerSpacing.x );
-			/* Since the read-only flag is passed, the passed pointer will not be modified. So this hack is safe to use here. */
-			ImGui::InputScalarN( name, GetImGuiDataType< Component >(), const_cast< Component* >( vector.Data() ), Size, NULL, NULL, GetFormat< Component >(), ImGuiInputTextFlags_ReadOnly );
-		}
+		ImGui::PushItemWidth( Size * ImGui::CalcTextSize( ".-999.99" ).x + ( Size - 1 ) * style.ItemInnerSpacing.x );
+		/* Since the read-only flag is passed, the passed pointer will not be modified. So this hack is safe to use here. */
+		ImGui::InputScalarN( name, GetImGuiDataType< Component >(), const_cast< Component* >( vector.Data() ), Size, NULL, NULL, GetFormat< Component >(), ImGuiInputTextFlags_ReadOnly );
 		ImGui::PopItemWidth();
 
 		ImGui::PopStyleColor();
 	}
 
-	template< Concepts::Arithmetic Component, std::size_t Size >
+	template< Concepts::Arithmetic_NotBool Component, std::size_t Size >
 		requires( Size > 1 )
 	bool Draw( Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
 	{
@@ -116,75 +94,42 @@ namespace Engine::ImGuiDrawer
 
 		const auto& style = ImGui::GetStyle();
 
-		if constexpr( std::is_same_v< Component, bool > )
-		{
-			ImGui::PushItemWidth( Size * ImGui::CalcTextSize( " []" ).x + ( Size - 1 ) * style.ItemInnerSpacing.x );
-			if constexpr( Size >= 2 )
-			{
-				is_modified |= ImGui::Checkbox( "##x", &vector[ 0 ] ); ImGui::SameLine(); is_modified |= ImGui::Checkbox( "##y", &vector[ 1 ] );
-			}
-			if constexpr( Size >= 3 )
-			{
-				ImGui::SameLine(); is_modified |= ImGui::Checkbox( "##z", &vector[ 2 ] );
-			}
-			if constexpr( Size >= 4 )
-			{
-				ImGui::SameLine(); is_modified |= ImGui::Checkbox( "##w", &vector[ 3 ] );
-			}
-		}
-		else
-		{
-			ImGui::PushItemWidth( Size * ImGui::CalcTextSize( ".-999.99" ).x + ( Size - 1 ) * style.ItemInnerSpacing.x );
-			is_modified |= ImGui::DragScalarN( name, GetImGuiDataType< Component >(), vector.Data(), Size, 1.0f, NULL, NULL, GetFormat< Component >() );
-		}
+		ImGui::PushItemWidth( Size * ImGui::CalcTextSize( ".-999.99" ).x + ( Size - 1 ) * style.ItemInnerSpacing.x );
+		is_modified |= ImGui::DragScalarN( name, GetImGuiDataType< Component >(), vector.Data(), Size, 1.0f, NULL, NULL, GetFormat< Component >() );
 		ImGui::PopItemWidth();
 
 		return is_modified;
 	}
 
-	template< Concepts::Arithmetic Component, std::size_t Size >
+	template< Concepts::Arithmetic_NotBool Component, std::size_t Size >
 		requires( Size > 1 )
 	void DrawAsTableCells( const Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
 	{
 		ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
-
-		if constexpr( std::is_same_v< Component, bool > )
+		
+		for( std::size_t i = 0; i < Size; ++i )
 		{
-			static_assert( Size <= 4, "DrawAsTableCells(): Bool vectors only supported up to 4 components (X, Y, Z, W)" );
-			constexpr const char* component_labels[ 4 ] = { "##x", "##y", "##z", "##w" };
+			ImGui::TableNextColumn();
 
-			for( std::size_t i = 0; i < Size; ++i )
-			{
-				ImGui::TableNextColumn();
-				ImGui::Checkbox( component_labels[ i ], &vector[ i ] );
-			}
-		}
-		else
-		{
-			for( std::size_t i = 0; i < Size; ++i )
-			{
-				ImGui::TableNextColumn();
-
-				ImGui::PushID( static_cast< int >( i ) );
-				ImGui::SetNextItemWidth( -FLT_MIN );
-				ImGui::InputScalar(
-					name,
-					GetImGuiDataType< Component >(),
-					/* Since the read-only flag is passed, the passed pointer will not be modified. So this hack is safe to use here. */
-					const_cast< Component* >( &vector[ i ] ),
-					nullptr,
-					nullptr,
-					GetFormat< Component >(),
-					ImGuiInputTextFlags_ReadOnly
-				);
-				ImGui::PopID();
-			}
+			ImGui::PushID( static_cast< int >( i ) );
+			ImGui::SetNextItemWidth( -FLT_MIN );
+			ImGui::InputScalar(
+				name,
+				GetImGuiDataType< Component >(),
+				/* Since the read-only flag is passed, the passed pointer will not be modified. So this hack is safe to use here. */
+				const_cast< Component* >( &vector[ i ] ),
+				nullptr,
+				nullptr,
+				GetFormat< Component >(),
+				ImGuiInputTextFlags_ReadOnly
+			);
+			ImGui::PopID();
 		}
 
 		ImGui::PopStyleColor();
 	}
 
-	template< Concepts::Arithmetic Component, std::size_t Size >
+	template< Concepts::Arithmetic_NotBool Component, std::size_t Size >
 		requires( Size == 4 && std::is_floating_point_v< Component > )
 	void DrawClipSpacePositionVectorAsTableCells( const Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
 	{
@@ -224,42 +169,28 @@ namespace Engine::ImGuiDrawer
 		ImGui::PopStyleColor();
 	}
 
-	template< Concepts::Arithmetic Component, std::size_t Size >
+	template< Concepts::Arithmetic_NotBool Component, std::size_t Size >
 		requires( Size > 1 )
 	bool DrawAsTableCells( Math::Vector< Component, Size >& vector, const char* name = "##vector<>" )
 	{
 		bool is_modified = false;
 
-		if constexpr( std::is_same_v< Component, bool > )
+		for( std::size_t i = 0; i < Size; ++i )
 		{
-			static_assert( Size <= 4, "DrawAsTableCells(): Bool vectors only supported up to 4 components (X, Y, Z, W)" );
-			constexpr const char* labels[ 4 ] = { "##x", "##y", "##z", "##w" };
+			ImGui::TableNextColumn();
 
-			for( std::size_t i = 0; i < Size; ++i )
-			{
-				ImGui::TableNextColumn();
-				is_modified |= ImGui::Checkbox( labels[ i ], &vector[ i ] );
-			}
-		}
-		else
-		{
-			for( std::size_t i = 0; i < Size; ++i )
-			{
-				ImGui::TableNextColumn();
-
-				ImGui::PushID( static_cast< int >( i ) );
-				ImGui::SetNextItemWidth( -FLT_MIN );
-				is_modified |= ImGui::DragScalar(
-					name,
-					GetImGuiDataType< Component >(),
-					&vector[ i ],
-					1.0f, // step.
-					nullptr,
-					nullptr,
-					GetFormat< Component >()
-				);
-				ImGui::PopID();
-			}
+			ImGui::PushID( static_cast< int >( i ) );
+			ImGui::SetNextItemWidth( -FLT_MIN );
+			is_modified |= ImGui::DragScalar(
+				name,
+				GetImGuiDataType< Component >(),
+				&vector[ i ],
+				1.0f, // step.
+				nullptr,
+				nullptr,
+				GetFormat< Component >()
+			);
+			ImGui::PopID();
 		}
 
 		return is_modified;

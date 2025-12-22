@@ -167,71 +167,52 @@ namespace Engine
 		template< typename Component, std::size_t Size > requires( Size >= 2 && Size <= 4 )
 		void SetUniform( const int location, const Math::Vector< Component, Size >& value )
 		{
-			if constexpr( std::is_same_v< Component, bool > )
+		
+			if constexpr( std::is_same_v< Component, float > )
 			{
-				/* Since sizeof( bool ) != sizeof( int ), we can not just pass a pointer to data and call the v variant of glUniformX functions. */
-
 				if constexpr( Size == 2 )
 				{
-					glUniform2i( location, value.X(), value.Y() );
+					glUniform2fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
 				}
 				if constexpr( Size == 3 )
 				{
-					glUniform3i( location, value.X(), value.Y(), value.Z() );
+					glUniform3fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
 				}
 				if constexpr( Size == 4 )
 				{
-					glUniform4i( location, value.X(), value.Y(), value.Z(), value.W() );
+					glUniform4fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
 				}
 			}
-			else
+
+			if constexpr( std::is_same_v< Component, int > )
 			{
-				if constexpr( std::is_same_v< Component, float > )
+				if constexpr( Size == 2 )
 				{
-					if constexpr( Size == 2 )
-					{
-						glUniform2fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
-					}
-					if constexpr( Size == 3 )
-					{
-						glUniform3fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
-					}
-					if constexpr( Size == 4 )
-					{
-						glUniform4fv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
-					}
+					glUniform2iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
 				}
-
-				if constexpr( std::is_same_v< Component, int > )
+				if constexpr( Size == 3 )
 				{
-					if constexpr( Size == 2 )
-					{
-						glUniform2iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
-					}
-					if constexpr( Size == 3 )
-					{
-						glUniform3iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
-					}
-					if constexpr( Size == 4 )
-					{
-						glUniform4iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
-					}
+					glUniform3iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
 				}
-
-				if constexpr( std::is_same_v< Component, unsigned int > )
+				if constexpr( Size == 4 )
 				{
-					if constexpr( Size == 2 )
-					{
-						glUniform2uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
-					}
-					if constexpr( Size == 3 )
-					{
-						glUniform3uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
-					}
-					if constexpr( Size == 4 )
-					{
-						glUniform4uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
-					}
+					glUniform4iv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+				}
+			}
+
+			if constexpr( std::is_same_v< Component, unsigned int > )
+			{
+				if constexpr( Size == 2 )
+				{
+					glUniform2uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+				}
+				if constexpr( Size == 3 )
+				{
+					glUniform3uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
+				}
+				if constexpr( Size == 4 )
+				{
+					glUniform4uiv( location, /* This is the number of ARRAY elements, which is 1 for non-arrays */ 1, value.Data() );
 				}
 			}
 		}
@@ -334,74 +315,52 @@ namespace Engine
 		void SetUniformArray( const int location, const Math::Vector< Component, Size >* address, const int element_count )
 		{
 			ASSERT_DEBUG_ONLY( element_count > 1 );
-			if constexpr( std::is_same_v< Component, bool > )
+			
+			if constexpr( std::is_same_v< Component, float > )
 			{
-				/* Since sizeof( bool ) != sizeof( int ), we have to create a Vector<> of integers, copy the data into it & pass its address for the memory to be laid out correctly: */
-				Math::Vector< int, Size > integer_version;
-				for( int i = 0; i < Size; i++ )
-					integer_version[ i ] = ( *address )[ i ];
-
 				if constexpr( Size == 2 )
 				{
-					glUniform2iv( location, element_count, reinterpret_cast< const int* >( integer_version.Data() ) );
+					glUniform2fv( location, element_count, reinterpret_cast< const float* >( address ) );
 				}
 				if constexpr( Size == 3 )
 				{
-					glUniform3iv( location, element_count, reinterpret_cast< const int* >( integer_version.Data() ) );
+					glUniform3fv( location, element_count, reinterpret_cast< const float* >( address ) );
 				}
 				if constexpr( Size == 4 )
 				{
-					glUniform4iv( location, element_count, reinterpret_cast< const int* >( integer_version.Data() ) );
+					glUniform4fv( location, element_count, reinterpret_cast< const float* >( address ) );
 				}
 			}
-			else
+
+			if constexpr( std::is_same_v< Component, int > )
 			{
-				if constexpr( std::is_same_v< Component, float > )
+				if constexpr( Size == 2 )
 				{
-					if constexpr( Size == 2 )
-					{
-						glUniform2fv( location, element_count, reinterpret_cast< const float* >( address ) );
-					}
-					if constexpr( Size == 3 )
-					{
-						glUniform3fv( location, element_count, reinterpret_cast< const float* >( address ) );
-					}
-					if constexpr( Size == 4 )
-					{
-						glUniform4fv( location, element_count, reinterpret_cast< const float* >( address ) );
-					}
+					glUniform2iv( location, element_count, reinterpret_cast< const int* >( address ) );
 				}
-
-				if constexpr( std::is_same_v< Component, int > )
+				if constexpr( Size == 3 )
 				{
-					if constexpr( Size == 2 )
-					{
-						glUniform2iv( location, element_count, reinterpret_cast< const int* >( address ) );
-					}
-					if constexpr( Size == 3 )
-					{
-						glUniform3iv( location, element_count, reinterpret_cast< const int* >( address ) );
-					}
-					if constexpr( Size == 4 )
-					{
-						glUniform4iv( location, element_count, reinterpret_cast< const int* >( address ) );
-					}
+					glUniform3iv( location, element_count, reinterpret_cast< const int* >( address ) );
 				}
-
-				if constexpr( std::is_same_v< Component, unsigned int > )
+				if constexpr( Size == 4 )
 				{
-					if constexpr( Size == 2 )
-					{
-						glUniform2uiv( location, element_count, reinterpret_cast< const unsigned int* >( address ) );
-					}
-					if constexpr( Size == 3 )
-					{
-						glUniform3uiv( location, element_count, reinterpret_cast< const unsigned int* >( address ) );
-					}
-					if constexpr( Size == 4 )
-					{
-						glUniform4uiv( location, element_count, reinterpret_cast< const unsigned int* >( address ) );
-					}
+					glUniform4iv( location, element_count, reinterpret_cast< const int* >( address ) );
+				}
+			}
+
+			if constexpr( std::is_same_v< Component, unsigned int > )
+			{
+				if constexpr( Size == 2 )
+				{
+					glUniform2uiv( location, element_count, reinterpret_cast< const unsigned int* >( address ) );
+				}
+				if constexpr( Size == 3 )
+				{
+					glUniform3uiv( location, element_count, reinterpret_cast< const unsigned int* >( address ) );
+				}
+				if constexpr( Size == 4 )
+				{
+					glUniform4uiv( location, element_count, reinterpret_cast< const unsigned int* >( address ) );
 				}
 			}
 		}
