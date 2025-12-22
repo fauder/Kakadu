@@ -1970,10 +1970,10 @@ namespace Engine
 				DisableFramebuffer_sRGBEncoding();
 		}
 
+		SetRenderState( render_state_to_set );
+
 		if( clear_framebuffer )
 			framebuffer_current->Clear();
-
-		SetRenderState( render_state_to_set );
 	}
 
 	void Renderer::SortRenderablesInQueue( const Vector3& camera_position, std::vector< Renderable* >& renderable_array_to_sort, const SortingMode sorting_mode )
