@@ -17,7 +17,7 @@ namespace Engine::Math
 	template< typename Component, std::size_t Size > requires( Size > 1 ) 
 	struct Vector;
 
-	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
+	template< Concepts::Arithmetic_NotBool Type, std::size_t RowSize, std::size_t ColumnSize >
 		requires Concepts::NonZero< RowSize >&& Concepts::NonZero< ColumnSize >
 	struct Matrix;
 }
@@ -37,7 +37,7 @@ namespace Engine::Math
 	template< std::floating_point Value >
 	Value SquareOf( Value value ) { return std::pow( value, Value{ 2 } ); }
 
-	template< Concepts::Arithmetic Value >
+	template< Concepts::Arithmetic_NotBool Value >
 	Value Abs( const Value value ) { return std::abs( value ); }
 
 	template< typename Value >
@@ -58,7 +58,7 @@ namespace Engine::Math
 	template< typename Value >
 	constexpr Value Max( const Value first, const Value second, const Value third, const Value fourth ) { return Max( first, Max( second, third, fourth ) ); }
 
-	template< Concepts::Arithmetic Value >
+	template< Concepts::Arithmetic_NotBool Value >
 	auto Sqrt( const Value value ) { return std::sqrt( value ); }
 
 	template< std::floating_point Value >
@@ -106,10 +106,10 @@ namespace Engine::Math
 	template< std::floating_point Value >
 	Value Exp( const Value exponent ) { return std::exp( exponent ); }
 
-	template< Concepts::Arithmetic Value >
+	template< Concepts::Arithmetic_NotBool Value >
 	Value Round( const Value value ) { return std::round( value ); }
 
-	template< Concepts::Arithmetic Value >
+	template< Concepts::Arithmetic_NotBool Value >
 	constexpr Value Mod( Value a, Value b )
 	{
 		if constexpr( std::is_integral_v< Value > )
@@ -122,7 +122,7 @@ namespace Engine::Math
 			return std::fmodl( a, b );
 	}
 
-	template< Concepts::Arithmetic Value >
+	template< Concepts::Arithmetic_NotBool Value >
 	constexpr int Sign( const Value value ) { return ( Value( 0 ) < value ) - ( value < Value( 0 ) ); }
 
 	template< typename Value, std::floating_point PercentType >
@@ -196,7 +196,7 @@ namespace Engine::Math
 	template< std::floating_point Value >
 	Radians< Value > Atan2( const Value y, const Value x ) { return Radians< Value >( std::atan2( y, x ) ); }
 
-	template< Concepts::Arithmetic Value, std::size_t Size >
+	template< Concepts::Arithmetic_NotBool Value, std::size_t Size >
 	Radians< Value > Angle( const Vector< Value, Size >& a, const Vector< Value, Size >& b )
 	{
 		ASSERT_DEBUG_ONLY( a.IsNormalized() && R"(Math::Angle(): The vector "a" is not normalized!)" );
@@ -221,7 +221,7 @@ namespace Engine::Math
 	 * In row-major form. Results in counter-clockwise rotation.
 	 * Describes the intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * equal to  the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
-	template< Concepts::Arithmetic Type, std::size_t MatrixSize >
+	template< Concepts::Arithmetic_NotBool Type, std::size_t MatrixSize >
 	void EulerToMatrix( Matrix< Type, MatrixSize, MatrixSize >& matrix, Engine::Radians heading_around_y, Engine::Radians pitch_around_x, Engine::Radians bank_around_z ) requires( MatrixSize >= 3 )
 	{
 		const auto sin_pitch   = Math::Sin( pitch_around_x );
@@ -243,7 +243,7 @@ namespace Engine::Math
 	/* Expects matrix in row-major form. Counter-clockwise rotation.
 	 * The matrix should describe  an intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * which would be the same as the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
-	template< Concepts::Arithmetic Type, std::size_t MatrixSize >
+	template< Concepts::Arithmetic_NotBool Type, std::size_t MatrixSize >
 	void MatrixToEuler( const Matrix< Type, MatrixSize, MatrixSize >& matrix, Engine::Radians& heading_around_y, Engine::Radians& pitch_around_x, Engine::Radians& bank_around_z ) requires( MatrixSize >= 3 )
 	{
 		/* The matrix' values for reference:
@@ -302,7 +302,7 @@ namespace Engine::Math
 	/* Expects matrix in row-major form. Counter-clockwise rotation.
 	 * The matrix should describe  an intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * which would be the same as the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
-	template< Concepts::Arithmetic Type, std::size_t MatrixSize >
+	template< Concepts::Arithmetic_NotBool Type, std::size_t MatrixSize >
 	void MatrixToEuler( const Matrix< Type, MatrixSize, MatrixSize >& matrix, Engine::Degrees& heading_around_y, Engine::Degrees& pitch_around_x, Engine::Degrees& bank_around_z ) requires( MatrixSize >= 3 )
 	{
 		Engine::Radians heading( heading_around_y ), pitch( pitch_around_x ), bank( bank_around_z );

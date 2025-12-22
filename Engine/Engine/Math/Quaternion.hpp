@@ -17,7 +17,7 @@ namespace Engine::Math
 	template< std::floating_point ComponentType >
 	constexpr ComponentType Dot( const Quaternion< ComponentType >& q1, const Quaternion< ComponentType >& q2 );
 
-	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
+	template< Concepts::Arithmetic_NotBool Type, std::size_t RowSize, std::size_t ColumnSize >
 		requires Concepts::NonZero< RowSize > && Concepts::NonZero< ColumnSize >
 	struct Matrix;
 

@@ -10,7 +10,7 @@
 namespace Engine::Math
 {
 	/* Row-major. Post-multiplies a row vector to transform it. */
-	template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
+	template< Concepts::Arithmetic_NotBool Type, std::size_t RowSize, std::size_t ColumnSize >
 		requires Concepts::NonZero< RowSize > && Concepts::NonZero< ColumnSize >
 	struct Matrix
 	{
