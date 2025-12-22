@@ -199,8 +199,8 @@ namespace Engine
 					}
 					else
 					{
-						renderer->SetFinalPassToUseDefaultFramebuffer();
 						OnFramebufferResizeEvent( Platform::GetFramebufferSizeInPixels() );
+						renderer->SetFinalPassToUseDefaultFramebuffer();
 					}
 				}
 				break;
