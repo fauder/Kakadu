@@ -43,5 +43,9 @@ namespace Engine
 		std::function< void( Renderer& renderer ) > execution_routine;
 
 		RenderState render_state = DefaultRenderState;
+
+		bool is_enabled = true;
+
+		// 3 bytes of padding.
 	};
 }

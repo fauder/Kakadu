@@ -399,6 +399,67 @@ namespace Engine
 
 						ImGui::EndTable();
 					}
+					
+					/* ------------------------------- */
+
+					// TODO: Replace with actual FS effect icon.
+
+					ImGui::SeparatorText( ICON_FA_QUESTION " Fullscreen Effects" );
+
+					if( ImGui::BeginTable( ICON_FA_QUESTION "Fullscreen Effects", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
+					{
+						ImGui::TableSetupColumn( "Name" );
+						ImGui::TableSetupColumn( ICON_FA_OBJECT_GROUP " Target Framebuffer" );
+
+						ImGui::TableHeadersRow();
+						ImGui::TableNextRow();
+
+						auto DrawEffect = []( const char* effect_name, FullscreenEffect& effect )
+						{
+							ImGui::TableNextColumn();
+
+							ImGui::PushID( effect_name );
+
+							ImGuiUtility::EyeCheckbox( "", &effect.is_enabled );
+
+							if( not effect.is_enabled )
+								ImGuiUtility::BeginDisabledButInteractable();
+
+							ImGui::PopID();
+							ImGui::SameLine();
+
+							if( ImGui::TreeNodeEx( effect_name, 0, ICON_FA_QUESTION " %s", effect_name ) )
+							{
+								ImGui::TableNextColumn();
+
+								for( std::uint8_t i = 0; i < effect.steps.size(); i++ )
+								{
+									ImGui::TableNextColumn();
+									ImGui::Text( "Step %d", i );
+
+									ImGui::TableNextColumn();
+									const auto& step = effect.steps[ i ];
+									ImGui::TextUnformatted( step.framebuffer_target->Name().c_str() );
+								}
+
+								ImGui::TreePop();
+							}
+							else
+								ImGui::TableNextColumn();
+
+							if( not effect.is_enabled )
+								ImGuiUtility::EndDisabledButInteractable();
+						};
+
+						DrawEffect( msaa_resolve.name.c_str(), msaa_resolve );
+
+						for( auto& [ effect_name, effect ] : post_processing_effect_map )
+							DrawEffect( effect_name.c_str(), *effect );
+
+						DrawEffect( tone_mapping.name.c_str(), tone_mapping );
+
+						ImGui::EndTable();
+					}
 
 					ImGui::EndTabItem();
 				}
