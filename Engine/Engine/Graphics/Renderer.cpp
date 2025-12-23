@@ -268,7 +268,7 @@ namespace Engine
 	{
 		const auto& style = ImGui::GetStyle();
 
-		if( ImGui::Begin( ICON_FA_DRAW_POLYGON " Renderer", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
+		if( ImGui::Begin( ICON_FA_BOLT_LIGHTNING " Renderer", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
 			ImGui::SeparatorText( "General" );
 
@@ -294,14 +294,16 @@ namespace Engine
 
 			if( ImGui::BeginTabBar( "Renderer-Tab-Bar" ) )
 			{
-				if( ImGui::BeginTabItem( "Passes " ICON_FA_FLAG_CHECKERED " & Queues " ICON_FA_BARS ) )
+				if( ImGui::BeginTabItem( ICON_FA_DIAGRAM_PROJECT " Render Pipeline" ) )
 				{
+					ImGui::SeparatorText( ICON_FA_FLAG_CHECKERED " Passes & " ICON_FA_BARS " Queues" );
+
 					if( ImGui::BeginTable( "Passes & Queues", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 					{
 						ImGui::TableSetupColumn( "Name" );
-						ImGui::TableSetupColumn( "Target" );
+						ImGui::TableSetupColumn( ICON_FA_OBJECT_GROUP " Target Framebuffer" );
 
-						ImGui::TableNextRow( ImGuiTableRowFlags_Headers ); // Indicates that the header row will be modified
+						ImGui::TableNextRow( ImGuiTableRowFlags_Headers ); // Indicates that the header row will be modified.
 						ImGuiUtility::Table_Header_ManuallySubmit_AppendHelpMarker( 0,
 																					"A pass will not render if:\n"
 																					"\t" ICON_FA_ARROW_RIGHT " All its queues are empty/disabled, \n"
@@ -323,7 +325,7 @@ namespace Engine
 
 							ImGui::PopID();
 							ImGui::SameLine();
-							if( ImGui::TreeNodeEx( pass.name.c_str(), 0, ICON_FA_FLAG_CHECKERED " #%d %s", ( int )pass_id, pass.name.c_str()) )
+							if( ImGui::TreeNodeEx( pass.name.c_str(), 0, ICON_FA_FLAG_CHECKERED " #%d %s", ( int )pass_id, pass.name.c_str() ) )
 							{
 								// TODO: Display RenderState info as a collapseable header.
 								for( auto& queue_id : pass.queue_id_set )
@@ -401,7 +403,7 @@ namespace Engine
 					ImGui::EndTabItem();
 				}
 
-				if( ImGui::BeginTabItem( "Framebuffers" ) )
+				if( ImGui::BeginTabItem( ICON_FA_OBJECT_GROUP " Framebuffers" ) )
 				{
 					auto DrawFramebufferImGui_Decorations = []( const Framebuffer& framebuffer )
 					{
