@@ -445,7 +445,7 @@ namespace Engine::ImGuiUtility
 		ImGui::SetNextWindowPos( { horizontal_position, vertical_position }, condition, { horizontal_pivot, vertical_pivot } );
 	}
 
-    global_variable ImVector< ImRect > GroupPanelLabelStack;
+    internal_variable ImVector< ImRect > GROUP_PANEL_LABEL_STACK;
 
     /* https://github.com/ocornut/imgui/issues/1496#issuecomment-655048353 */
     void BeginGroupPanel( const char* name, bool* is_enabled, const ImVec2& size )
@@ -501,7 +501,7 @@ namespace Engine::ImGuiUtility
         const auto itemWidth = ImGui::CalcItemWidth();
         ImGui::PushItemWidth( ImMax( 0.0f, itemWidth - frameHeight ) );
 
-        GroupPanelLabelStack.push_back( ImRect( labelMin, labelMax ) );
+        GROUP_PANEL_LABEL_STACK.push_back( ImRect( labelMin, labelMax ) );
     }
 
     /* https://github.com/ocornut/imgui/issues/1496#issuecomment-655048353 */
@@ -535,8 +535,8 @@ namespace Engine::ImGuiUtility
         auto itemMax = ImGui::GetItemRectMax();
         //ImGui::GetWindowDrawList()->AddRectFilled(itemMin, itemMax, IM_COL32(255, 0, 0, 64), 4.0f);
 
-        auto labelRect = GroupPanelLabelStack.back();
-        GroupPanelLabelStack.pop_back();
+        auto labelRect = GROUP_PANEL_LABEL_STACK.back();
+        GROUP_PANEL_LABEL_STACK.pop_back();
 
         ImVec2 halfFrame = ImVec2( frameHeight * 0.25f, frameHeight ) * 0.5f;
         ImRect frameRect = ImRect( itemMin + halfFrame, itemMax - ImVec2( halfFrame.x, 0.0f ) );

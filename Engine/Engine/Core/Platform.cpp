@@ -23,23 +23,27 @@
 
 namespace Platform
 {
-	GLFWwindow* WINDOW = nullptr; // No need to expose this outside.
-	bool KEYS_THAT_ARE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
-	bool KEYS_THAT_WERE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
-	float MOUSE_CURSOR_X_POS = 0.0f, MOUSE_CURSOR_Y_POS = 0.0f;
-	float MOUSE_CURSOR_X_DELTA = 0.0f, MOUSE_CURSOR_Y_DELTA = 0.0f;
-	float MOUSE_SCROLL_X_OFFSET = 0.0f, MOUSE_SCROLL_Y_OFFSET = 0.0f;
-	float MOUSE_SENSITIVITY = 0.004f;
-	bool MOUSE_CAPTURE_IS_RESET = true;
-	bool MOUSE_CAPTURE_ENABLED = false;
-	std::array< bool, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME{ false };
-	std::array< MouseButtonAction, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATES{ MouseButtonAction::RELEASE };
-	std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )			> KEYBOARD_CALLBACK;
-	std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods )	> MOUSE_BUTTON_CALLBACK;
-	std::function< void( const float x_offset, const float y_offset )									> MOUSE_SCROLL_CALLBACK;
-	std::function< void( const int width_new_pixels, const int height_new_pixels )						> FRAMEBUFFER_RESIZE_CALLBACK;
+	internal_variable GLFWwindow* WINDOW = nullptr;
+
+	internal_variable bool KEYS_THAT_ARE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
+	internal_variable bool KEYS_THAT_WERE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
+	internal_variable float MOUSE_CURSOR_X_POS = 0.0f, MOUSE_CURSOR_Y_POS = 0.0f;
+	internal_variable float MOUSE_CURSOR_X_DELTA = 0.0f, MOUSE_CURSOR_Y_DELTA = 0.0f;
+	internal_variable float MOUSE_SCROLL_X_OFFSET = 0.0f, MOUSE_SCROLL_Y_OFFSET = 0.0f;
+	internal_variable float MOUSE_SENSITIVITY = 0.004f;
+	internal_variable bool MOUSE_CAPTURE_IS_RESET = true;
+	internal_variable bool MOUSE_CAPTURE_ENABLED = false;
+
+	internal_variable std::array< bool, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME{ false };
+	internal_variable std::array< MouseButtonAction, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATES{ MouseButtonAction::RELEASE };
+
+	internal_variable std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )			> KEYBOARD_CALLBACK;
+	internal_variable std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods )	> MOUSE_BUTTON_CALLBACK;
+	internal_variable std::function< void( const float x_offset, const float y_offset )									> MOUSE_SCROLL_CALLBACK;
+	internal_variable std::function< void( const int width_new_pixels, const int height_new_pixels )						> FRAMEBUFFER_RESIZE_CALLBACK;
+
 #ifdef _EDITOR
-	std::function< void( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
+	internal_variable std::function< void( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
 #endif // _EDITOR
 
 	void OnResizeWindow( GLFWwindow* window, const int width_new_pixels, const int height_new_pixels )
