@@ -117,7 +117,8 @@ namespace Engine
 	void Renderer::Render()
 	{
 #ifdef _EDITOR
-		if( editor_shading_mode != EditorShadingMode::Shaded && editor_shading_mode != EditorShadingMode::ShadedWireframe ) // "Shaded" part of shaded wireframe needs to run first, which is in here.
+		// "Shaded" part of shaded wireframe needs to run first, which is in here.
+		if( editor_shading_mode != EditorShadingMode::Shaded && editor_shading_mode != EditorShadingMode::ShadedWireframe )
 		{
 			RenderOtherEditorShadingModes();
 
@@ -174,7 +175,7 @@ namespace Engine
 										if( renderable->transform )
 											shadow_map_write_shader.SetUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
 
-										Render( *renderable->mesh );
+										RenderGeometry( *renderable->mesh );
 									}
 								}
 
@@ -186,7 +187,7 @@ namespace Engine
 									{
 										renderable->mesh->Bind();
 
-										Render( *renderable->mesh );
+										RenderGeometry( *renderable->mesh );
 									}
 								}
 							}
@@ -213,7 +214,7 @@ namespace Engine
 													if( renderable->transform )
 														material->SetAndUploadUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
 
-													Render( *renderable->mesh );
+													RenderGeometry( *renderable->mesh );
 												}
 											}
 										}
@@ -247,7 +248,7 @@ namespace Engine
 		RenderFullscreenEffect( tone_mapping );
 	}
 
-	void Renderer::Render( const Mesh& mesh ) const
+	void Renderer::RenderGeometry( const Mesh& mesh ) const
 	{
 		mesh.HasInstancing()
 			? mesh.HasIndices()
@@ -260,7 +261,7 @@ namespace Engine
 
 	void Renderer::RenderPostProcessingEffectStep() const
 	{
-		Render( full_screen_quad_mesh );
+		RenderGeometry( full_screen_quad_mesh );
 	}
 
 	void Renderer::RenderImGui()
@@ -291,7 +292,7 @@ namespace Engine
 				}
 			}
 
-			if( ImGui::BeginTabBar( "Renderer-Ta-Bar" ) )
+			if( ImGui::BeginTabBar( "Renderer-Tab-Bar" ) )
 			{
 				if( ImGui::BeginTabItem( "Passes " ICON_FA_FLAG_CHECKERED " & Queues " ICON_FA_BARS ) )
 				{
@@ -458,8 +459,6 @@ namespace Engine
 
 					DrawFramebufferImGui( framebuffer_shadow_map_light_directional );
 					DrawFramebufferImGui( framebuffer_main );
-					/*DrawFramebufferImGui( framebuffer_postprocessing_A );
-					DrawFramebufferImGui( framebuffer_postprocessing_B );*/
 					DrawFramebufferImGui( framebuffer_postprocessing );
 					DrawFramebufferImGui( framebuffer_final );
 
@@ -1594,7 +1593,7 @@ namespace Engine
 			{
 				tone_mapping.material.Bind();
 
-				const auto step = tone_mapping.steps.front();
+				const auto& step = tone_mapping.steps.front();
 
 				SetRenderState( tone_mapping.render_state, step.framebuffer_target );
 
@@ -1899,7 +1898,7 @@ namespace Engine
 									if( renderable->transform )
 										shader->SetUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
 
-									Render( *renderable->mesh );
+									RenderGeometry( *renderable->mesh );
 								}
 							}
 						}

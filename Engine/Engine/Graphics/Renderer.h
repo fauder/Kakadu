@@ -66,7 +66,7 @@ namespace Engine
 		void Update();
 		void UpdatePerPass( const RenderPass::ID pass_id_to_update, Camera& camera );
 		void Render();
-		void Render( const Mesh& mesh ) const;
+		void RenderGeometry( const Mesh& mesh ) const;
 		void RenderPostProcessingEffectStep() const;
 		void RenderImGui();
 		void OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels );
