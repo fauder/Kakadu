@@ -180,6 +180,8 @@ namespace Platform
 	void MaximizeWindow();
 	void RestoreWindow();
 	void SetFramebufferResizeCallback( std::function< void( const int width_new_pixels, const int height_new_pixels ) > callback = {} );
+	bool IsWindowFocused();
+	bool IsWindowIconified();
 
 	Engine::Vector2I GetFramebufferSizeInPixels();
 	int GetFramebufferWidthInPixels();
@@ -244,6 +246,7 @@ namespace Platform
 	bool ShouldClose();
 	void* GetWindowHandle();
 	void LaunchWithDefaultProgram( const std::string& file_path );
+	void Sleep( float duration_in_seconds );
 
 	/* Windows Only. */
 #ifdef _WIN32

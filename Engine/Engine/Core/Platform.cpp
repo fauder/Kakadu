@@ -14,6 +14,12 @@
 
 // Vendor Includes.
 #include "GLFW/glfw3.h"
+#ifdef _WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#define GLFW_NATIVE_INCLUDE_NONE
+#include "GLFW/glfw3native.h"  
+#endif // _WIN32
+
 #include <ImGui/backends/imgui_impl_glfw.h>
 #include <Tracy/tracy/Tracy.hpp>
 
@@ -23,6 +29,18 @@
 
 namespace Platform
 {
+	struct WindowState
+	{
+		bool is_focused   = true;
+		bool is_iconified = false;
+	};
+
+	internal_variable WindowState WINDOW_STATE;
+
+#ifdef _WIN32
+	HWND WINDOWS_HWND = NULL;
+#endif // _WIN32
+
 	internal_variable GLFWwindow* WINDOW = nullptr;
 
 	internal_variable bool KEYS_THAT_ARE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
@@ -37,9 +55,9 @@ namespace Platform
 	internal_variable std::array< bool, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME{ false };
 	internal_variable std::array< MouseButtonAction, GLFW_MOUSE_BUTTON_LAST > MOUSE_BUTTON_STATES{ MouseButtonAction::RELEASE };
 
-	internal_variable std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )			> KEYBOARD_CALLBACK;
+	internal_variable std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )				> KEYBOARD_CALLBACK;
 	internal_variable std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods )	> MOUSE_BUTTON_CALLBACK;
-	internal_variable std::function< void( const float x_offset, const float y_offset )									> MOUSE_SCROLL_CALLBACK;
+	internal_variable std::function< void( const float x_offset, const float y_offset )										> MOUSE_SCROLL_CALLBACK;
 	internal_variable std::function< void( const int width_new_pixels, const int height_new_pixels )						> FRAMEBUFFER_RESIZE_CALLBACK;
 
 #ifdef _EDITOR
@@ -147,6 +165,18 @@ namespace Platform
 		glfwSetScrollCallback( WINDOW, OnMouseScrolled );
 	}
 
+	internal_function void RegisterWindowFocusCallback( GLFWwindow* window, int focused )
+	{
+		auto* state = static_cast< WindowState* >( glfwGetWindowUserPointer( window ) );
+		state->is_focused = ( focused == GLFW_TRUE );
+	}
+
+	internal_function void RegisterWindowIconifyCallback( GLFWwindow* window, int iconified )
+	{
+		auto* state = static_cast< WindowState* >( glfwGetWindowUserPointer( window ) );
+		state->is_iconified = ( iconified == GLFW_TRUE );
+	}
+
 	/*
 	 * Initialization:
 	 */
@@ -178,9 +208,13 @@ namespace Platform
 			throw std::runtime_error( "ERROR::PLATFORM::GLFW::FAILED TO CREATE GLFW WINDOW!" );
 		}
 
-	#ifdef _DEBUG
+#ifdef _WIN32
+		WINDOWS_HWND = glfwGetWin32Window( WINDOW );
+#endif // _WIN32
+
+#ifdef _DEBUG
 		MoveConsoleWindowToNonPrimaryMonitor();
-	#endif // _DEBUG
+#endif // _DEBUG
 
 		CenterWindow( width_pixels, height_pixels );
 
@@ -212,6 +246,10 @@ namespace Platform
 		RegisterFrameBufferResizeCallback();
 		RegisterMousePositionChangeCallback();
 		RegisterMouseScrollCallback();
+
+		glfwSetWindowUserPointer( WINDOW, &WINDOW_STATE );
+		glfwSetWindowFocusCallback(	 WINDOW, RegisterWindowFocusCallback );
+		glfwSetWindowIconifyCallback( WINDOW, RegisterWindowIconifyCallback );
 	}
 
 	/*
@@ -245,6 +283,16 @@ namespace Platform
 		ImGui_ImplGlfw_RestoreCallbacks( WINDOW );
 		glfwSetFramebufferSizeCallback( WINDOW, OnResizeWindow );
 		ImGui_ImplGlfw_InstallCallbacks( WINDOW );
+	}
+
+	bool IsWindowFocused()
+	{
+		return WINDOW_STATE.is_focused;
+	}
+
+	bool IsWindowIconified()
+	{
+		return WINDOW_STATE.is_iconified;
 	}
 
 	Engine::Vector2I GetFramebufferSizeInPixels()
@@ -727,6 +775,11 @@ namespace Platform
 #else
 		throw std::logic_error( "LaunchWithDefaultProgram() is not implemented for OSes other than Windows yet!" );
 #endif // _WIN32
+	}
+
+	void Sleep( float duration_in_seconds )
+	{
+		glfwWaitEventsTimeout( 0.2f );
 	}
 
 	/* Windows Only. */
