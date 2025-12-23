@@ -244,4 +244,9 @@ namespace Platform
 	bool ShouldClose();
 	void* GetWindowHandle();
 	void LaunchWithDefaultProgram( const std::string& file_path );
+
+	/* Windows Only. */
+#ifdef _WIN32
+	void MoveConsoleWindowToNonPrimaryMonitor();
+#endif
 }

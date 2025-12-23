@@ -174,6 +174,10 @@ namespace Platform
 			throw std::runtime_error( "ERROR::PLATFORM::GLFW::FAILED TO CREATE GLFW WINDOW!" );
 		}
 
+	#ifdef _DEBUG
+		MoveConsoleWindowToNonPrimaryMonitor();
+	#endif // _DEBUG
+
 		CenterWindow( width_pixels, height_pixels );
 
 		glfwShowWindow( WINDOW );
@@ -720,4 +724,54 @@ namespace Platform
 		throw std::logic_error( "LaunchWithDefaultProgram() is not implemented for OSes other than Windows yet!" );
 #endif // _WIN32
 	}
+
+	/* Windows Only. */
+#ifdef _WIN32
+	void MoveConsoleWindowToNonPrimaryMonitor()
+	{
+		HWND console_hwnd = GetConsoleWindow();
+		if( console_hwnd )
+		{
+			HMONITOR target_monitor = nullptr;
+
+			EnumDisplayMonitors( nullptr,
+								 nullptr,
+								 []( HMONITOR monitor, HDC, LPRECT, LPARAM user_data ) -> BOOL
+									{
+										MONITORINFO info{};
+										info.cbSize = sizeof( info );
+
+										if( GetMonitorInfo( monitor, &info ) )
+										{
+											// Pick the non-primary monitor
+											if( !( info.dwFlags & MONITORINFOF_PRIMARY ) )
+											{
+												*reinterpret_cast< HMONITOR* >( user_data ) = monitor;
+												return FALSE; // stop enumeration
+											}
+										}
+
+										return TRUE;
+									},
+								 reinterpret_cast< LPARAM >( &target_monitor ) );
+
+			if( target_monitor )
+			{
+				MONITORINFO info{};
+				info.cbSize = sizeof( info );
+				GetMonitorInfo( target_monitor, &info );
+
+				RECT work = info.rcWork;
+
+				SetWindowPos( console_hwnd,
+							  HWND_TOP,
+							  work.left + 50,
+							  work.top + 50,
+							  800,
+							  600,
+							  SWP_SHOWWINDOW );
+			}
+		}
+	}
+#endif
 }
