@@ -118,6 +118,12 @@ namespace Engine
 
 			Platform::PollEvents();
 
+			if( Platform::IsWindowIconified() )
+			{
+				Platform::Sleep( 0.2f );
+				continue;
+			}
+
 			{
 				ZoneScopedN( "Update" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
 				Update();
