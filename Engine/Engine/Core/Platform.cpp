@@ -64,7 +64,7 @@ namespace Platform
 	internal_variable std::function< void( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
 #endif // _EDITOR
 
-	void OnResizeWindow( GLFWwindow* window, const int width_new_pixels, const int height_new_pixels )
+	internal_function void OnResizeWindow( GLFWwindow* window, const int width_new_pixels, const int height_new_pixels )
 	{
 		if( glfwGetMouseButton( WINDOW, GLFW_MOUSE_BUTTON_LEFT ) != GLFW_RELEASE )
 			return;
@@ -77,7 +77,7 @@ namespace Platform
 			FRAMEBUFFER_RESIZE_CALLBACK( width_new_pixels, height_new_pixels );
 	}
 
-	void OnKeyboardEvent( GLFWwindow* window, const int key_code, const int scan_code, const int action, const int mods )
+	internal_function void OnKeyboardEvent( GLFWwindow* window, const int key_code, const int scan_code, const int action, const int mods )
 	{
 		if( ImGui::GetIO().WantCaptureKeyboard )
 			return;
@@ -86,7 +86,7 @@ namespace Platform
 			KEYBOARD_CALLBACK( KeyCode( key_code ), KeyAction( action ), KeyMods( mods ) );
 	}
 
-	void OnMouseCursorPositionChanged( GLFWwindow* window, const double x_position, const double y_position )
+	internal_function void OnMouseCursorPositionChanged( GLFWwindow* window, const double x_position, const double y_position )
 	{
 		if( ImGui::GetIO().WantCaptureMouse )
 			return;
@@ -105,7 +105,7 @@ namespace Platform
 		MOUSE_CURSOR_Y_POS = ( float )y_position;
 	}
 
-	void OnMouseScrolled( GLFWwindow* window, const double x_offset, const double y_offset )
+	internal_function void OnMouseScrolled( GLFWwindow* window, const double x_offset, const double y_offset )
 	{
 		if( ImGui::GetIO().WantCaptureMouse )
 			return;
@@ -117,7 +117,7 @@ namespace Platform
 			MOUSE_SCROLL_CALLBACK( MOUSE_SCROLL_X_OFFSET, MOUSE_SCROLL_Y_OFFSET );
 	}
 
-	void OnMouseButtonEvent( GLFWwindow* window, const int button, const int action, const int mods )
+	internal_function void OnMouseButtonEvent( GLFWwindow* window, const int button, const int action, const int mods )
 	{
 		if( ImGui::GetIO().WantCaptureMouse )
 			return;
@@ -127,21 +127,21 @@ namespace Platform
 	}
 
 #ifdef _EDITOR
-	void OnDebugOutput( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters )
+	internal_function void OnDebugOutput( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters )
 	{
 		GL_DEBUG_OUTPUT_CALLBACK( source, type, id, severity, length, message, parameters );
 	}
 #endif // _EDITOR
 
 	/* GLAD needs the created window's context made current BEFORE it is initialized. */
-	void InitializeGLAD()
+	internal_function void InitializeGLAD()
 	{
 		if( !gladLoadGLLoader( ( GLADloadproc )glfwGetProcAddress ) )
 			throw std::runtime_error( "ERROR::GRAPHICS::GLAD::FAILED_TO_INITIALIZE!" );
 	}
 
 #ifdef _EDITOR
-	void RegisterGLDebugOutputCallback()
+	internal_function void RegisterGLDebugOutputCallback()
 	{
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
@@ -150,17 +150,17 @@ namespace Platform
 	}
 #endif // _EDITOR
 
-	void RegisterFrameBufferResizeCallback()
+	internal_function void RegisterFrameBufferResizeCallback()
 	{
 		glfwSetFramebufferSizeCallback( WINDOW, OnResizeWindow );
 	}
 
-	void RegisterMousePositionChangeCallback()
+	internal_function void RegisterMousePositionChangeCallback()
 	{
 		glfwSetCursorPosCallback( WINDOW, OnMouseCursorPositionChanged );
 	}
 
-	void RegisterMouseScrollCallback()
+	internal_function void RegisterMouseScrollCallback()
 	{
 		glfwSetScrollCallback( WINDOW, OnMouseScrolled );
 	}
