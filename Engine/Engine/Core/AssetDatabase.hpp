@@ -139,12 +139,10 @@ namespace Engine
 		{
 			const auto& asset_name = asset.Name();
 
-			/* If the asset is already loaded, return the existing one. */
-			if( asset_map.contains( asset_name ) )
-				return &asset_map[ asset_name ];
+			/* try_emplace() API will return the existing asset on failure due to asset already existing, which is exactly what is intended. */
 
-			asset_path_map.emplace( asset_name, file_path );
-			return &( asset_map.emplace( asset_name, std::move( asset ) ).first->second );
+			asset_path_map.try_emplace( asset_name, file_path );
+			return &( asset_map.try_emplace( asset_name, std::move( asset ) ).first->second );
 		}
 
 		AssetType* AddOrUpdateAsset( AssetType&& asset,
@@ -152,8 +150,11 @@ namespace Engine
 		{
 			const auto& asset_name = asset.Name();
 
-			asset_path_map.try_emplace( asset_name, file_path );
-			return &( asset_map.try_emplace( asset_name, std::move( asset ) ).first->second );
+			asset_path_map[ asset_name ] = file_path;
+
+			AssetType& stored_asset = asset_map[ asset_name ];
+			stored_asset = std::move( asset );
+			return &stored_asset;
 		}
 
 		bool RemoveAsset( const std::string& name )
