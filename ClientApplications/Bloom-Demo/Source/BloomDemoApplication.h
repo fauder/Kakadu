@@ -7,8 +7,6 @@
 #include "Engine/Graphics/ModelInstance.h"
 #include "Engine/Graphics/Renderer.h"
 #include "Engine/Graphics/Texture.h"
-#include "Engine/Scene/Camera.h"
-#include "Engine/Scene/CameraController_Flight.h"
 
 #include "Engine/DefineMathTypes.h"
 
@@ -18,18 +16,6 @@
 class BloomDemoApplication : public Engine::Application
 {
 	DEFINE_MATH_TYPES()
-
-	enum class CameraView
-	{
-		FRONT,
-		BACK,
-		LEFT,
-		RIGHT,
-		TOP,
-		BOTTOM,
-
-		CUSTOM_1,
-	};
 
 	struct ModelInfo
 	{
@@ -64,19 +50,11 @@ private:
 	void ResetLightingData();
 	void ResetMaterialData();
 	void ResetInstanceData();
-	void ResetCamera();
-	void ResetProjection();
-	void SwitchCameraView( const CameraView view );
-	Radians CalculateVerticalFieldOfView( const Radians horizontal_field_of_view, const float aspect_ratio ) const;
 
 	bool ReloadModel( ModelInfo& model_info_to_be_loaded, const std::string& file_path, const char* name );
 	void UnloadModel( ModelInfo& model_info_to_be_unloaded, const char* name );
 
 	void ReplaceMeteoriteAndCubeRenderables( bool use_meteorites );
-
-	void RecalculateProjectionParameters( const int width_new_pixels, const int height_new_pixels );
-	void RecalculateProjectionParameters( const Vector2I new_size_pixels ); // Convenience overload.
-	void RecalculateProjectionParameters(); // Utilizes current framebuffer size.
 
 private:
 /* Renderer: */
@@ -182,8 +160,6 @@ private:
 	std::vector< LightInstanceData > light_source_instance_data_array;
 
 /* Scene: */
-	Engine::Transform camera_transform;
-
 	/* Lights: */
 	Engine::Transform light_directional_transform;
 	std::vector< Engine::Transform > light_point_transform_array;
@@ -203,15 +179,6 @@ private:
 	Engine::Transform sphere_transform;
 
 	std::array< Engine::Transform, WINDOW_COUNT > window_transform_array;
-
-/* Camera: */
-	Engine::Camera camera;
-	float camera_rotation_speed;
-	float camera_move_speed;
-	Engine::CameraController_Flight camera_controller;
-
-	bool camera_animation_is_enabled;
-	float camera_animation_orbit_radius;
 
 /* Lighting: */
 	const static constexpr int LIGHT_POINT_COUNT = 15;

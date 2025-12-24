@@ -77,10 +77,6 @@ SandboxApplication::SandboxApplication( const Engine::BitFlags< Engine::Creation
 	light_point_transform_array( LIGHT_POINT_COUNT ),
 	cube_transform_array( CUBE_COUNT ),
 	cube_reflected_transform_array( CUBE_REFLECTED_COUNT ),
-	camera( &camera_transform, Platform::GetAspectRatio(), CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), Platform::GetAspectRatio() ) ),
-	camera_rotation_speed( 5.0f ),
-	camera_move_speed( 5.0f ),
-	camera_controller( &camera, camera_rotation_speed ),
 	render_rear_view_cam_to_imgui( true )
 {
 	Initialize();
@@ -457,7 +453,7 @@ void SandboxApplication::Initialize()
 	renderer->ToggleQueue( Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
 
 /* Camera: */
-	ResetCamera();
+	//ResetCamera(); // TODO: Game camera rendering.
 
 	/* This is the earliest place we can MaximizeWindow() at,
 	 * because the Renderer will populate its Intrinsic UBO info only upon AddRenderable( <Renderable with a Shader using said UBO> ). */
@@ -532,7 +528,7 @@ void SandboxApplication::Update()
 
 			const bool heading_instead_of_pitching = new_angle_mod_two_pi <= Engine::Constants< Radians >::Pi();
 			
-			const auto point_light_rotation( Engine::Math::EulerToMatrix( /* Offset heading by 45 degrees to prevent light sources rotating directly in front of the camera. */
+			const auto point_light_rotation( Engine::Math::EulerToMatrix( /* Offset heading by 45 degrees to prevent light sources rotating directly in front of the scene camera. */
 																		  Engine::Math::Lerp( Engine::Constants< Radians >::Pi_Over_Four(),
 																							  new_angle_mod_two_pi + Engine::Constants< Radians >::Pi_Over_Four(),
 																							  float( heading_instead_of_pitching ) ),
@@ -573,69 +569,36 @@ void SandboxApplication::Update()
 
 	/* Sphere's transform; Same as the parallax cube: */
 	sphere_transform.SetRotation( cube_parallax_transform.GetRotation() );
-
-	/* Camera transform: */
-	if( camera_animation_is_enabled )
-	{
-		/* Orbit motion: */
-
-		Engine::Math::Vector< Radians, 3 > old_euler_angles;
-		Engine::Math::QuaternionToEuler( camera_transform.GetRotation(), old_euler_angles );
-		// Don't modify X & Z euler angles; Allow the user to modify them.
-		camera_transform.SetRotation( Engine::Math::EulerToQuaternion( -current_time_as_angle * 0.33f, old_euler_angles.X(), old_euler_angles.Z() ) );
-
-		auto new_pos = CAMERA_ROTATION_ORIGIN + -camera_transform.Forward() * camera_animation_orbit_radius;
-		new_pos.SetY( camera_transform.GetTranslation().Y() ); // Don't modify Y position; Allow the user to modify it.
-		camera_transform.SetTranslation( new_pos );
-	}
-	else
-	{
-		if( !ui_interaction_enabled )
-		{
-			// Control via mouse:
-			const auto [ mouse_x_delta_pos, mouse_y_delta_pos ] = Platform::GetMouseCursorDeltas();
-			camera_controller
-				.OffsetHeading( Radians( +mouse_x_delta_pos ) )
-				.OffsetPitch( Radians( +mouse_y_delta_pos ), -( Engine::Constants< Radians >::Pi_Over_Two() - 0.01_rad ), Engine::Constants< Radians >::Pi_Over_Two() - 0.01_rad );
-		}
-	}
-
-	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_W ) )
-		camera_transform.OffsetTranslation( camera_transform.Forward() * +camera_move_speed * time_delta );
-	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_S ) )
-		camera_transform.OffsetTranslation( camera_transform.Forward() * -camera_move_speed * time_delta );
-	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_A ) )
-		camera_transform.OffsetTranslation( camera_transform.Right()   * -camera_move_speed * time_delta );
-	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_D ) )
-		camera_transform.OffsetTranslation( camera_transform.Right()   * +camera_move_speed * time_delta );
-
-	renderer->Update();
 }
 
 void SandboxApplication::Render()
 {
 	Engine::Application::Render();
 
-	/* Lighting - Rear-view pass: Invert camera direction, render everything to the off-screen framebuffer 0: */
-	{
-		camera_controller.Invert();
-		renderer->UpdatePerPass( RENDER_PASS_ID_LIGHTING_REAR_VIEW, camera );
-	}
+	// Scene-view Camera moved into Application.
+	
+	// TODO: Implement these rear-veiw passes when game camera rendering is implemented.
 
-	/* Lighting: Invert camera direction again (to revert to default view), render everything to the off-screen framebuffer 1: */
-	{
-		camera_controller.Invert(); // Revert back to original orientation.
-		renderer->UpdatePerPass( Engine::Renderer::RENDER_PASS_ID_LIGHTING, camera );
-	}
+	///* Lighting - Rear-view pass: Invert camera direction, render everything to the off-screen framebuffer 0: */
+	//{
+	//	camera_controller.Invert();
+	//	renderer->UpdatePerPass( RENDER_PASS_ID_LIGHTING_REAR_VIEW, camera );
+	//}
 
-	// TODO: Outline pass.
+	///* Lighting: Invert camera direction again (to revert to default view), render everything to the off-screen framebuffer 1: */
+	//{
+	//	camera_controller.Invert(); // Revert back to original orientation.
+	//	renderer->UpdatePerPass( Engine::Renderer::RENDER_PASS_ID_LIGHTING, camera );
+	//}
 
-	/* Post-processing pass: Blit off-screen framebuffers to quads on the default or the editor framebuffer to actually display them: */
-	{
-		/* This pass does not utilize camera view/projection => no Renderer::Update() necessary. */
-	}
+	//// TODO: Outline pass.
 
-	renderer->Render();
+	///* Post-processing pass: Blit off-screen framebuffers to quads on the default or the editor framebuffer to actually display them: */
+	//{
+	//	/* This pass does not utilize camera view/projection => no Renderer::Update() necessary. */
+	//}
+
+	//renderer->Render();
 }
 
 void SandboxApplication::RenderImGui()
@@ -900,70 +863,6 @@ void SandboxApplication::RenderImGui()
 	}
 
 	ImGui::End();
-
-	if( ImGui::Begin( ICON_FA_VIDEO " Camera", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
-	{
-	/* Row 1: */
-		const float button_width( ImGui::CalcTextSize( ICON_FA_ARROWS_ROTATE " XXXXXX" ).x + style.ItemInnerSpacing.x );
-		ImGui::SetCursorPosX( button_width );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Top" ) )
-			SwitchCameraView( CameraView::TOP );
-
-	/* Row 2: */
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Left" ) )
-			SwitchCameraView( CameraView::LEFT );
-		ImGui::SameLine();
-		ImGui::SetCursorPosX( button_width );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Front" ) )
-			SwitchCameraView( CameraView::FRONT );
-		ImGui::SameLine();
-		ImGui::SetCursorPosX( button_width * 2 );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Right" ) )
-			SwitchCameraView( CameraView::RIGHT );
-
-	/* Row 3: */
-		ImGui::SetCursorPosX( button_width );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Back" ) )
-			SwitchCameraView( CameraView::BACK );
-
-	/* Row 4: */
-		ImGui::SetCursorPosX( button_width );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Bottom" ) )
-			SwitchCameraView( CameraView::BOTTOM );
-
-
-		ImGui::NewLine();
-
-	/* Row 5: */
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Custom (1)" ) )
-			SwitchCameraView( CameraView::CUSTOM_1 );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Reset##Camera" ) )
-			ResetCamera();
-
-		ImGui::Checkbox( "Animate (Rotate) Camera", &camera_animation_is_enabled );
-		if( camera_animation_is_enabled )
-			ImGui::SliderFloat( "Camera Orbit Radius", &camera_animation_orbit_radius, 0.0f, 50.0f );
-		Engine::ImGuiDrawer::Draw( camera_transform, Engine::Transform::Mask::NoScale, "Main Camera" );
-	}
-
-	ImGui::End();
-
-	if( ImGui::Begin( "Projection", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
-	{
-		Engine::ImGuiUtility::BeginGroupPanel();
-		{
-			if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Reset##Projection" ) )
-				ResetProjection();
-
-			if( Engine::ImGuiDrawer::Draw( camera, "Main Camera", true ) )
-				RecalculateProjectionParameters();
-		}
-		Engine::ImGuiUtility::EndGroupPanel();
-	}
-
-	ImGui::End();
-
-	renderer->RenderImGui();
 }
 
 void SandboxApplication::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
@@ -1006,8 +905,6 @@ void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, c
 
 	renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
 
-	RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
-	
 	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
 
 	mirror_quad_material.SetTexture( "uniform_tex", &renderer->CustomFramebuffer( 0 ).ColorAttachment() );
@@ -1156,70 +1053,6 @@ void SandboxApplication::ResetInstanceData()
 	light_source_instance_data_array.resize( LIGHT_POINT_COUNT );
 }
 
-void SandboxApplication::ResetCamera()
-{
-	camera_animation_orbit_radius = 30.0f;
-
-	ResetProjection();
-
-	SwitchCameraView( CameraView::FRONT );
-}
-
-void SandboxApplication::ResetProjection()
-{
-	camera = Engine::Camera( &camera_transform, camera.GetAspectRatio(), camera.GetVerticalFieldOfView() ); // Keep current aspect ratio & v-fov.
-}
-
-void SandboxApplication::SwitchCameraView( const CameraView view )
-{
-	camera_animation_is_enabled = false;
-
-	switch( view )
-	{
-		case CameraView::FRONT: 
-			camera_transform.SetTranslation( 0.0f, 10.0f, -20.0f );
-			camera_transform.LookAt( Vector3::Forward() );
-			break;
-		case CameraView::BACK:
-			camera_transform.SetTranslation( 0.0f, 10.0f, +20.0f );
-			camera_transform.LookAt( Vector3::Backward() );
-			break;
-		case CameraView::LEFT:
-			camera_transform.SetTranslation( -10.0f, 10.0f, 0.0f );
-			camera_transform.LookAt( Vector3::Right() );
-			break;
-		case CameraView::RIGHT:
-			camera_transform.SetTranslation( +10.0f, 10.0f, 0.0f );
-			camera_transform.LookAt( Vector3::Left() );
-			break;
-		case CameraView::TOP:
-			camera_transform.SetTranslation( 0.0f, 60.0f, 0.0f );
-			camera_transform.LookAt( Vector3::Down() );
-			break;
-		case CameraView::BOTTOM:
-			camera_transform.SetTranslation( 0.0f, -20.0f, 0.0f );
-			camera_transform.LookAt( Vector3::Up() );
-			break;
-
-
-
-		case CameraView::CUSTOM_1:
-			camera_transform.SetTranslation( 12.0f, 10.0f, -14.0f );
-			camera_transform.SetRotation( -35_deg, 0_deg, 0_deg );
-			break;
-
-		default:
-			break;
-	}
-
-	camera_controller.ResetToTransform();
-}
-
-SandboxApplication::Radians SandboxApplication::CalculateVerticalFieldOfView( const Radians horizontal_field_of_view, const float aspect_ratio ) const
-{
-	return 2.0f * Engine::Math::Atan2( Engine::Math::Tan( horizontal_field_of_view / 2.0f ), aspect_ratio );
-}
-
 bool SandboxApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const std::string& file_path, const char* name )
 {
 	auto& model_database = Engine::ServiceLocator< Engine::AssetDatabase< Engine::Model > >::Get();
@@ -1296,20 +1129,4 @@ void SandboxApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorites
 											GL_STATIC_DRAW );
 		renderer->AddRenderable( &cube_renderable );
 	}
-}
-
-void SandboxApplication::RecalculateProjectionParameters( const int width_new_pixels, const int height_new_pixels )
-{
-	camera.SetAspectRatio( float( width_new_pixels ) / height_new_pixels );
-	camera.SetVerticalFieldOfView( CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), camera.GetAspectRatio() ) );
-}
-
-void SandboxApplication::RecalculateProjectionParameters( const Vector2I new_size_pixels )
-{
-	RecalculateProjectionParameters( new_size_pixels.X(), new_size_pixels.Y() );
-}
-
-void SandboxApplication::RecalculateProjectionParameters()
-{
-	RecalculateProjectionParameters( renderer->FinalFramebuffer().Size() );
 }

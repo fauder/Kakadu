@@ -5,26 +5,12 @@
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Mesh.h"
 #include "Engine/Graphics/Texture.h"
-#include "Engine/Scene/Camera.h"
-#include "Engine/Scene/CameraController_Flight.h"
 
 #include "Engine/DefineMathTypes.h"
 
 class HDR_DemoApplication : public Engine::Application
 {
 	DEFINE_MATH_TYPES()
-
-	enum class CameraView
-	{
-		FRONT,
-		BACK,
-		LEFT,
-		RIGHT,
-		TOP,
-		BOTTOM,
-
-		CUSTOM_1,
-	};
 
 public:
 	HDR_DemoApplication( const Engine::BitFlags< Engine::CreationFlags > );
@@ -49,14 +35,7 @@ private:
 	void ResetInstanceData();
 	void ResetLightingData();
 	void ResetMaterialData();
-	void ResetCamera();
-	void ResetProjection();
-	void SwitchCameraView( const CameraView view );
-	Radians CalculateVerticalFieldOfView( const Radians horizontal_field_of_view, const float aspect_ratio ) const;
-
 	void RecalculateProjectionParameters( const int width_new_pixels, const int height_new_pixels );
-	void RecalculateProjectionParameters( const Vector2I new_size_pixels ); // Convenience overload.
-	void RecalculateProjectionParameters(); // Utilizes current framebuffer size.
 
 private:
 /* Renderer: */
@@ -91,20 +70,12 @@ private:
 	Engine::Material light_source_material;
 
 /* Scene: */
-	Engine::Transform camera_transform;
-
 	/* Lights: */
 	std::vector< Engine::Transform > light_point_transform_array;
 
 	/* GameObjects: */
 
 	Engine::Transform tunnel_transform;
-
-/* Camera: */
-	Engine::Camera camera;
-	float camera_rotation_speed;
-	float camera_move_speed;
-	Engine::CameraController_Flight camera_controller;
 
 /* Instancing Data: */
 	struct LightInstanceData

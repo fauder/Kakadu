@@ -7,12 +7,12 @@
 #include "RenderPass.h"
 #include "Core/BitFlags.hpp"
 #include "Core/DirtyBlob.h"
-#include "Scene/Camera.h"
 #include "Lighting/DirectionalLight.h"
 #include "Lighting/PointLight.h"
 #include "Lighting/SpotLight.h"
 #include "UniformBufferManagement.hpp"
 #include "Math/OrthographicProjectionParameters.h"
+#include "Scene/Camera.h"
 
 // std Includes.
 #include <map>
@@ -373,7 +373,7 @@ namespace Engine
 		std::uint8_t framebuffer_main_msaa_sample_count;
 		Texture::Format framebuffer_main_color_format;
 
-		/* 4 bytes of padding. */
+		/* 6 bytes of padding. */
 
 		/*
 		 * Lighting:
@@ -422,6 +422,8 @@ namespace Engine
 		 */
 
 		std::uint8_t bloom_mip_chain_size = 3; // Denotes the step count for either downsampling or upsampling. Total step count is 2x that.
+		/* 7 byte(s) of padding. */
+
 		FullscreenEffect bloom_downsampling;
 		FullscreenEffect bloom_upsampling;
 		Shader* bloom_shader_downsample;
@@ -460,9 +462,12 @@ namespace Engine
 		 */
 
 #ifdef _EDITOR
-		EditorShadingMode editor_shading_mode;
 		float editor_wireframe_thickness_in_pixels;
 		Color4 editor_wireframe_color;
+		EditorShadingMode editor_shading_mode;
+
+		/* 7 byte(s) of padding. */
+
 #endif // _EDITOR
 	};
 }

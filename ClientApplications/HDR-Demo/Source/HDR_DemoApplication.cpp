@@ -40,11 +40,7 @@ HDR_DemoApplication::HDR_DemoApplication( const Engine::BitFlags< Engine::Creati
 							 .main_framebuffer_color_format      = Engine::Texture::Format::RGBA_16F,
 							 .main_framebuffer_msaa_sample_count = 4
 						 } ),
-	light_point_transform_array( LIGHT_POINT_COUNT ),
-	camera( &camera_transform, Platform::GetAspectRatio(), CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), Platform::GetAspectRatio() ) ),
-	camera_rotation_speed( 5.0f ),
-	camera_move_speed( 5.0f ),
-	camera_controller( &camera, camera_rotation_speed )
+	light_point_transform_array( LIGHT_POINT_COUNT )
 {
 	Initialize();
 }
@@ -158,7 +154,7 @@ void HDR_DemoApplication::Initialize()
 	renderer->ToggleQueue( Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
 
 /* Camera: */
-	ResetCamera();
+	//ResetCamera(); // TODO: Game camera rendering.
 
 	/* This is the earliest place we can MaximizeWindow() at,
 	 * because the Renderer will populate its Intrinsic UBO info only upon AddRenderable( <Renderable with a Shader using said UBO> ). */
@@ -187,46 +183,15 @@ void HDR_DemoApplication::Update()
 
 	current_time_as_angle = Radians( time_current );
 	const Radians current_time_mod_two_pi( std::fmod( time_current, Engine::Constants< float >::Two_Pi() ) );
-
-	/* Camera transform: */
-	{
-		if( !ui_interaction_enabled )
-		{
-			// Control via mouse:
-			const auto [ mouse_x_delta_pos, mouse_y_delta_pos ] = Platform::GetMouseCursorDeltas();
-			camera_controller
-				.OffsetHeading( Radians( +mouse_x_delta_pos ) )
-				.OffsetPitch( Radians( +mouse_y_delta_pos ), -( Engine::Constants< Radians >::Pi_Over_Two() - 0.01_rad ), Engine::Constants< Radians >::Pi_Over_Two() - 0.01_rad );
-		}
-	}
-
-	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_W ) )
-		camera_transform.OffsetTranslation( camera_transform.Forward() * +camera_move_speed * time_delta );
-	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_S ) )
-		camera_transform.OffsetTranslation( camera_transform.Forward() * -camera_move_speed * time_delta );
-	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_A ) )
-		camera_transform.OffsetTranslation( camera_transform.Right() * -camera_move_speed * time_delta );
-	if( Platform::IsKeyPressed( Platform::KeyCode::KEY_D ) )
-		camera_transform.OffsetTranslation( camera_transform.Right() * +camera_move_speed * time_delta );
-
-	renderer->Update();
 }
 
 void HDR_DemoApplication::Render()
 {
 	Engine::Application::Render();
 
-	/* Lighting: Render everything to the off-screen framebuffer 1: */
-	{
-		renderer->UpdatePerPass( Engine::Renderer::RENDER_PASS_ID_LIGHTING, camera );
-	}
+	// Scene-view Camera moved into Application.
 
-	/* Post-processing pass: Blit off-screen framebuffers to quads on the default or the final framebuffer to actually display them: */
-	{
-		/* This pass does not utilize camera view/projection => no Renderer::Update() necessary. */
-	}
-
-	renderer->Render();
+	//renderer->Render();
 }
 
 void HDR_DemoApplication::RenderImGui()
@@ -305,67 +270,6 @@ void HDR_DemoApplication::RenderImGui()
 	}
 
 	ImGui::End();
-
-	if( ImGui::Begin( ICON_FA_VIDEO " Camera", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
-	{
-	/* Row 1: */
-		const float button_width( ImGui::CalcTextSize( ICON_FA_ARROWS_ROTATE " XXXXXX" ).x + style.ItemInnerSpacing.x );
-		ImGui::SetCursorPosX( button_width );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Top" ) )
-			SwitchCameraView( CameraView::TOP );
-
-	/* Row 2: */
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Left" ) )
-			SwitchCameraView( CameraView::LEFT );
-		ImGui::SameLine();
-		ImGui::SetCursorPosX( button_width );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Front" ) )
-			SwitchCameraView( CameraView::FRONT );
-		ImGui::SameLine();
-		ImGui::SetCursorPosX( button_width * 2 );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Right" ) )
-			SwitchCameraView( CameraView::RIGHT );
-
-	/* Row 3: */
-		ImGui::SetCursorPosX( button_width );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Back" ) )
-			SwitchCameraView( CameraView::BACK );
-
-	/* Row 4: */
-		ImGui::SetCursorPosX( button_width );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Bottom" ) )
-			SwitchCameraView( CameraView::BOTTOM );
-
-
-		ImGui::NewLine();
-
-	/* Row 5: */
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Custom (1)" ) )
-			SwitchCameraView( CameraView::CUSTOM_1 );
-		if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Reset##Camera" ) )
-			ResetCamera();
-
-		Engine::ImGuiDrawer::Draw( camera_transform, Engine::Transform::Mask::NoScale, "Main Camera" );
-	}
-
-	ImGui::End();
-
-	if( ImGui::Begin( "Projection", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
-	{
-		Engine::ImGuiUtility::BeginGroupPanel();
-		{
-			if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Reset##Projection" ) )
-				ResetProjection();
-
-			if( Engine::ImGuiDrawer::Draw( camera, "Main Camera", true ) )
-				RecalculateProjectionParameters();
-		}
-		Engine::ImGuiUtility::EndGroupPanel();
-	}
-
-	ImGui::End();
-
-	renderer->RenderImGui();
 }
 
 void HDR_DemoApplication::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
@@ -397,8 +301,6 @@ void HDR_DemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, 
 		return;
 
 	renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
-
-	RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
 
 	Application::OnFramebufferResizeEvent( width_new_pixels, height_new_pixels );
 }
@@ -483,81 +385,4 @@ void HDR_DemoApplication::ResetMaterialData()
 	};
 
 	wood_material.Set( "BlinnPhongMaterialData", tunnel_surface_data );
-}
-
-void HDR_DemoApplication::ResetCamera()
-{
-	ResetProjection();
-
-	SwitchCameraView( CameraView::FRONT );
-}
-
-void HDR_DemoApplication::ResetProjection()
-{
-	camera = Engine::Camera( &camera_transform, camera.GetAspectRatio(), camera.GetVerticalFieldOfView() ); // Keep current aspect ratio & v-fov.
-}
-
-void HDR_DemoApplication::SwitchCameraView( const CameraView view )
-{
-	switch( view )
-	{
-		case CameraView::FRONT:
-			//camera_transform.SetTranslation( 0.0f, 0.0f, -20.0f );
-			camera_transform.SetTranslation( 0.0f, 0.0f, 4.0f );
-			camera_transform.LookAt( Vector3::Forward() );
-			break;
-		case CameraView::BACK:
-			camera_transform.SetTranslation( 0.0f, 0.0f, +20.0f );
-			camera_transform.LookAt( Vector3::Backward() );
-			break;
-		case CameraView::LEFT:
-			camera_transform.SetTranslation( -10.0f, 0.0f, 0.0f );
-			camera_transform.LookAt( Vector3::Right() );
-			break;
-		case CameraView::RIGHT:
-			camera_transform.SetTranslation( +10.0f, 0.0f, 0.0f );
-			camera_transform.LookAt( Vector3::Left() );
-			break;
-		case CameraView::TOP:
-			camera_transform.SetTranslation( 0.0f, 60.0f, 0.0f );
-			camera_transform.LookAt( Vector3::Down() );
-			break;
-		case CameraView::BOTTOM:
-			camera_transform.SetTranslation( 0.0f, -20.0f, 0.0f );
-			camera_transform.LookAt( Vector3::Up() );
-			break;
-
-
-
-		case CameraView::CUSTOM_1:
-			camera_transform.SetTranslation( 0.0f, 0.0f, 14.5f );
-			camera_transform.SetRotation( Quaternion::RotateAroundY_By_Pi() );
-			break;
-
-		default:
-			break;
-	}
-
-	camera_controller.ResetToTransform();
-}
-
-HDR_DemoApplication::Radians HDR_DemoApplication::CalculateVerticalFieldOfView( const Radians horizontal_field_of_view, const float aspect_ratio ) const
-{
-	return 2.0f * Engine::Math::Atan2( Engine::Math::Tan( horizontal_field_of_view / 2.0f ), aspect_ratio );
-}
-
-void HDR_DemoApplication::RecalculateProjectionParameters( const int width_new_pixels, const int height_new_pixels )
-{
-	camera.SetAspectRatio( float( width_new_pixels ) / height_new_pixels );
-	camera.SetVerticalFieldOfView( CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), camera.GetAspectRatio() ) );
-}
-
-void HDR_DemoApplication::RecalculateProjectionParameters( const Vector2I new_size_pixels )
-{
-	RecalculateProjectionParameters( new_size_pixels.X(), new_size_pixels.Y() );
-}
-
-void HDR_DemoApplication::RecalculateProjectionParameters()
-{
-	RecalculateProjectionParameters( renderer->FinalFramebuffer().Size() );
 }

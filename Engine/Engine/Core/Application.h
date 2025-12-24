@@ -12,6 +12,10 @@
 #include "Graphics/Renderer.h"
 #include "Graphics/Texture.h"
 
+#ifdef _EDITOR
+#include "Editor/SceneCamera.h" 
+#endif // _EDITOR
+
 namespace Engine
 {
 	enum class CreationFlags
@@ -36,6 +40,9 @@ namespace Engine
 		virtual void Update();
 
 		virtual void Render();
+#ifdef _EDITOR
+		void RenderViewport();
+#endif
 
 		virtual void OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		virtual void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
@@ -84,6 +91,8 @@ namespace Engine
 
 		void CalculateTimeInformation();
 
+	private:
+
 #ifdef _EDITOR
 		void RenderImGui_Viewport();
 		void RenderImGui_ViewportControls();
@@ -103,10 +112,16 @@ namespace Engine
 		bool show_gl_logger;
 
 		bool ui_interaction_enabled;
-
 		/* 2 bytes(s) of padding. */
 
 		ViewportWindowInfo viewport_info;
+
+		/* 
+		 * Scene Camera:
+		 */
+
+		// Needs to be initialized after the Platform layer is initialized to be able to query framebuffer size for aspect ratio => hence the unique_ptr.
+		std::unique_ptr< Editor::SceneCamera > scene_camera;
 
 #endif // _EDITOR
 

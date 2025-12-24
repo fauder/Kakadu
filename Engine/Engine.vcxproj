@@ -318,6 +318,7 @@
     <ClInclude Include="Engine\Core\Macros_SpaceshipOperator.h" />
     <ClInclude Include="Engine\Core\Morph.h" />
     <ClInclude Include="Engine\Core\MorphSystem.h" />
+    <ClInclude Include="Engine\Editor\SceneCamera.h" />
     <ClInclude Include="Engine\Graphics\FullscreenEffect.h" />
     <ClInclude Include="Engine\Graphics\BuiltinTextures.h" />
     <ClInclude Include="Engine\Graphics\Enums.h" />
@@ -439,6 +440,7 @@
     <ClCompile Include="Engine\Math\Matrix.cpp" />
     <ClCompile Include="Engine\Math\Intersect.cpp" />
     <ClCompile Include="Engine\Math\Vector.cpp" />
+    <ClCompile Include="Engine\Editor\SceneCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vendor\Vendor.vcxproj">

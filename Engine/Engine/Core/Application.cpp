@@ -51,6 +51,8 @@ namespace Engine
 
 		renderer_description.enable_gamma_correction = gamma_correction_is_enabled;
 		renderer = std::make_unique< Renderer >( std::move( renderer_description ) );
+
+		scene_camera = std::make_unique< Editor::SceneCamera >(); // Needs to be initialized after the Platform layer is initialized to be able to query framebuffer size for aspect ratio.
 	}
 
 	Application::~Application()
@@ -131,6 +133,14 @@ namespace Engine
 				Update();
 			}
 
+#ifdef _EDITOR
+			{
+				ZoneScopedN( "RenderViewport" );
+				RenderViewport();
+			}
+#endif // _EDITOR
+
+
 			{
 				ZoneScopedN( "Render" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
 				Render();
@@ -170,15 +180,29 @@ namespace Engine
 		}
 
 		morph_system.Execute( time_delta );
+
+#ifdef _EDITOR
+		scene_camera->Update( time_current, time_delta, not ui_interaction_enabled );
+		renderer->Update();
+#endif // _EDITOR
 	}
 
 	void Application::Render()
 	{
+		// Client App can override this to inject custom rendering code.
+		// TODO: Implement actual game camera rendering.
+	}
+
+	void Application::RenderViewport()
+	{
+		renderer->UpdatePerPass( Engine::Renderer::RENDER_PASS_ID_LIGHTING, scene_camera->camera );
+
+		renderer->Render();
 	}
 
 	void Application::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
-	#ifdef _EDITOR
+#ifdef _EDITOR
 		switch( key_code )
 		{
 			case Platform::KeyCode::KEY_ESCAPE:
@@ -215,7 +239,7 @@ namespace Engine
 			default:
 				break;
 		}
-	#endif // _EDITOR
+#endif // _EDITOR
 	}
 
 	void Application::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
@@ -238,6 +262,10 @@ namespace Engine
 
 	void Application::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 	{
+#ifdef _EDITOR
+		scene_camera->RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
+#endif // _EDITOR
+
 	}
 
 	void Application::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
@@ -339,7 +367,11 @@ namespace Engine
 		if( show_gl_logger )
 			gl_logger.Render( &show_gl_logger );
 
+		scene_camera->RenderImGui( renderer->FinalFramebuffer().Size() );
+
 		Engine::ImGuiDrawer::Draw( asset_database_texture.Assets(), { 400.0f, 512.0f } );
+
+		renderer->RenderImGui();
 	}
 
 	void Application::RenderImGui_Viewport()
