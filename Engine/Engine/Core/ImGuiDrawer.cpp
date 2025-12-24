@@ -885,7 +885,7 @@ namespace Engine::ImGuiDrawer
 													   current_texture_name.c_str(),
 													   ImGuiComboFlags_WidthFitPreview | ImGuiComboFlags_HeightLarge ) )
 								{
-									const auto& texture_map( AssetDatabase< Texture >::Assets() );
+									const auto& texture_map( ServiceLocator< AssetDatabase< Texture > >::Get().Assets() );
 									for( const auto& [ texture_name, texture ] : texture_map )
 									{
 										if( ImGui::Selectable( ( ICON_FA_IMAGE " " + texture.Name() ).c_str() ) )

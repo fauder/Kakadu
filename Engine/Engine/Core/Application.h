@@ -1,13 +1,16 @@
 #pragma once
 
 // Engine Includes.
+#include "AssetDatabase.hpp"
 #include "BitFlags.hpp"
 #include "ImGuiLog.hpp"
 #include "MorphSystem.h"
 #include "Platform.h"
 #include "Math/Math.hpp"
 #include "Graphics/GLLogger.h"
+#include "Graphics/Model.h"
 #include "Graphics/Renderer.h"
+#include "Graphics/Texture.h"
 
 namespace Engine
 {
@@ -101,12 +104,14 @@ namespace Engine
 
 		bool ui_interaction_enabled;
 
-		/* 3 bytes(s) of padding. */
+		/* 2 bytes(s) of padding. */
 
 		ViewportWindowInfo viewport_info;
 
-		/* 4 bytes(s) of padding. */
 #endif // _EDITOR
+
+		AssetDatabase< Texture > asset_database_texture;
+		AssetDatabase< Model   > asset_database_model;
 
 		std::unique_ptr< Renderer > renderer;
 

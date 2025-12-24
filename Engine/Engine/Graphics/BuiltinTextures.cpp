@@ -48,10 +48,10 @@ namespace Engine
 			};
 		}
 
-		return AssetDatabase< Texture >::CreateAssetFromRawBytes( name,
-																  reinterpret_cast< const std::byte* >( &texel ),
-																  Vector2I{ 1, 1 },
-																  *import_settings );
+		return ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromRawBytes( name,
+																						  reinterpret_cast< const std::byte* >( &texel ),
+																						  Vector2I{ 1, 1 },
+																						  *import_settings );
 	}
 
 	void BuiltinTextures::Initialize()
@@ -86,35 +86,38 @@ namespace Engine
 				63, 31, 55, 23, 61, 29, 53, 21
 			};
 
-			TEXTURE_MAP.try_emplace( "Bayer Dither", AssetDatabase< Texture >::CreateAssetFromRawBytes( "Bayer Dither",
-																										reinterpret_cast< const std::byte* >( &bayer_dither_matrix ),
-																										Vector2I{ 8, 8 },
-																										Texture::ImportSettings
-																										{
-																											.wrap_u     = Texture::Wrapping::Repeat,
-																											.wrap_v     = Texture::Wrapping::Repeat,
-																											.min_filter = Texture::Filtering::Nearest,
-																											.mag_filter = Texture::Filtering::Nearest,
+			TEXTURE_MAP.try_emplace( "Bayer Dither",
+									 ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromRawBytes( "Bayer Dither",
+																												reinterpret_cast< const std::byte* >( &bayer_dither_matrix ),
+																												Vector2I{ 8, 8 },
+																												Texture::ImportSettings
+																												{
+																													.wrap_u     = Texture::Wrapping::Repeat,
+																													.wrap_v     = Texture::Wrapping::Repeat,
+																													.min_filter = Texture::Filtering::Nearest,
+																													.mag_filter = Texture::Filtering::Nearest,
 
-																											.flip_vertically  = false,
-																											.generate_mipmaps = false,
+																													.flip_vertically  = false,
+																													.generate_mipmaps = false,
 
-																											.format = Texture::Format::R,
-																										} ) );
+																													.format = Texture::Format::R,
+																												} ) );
 		}
 
-		TEXTURE_MAP.try_emplace( "Missing", AssetDatabase< Texture >::CreateAssetFromFile( "Missing", ENGINE_TEXTURE_PATH_ABSOLUTE( "missing_texture.jpg" ),
-																						   Texture::ImportSettings
-																						   {
-																							   .wrap_u = Texture::Wrapping::Repeat,
-																							   .wrap_v = Texture::Wrapping::Repeat
-																						   } ) );
+		TEXTURE_MAP.try_emplace( "Missing", ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromFile( "Missing",
+																												   ENGINE_TEXTURE_PATH_ABSOLUTE( "missing_texture.jpg" ),
+																												   Texture::ImportSettings
+																												   {
+																													   .wrap_u = Texture::Wrapping::Repeat,
+																													   .wrap_v = Texture::Wrapping::Repeat
+																												   } ) );
 
-		TEXTURE_MAP.try_emplace( "UV Test", AssetDatabase< Texture >::CreateAssetFromFile( "UV Test", ENGINE_TEXTURE_PATH_ABSOLUTE( "uv_test.png" ),
-																						   Texture::ImportSettings
-																						   {
-																							   .wrap_u = Texture::Wrapping::Repeat,
-																							   .wrap_v = Texture::Wrapping::Repeat
-																						   } ) );
+		TEXTURE_MAP.try_emplace( "UV Test", ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromFile( "UV Test",
+																												   ENGINE_TEXTURE_PATH_ABSOLUTE( "uv_test.png" ),
+																												   Texture::ImportSettings
+																												   {
+																													   .wrap_u = Texture::Wrapping::Repeat,
+																													   .wrap_v = Texture::Wrapping::Repeat
+																												   } ) );
 	}
 }

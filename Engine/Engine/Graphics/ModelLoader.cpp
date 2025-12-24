@@ -49,6 +49,8 @@ namespace Engine
         mesh_group_to_load.sub_meshes.reserve( gltf_mesh.primitives.size() );
         mesh_group_to_load.name = gltf_mesh.name;
 
+        auto& texture_database = ServiceLocator< AssetDatabase< Texture > >::Get();
+
 		for( auto submesh_iterator = gltf_mesh.primitives.begin(); submesh_iterator != gltf_mesh.primitives.end(); ++submesh_iterator )
         {
             std::size_t base_color_uv_index = 0;
@@ -80,9 +82,9 @@ namespace Engine
                     {
                         std::string old_name( sub_mesh_albedo_texture->Name() );
                         sub_mesh_albedo_texture->SetName( gltf_mesh.name.empty()
-														  ? ( "Unnamed Model " + sub_mesh_albedo_texture->Name().substr( 10 ) + " (Albedo)" ).c_str()
-                                                          : ( gltf_mesh.name + " (Albedo)" ).c_str() );
-                        AssetDatabase< Texture >::RenameAsset( std::move( old_name ), sub_mesh_albedo_texture->Name() );
+														    ? ( "Unnamed Model " + sub_mesh_albedo_texture->Name().substr( 10 ) + " (Albedo)" ).c_str()
+                                                            : ( gltf_mesh.name + " (Albedo)" ).c_str() );
+                        texture_database.RenameAsset( std::move( old_name ), sub_mesh_albedo_texture->Name() );
                     }
 
                     if( base_color_texture_info->transform && base_color_texture_info->transform->texCoordIndex.has_value() )
@@ -108,9 +110,9 @@ namespace Engine
                     {
                         std::string old_name( sub_mesh_normal_texture->Name() );
                         sub_mesh_normal_texture->SetName( gltf_mesh.name.empty()
-                                                          ? ( "Unnamed Model " + sub_mesh_normal_texture->Name().substr( 10 ) + " (Normal)" ).c_str()
-                                                          : ( gltf_mesh.name + " (Normal)" ).c_str() );
-                        AssetDatabase< Texture >::RenameAsset( std::move( old_name ), sub_mesh_normal_texture->Name() );
+                                                            ? ( "Unnamed Model " + sub_mesh_normal_texture->Name().substr( 10 ) + " (Normal)" ).c_str()
+                                                            : ( gltf_mesh.name + " (Normal)" ).c_str() );
+                        texture_database.RenameAsset( std::move( old_name ), sub_mesh_normal_texture->Name() );
                     }
                 }
 
@@ -126,9 +128,9 @@ namespace Engine
                     {
                         std::string old_name( metallic_roughness_texture->Name() );
                         metallic_roughness_texture->SetName( gltf_mesh.name.empty()
-                                                             ? ( "Unnamed Model " + metallic_roughness_texture->Name().substr( 10 ) + " (Metallic-Roughness)" ).c_str()
-                                                             : ( gltf_mesh.name + " (Metallic-Roughness)" ).c_str() );
-                        AssetDatabase< Texture >::RenameAsset( std::move( old_name ), metallic_roughness_texture->Name() );
+                                                                ? ( "Unnamed Model " + metallic_roughness_texture->Name().substr( 10 ) + " (Metallic-Roughness)" ).c_str()
+                                                                : ( gltf_mesh.name + " (Metallic-Roughness)" ).c_str() );
+                        texture_database.RenameAsset( std::move( old_name ), metallic_roughness_texture->Name() );
                     }
                 }
 
@@ -144,9 +146,9 @@ namespace Engine
                     {
                         std::string old_name( occlusion_texture->Name() );
                         occlusion_texture->SetName( gltf_mesh.name.empty()
-                                                             ? ( "Unnamed Model " + occlusion_texture->Name().substr( 10 ) + " (Occlusion)" ).c_str()
-                                                             : ( gltf_mesh.name + " (Occlusion)" ).c_str() );
-                        AssetDatabase< Texture >::RenameAsset( std::move( old_name ), occlusion_texture->Name() );
+                                                        ? ( "Unnamed Model " + occlusion_texture->Name().substr( 10 ) + " (Occlusion)" ).c_str()
+                                                        : ( gltf_mesh.name + " (Occlusion)" ).c_str() );
+                        texture_database.RenameAsset( std::move( old_name ), occlusion_texture->Name() );
                     }
                 }
             }
@@ -179,7 +181,7 @@ namespace Engine
 
             std::vector< Vector3 > normals;
 
-			if( auto* normal_iterator = submesh_iterator->findAttribute( "NORMAL" );
+            if( auto* normal_iterator = submesh_iterator->findAttribute( "NORMAL" );
                 normal_iterator != submesh_iterator->attributes.end() )
             {
                 const auto& normal_accessor = gltf_asset.accessors[ normal_iterator->accessorIndex ];
@@ -189,10 +191,10 @@ namespace Engine
                 normals.resize( normal_accessor.count, ZERO_INITIALIZATION );
 
                 fastgltf::iterateAccessorWithIndex< Vector3 >( gltf_asset, normal_accessor,
-															   [ & ]( Vector3 normal, std::size_t index )
-				                                               {
-					                                               normals[ index ] = normal * coordinate_system_transform;
-				                                               } );
+                                                               [ & ]( Vector3 normal, std::size_t index )
+                {
+                    normals[ index ] = normal * coordinate_system_transform;
+                } );
             }
 
             /*
@@ -219,7 +221,7 @@ namespace Engine
 
             std::vector< Vector3 > tangents;
 
-			if( auto* tangent_iterator = submesh_iterator->findAttribute( "TANGENT" );
+            if( auto* tangent_iterator = submesh_iterator->findAttribute( "TANGENT" );
                 tangent_iterator != submesh_iterator->attributes.cend() )
             {
                 const auto& tangent_accessor = gltf_asset.accessors[ tangent_iterator->accessorIndex ];
@@ -229,17 +231,17 @@ namespace Engine
                 tangents.resize( tangent_accessor.count, ZERO_INITIALIZATION );
 
                 fastgltf::iterateAccessorWithIndex< Vector4 >( gltf_asset, tangent_accessor,
-															   [ & ]( Vector4 tangent, std::size_t index )
-				                                               {
-					                                               tangents[ index ] = tangent.XYZ() * coordinate_system_transform;
-				                                               } );
+                                                               [ & ]( Vector4 tangent, std::size_t index )
+                {
+                    tangents[ index ] = tangent.XYZ() * coordinate_system_transform;
+                } );
             }
 
             /*
              * Indices:
              */
 
-			ASSERT_DEBUG_ONLY( submesh_iterator->indicesAccessor.has_value() ); // We specify GenerateMeshIndices, so we should always have indices.
+            ASSERT_DEBUG_ONLY( submesh_iterator->indicesAccessor.has_value() ); // We specify GenerateMeshIndices, so we should always have indices.
 
             const auto& index_accessor = gltf_asset.accessors[ submesh_iterator->indicesAccessor.value() ];
             if( !index_accessor.bufferViewIndex.has_value() )
@@ -263,10 +265,10 @@ namespace Engine
 
             fastgltf::iterateAccessorWithIndex< std::uint32_t >( gltf_asset, index_accessor,
                                                                  [ & ]( std::uint32_t actual_index, std::size_t array_index )
-                                                                 {
-                                                                     indices_u32[ EffectiveIndex( array_index ) ] = actual_index;
-                                                                 } );
-            
+            {
+                indices_u32[ EffectiveIndex( array_index ) ] = actual_index;
+            } );
+
             /* Calculate tangents if the model did not have them. */
             if( tangents.empty() )
             {
@@ -306,18 +308,18 @@ namespace Engine
 
             std::string sub_mesh_name( mesh_group_to_load.name + "_" + std::to_string( std::distance( gltf_mesh.primitives.begin(), submesh_iterator ) ) );
 
-			mesh_group_to_load.sub_meshes.emplace_back( sub_mesh_name,
-												        /* Actual Mesh will be stored inside the meshes vector. SubMesh will have a reference to this Mesh. */
-														meshes.emplace_back( Mesh( std::move( positions ),
-																				   sub_mesh_name,
-																				   std::move( normals ),
+            mesh_group_to_load.sub_meshes.emplace_back( sub_mesh_name,
+                                                        /* Actual Mesh will be stored inside the meshes vector. SubMesh will have a reference to this Mesh. */
+                                                        meshes.emplace_back( Mesh( std::move( positions ),
+                                                                                   sub_mesh_name,
+                                                                                   std::move( normals ),
                                                                                    std::move( uvs_0 ),
                                                                                    std::move( indices_u32 ),
                                                                                    std::move( tangents ) ) ),
-														sub_mesh_albedo_texture,
+                                                        sub_mesh_albedo_texture,
                                                         sub_mesh_normal_texture,
                                                         std::move( sub_mesh_albedo_color ) );
-		}
+        }
 
         return true;
     }
@@ -325,6 +327,8 @@ namespace Engine
     bool LoadTexture( const fastgltf::Asset& gltf_asset, const fastgltf::Image& gltf_image,
                       Texture*& texture_to_load, const Engine::Texture::ImportSettings& import_settings )
     {
+        auto& texture_database = ServiceLocator< AssetDatabase< Texture > >::Get();
+
         std::visit( fastgltf::visitor
                     {
                         []( const auto& arg ) {},
@@ -335,23 +339,23 @@ namespace Engine
 
                             const std::string path( file_path.uri.path().begin(), file_path.uri.path().end() );
 
-                            texture_to_load = AssetDatabase< Texture >::CreateAssetFromFile( std::string( gltf_image.name ),
-                                                                                             path,
-                                                                                             import_settings );
-                        },
+							texture_to_load = texture_database.CreateAssetFromFile( std::string( gltf_image.name ),
+																													 path,
+																													 import_settings );
+		                },
                         [ & ]( const fastgltf::sources::Array& vector )
                         {
-                            texture_to_load = AssetDatabase< Texture >::CreateAssetFromFileBytes( std::string( gltf_image.name ), 
-                                                                                                  vector.bytes.data(), 
-																								  static_cast< int >( vector.bytes.size() ),
-                                                                                                  import_settings );
+							texture_to_load = texture_database.CreateAssetFromFileBytes( std::string( gltf_image.name ),
+                                                                                         vector.bytes.data(),
+                                                                                         static_cast< int >( vector.bytes.size() ),
+                                                                                         import_settings );
                         },
                         [ & ]( const fastgltf::sources::BufferView& view )
                         {
                             auto& buffer_view = gltf_asset.bufferViews[ view.bufferViewIndex ];
-                            auto& buffer      = gltf_asset.buffers[ buffer_view.bufferIndex ];
+                            auto& buffer = gltf_asset.buffers[ buffer_view.bufferIndex ];
 
-                            /* Yes, we've already loaded every buffer into some GL buffer. 
+                            /* Yes, we've already loaded every buffer into some GL buffer.
                              * However, with GL it's simpler to just copy the buffer data again for the texture.
                              * Besides, this is just an example. */
                             std::visit( fastgltf::visitor
@@ -360,10 +364,11 @@ namespace Engine
                                             []( const auto& arg ) {},
                                             [ & ]( const fastgltf::sources::Array& vector )
                                             {
-												texture_to_load = AssetDatabase< Texture >::CreateAssetFromFileBytes( std::string( gltf_image.name ),
-                                                                                                                      vector.bytes.data() + buffer_view.byteOffset,
-                                                                                                                      static_cast< int >( buffer_view.byteLength ),
-                                                                                                                      import_settings );
+                                                texture_to_load =
+                                                    texture_database.CreateAssetFromFileBytes( std::string( gltf_image.name ),
+                                                                                               vector.bytes.data() + buffer_view.byteOffset,
+                                                                                               static_cast< int >( buffer_view.byteLength ),
+                                                                                               import_settings );
                                             }
                                         }, buffer.data );
                         }

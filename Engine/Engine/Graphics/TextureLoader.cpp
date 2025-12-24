@@ -94,7 +94,8 @@ namespace Engine
 		return maybe_texture;
 	}
 
-	std::optional< Texture > Texture::Loader::FromFileBytes( const::std::string_view name, 
+	/* 'data' argument here contains the parsed file contents that are still encoded and need to be decoded before actual use. */
+	std::optional< Texture > Texture::Loader::FromFileBytes( const::std::string_view name,
 															 const std::byte* data,
 															 const int length,
 															 const ImportSettings& import_settings )
@@ -131,6 +132,7 @@ namespace Engine
 		return maybe_texture;
 	}
 
+	/* 'data' here is already decoded and ready to be consumed directly. */
 	std::optional< Texture > Texture::Loader::FromRawBytes( const::std::string_view name,
 															const std::byte* data,
 															const SizeType size,

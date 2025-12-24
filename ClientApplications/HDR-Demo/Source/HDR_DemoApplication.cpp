@@ -63,12 +63,12 @@ void HDR_DemoApplication::Initialize()
 	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo GL Init." ) );
 
 /* Textures: */
-	wood_diffuse_map  = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)",
-																					   Engine::Texture::ImportSettings
-																					   {
-																						   .wrap_u = Engine::Texture::Wrapping::Repeat,
-																						   .wrap_v = Engine::Texture::Wrapping::Repeat
-																					   } );
+	wood_diffuse_map = Engine::ServiceLocator< Engine::AssetDatabase< Engine::Texture > >::Get().CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)",
+																													  Engine::Texture::ImportSettings
+																													  {
+																														  .wrap_u = Engine::Texture::Wrapping::Repeat,
+																														  .wrap_v = Engine::Texture::Wrapping::Repeat
+																													  } );
 
 /* Shaders: */
 	shader_blinn_phong           = Engine::BuiltinShaders::Get( "Blinn-Phong" );
@@ -365,7 +365,7 @@ void HDR_DemoApplication::RenderImGui()
 
 	ImGui::End();
 
-	Engine::ImGuiDrawer::Draw( Engine::AssetDatabase< Engine::Texture >::Assets(), { 400.0f, 512.0f } );
+	Engine::ImGuiDrawer::Draw( Engine::ServiceLocator< Engine::AssetDatabase< Engine::Texture > >::Get().Assets(), { 400.0f, 512.0f } );
 
 	renderer->RenderImGui();
 }

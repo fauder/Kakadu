@@ -252,5 +252,4 @@ private:
 
 	const static constexpr Vector3 CUBES_ORIGIN = std::accumulate( CUBE_REFLECTED_POSITIONS.cbegin(), CUBE_REFLECTED_POSITIONS.cend(), Vector3::Zero() ) / CUBE_COUNT;
 	const static constexpr Vector3 CAMERA_ROTATION_ORIGIN = CUBES_ORIGIN;
-
 };

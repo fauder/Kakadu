@@ -100,52 +100,58 @@ void SandboxApplication::Initialize()
 	auto log_group( gl_logger.TemporaryLogGroup( "Sandbox GL Init." ) );
 
 /* Textures: */
-	skybox_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Skybox", 
-																					{
-																						AssetDir R"(Skybox/right.jpg)",
-																						AssetDir R"(Skybox/left.jpg)",
-																						AssetDir R"(Skybox/top.jpg)",
-																						AssetDir R"(Skybox/bottom.jpg)",
-																						AssetDir R"(Skybox/front.jpg)",
-																						AssetDir R"(Skybox/back.jpg)"
-																					},
-																					Engine::Texture::ImportSettings
-																					{
-																						.min_filter      = Engine::Texture::Filtering::Linear,
-																						.flip_vertically = false,
-																					} );
+	auto& texture_database = Engine::ServiceLocator< Engine::AssetDatabase< Engine::Texture > >::Get();
+
+	skybox_texture = texture_database.CreateAssetFromFile( "Skybox",
+														   {
+															   AssetDir R"(Skybox/right.jpg)",
+															   AssetDir R"(Skybox/left.jpg)",
+															   AssetDir R"(Skybox/top.jpg)",
+															   AssetDir R"(Skybox/bottom.jpg)",
+															   AssetDir R"(Skybox/front.jpg)",
+															   AssetDir R"(Skybox/back.jpg)"
+														   },
+														   Engine::Texture::ImportSettings
+														   {
+															   .min_filter      = Engine::Texture::Filtering::Linear,
+															   .flip_vertically = false,
+														   } );
 		
-	container_texture_diffuse_map  = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Container (Diffuse) Map",	AssetDir R"(container2.png)" );
-	container_texture_specular_map = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Container (Specular) Map", AssetDir R"(container2_specular.png)" );
+	container_texture_diffuse_map  = texture_database.CreateAssetFromFile( "Container (Diffuse) Map",  AssetDir R"(container2.png)" );
+	container_texture_specular_map = texture_database.CreateAssetFromFile( "Container (Specular) Map", AssetDir R"(container2_specular.png)" );
 
-	brickwall_diffuse_map  = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Diffuse) Map", AssetDir R"(bricks2.jpg)",
-																							Engine::Texture::ImportSettings
-																							{
-																								.wrap_u = Engine::Texture::Wrapping::Repeat,
-																								.wrap_v = Engine::Texture::Wrapping::Repeat
-																							} );
-	brickwall_normal_map   = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Normal) Map",  AssetDir R"(bricks2_normal.jpg)",
-																							Engine::Texture::ImportSettings
-																							{
-																								.wrap_u  = Engine::Texture::Wrapping::Repeat,
-																								.wrap_v  = Engine::Texture::Wrapping::Repeat,
-																								.format  = Engine::Texture::Format::RGBA,
-																							} );
+	brickwall_diffuse_map = texture_database.CreateAssetFromFile( "Brickwall (Diffuse) Map",
+																  AssetDir R"(bricks2.jpg)",
+																  Engine::Texture::ImportSettings
+																  {
+																	  .wrap_u = Engine::Texture::Wrapping::Repeat,
+																	  .wrap_v = Engine::Texture::Wrapping::Repeat
+																  } );
+	brickwall_normal_map = texture_database.CreateAssetFromFile( "Brickwall (Normal) Map",
+																 AssetDir R"(bricks2_normal.jpg)",
+																 Engine::Texture::ImportSettings
+																 {
+																	 .wrap_u = Engine::Texture::Wrapping::Repeat,
+																	 .wrap_v = Engine::Texture::Wrapping::Repeat,
+																	 .format = Engine::Texture::Format::RGBA,
+																 } );
 
-	brickwall_displacement_map = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Brickwall (Displacement) Map", AssetDir R"(bricks2_disp.jpg)",
-																								Engine::Texture::ImportSettings
-																								{
-																									.format = Engine::Texture::Format::RGBA,
-																								} );
+	brickwall_displacement_map = texture_database.CreateAssetFromFile( "Brickwall (Displacement) Map",
+																	   AssetDir R"(bricks2_disp.jpg)",
+																	   Engine::Texture::ImportSettings
+																	   {
+																		   .format = Engine::Texture::Format::RGBA,
+																	   } );
 
-	transparent_window_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Transparent Window", AssetDir R"(blending_transparent_window.png)" );
+	transparent_window_texture = texture_database.CreateAssetFromFile( "Transparent Window", AssetDir R"(blending_transparent_window.png)" );
 	
-	checker_pattern_texture = Engine::AssetDatabase< Engine::Texture >::CreateAssetFromFile( "Checkerboard Pattern 09", AssetDir R"(kenney_prototype/texture_09.png)", 
-																							 Engine::Texture::ImportSettings
-																							 {
-																								 .wrap_u = Engine::Texture::Wrapping::Repeat,
-																								 .wrap_v = Engine::Texture::Wrapping::Repeat
-																							 } );
+	checker_pattern_texture = texture_database.CreateAssetFromFile( "Checkerboard Pattern 09",
+																	AssetDir R"(kenney_prototype/texture_09.png)", 
+																	Engine::Texture::ImportSettings
+																	{
+																		.wrap_u = Engine::Texture::Wrapping::Repeat,
+																		.wrap_v = Engine::Texture::Wrapping::Repeat
+																	} );
 
 /* Shaders: */
 	shader_skybox                                           = Engine::BuiltinShaders::Get( "Skybox" );
@@ -957,7 +963,7 @@ void SandboxApplication::RenderImGui()
 
 	ImGui::End();
 
-	Engine::ImGuiDrawer::Draw( Engine::AssetDatabase< Engine::Texture >::Assets(), { 400.0f, 512.0f } );
+	Engine::ImGuiDrawer::Draw( Engine::ServiceLocator< Engine::AssetDatabase< Engine::Texture > >::Get().Assets(), { 400.0f, 512.0f } );
 
 	renderer->RenderImGui();
 }
@@ -1218,9 +1224,11 @@ SandboxApplication::Radians SandboxApplication::CalculateVerticalFieldOfView( co
 
 bool SandboxApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const std::string& file_path, const char* name )
 {
-	Engine::AssetDatabase< Engine::Model >::RemoveAsset( name );
+	auto& model_database = Engine::ServiceLocator< Engine::AssetDatabase< Engine::Model > >::Get();
 
-	if( auto new_model = Engine::AssetDatabase< Engine::Model >::CreateAssetFromFile( name, file_path ); 
+	model_database.RemoveAsset( name );
+
+	if( auto new_model = model_database.CreateAssetFromFile( name, file_path ); 
 		new_model )
 	{
 		model_info_to_be_loaded.file_path = file_path;
@@ -1257,7 +1265,7 @@ void SandboxApplication::UnloadModel( ModelInfo& model_info_to_be_loaded, const 
 	for( auto& renderable_to_remove : model_info_to_be_loaded.model_instance.Renderables() )
 		renderer->RemoveRenderable( &renderable_to_remove );
 
-	Engine::AssetDatabase< Engine::Model >::RemoveAsset( name );
+	Engine::ServiceLocator< Engine::AssetDatabase< Engine::Model > >::Get().RemoveAsset( name );
 
 	model_info_to_be_loaded.model_instance = {};
 }

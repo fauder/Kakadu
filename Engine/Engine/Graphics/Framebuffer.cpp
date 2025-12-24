@@ -274,21 +274,24 @@ namespace Engine
 
 			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) +
 								   " (MSAA " + std::to_string( msaa.sample_count ) + "x)" );
-			attachment_texture = Engine::AssetDatabase< Engine::Texture >::AddOrUpdateAsset( Engine::Texture( full_name,
-																											  format,
-																											  msaa.sample_count,
-																											  size.X(),
-																											  size.Y() ) );
+			attachment_texture = Engine::ServiceLocator< AssetDatabase< Engine::Texture > >::Get().AddOrUpdateAsset( Engine::Texture( full_name,
+																																	  format,
+																																	  msaa.sample_count,
+																																	  size.X(),
+																																	  size.Y() ) );
 		}
 		else
 		{
 			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) );
-			attachment_texture = Engine::AssetDatabase< Engine::Texture >::AddOrUpdateAsset( Engine::Texture( full_name, format,
-																											  size.X(),
-																											  size.Y(),
-																											  description.wrap_u, description.wrap_v,
-																											  description.border_color,
-																											  description.minification_filter, description.magnification_filter ) );
+			attachment_texture =
+				Engine::ServiceLocator< AssetDatabase< Engine::Texture > >::Get().AddOrUpdateAsset( Engine::Texture( full_name, format,
+																													 size.X(),
+																													 size.Y(),
+																													 description.wrap_u,
+																													 description.wrap_v,
+																													 description.border_color,
+																													 description.minification_filter,
+																													 description.magnification_filter ) );
 		}
 
 		glFramebufferTexture2D( ( GLenum )bind_point, attachment_type_enum, msaa.IsEnabled() ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, attachment_texture->Id().Get(), 0);
@@ -332,17 +335,19 @@ namespace Engine
 	{
 		if( IsValid() ) // Also prevents the default framebuffer from getting processed here.
 		{
+			auto& texture_database = Engine::ServiceLocator< AssetDatabase< Engine::Texture > >::Get();
+
 			if( HasColorAttachment() )
-				Engine::AssetDatabase< Engine::Texture >::RemoveAsset( color_attachment->Name() );
+				texture_database.RemoveAsset( color_attachment->Name() );
 
 			if( HasCombinedDepthStencilAttachment() )
-				Engine::AssetDatabase< Engine::Texture >::RemoveAsset( depth_stencil_attachment->Name() );
+				texture_database.RemoveAsset( depth_stencil_attachment->Name() );
 			else
 			{
 				if( HasSeparateDepthAttachment() )
-					Engine::AssetDatabase< Engine::Texture >::RemoveAsset( depth_attachment->Name() );
+					texture_database.RemoveAsset( depth_attachment->Name() );
 				if( HasSeparateStencilAttachment() )
-					Engine::AssetDatabase< Engine::Texture >::RemoveAsset( stencil_attachment->Name() );
+					texture_database.RemoveAsset( stencil_attachment->Name() );
 			}
 
 			glDeleteFramebuffers( 1, id.Address() );
