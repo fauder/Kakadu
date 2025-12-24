@@ -338,6 +338,8 @@ namespace Engine
 
 		if( show_gl_logger )
 			gl_logger.Render( &show_gl_logger );
+
+		Engine::ImGuiDrawer::Draw( asset_database_texture.Assets(), { 400.0f, 512.0f } );
 	}
 
 	void Application::RenderImGui_Viewport()

@@ -912,8 +912,6 @@ void BloomDemoApplication::RenderImGui()
 
 	ImGui::End();
 
-	Engine::ImGuiDrawer::Draw( Engine::ServiceLocator< Engine::AssetDatabase< Engine::Texture > >::Get().Assets(), { 400.0f, 512.0f } );
-
 	renderer->RenderImGui();
 }
 
