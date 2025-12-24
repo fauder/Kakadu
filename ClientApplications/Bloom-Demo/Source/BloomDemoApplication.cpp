@@ -1043,6 +1043,7 @@ void BloomDemoApplication::ResetMaterialData()
 
 	cube_material = Engine::Material( "Cube", shader_blinn_phong_shadowed_instanced );
 	cube_material.SetTexture( "uniform_tex_diffuse", container_texture_diffuse_map );
+	cube_material.SetTexture( "uniform_tex_emission", Engine::BuiltinTextures::Get( "White" ) );
 	cube_material.SetTexture( "uniform_tex_specular", container_texture_specular_map );
 	cube_material.SetTexture( "uniform_tex_normal", container_texture_normal_map );
 	cube_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
@@ -1089,7 +1090,7 @@ void BloomDemoApplication::ResetMaterialData()
 		.shininess           = 32.0f
 	};
 
-	cube_surface_data.color_emission = Engine::Color3( 1000.0f, 1000.0f, 1000.0f );
+	cube_surface_data.color_emission = Engine::Color3( 32.0f, 32.0f, 32.0f );
 
 	ground_material.Set( "BlinnPhongMaterialData", ground_quad_surface_data );
 	wall_material.Set( "BlinnPhongMaterialData", wall_surface_data );
