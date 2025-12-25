@@ -65,9 +65,9 @@ namespace Engine
 
 		void Update();
 		void UpdatePerPass( const RenderPass::ID pass_id_to_update, Camera& camera );
-		void Render();
-		void RenderGeometry( const Mesh& mesh ) const;
-		void RenderPostProcessingEffectStep() const;
+		void RenderFrame();
+		void DrawMesh( const Mesh& mesh ) const;
+		void DrawPostProcessingEffectStep() const;
 		void RenderImGui();
 		void OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels );
 		void OnFramebufferResize( const Vector2I new_resolution_in_pixels );
@@ -248,12 +248,12 @@ namespace Engine
 		void InitializeBuiltinQueues();
 		void InitializeBuiltinPasses();
 
-		void Render_Indexed( const Mesh& mesh ) const;
-		void Render_NonIndexed( const Mesh& mesh ) const;
+		void Draw_Indexed( const Mesh& mesh ) const;
+		void Draw_NonIndexed( const Mesh& mesh ) const;
 
-		void RenderInstanced( const Mesh& mesh ) const;
-		void RenderInstanced_Indexed( const Mesh& mesh ) const;
-		void RenderInstanced_NonIndexed( const Mesh& mesh ) const;
+		void DrawInstanced( const Mesh& mesh ) const;
+		void DrawInstanced_Indexed( const Mesh& mesh ) const;
+		void DrawInstanced_NonIndexed( const Mesh& mesh ) const;
 
 		void RenderFullscreenEffect( FullscreenEffect& effect );
 	

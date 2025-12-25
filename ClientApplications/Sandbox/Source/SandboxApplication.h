@@ -37,7 +37,7 @@ public:
 
 	virtual void Update() override;
 
-	virtual void Render() override;
+	virtual void RenderFrame() override;
 
 	virtual void RenderImGui() override;
 	virtual void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods ) override;

@@ -545,9 +545,9 @@ void BloomDemoApplication::Update()
 	renderer->Update();
 }
 
-void BloomDemoApplication::Render()
+void BloomDemoApplication::RenderFrame()
 {
-	Engine::Application::Render();
+	Engine::Application::RenderFrame();
 
 	// Scene-view Camera moved into Application.
 
@@ -576,7 +576,7 @@ void BloomDemoApplication::RenderImGui()
 			Loaded, Unloaded, None
 		};
 
-		auto DrawModelLine = [ & ]( ModelInfo& model_info, const char* model_name ) -> ModelLoadActionResult
+		auto RenderModelUIEdits = [ & ]( ModelInfo& model_info, const char* model_name ) -> ModelLoadActionResult
 		{
 			ModelLoadActionResult action = ModelLoadActionResult::None;
 
@@ -644,8 +644,8 @@ void BloomDemoApplication::RenderImGui()
 			return action;
 		};
 
-		DrawModelLine( test_model_info, "Test Model" );
-		switch( DrawModelLine( meteorite_model_info, "Meteorite" ) )
+		RenderModelUIEdits( test_model_info, "Test Model" );
+		switch( RenderModelUIEdits( meteorite_model_info, "Meteorite" ) )
 		{
 			case ModelLoadActionResult::Loaded:
 				ReplaceMeteoriteAndCubeRenderables( true );

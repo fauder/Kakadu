@@ -185,9 +185,9 @@ void HDR_DemoApplication::Update()
 	const Radians current_time_mod_two_pi( std::fmod( time_current, Engine::Constants< float >::Two_Pi() ) );
 }
 
-void HDR_DemoApplication::Render()
+void HDR_DemoApplication::RenderFrame()
 {
-	Engine::Application::Render();
+	Engine::Application::RenderFrame();
 
 	// Scene-view Camera moved into Application.
 

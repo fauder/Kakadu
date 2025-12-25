@@ -571,9 +571,9 @@ void SandboxApplication::Update()
 	sphere_transform.SetRotation( cube_parallax_transform.GetRotation() );
 }
 
-void SandboxApplication::Render()
+void SandboxApplication::RenderFrame()
 {
-	Engine::Application::Render();
+	Engine::Application::RenderFrame();
 
 	// Scene-view Camera moved into Application.
 	
@@ -638,7 +638,7 @@ void SandboxApplication::RenderImGui()
 			Loaded, Unloaded, None
 		};
 
-		auto DrawModelLine = [ & ]( ModelInfo& model_info, const char* model_name ) -> ModelLoadActionResult
+		auto RenderModelUIEdits = [ & ]( ModelInfo& model_info, const char* model_name ) -> ModelLoadActionResult
 		{
 			ModelLoadActionResult action = ModelLoadActionResult::None;
 
@@ -706,8 +706,8 @@ void SandboxApplication::RenderImGui()
 			return action;
 		};
 
-		DrawModelLine( test_model_info, "Test Model" );
-		switch( DrawModelLine( meteorite_model_info, "Meteorite" ) )
+		RenderModelUIEdits( test_model_info, "Test Model" );
+		switch( RenderModelUIEdits( meteorite_model_info, "Meteorite" ) )
 		{
 			case ModelLoadActionResult::Loaded:
 				ReplaceMeteoriteAndCubeRenderables( true );

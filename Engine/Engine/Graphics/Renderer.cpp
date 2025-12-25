@@ -114,7 +114,7 @@ namespace Engine
 		}
 	}
 
-	void Renderer::Render()
+	void Renderer::RenderFrame()
 	{
 #ifdef _EDITOR
 		// "Shaded" part of shaded wireframe needs to run first, which is in here.
@@ -175,7 +175,7 @@ namespace Engine
 										if( renderable->transform )
 											shadow_map_write_shader.SetUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
 
-										RenderGeometry( *renderable->mesh );
+										DrawMesh( *renderable->mesh );
 									}
 								}
 
@@ -187,7 +187,7 @@ namespace Engine
 									{
 										renderable->mesh->Bind();
 
-										RenderGeometry( *renderable->mesh );
+										DrawMesh( *renderable->mesh );
 									}
 								}
 							}
@@ -214,7 +214,7 @@ namespace Engine
 													if( renderable->transform )
 														material->SetAndUploadUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
 
-													RenderGeometry( *renderable->mesh );
+													DrawMesh( *renderable->mesh );
 												}
 											}
 										}
@@ -248,20 +248,20 @@ namespace Engine
 		RenderFullscreenEffect( tone_mapping );
 	}
 
-	void Renderer::RenderGeometry( const Mesh& mesh ) const
+	void Renderer::DrawMesh( const Mesh& mesh ) const
 	{
 		mesh.HasInstancing()
 			? mesh.HasIndices()
-				? RenderInstanced_Indexed( mesh )
-				: RenderInstanced_NonIndexed( mesh )
+				? DrawInstanced_Indexed( mesh )
+				: DrawInstanced_NonIndexed( mesh )
 			: mesh.HasIndices()
-				? Render_Indexed( mesh )
-				: Render_NonIndexed( mesh );
+				? Draw_Indexed( mesh )
+				: Draw_NonIndexed( mesh );
 	}
 
-	void Renderer::RenderPostProcessingEffectStep() const
+	void Renderer::DrawPostProcessingEffectStep() const
 	{
-		RenderGeometry( full_screen_quad_mesh );
+		DrawMesh( full_screen_quad_mesh );
 	}
 
 	void Renderer::RenderImGui()
@@ -1365,29 +1365,29 @@ namespace Engine
 				 } );
 	}
 
-	void Renderer::Render_Indexed( const Mesh& mesh ) const
+	void Renderer::Draw_Indexed( const Mesh& mesh ) const
 	{
 		glDrawElements( ( GLint )mesh.Primitive(), mesh.IndexCount(), mesh.IndexType(), 0 );
 	}
 
-	void Renderer::Render_NonIndexed( const Mesh& mesh ) const
+	void Renderer::Draw_NonIndexed( const Mesh& mesh ) const
 	{
 		glDrawArrays( ( GLint )mesh.Primitive(), 0, mesh.VertexCount() );
 	}
 
-	void Renderer::RenderInstanced( const Mesh& mesh ) const
+	void Renderer::DrawInstanced( const Mesh& mesh ) const
 	{
 		mesh.HasIndices()
-			? RenderInstanced_Indexed( mesh )
-			: RenderInstanced_NonIndexed( mesh );
+			? DrawInstanced_Indexed( mesh )
+			: DrawInstanced_NonIndexed( mesh );
 	}
 
-	void Renderer::RenderInstanced_Indexed( const Mesh& mesh ) const
+	void Renderer::DrawInstanced_Indexed( const Mesh& mesh ) const
 	{
 		glDrawElementsInstanced( ( GLint )mesh.Primitive(), mesh.IndexCount(), mesh.IndexType(), 0, mesh.InstanceCount() );
 	}
 
-	void Renderer::RenderInstanced_NonIndexed( const Mesh& mesh ) const
+	void Renderer::DrawInstanced_NonIndexed( const Mesh& mesh ) const
 	{
 		glDrawArraysInstanced( ( GLint )mesh.Primitive(), 0, mesh.VertexCount(), mesh.InstanceCount() );
 	}
@@ -1413,7 +1413,7 @@ namespace Engine
 				effect.material.SetTexture( "uniform_tex", step.texture_input );
 				effect.material.UploadUniforms();
 
-				RenderPostProcessingEffectStep();
+				DrawPostProcessingEffectStep();
 			}
 		}
 	}
@@ -1669,7 +1669,7 @@ namespace Engine
 				tone_mapping.material.SetTexture( "uniform_tex_bloom", &bloom_downsampling.framebuffers.front().ColorAttachment() );
 				tone_mapping.material.UploadUniforms();
 
-				RenderPostProcessingEffectStep();
+				DrawPostProcessingEffectStep();
 			}
 		};
 
@@ -1801,7 +1801,7 @@ namespace Engine
 				bloom_downsampling.material.Set( "uniform_source_resolution", downsample_step.texture_input->Size() );
 				bloom_downsampling.material.UploadUniforms();
 
-				renderer.RenderPostProcessingEffectStep();
+				renderer.DrawPostProcessingEffectStep();
 			}
 		};
 
@@ -1818,7 +1818,7 @@ namespace Engine
 				bloom_upsampling.material.SetTexture( "uniform_tex_source", upsample_step.texture_input );
 				bloom_upsampling.material.UploadUniforms();
 
-				renderer.RenderPostProcessingEffectStep();
+				renderer.DrawPostProcessingEffectStep();
 			}
 		};
 
@@ -1966,7 +1966,7 @@ namespace Engine
 									if( renderable->transform )
 										shader->SetUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
 
-									RenderGeometry( *renderable->mesh );
+									DrawMesh( *renderable->mesh );
 								}
 							}
 						}

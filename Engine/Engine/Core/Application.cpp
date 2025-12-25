@@ -114,7 +114,7 @@ namespace Engine
 	{
 		TracyGpuContext;
 
-		/* The render loop. */
+		/* The main loop. */
 		while( !Platform::ShouldClose() )
 		{
 			TracyGpuZone( "GPU Time" );
@@ -143,8 +143,8 @@ namespace Engine
 
 
 			{
-				ZoneScopedN( "Render" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
-				Render();
+				ZoneScopedN( "RenderFrame" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
+				RenderFrame();
 			}
 
 			if( show_imgui )
@@ -188,7 +188,7 @@ namespace Engine
 #endif // _EDITOR
 	}
 
-	void Application::Render()
+	void Application::RenderFrame()
 	{
 		// Client App can override this to inject custom rendering code.
 		// TODO: Implement actual game camera rendering.
@@ -198,7 +198,7 @@ namespace Engine
 	{
 		renderer->UpdatePerPass( Engine::Renderer::RENDER_PASS_ID_LIGHTING, scene_camera->camera );
 
-		renderer->Render();
+		renderer->RenderFrame();
 	}
 
 	void Application::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
@@ -366,7 +366,7 @@ namespace Engine
 		RenderImGui_FrameStatistics();
 
 		if( show_gl_logger )
-			gl_logger.Render( &show_gl_logger );
+			gl_logger.Draw( &show_gl_logger );
 
 		scene_camera->RenderImGui( renderer->FinalFramebuffer().Size() );
 

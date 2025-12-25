@@ -145,7 +145,7 @@ namespace Engine
 		glDebugMessageControl( GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 1, &id_to_restore, true );
 	}
 
-	void GLLogger::Render( bool* show )
+	void GLLogger::Draw( bool* show )
 	{
 		logger.Draw( ICON_FA_BOOK " GL Logs", show );
 	}

@@ -40,7 +40,7 @@ namespace Engine
 
 		virtual void Update();
 
-		virtual void Render();
+		virtual void RenderFrame();
 #ifdef _EDITOR
 		void RenderViewport();
 #endif
