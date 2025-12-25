@@ -270,28 +270,6 @@ namespace Engine
 
 		if( ImGui::Begin( ICON_FA_BOLT_LIGHTNING " Renderer", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
-			ImGui::SeparatorText( "General" );
-
-			ImGuiUtility::ImmutableCheckbox( "Gamma Correction", gamma_correction_is_enabled );
-
-			/* MSAA Setting: */
-			{
-				const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.ColorAttachment().PixelFormat() ];
-				const int   option_count                 = 1 + ( int )msaa_supported_sample_counts.size();
-
-				int msaa_sample_log_2 = Math::Log2( framebuffer_main_msaa_sample_count );
-
-				const auto sample_count_string = msaa_sample_log_2 == 0
-													? "Off"
-													: "MSAA " + std::to_string( msaa_supported_sample_counts[ msaa_sample_log_2 - 1 ] ) + 'x';
-				if( ImGui::SliderInt( "MSAA", &msaa_sample_log_2, 0, ( int )option_count - 1, sample_count_string.c_str() ) )
-				{
-					framebuffer_main_msaa_sample_count = Math::Pow2( msaa_sample_log_2 );
-
-					SetMSAASampleCount( framebuffer_main_msaa_sample_count );
-				}
-			}
-
 			if( ImGui::BeginTabBar( "Renderer-Tab-Bar" ) )
 			{
 				if( ImGui::BeginTabItem( ICON_FA_DIAGRAM_PROJECT " Render Pipeline" ) )
@@ -564,6 +542,52 @@ namespace Engine
 					ImGui::EndTabItem();
 				}
 
+				if( ImGui::BeginTabItem( "Other" ) )
+				{
+					ImGuiUtility::ImmutableCheckbox( "Gamma Correction", gamma_correction_is_enabled );
+
+					/* MSAA Setting: */
+					{
+						const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.ColorAttachment().PixelFormat() ];
+						const int   option_count = 1 + ( int )msaa_supported_sample_counts.size();
+
+						int msaa_sample_log_2 = Math::Log2( framebuffer_main_msaa_sample_count );
+
+						const auto sample_count_string = msaa_sample_log_2 == 0
+							? "Off"
+							: "MSAA " + std::to_string( msaa_supported_sample_counts[ msaa_sample_log_2 - 1 ] ) + 'x';
+						if( ImGui::SliderInt( "MSAA", &msaa_sample_log_2, 0, ( int )option_count - 1, sample_count_string.c_str() ) )
+						{
+							framebuffer_main_msaa_sample_count = Math::Pow2( msaa_sample_log_2 );
+
+							SetMSAASampleCount( framebuffer_main_msaa_sample_count );
+						}
+					}
+
+					/* Wireframe: */
+					ImGui::NewLine();
+					ImGui::SeparatorText( "Wireframe Settings" );
+					{
+						ImGui::SliderFloat( "Wireframe Thickness", &editor_wireframe_thickness_in_pixels, 0.0f, 100.0f, "%.1f pixels", ImGuiSliderFlags_Logarithmic );
+						ImGuiDrawer::Draw( editor_wireframe_color, "Wireframe Color" );
+					}
+
+					/* Misc.: */
+					ImGui::NewLine();
+					ImGui::SeparatorText( "Misc." );
+					{
+						local_persist bool is_running = false;
+						ImGui::BeginDisabled( is_running );
+						if( ImGui::Button( "Flash Main Framebuffer Clear Color" ) )
+							framebuffer_main.Debug_FlashClearColor( is_running = true );
+
+						ImGuiDrawer::Draw( framebuffer_main.clear_color, "Main Framebuffer Clear Color" );
+						ImGui::EndDisabled();
+					}
+
+					ImGui::EndTabItem();
+				}
+
 				ImGui::EndTabBar();
 			}
 		}
@@ -583,25 +607,6 @@ namespace Engine
 		/* Uniforms (Renderer-scope): */
 		ImGuiDrawer::Draw( uniform_buffer_management_intrinsic, "Shader Intrinsics" );
 		ImGuiDrawer::Draw( uniform_buffer_management_global,	"Shader Globals" );
-
-#ifdef _EDITOR
-		/* Debug: */
-		if( ImGui::Begin( "Debug" ) )
-		{
-			local_persist bool is_running = false;
-			ImGui::BeginDisabled( is_running );
-			if( ImGui::Button( "Flash Main Framebuffer Clear Color" ) )
-				framebuffer_main.Debug_FlashClearColor( is_running = true );
-
-			ImGuiDrawer::Draw( framebuffer_main.clear_color, "Main Framebuffer Clear Color" );
-			ImGui::EndDisabled();
-
-			ImGui::SliderFloat( "Wireframe Thickness", &editor_wireframe_thickness_in_pixels, 0.0f, 100.0f, "%.1f pixels", ImGuiSliderFlags_Logarithmic );
-			ImGuiDrawer::Draw( editor_wireframe_color, "Wireframe Color" );
-		}
-
-		ImGui::End();
-#endif // _EDITOR
 	}
 
 	void Renderer::OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels )
