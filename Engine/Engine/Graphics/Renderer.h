@@ -1,5 +1,9 @@
 #pragma once
 
+/* See: Docs/naming_render_vs_draw.md
+ * This renderer enforces a strict semantic distinction between the naming of Render* and Draw*.
+ * Do not introduce new Render* or Draw* functions without following that document. */
+
 // Engine Includes.
 #include "Framebuffer.h"
 #include "FullscreenEffect.h"
