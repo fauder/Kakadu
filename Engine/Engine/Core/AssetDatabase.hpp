@@ -21,7 +21,7 @@ namespace Engine
 										const std::string& file_path,
 										const typename AssetType::ImportSettings& import_settings = AssetType::DEFAULT_IMPORT_SETTINGS )
 		{
-			if( not asset_path_map.contains( file_path ) )
+			if( not asset_path_map.contains( name ) )
 			{
 				if( auto maybe_asset = AssetType::Loader::FromFile( name, file_path, import_settings ); 
 					maybe_asset )
