@@ -2,7 +2,7 @@
 
 // Engine Includes.
 #include "Macros.h"
-#include "Math/Concepts.h"
+#include "Concepts.h"
 
 // std Includes.
 #include <compare>

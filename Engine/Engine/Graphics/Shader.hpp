@@ -8,7 +8,7 @@
 #include "Std140StructTag.h"
 #include "Uniform.h"
 #include "VertexLayout.hpp"
-#include "Math/Concepts.h"
+#include "Math/Concepts_Math.h"
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
 

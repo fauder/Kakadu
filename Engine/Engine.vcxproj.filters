@@ -66,7 +66,7 @@
     <ClInclude Include="Engine\Math\Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Math\Concepts.h">
+    <ClInclude Include="Engine\Math\Concepts_Math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Math\Matrix.hpp">
@@ -313,6 +313,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Core\AssetDatabase_Tracked.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

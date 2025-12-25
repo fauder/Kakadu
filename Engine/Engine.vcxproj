@@ -309,6 +309,7 @@
     <ClInclude Include="Engine\Core\AssetDatabase.hpp" />
     <ClInclude Include="Engine\Core\AssetDatabase_Tracked.hpp" />
     <ClInclude Include="Engine\Core\BitFlags.hpp" />
+    <ClInclude Include="Engine\Core\Concepts.h" />
     <ClInclude Include="Engine\Core\ImGuiCustomColors.h" />
     <ClInclude Include="Engine\Core\ImGuiDrawer.hpp" />
     <ClInclude Include="Engine\Core\ImGuiLog.hpp" />
@@ -387,7 +388,7 @@
     <ClInclude Include="Engine\Graphics\VertexArray.h" />
     <ClInclude Include="Engine\Graphics\VertexLayout.hpp" />
     <ClInclude Include="Engine\Math\Angle.hpp" />
-    <ClInclude Include="Engine\Math\Concepts.h" />
+    <ClInclude Include="Engine\Math\Concepts_Math.h" />
     <ClInclude Include="Engine\Math\Constants.h" />
     <ClInclude Include="Engine\DefineMathTypes.h" />
     <ClInclude Include="Engine\Math\Math.hpp" />

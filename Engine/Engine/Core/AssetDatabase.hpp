@@ -1,7 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "Math/Concepts.h"
+#include "Concepts.h"
 #include "Macros.h"
 
 // std Includes.

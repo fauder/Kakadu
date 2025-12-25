@@ -4,7 +4,7 @@
 #include "Graphics.h"
 #include "GraphicsMacros.h"
 #include "ShaderTypeInformation.h"
-#include "Math/Concepts.h"
+#include "Math/Concepts_Math.h"
 
 // std Includes.
 #include <vector>
