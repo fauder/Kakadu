@@ -89,22 +89,22 @@ namespace Engine
 		bool IsMultiSampled() const { return msaa.IsEnabled(); }
 
 		/* Default framebuffer always uses sRGB Encoding. */
-		bool Is_sRGB() const { return id.Get() == 0 || ( HasColorAttachment() && color_attachment->Is_sRGB() ); }
-		bool IsHDR()   const { return HasColorAttachment() && color_attachment->IsHDR(); }
+		bool Is_sRGB() const { return id.Get() == 0 || ( HasColorAttachment() && color_attachment.Is_sRGB() ); }
+		bool IsHDR()   const { return HasColorAttachment() && color_attachment.IsHDR(); }
 
 		const std::string&	Name() const { return name; }
 
 	/* Attachment Queries: */
 
-		bool HasColorAttachment()				 const { return color_attachment; }
-		bool HasSeparateDepthAttachment()		 const { return depth_attachment && not stencil_attachment; }
-		bool HasSeparateStencilAttachment()		 const { return stencil_attachment && not depth_attachment; }
-		bool HasCombinedDepthStencilAttachment() const { return depth_stencil_attachment; }
+		bool HasColorAttachment()				 const { return color_attachment.IsValid(); }
+		bool HasSeparateDepthAttachment()		 const { return depth_attachment.IsValid() && not stencil_attachment.IsValid(); }
+		bool HasSeparateStencilAttachment()		 const { return stencil_attachment.IsValid() && not depth_attachment.IsValid(); }
+		bool HasCombinedDepthStencilAttachment() const { return depth_stencil_attachment.IsValid(); }
 
-		const Texture& ColorAttachment()		 const { return *color_attachment; }
-		const Texture& DepthStencilAttachment()	 const { return *depth_stencil_attachment; }
-		const Texture& DepthAttachment()		 const { return *depth_attachment; }
-		const Texture& StencilAttachment()		 const { return *stencil_attachment; }
+		const Texture& ColorAttachment()		 const { return color_attachment; }
+		const Texture& DepthStencilAttachment()	 const { return depth_stencil_attachment; }
+		const Texture& DepthAttachment()		 const { return depth_attachment; }
+		const Texture& StencilAttachment()		 const { return stencil_attachment; }
 
 	private:
 		struct DefaultFramebuferConstructorTag {};
@@ -120,7 +120,7 @@ namespace Engine
 
 		void Create();
 		void CreateAttachments();
-		void CreateTextureAndAttachToFramebuffer( const Texture*& attachment_texture,
+		void CreateTextureAndAttachToFramebuffer( Texture& attachment_texture,
 												  const char* attachment_type_name,
 												  const GLenum attachment_type_enum,
 												  const Texture::Format format,
@@ -168,9 +168,9 @@ namespace Engine
 
 		Description description;
 
-		const Texture* color_attachment;
-		const Texture* depth_stencil_attachment;
-		const Texture* depth_attachment;
-		const Texture* stencil_attachment;
+		Texture color_attachment;
+		Texture depth_stencil_attachment;
+		Texture depth_attachment;
+		Texture stencil_attachment;
 	};
 }

@@ -276,7 +276,7 @@ namespace Engine
 
 			/* MSAA Setting: */
 			{
-				const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.color_attachment->PixelFormat() ];
+				const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.ColorAttachment().PixelFormat() ];
 				const int   option_count                 = 1 + ( int )msaa_supported_sample_counts.size();
 
 				int msaa_sample_log_2 = Math::Log2( framebuffer_main_msaa_sample_count );
@@ -1636,7 +1636,7 @@ namespace Engine
 			.steps = { 1, FullscreenEffect::Step
 			{
 				.framebuffer_target = &framebuffer_postprocessing,
-				.texture_input      = framebuffer_main.color_attachment
+				.texture_input      = &framebuffer_main.ColorAttachment()
 			} },
 			.material = Material( "[Renderer] MSAA Resolve", msaa_resolve_shader )
 			
@@ -1649,7 +1649,7 @@ namespace Engine
 			.steps = { 1, FullscreenEffect::Step
 			{
 				.framebuffer_target = &framebuffer_final, // This is not set in stone; Can be configured via the Renderer API by the client app if desired.
-				.texture_input      = framebuffer_postprocessing.color_attachment
+				.texture_input      = &framebuffer_postprocessing.ColorAttachment()
 			} },
 			.material = Material( "[Renderer] Tonemapping", tone_mapping_shader ),
 			.execution_routine = [ & ]( Renderer& renderer )
@@ -1661,7 +1661,7 @@ namespace Engine
 				SetRenderState( tone_mapping.render_state, step.framebuffer_target );
 
 				tone_mapping.material.SetTexture( "uniform_tex_color", step.texture_input );
-				tone_mapping.material.SetTexture( "uniform_tex_bloom", bloom_downsampling.framebuffers.front().color_attachment );
+				tone_mapping.material.SetTexture( "uniform_tex_bloom", &bloom_downsampling.framebuffers.front().ColorAttachment() );
 				tone_mapping.material.UploadUniforms();
 
 				RenderPostProcessingEffectStep();
@@ -1747,7 +1747,7 @@ namespace Engine
 				.texture_input      = input_texture
 			};
 
-			input_texture = step.framebuffer_target->color_attachment;
+			input_texture = &step.framebuffer_target->ColorAttachment();
 
 			bloom_downsampling.steps.push_back( std::move( step ) );
 		}
@@ -1773,7 +1773,7 @@ namespace Engine
 				.texture_input      = input_texture,
 			};
 
-			input_texture = step.framebuffer_target->color_attachment;
+			input_texture = &step.framebuffer_target->ColorAttachment();
 
 			bloom_upsampling.steps.push_back( std::move( step ) );
 		}

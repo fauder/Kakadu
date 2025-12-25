@@ -14,7 +14,7 @@
 
 namespace Engine
 {
-	template< typename AssetType >
+	template< Concepts::NotPointer AssetType >
 	class AssetDatabase;
 
 	enum class TextureType

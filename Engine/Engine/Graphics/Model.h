@@ -10,7 +10,7 @@
 
 namespace Engine
 {
-	template< typename AssetType >
+	template< Concepts::NotPointer AssetType >
 	class AssetDatabase;
 
 	class Model

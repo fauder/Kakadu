@@ -312,6 +312,9 @@
     <ClInclude Include="Engine\Editor\SceneCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Core\AssetDatabase_Tracked.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\Application.cpp">

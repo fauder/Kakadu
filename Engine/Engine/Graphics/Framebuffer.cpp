@@ -4,7 +4,7 @@
 #include "GLLabelPrefixes.h"
 #include "GLLogger.h"
 #include "Core/Assertion.h"
-#include "Core/AssetDatabase.hpp"
+#include "Core/AssetDatabase_Tracked.hpp"
 #include "Core/Platform.h"
 #include "Core/ServiceLocator.h"
 #include "Core/MorphSystem.h"
@@ -19,11 +19,7 @@ namespace Engine
 		clear_color( Color4::Black() ),
 		clear_depth_value( 1.0f ),
 		clear_stencil_value( 0 ),
-		name( "<default constructed FB>" ),
-		color_attachment( nullptr ),
-		depth_stencil_attachment( nullptr ),
-		depth_attachment( nullptr ),
-		stencil_attachment( nullptr )
+		name( "<default constructed FB>" )
 	{
 	}
 
@@ -37,11 +33,7 @@ namespace Engine
 		clear_depth_value( 1.0f ),
 		clear_stencil_value( 0 ),
 		name( description.name ),
-		description( description ),
-		color_attachment( nullptr ),
-		depth_stencil_attachment( nullptr ),
-		depth_attachment( nullptr ),
-		stencil_attachment( nullptr )
+		description( description )
 	{
 		Create();
 	}
@@ -56,11 +48,7 @@ namespace Engine
 		clear_depth_value( 1.0f ),
 		clear_stencil_value( 0 ),
 		name( description.name ),
-		description( std::move( description ) ),
-		color_attachment( nullptr ),
-		depth_stencil_attachment( nullptr ),
-		depth_attachment( nullptr ),
-		stencil_attachment( nullptr )
+		description( std::move( description ) )
 	{
 		Create();
 	}
@@ -74,11 +62,7 @@ namespace Engine
 		clear_targets( ClearTarget::ColorBuffer ),
 		clear_color( Color4::Black() ),
 		clear_depth_value( 1.0f ),
-		clear_stencil_value( 0 ),
-		color_attachment( nullptr ),
-		depth_stencil_attachment( nullptr ),
-		depth_attachment( nullptr ),
-		stencil_attachment( nullptr )
+		clear_stencil_value( 0 )
 	{
 		/* Query attachments: */
 		{
@@ -118,10 +102,10 @@ namespace Engine
 		clear_stencil_value( std::exchange( donor.clear_stencil_value, 0 ) ),
 		name( std::exchange( donor.name, "<moved-from>" ) ),
 		description( std::move( donor.description ) ),
-		color_attachment( std::exchange( donor.color_attachment, nullptr ) ),
-		depth_stencil_attachment( std::exchange( donor.depth_stencil_attachment, nullptr ) ),
-		depth_attachment( std::exchange( donor.depth_attachment, nullptr ) ),
-		stencil_attachment( std::exchange( donor.stencil_attachment, nullptr ) )
+		color_attachment( std::exchange( donor.color_attachment, Texture{} ) ),
+		depth_stencil_attachment( std::exchange( donor.depth_stencil_attachment, Texture{} ) ),
+		depth_attachment( std::exchange( donor.depth_attachment, Texture{} ) ),
+		stencil_attachment( std::exchange( donor.stencil_attachment, Texture{} ) )
 	{
 	}
 
@@ -139,10 +123,10 @@ namespace Engine
 		clear_stencil_value      = std::exchange( donor.clear_stencil_value,		0 );
 		name                     = std::exchange( donor.name,						"<moved-from>" );
 		description              = std::move( donor.description );
-		color_attachment         = std::exchange( donor.color_attachment,			nullptr );
-		depth_stencil_attachment = std::exchange( donor.depth_stencil_attachment,	nullptr );
-		depth_attachment         = std::exchange( donor.depth_attachment,			nullptr );
-		stencil_attachment       = std::exchange( donor.stencil_attachment,			nullptr );
+		color_attachment         = std::exchange( donor.color_attachment,			Texture{} );
+		depth_stencil_attachment = std::exchange( donor.depth_stencil_attachment,	Texture{} );
+		depth_attachment         = std::exchange( donor.depth_attachment,			Texture{} );
+		stencil_attachment       = std::exchange( donor.stencil_attachment,			Texture{} );
 
 		return *this;
 	}
@@ -256,7 +240,7 @@ namespace Engine
 		}
 	}
 
-	void Framebuffer::CreateTextureAndAttachToFramebuffer( const Texture*& attachment_texture,
+	void Framebuffer::CreateTextureAndAttachToFramebuffer( Texture& attachment_texture,
 														   const char* attachment_type_name,
 														   const GLenum attachment_type_enum,
 														   const Texture::Format format,
@@ -269,32 +253,39 @@ namespace Engine
 
 		if( IsMultiSampled() )
 		{
-			/* MSAA prefix/suffix here in the name is mandatory, 
-			 * otherwise code below may update an already existing texture instead of creating a new one! */
-
 			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) +
 								   " (MSAA " + std::to_string( msaa.sample_count ) + "x)" );
-			attachment_texture = Engine::ServiceLocator< AssetDatabase< Engine::Texture > >::Get().AddOrUpdateAsset( Engine::Texture( full_name,
-																																	  format,
-																																	  msaa.sample_count,
-																																	  size.X(),
-																																	  size.Y() ) );
+			attachment_texture = Engine::Texture( full_name,
+												  format,
+												  msaa.sample_count,
+												  size.X(),
+												  size.Y() );
+				
+			Engine::ServiceLocator< AssetDatabase_Tracked< Engine::Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
 		}
 		else
 		{
 			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) );
-			attachment_texture =
-				Engine::ServiceLocator< AssetDatabase< Engine::Texture > >::Get().AddOrUpdateAsset( Engine::Texture( full_name, format,
-																													 size.X(),
-																													 size.Y(),
-																													 description.wrap_u,
-																													 description.wrap_v,
-																													 description.border_color,
-																													 description.minification_filter,
-																													 description.magnification_filter ) );
+			attachment_texture = Engine::Texture( full_name, format,
+												  size.X(),
+												  size.Y(),
+												  description.wrap_u,
+												  description.wrap_v,
+												  description.border_color,
+												  description.minification_filter,
+												  description.magnification_filter );
+
+			Engine::ServiceLocator< AssetDatabase_Tracked< Engine::Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
 		}
 
-		glFramebufferTexture2D( ( GLenum )bind_point, attachment_type_enum, msaa.IsEnabled() ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, attachment_texture->Id().Get(), 0);
+		constexpr int gl_spec_required_level = 0;
+		glFramebufferTexture2D( ( GLenum )bind_point,
+								attachment_type_enum,
+								msaa.IsEnabled()
+									? GL_TEXTURE_2D_MULTISAMPLE
+									: GL_TEXTURE_2D,
+								attachment_texture.Id().Get(),
+								gl_spec_required_level );
 	}
 
 	void Framebuffer::SetClearColor( const Color3& new_clear_color )
@@ -335,19 +326,19 @@ namespace Engine
 	{
 		if( IsValid() ) // Also prevents the default framebuffer from getting processed here.
 		{
-			auto& texture_database = Engine::ServiceLocator< AssetDatabase< Engine::Texture > >::Get();
+			auto& texture_database = Engine::ServiceLocator< AssetDatabase_Tracked< Engine::Texture* > >::Get();
 
 			if( HasColorAttachment() )
-				texture_database.RemoveAsset( color_attachment->Name() );
+				texture_database.RemoveAsset( color_attachment.Name() );
 
 			if( HasCombinedDepthStencilAttachment() )
-				texture_database.RemoveAsset( depth_stencil_attachment->Name() );
+				texture_database.RemoveAsset( depth_stencil_attachment.Name() );
 			else
 			{
 				if( HasSeparateDepthAttachment() )
-					texture_database.RemoveAsset( depth_attachment->Name() );
+					texture_database.RemoveAsset( depth_attachment.Name() );
 				if( HasSeparateStencilAttachment() )
-					texture_database.RemoveAsset( stencil_attachment->Name() );
+					texture_database.RemoveAsset( stencil_attachment.Name() );
 			}
 
 			glDeleteFramebuffers( 1, id.Address() );

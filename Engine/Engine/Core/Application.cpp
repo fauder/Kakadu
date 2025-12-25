@@ -64,7 +64,8 @@ namespace Engine
 	{
 		ServiceLocator< GLLogger >::Register( &gl_logger );
 		ServiceLocator< AssetDatabase< Texture > >::Register( &asset_database_texture );
-		ServiceLocator< AssetDatabase< Model   > >::Register( &asset_database_model );
+		ServiceLocator< AssetDatabase_Tracked< Texture* > >::Register( &asset_database_texture_tracked );
+		ServiceLocator< AssetDatabase< Model > >::Register( &asset_database_model );
 		ServiceLocator< MorphSystem >::Register( &morph_system );
 
 		Platform::InitializeAndCreateWindow( 800, 600, vsync_is_enabled );

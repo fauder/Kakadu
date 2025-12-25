@@ -307,6 +307,7 @@
     <ClInclude Include="Engine\Core\Application.h" />
     <ClInclude Include="Engine\Core\Assertion.h" />
     <ClInclude Include="Engine\Core\AssetDatabase.hpp" />
+    <ClInclude Include="Engine\Core\AssetDatabase_Tracked.hpp" />
     <ClInclude Include="Engine\Core\BitFlags.hpp" />
     <ClInclude Include="Engine\Core\ImGuiCustomColors.h" />
     <ClInclude Include="Engine\Core\ImGuiDrawer.hpp" />

@@ -2,6 +2,7 @@
 
 // Engine Includes.
 #include "AssetDatabase.hpp"
+#include "AssetDatabase_Tracked.hpp"
 #include "BitFlags.hpp"
 #include "ImGuiLog.hpp"
 #include "MorphSystem.h"
@@ -126,7 +127,8 @@ namespace Engine
 #endif // _EDITOR
 
 		AssetDatabase< Texture > asset_database_texture;
-		AssetDatabase< Model   > asset_database_model;
+		AssetDatabase_Tracked< Texture* > asset_database_texture_tracked;
+		AssetDatabase< Model > asset_database_model;
 
 		std::unique_ptr< Renderer > renderer;
 
