@@ -246,7 +246,8 @@ namespace Engine
 		const auto log_group( logger.TemporaryLogGroup( ( "[Post-Processing] " ) ) );
 
 		for( auto& [ post_fx_name, post_fx ] : post_processing_effect_map )
-			RenderFullscreenEffect( *post_fx );
+			if( post_fx->is_enabled )
+				RenderFullscreenEffect( *post_fx );
 
 		RenderFullscreenEffect( tone_mapping );
 	}
