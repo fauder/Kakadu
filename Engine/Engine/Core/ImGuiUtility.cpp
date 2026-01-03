@@ -84,18 +84,19 @@ namespace Engine::ImGuiUtility
     {
         ImGui::PushID( label );
 
+        const float button_size = ImGui::GetFrameHeight();
+
         // Invisible button to capture input:
-        bool clicked = ImGui::InvisibleButton( "##icon_checkbox", ImVec2( 20, 20 ) );
+        bool clicked = ImGui::InvisibleButton( "##icon_checkbox", ImVec2( button_size, button_size ) );
         if( clicked )
             *v = !*v;
 
-        ImVec2 pos            = ImGui::GetItemRectMin();
-        ImDrawList* draw_list = ImGui::GetWindowDrawList();
-        ImU32 col             = ImGui::GetColorU32( *v ? ImGuiCol_Text : ImGuiCol_TextDisabled );
+        ImGui::SetCursorScreenPos( ImGui::GetItemRectMin() );
 
-        // Center icons in the box:
-        const char* icon = *v ? icon_on : icon_off;
-        draw_list->AddText( ImGui::GetFont(), ImGui::GetFontSize(), pos, col, icon );
+        ImGui::PushStyleColor( ImGuiCol_Text,
+                               ImGui::GetColorU32( *v ? ImGuiCol_Text : ImGuiCol_TextDisabled ) );
+        ImGui::TextUnformatted( *v ? icon_on : icon_off );
+        ImGui::PopStyleColor();
 
         ImGui::SameLine();
         ImGui::TextUnformatted( label );
