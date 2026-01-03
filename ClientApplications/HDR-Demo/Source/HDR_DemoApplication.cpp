@@ -155,13 +155,6 @@ void HDR_DemoApplication::Initialize()
 
 /* Camera: */
 	//ResetCamera(); // TODO: Game camera rendering.
-
-	/* This is the earliest place we can MaximizeWindow() at,
-	 * because the Renderer will populate its Intrinsic UBO info only upon AddRenderable( <Renderable with a Shader using said UBO> ). */
-
-	/* No need to Initialize Framebuffer related stuff as maximizing the window will cause them to be (re)initialized in OnFramebufferResizeEvent(). */
-
-	Platform::MaximizeWindow();
 }
 
 void HDR_DemoApplication::Shutdown()
