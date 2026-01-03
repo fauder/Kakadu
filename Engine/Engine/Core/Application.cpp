@@ -51,6 +51,7 @@ namespace Engine
 
 		renderer_description.enable_gamma_correction = gamma_correction_is_enabled;
 		renderer = std::make_unique< Renderer >( std::move( renderer_description ) );
+		renderer->OnFramebufferResize( Platform::GetFramebufferSizeInPixels() );
 
 		scene_camera = std::make_unique< Editor::SceneCamera >(); // Needs to be initialized after the Platform layer is initialized to be able to query framebuffer size for aspect ratio.
 	}
