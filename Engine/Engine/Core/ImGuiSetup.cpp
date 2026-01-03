@@ -72,7 +72,7 @@ namespace Engine::ImGuiSetup
         font_glyph_ranges_builder.BuildRanges( &glyph_ranges );
 
         io.Fonts->Clear();
-        io.Fonts->AddFontFromFileTTF( ENGINE_FONT_PATH_ABSOLUTE( "JetBrainsMono-Regular.ttf" ), 18, nullptr, glyph_ranges.Data );
+        io.Fonts->AddFontFromFileTTF( ENGINE_FONT_PATH_ABSOLUTE( "JetBrainsMono-Regular.ttf" ), base_font_size, nullptr, glyph_ranges.Data );
         /* Merge in icons from icon font(s): */
         io.Fonts->AddFontFromFileTTF( ENGINE_FONT_PATH_ABSOLUTE( "Font-Awesome/" FONT_ICON_FILE_NAME_FAS ), icon_font_size, &icons_config, icons_ranges ); // Merge into JetBrainsMono-Regular (18).
 
