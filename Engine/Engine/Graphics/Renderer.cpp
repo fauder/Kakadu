@@ -549,13 +549,13 @@ namespace Engine
 					/* MSAA Setting: */
 					{
 						const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.ColorAttachment().PixelFormat() ];
-						const int   option_count = 1 + ( int )msaa_supported_sample_counts.size();
+						const int   option_count = ( int )msaa_supported_sample_counts.size();
 
-						int msaa_sample_log_2 = Math::Log2( framebuffer_main_msaa_sample_count );
+						int msaa_sample_log_2 = Math::Log2( framebuffer_main_msaa_sample_count ); // Can be directly used as index.
 
 						const auto sample_count_string = msaa_sample_log_2 == 0
 							? "Off"
-							: "MSAA " + std::to_string( msaa_supported_sample_counts[ msaa_sample_log_2 - 1 ] ) + 'x';
+							: "MSAA " + std::to_string( msaa_supported_sample_counts[ msaa_sample_log_2 ] ) + 'x';
 						if( ImGui::SliderInt( "MSAA", &msaa_sample_log_2, 0, ( int )option_count - 1, sample_count_string.c_str() ) )
 						{
 							framebuffer_main_msaa_sample_count = Math::Pow2( msaa_sample_log_2 );
