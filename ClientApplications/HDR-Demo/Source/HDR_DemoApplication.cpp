@@ -168,11 +168,6 @@ void HDR_DemoApplication::Shutdown()
 {
 }
 
-//void HDR_DemoApplication::Run()
-//{
-//
-//}
-
 void HDR_DemoApplication::Update()
 {
 	Application::Update();

@@ -494,11 +494,6 @@ void SandboxApplication::Shutdown()
 	}
 }
 
-//void SandboxApplication::Run()
-//{
-//
-//}
-
 void SandboxApplication::Update()
 {
 	Application::Update();

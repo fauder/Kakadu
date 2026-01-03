@@ -466,11 +466,6 @@ void BloomDemoApplication::Shutdown()
 	}
 }
 
-//void BloomDemoApplication::Run()
-//{
-//
-//}
-
 void BloomDemoApplication::Update()
 {
 	Application::Update();

@@ -34,8 +34,6 @@ public:
 	virtual void Initialize() override;
 	virtual void Shutdown() override;
 
-	//virtual void Run() override;
-
 	virtual void Update() override;
 
 	virtual void RenderFrame() override;

@@ -36,7 +36,7 @@ namespace Engine
 		virtual void Initialize();
 		virtual void Shutdown();
 
-		virtual void Run();
+		void Run();
 
 		virtual void Update();
 
