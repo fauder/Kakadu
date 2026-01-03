@@ -228,7 +228,7 @@ namespace Engine
 					show_imgui = !show_imgui;
 					if( show_imgui )
 					{
-						renderer->SetFinalPassToUseFinalFramebuffer();
+						renderer->SetFinalPassToUseEditorViewportFramebuffer();
 					}
 					else
 					{
@@ -358,7 +358,7 @@ namespace Engine
 
 		if( ImGui::Begin( viewport_info.imgui_window_name.c_str() ) )
 		{
-			ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
+			ImGui::Image( ( ImTextureID )renderer->EditorViewportFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
 		}
 
 		ImGui::End();
@@ -368,7 +368,7 @@ namespace Engine
 		if( show_gl_logger )
 			gl_logger.Draw( &show_gl_logger );
 
-		scene_camera->RenderImGui( renderer->FinalFramebuffer().Size() );
+		scene_camera->RenderImGui( renderer->EditorViewportFramebuffer().Size() );
 
 		Engine::ImGuiDrawer::Draw( asset_database_texture.Assets(), { 400.0f, 512.0f } );
 
@@ -390,7 +390,7 @@ namespace Engine
 			const Vector2I viewport_available_size( ( int )viewport_info.framebuffer_size.x, ( int )viewport_info.framebuffer_size.y );
 
 			const auto& imgui_io = ImGui::GetIO();
-			if( viewport_available_size != renderer->FinalFramebuffer().Size() &&
+			if( viewport_available_size != renderer->EditorViewportFramebuffer().Size() &&
 				( not imgui_io.WantCaptureMouse || not imgui_io.MouseDown[ 0 ] ) )
 			{
 				OnFramebufferResizeEvent( viewport_available_size.X(), viewport_available_size.Y() );
@@ -416,7 +416,7 @@ namespace Engine
 			}
 
 			/* ImGui::Image() call below is moved to a later point, to make sure the image itself stays the same until ImGui actually renders it. */
-			//ImGui::Image( ( ImTextureID )renderer->FinalFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
+			//ImGui::Image( ( ImTextureID )renderer->EditorViewportFramebuffer().ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 });
 		}
 
 		ImGui::End();
@@ -506,7 +506,7 @@ namespace Engine
 				glSamplerParameteri( nearest_sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			}
 
-			const auto texture_id = renderer->FinalFramebuffer().ColorAttachment().Id().Get();
+			const auto texture_id = renderer->EditorViewportFramebuffer().ColorAttachment().Id().Get();
 			glBindSampler( 0, nearest_sampler );
 			const auto cursor_pos_before_image( ImGui::GetCursorScreenPos() );
 			ImGui::Image( ( ImTextureID )texture_id, ImVec2( window_size, window_size ), uv0, uv1 );

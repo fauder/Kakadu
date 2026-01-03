@@ -107,8 +107,10 @@ namespace Engine
 		void AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to );
 		void RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from );
 
-		void SetFinalPassToUseFinalFramebuffer();
+#ifdef _EDITOR
+		void SetFinalPassToUseEditorViewportFramebuffer();
 		void SetFinalPassToUseDefaultFramebuffer();
+#endif // _EDITOR
 
 		void AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id = RenderQueue::ID{ 0 } );
 		// TODO: Switch to unsigned map of "Component" UUIDs when Component class is implemented.
@@ -217,7 +219,10 @@ namespace Engine
 		Framebuffer* CurrentFramebuffer();
 		Framebuffer& MainFramebuffer();
 		Framebuffer& PostProcessingFramebuffer();
-		Framebuffer& FinalFramebuffer();
+#ifdef _EDITOR
+		Framebuffer& EditorViewportFramebuffer();
+#endif // _EDITOR
+
 		Framebuffer& CustomFramebuffer( const unsigned int framebuffer_index = 0 );
 
 		/*
@@ -369,7 +374,7 @@ namespace Engine
 		Framebuffer framebuffer_shadow_map_light_directional;
 		Framebuffer framebuffer_main;
 		Framebuffer framebuffer_postprocessing;
-		Framebuffer framebuffer_final;
+		Framebuffer framebuffer_editor_viewport;
 
 		std::array< Framebuffer,								FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_array;
 		std::array< std::optional< Framebuffer::Description >,	FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_description_array;

@@ -508,7 +508,7 @@ namespace Engine
 					DrawFramebufferImGui( framebuffer_shadow_map_light_directional );
 					DrawFramebufferImGui( framebuffer_main );
 					DrawFramebufferImGui( framebuffer_postprocessing );
-					DrawFramebufferImGui( framebuffer_final );
+					DrawFramebufferImGui( framebuffer_editor_viewport );
 
 					for( auto& custom_framebuffer : framebuffer_custom_array )
 						DrawCustomFramebufferImGui( custom_framebuffer );
@@ -675,23 +675,23 @@ namespace Engine
 
 	
 		/* Editor: */
-		framebuffer_final = Framebuffer( Framebuffer::Description
-										 {
-											 .name = "Editor",
+		framebuffer_editor_viewport = Framebuffer( Framebuffer::Description
+												   {
+													   .name = "Editor",
 
-											 .width_in_pixels  = new_width_in_pixels,
-											 .height_in_pixels = new_height_in_pixels,
+													   .width_in_pixels  = new_width_in_pixels,
+													   .height_in_pixels = new_height_in_pixels,
 
-											 .magnification_filter = Texture::Filtering::Nearest,
+													   .magnification_filter = Texture::Filtering::Nearest,
 #ifdef _EDITOR
-											 .color_format = ( editor_shading_mode == EditorShadingMode::Shaded || editor_shading_mode == EditorShadingMode::ShadedWireframe )
-												? Texture::Format::SRGBA
-												: Texture::Format::RGBA,
+													   .color_format = ( editor_shading_mode == EditorShadingMode::Shaded || editor_shading_mode == EditorShadingMode::ShadedWireframe )
+														  ? Texture::Format::SRGBA
+														  : Texture::Format::RGBA,
 #else
-											 .color_format = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
+													   .color_format = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
 #endif // _EDITOR
-											 .attachment_bits = Framebuffer::AttachmentType::Color
-										 } );
+													   .attachment_bits = Framebuffer::AttachmentType::Color
+												   } );
 
 		/* Custom Framebuffers: */
 		for( auto index = 0; index < framebuffer_custom_array.size(); index++ )
@@ -922,6 +922,7 @@ namespace Engine
 			CONSOLE_ERROR( "Attempting to add an already existing queue to a pass!" );
 
 	}
+
 	void Renderer::RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from )
 	{
 		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "RemoveQueueFromPass", pass_to_remove_from );
@@ -931,9 +932,9 @@ namespace Engine
 			CONSOLE_ERROR( "Attempting to add a non-existing queue from a pass!" );
 	}
 
-	void Renderer::SetFinalPassToUseFinalFramebuffer()
+	void Renderer::SetFinalPassToUseEditorViewportFramebuffer()
 	{
-		tone_mapping.steps.front().framebuffer_target = &framebuffer_final;
+		tone_mapping.steps.front().framebuffer_target = &framebuffer_editor_viewport;
 	}
 
 	void Renderer::SetFinalPassToUseDefaultFramebuffer()
@@ -1200,10 +1201,12 @@ namespace Engine
 		return framebuffer_postprocessing;
 	}
 
-	Framebuffer& Renderer::FinalFramebuffer()
+#ifdef _EDITOR
+	Framebuffer& Renderer::EditorViewportFramebuffer()
 	{
-		return framebuffer_final;
+		return framebuffer_editor_viewport;
 	}
+#endif // _EDITOR
 
 	Framebuffer& Renderer::CustomFramebuffer( const unsigned int framebuffer_index )
 	{
@@ -1660,7 +1663,7 @@ namespace Engine
 			.name = "Tonemapping",
 			.steps = { 1, FullscreenEffect::Step
 			{
-				.framebuffer_target = &framebuffer_final, // This is not set in stone; Can be configured via the Renderer API by the client app if desired.
+				.framebuffer_target = &framebuffer_editor_viewport,
 				.texture_input      = &framebuffer_postprocessing.ColorAttachment()
 			} },
 			.material = Material( "[Renderer] Tonemapping", tone_mapping_shader ),

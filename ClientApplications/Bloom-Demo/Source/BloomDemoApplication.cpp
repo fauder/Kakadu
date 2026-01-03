@@ -836,7 +836,7 @@ void BloomDemoApplication::OnFramebufferResizeEvent( const int width_new_pixels,
 {
 	/* Do nothing on minimize: */
 	if( width_new_pixels == 0 || height_new_pixels == 0 || 
-		( renderer->FinalFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
+		( renderer->EditorViewportFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
 		return;
 
 	renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
