@@ -238,7 +238,10 @@ namespace Engine
 
 		// TODO: Find a prefix emoji for post-fx.
 
-		RenderFullscreenEffect( msaa_resolve );
+		if( msaa_resolve.is_enabled )
+			RenderFullscreenEffect( msaa_resolve );
+		else
+			Framebuffer::Blit( framebuffer_main, framebuffer_postprocessing );
 
 		const auto log_group( logger.TemporaryLogGroup( ( "[Post-Processing] " ) ) );
 
@@ -1233,9 +1236,7 @@ namespace Engine
 											.msaa            = new_msaa
 										} );
 
-		// TODO: Toggle on/off based on sample count > 1.
-
-		if( new_sample_count > 1 )
+		if( msaa_resolve.is_enabled = new_sample_count > 1 )
 		{
 			char buffer[ 48 ];
 			snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
