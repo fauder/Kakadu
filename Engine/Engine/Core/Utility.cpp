@@ -204,7 +204,7 @@ namespace Engine
 					return std::nullopt;
 				else
 				{
-					source_to_advance.remove_prefix( preceding_token_pos + 1 );
+					source_to_advance.remove_prefix( preceding_token_pos + prefix_to_skip.size() );
 					return ParseTokenAndAdvance( source_to_advance, opening_delimiters, closing_delimiters );
 				}
 			}
