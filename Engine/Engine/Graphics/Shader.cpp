@@ -540,9 +540,9 @@ namespace Engine
 		std::string_view shader_source_view( shader_source );
 
 		/* Parse declarations via "#pragma feature <feature_name>" syntax: */
-		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefixes( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefixes( shader_source_view, { "#pragma", "feature" }, " \t\r\n", " \t\r\n" ) )
 		{
 			features.try_emplace( std::string( *maybe_next_token ), std::nullopt, false );
 		}
@@ -730,9 +730,9 @@ namespace Engine
 
 		std::string_view source_view( shader_source );
 
-		for( auto maybe_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" );
+		for( auto maybe_token = Utility::String::ParseTokenAndAdvance_SkipPrefixes( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" );
 			 maybe_token.has_value();
-			 maybe_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" ) )
+			 maybe_token = Utility::String::ParseTokenAndAdvance_SkipPrefixes( source_view, { "layout", "(", "std140", ")", "uniform" }, " \t", " \t\n" ) )
 		{
 			/* This is a valid shader semantically, so no need for error checking below. */
 			const std::string uniform_block_name( *maybe_token );
@@ -947,9 +947,9 @@ namespace Engine
 
 		std::string_view shader_source_view( shader_source );
 
-		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, { "layout", "location", "=" } );
+		for( auto maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefixes( shader_source_view, { "layout", "location", "=" } );
 			 maybe_next_token.has_value();
-			 maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, { "layout", "location", "=" } ) )
+			 maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefixes( shader_source_view, { "layout", "location", "=" } ) )
 		{
 			const std::string_view location_sv( *maybe_next_token );
 			unsigned int location;

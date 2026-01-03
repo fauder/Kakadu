@@ -35,10 +35,10 @@ namespace Engine
 																			   const std::string_view prefix_to_skip,
 																			   const std::string_view opening_delimiters = " \t",
 																			   const std::string_view closing_delimiters = " \t" );
-			std::optional< std::string_view > ParseTokenAndAdvance_SkipPrefix( std::string_view& source_to_advance,
-																			   std::initializer_list< const std::string_view > prefixes_to_skip,
-																			   const std::string_view opening_delimiters = " \t",
-																			   const std::string_view closing_delimiters = " \t" );
+			std::optional< std::string_view > ParseTokenAndAdvance_SkipPrefixes( std::string_view& source_to_advance,
+																				 std::initializer_list< const std::string_view > prefixes_to_skip,
+																				 const std::string_view opening_delimiters = " \t",
+																				 const std::string_view closing_delimiters = " \t" );
 			std::vector< std::string_view > ParseAndSplitLine_SkipPrefix( std::string_view& source,
 																		  const std::string_view prefix_to_skip,
 																		  const std::string_view opening_delimiters = " \t",

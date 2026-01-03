@@ -209,10 +209,10 @@ namespace Engine
 				}
 			}
 
-			std::optional< std::string_view > ParseTokenAndAdvance_SkipPrefix( std::string_view& source_to_advance,
-																			   std::initializer_list< const std::string_view > prefixes_to_skip,
-																			   const std::string_view opening_delimiters,
-																			   const std::string_view closing_delimiters )
+			std::optional< std::string_view > ParseTokenAndAdvance_SkipPrefixes( std::string_view& source_to_advance,
+																				 std::initializer_list< const std::string_view > prefixes_to_skip,
+																				 const std::string_view opening_delimiters,
+																				 const std::string_view closing_delimiters )
 			{
 				std::size_t preceding_token_pos = 0;
 				std::size_t last_preceding_token_size = 0;
