@@ -295,14 +295,6 @@ void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, con
 
 void HDR_DemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 {
-	/* Do nothing on minimize: */
-	if( width_new_pixels == 0 || height_new_pixels == 0 ||
-		( renderer->EditorViewportFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
-		return;
-
-	renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
-
-	Application::OnFramebufferResizeEvent( width_new_pixels, height_new_pixels );
 }
 
 void HDR_DemoApplication::ResetInstanceData()

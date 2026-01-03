@@ -263,10 +263,6 @@ namespace Engine
 
 	void Application::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 	{
-#ifdef _EDITOR
-		scene_camera->RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
-#endif // _EDITOR
-
 	}
 
 	void Application::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
@@ -320,6 +316,17 @@ namespace Engine
 
 	void Application::OnFramebufferResizeEventInternal( const int width_new_pixels, const int height_new_pixels )
 	{
+		/* Do nothing on minimize: */
+		if( width_new_pixels == 0 || height_new_pixels == 0 ||
+			( renderer->EditorViewportFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
+			return;
+
+		renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
+
+#ifdef _EDITOR
+		scene_camera->RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
+#endif // _EDITOR
+
 		OnFramebufferResizeEvent( width_new_pixels, height_new_pixels );
 	}
 

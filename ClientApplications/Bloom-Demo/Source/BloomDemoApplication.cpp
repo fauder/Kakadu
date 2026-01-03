@@ -834,18 +834,9 @@ void BloomDemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, co
 
 void BloomDemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 {
-	/* Do nothing on minimize: */
-	if( width_new_pixels == 0 || height_new_pixels == 0 || 
-		( renderer->EditorViewportFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
-		return;
-
-	renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
-
 	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
 
 	mirror_quad_material.SetTexture( "uniform_tex", &renderer->CustomFramebuffer( 0 ).ColorAttachment() );
-
-	Application::OnFramebufferResizeEvent( width_new_pixels, height_new_pixels );
 }
 
 void BloomDemoApplication::ResetLightingData()
