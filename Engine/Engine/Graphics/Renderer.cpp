@@ -392,13 +392,20 @@ namespace Engine
 						ImGui::TableHeadersRow();
 						ImGui::TableNextRow();
 
-						auto DrawEffect = []( const char* effect_name, FullscreenEffect& effect )
+						auto DrawEffect = [ &style ]( const char* effect_name, FullscreenEffect& effect, bool is_always_enabled = false )
 						{
 							ImGui::TableNextColumn();
 
 							ImGui::PushID( effect_name );
 
-							ImGuiUtility::EyeCheckbox( "", &effect.is_enabled );
+							if( not is_always_enabled )
+								ImGuiUtility::EyeCheckbox( "", &effect.is_enabled );
+							else
+							{
+								// Reserve the exact same horizontal space as an eye checkbox:
+								ImGui::Dummy( ImVec2( ImGui::GetFrameHeight() + style.ItemInnerSpacing.x,
+													  ImGui::GetFrameHeight() ) );
+							}
 
 							if( not effect.is_enabled )
 								ImGuiUtility::BeginDisabledButInteractable();
@@ -434,7 +441,7 @@ namespace Engine
 						for( auto& [ effect_name, effect ] : post_processing_effect_map )
 							DrawEffect( effect_name.c_str(), *effect );
 
-						DrawEffect( tone_mapping.name.c_str(), tone_mapping );
+						DrawEffect( tone_mapping.name.c_str(), tone_mapping, true );
 
 						ImGui::EndTable();
 					}
