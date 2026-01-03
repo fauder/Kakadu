@@ -276,7 +276,7 @@ namespace Engine
 				{
 					ImGui::SeparatorText( ICON_FA_FLAG_CHECKERED " Passes & " ICON_FA_BARS " Queues" );
 
-					if( ImGui::BeginTable( "Passes & Queues", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
+					if( ImGui::BeginTable( "Render Pipeline", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 					{
 						ImGui::TableSetupColumn( "Name" );
 						ImGui::TableSetupColumn( ICON_FA_OBJECT_GROUP " Target Framebuffer" );
@@ -384,7 +384,7 @@ namespace Engine
 
 					ImGui::SeparatorText( ICON_FA_QUESTION " Fullscreen Effects" );
 
-					if( ImGui::BeginTable( ICON_FA_QUESTION "Fullscreen Effects", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
+					if( ImGui::BeginTable( "Render Pipeline", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 					{
 						ImGui::TableSetupColumn( "Name" );
 						ImGui::TableSetupColumn( ICON_FA_OBJECT_GROUP " Target Framebuffer" );
