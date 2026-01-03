@@ -214,7 +214,7 @@ namespace Engine
 		// TODO: Make these private after some time if they are not used (as pass API makes explicit Framebuffer operations redundant).
 
 		void SetCurrentFramebuffer( Framebuffer* framebuffer );
-		void ResetToDefaultFramebuffer( const Framebuffer::BindPoint bind_point = Framebuffer::BindPoint::Both );
+		void ResetToDefaultFramebuffer();
 		bool DefaultFramebufferIsBound() const;
 		Framebuffer* CurrentFramebuffer();
 		Framebuffer& MainFramebuffer();

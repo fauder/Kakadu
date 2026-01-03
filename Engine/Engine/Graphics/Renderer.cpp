@@ -1177,7 +1177,7 @@ namespace Engine
 			glViewport( 0, 0, framebuffer->Width(), framebuffer->Height() );
 	}
 
-	void Renderer::ResetToDefaultFramebuffer( const Framebuffer::BindPoint bind_point )
+	void Renderer::ResetToDefaultFramebuffer()
 	{
 		framebuffer_current = &framebuffer_default;
 		framebuffer_current->Bind();
