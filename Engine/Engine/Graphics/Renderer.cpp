@@ -565,9 +565,7 @@ namespace Engine
 							: "MSAA " + std::to_string( msaa_supported_sample_counts[ msaa_sample_log_2 ] ) + 'x';
 						if( ImGui::SliderInt( "MSAA", &msaa_sample_log_2, 0, ( int )option_count - 1, sample_count_string.c_str() ) )
 						{
-							framebuffer_main_msaa_sample_count = Math::Pow2( msaa_sample_log_2 );
-
-							SetMSAASampleCount( framebuffer_main_msaa_sample_count );
+							SetMSAASampleCount( Math::Pow2( msaa_sample_log_2 ) );
 						}
 					}
 
@@ -1216,6 +1214,9 @@ namespace Engine
 	/* Sets the sample count for main framebuffer MSAA. */
 	MSAA Renderer::SetMSAASampleCount( const std::uint8_t new_sample_count )
 	{
+		if( new_sample_count == framebuffer_main_msaa_sample_count )
+			return MSAA( framebuffer_main_msaa_sample_count );
+
 		framebuffer_main_msaa_sample_count = new_sample_count;
 
 		MSAA new_msaa = MSAA( framebuffer_main_msaa_sample_count );
@@ -1235,7 +1236,14 @@ namespace Engine
 		// TODO: Toggle on/off based on sample count > 1.
 
 		if( new_sample_count > 1 )
+		{
+			char buffer[ 48 ];
+			snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
+			msaa_resolve_shader = BuiltinShaders::Get( buffer );
+
+			msaa_resolve.material.SetShader( msaa_resolve_shader );
 			msaa_resolve.material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
+		}
 
 		return new_msaa;
 	}
