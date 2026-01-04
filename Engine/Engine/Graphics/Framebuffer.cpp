@@ -14,7 +14,6 @@ namespace Engine
 	Framebuffer::Framebuffer()
 		:
 		id( {} ),
-		bind_point( BindPoint::Invalid ),
 		size( ZERO_INITIALIZATION ),
 		clear_color( Color4::Black() ),
 		clear_depth_value( 1.0f ),
@@ -26,7 +25,6 @@ namespace Engine
 	Framebuffer::Framebuffer( const Description& description )
 		:
 		id( {} ),
-		bind_point( description.bind_point ),
 		size( description.width_in_pixels, description.height_in_pixels ),
 		msaa( description.msaa ),
 		clear_color( Color4::Black() ),
@@ -41,7 +39,6 @@ namespace Engine
 	Framebuffer::Framebuffer( Description&& description )
 		:
 		id( {} ),
-		bind_point( description.bind_point ),
 		size( description.width_in_pixels, description.height_in_pixels ),
 		msaa( description.msaa ),
 		clear_color( Color4::Black() ),
@@ -56,7 +53,6 @@ namespace Engine
 	Framebuffer::Framebuffer( DefaultFramebuferConstructorTag )
 		:
 		id( 0 ),
-		bind_point( BindPoint::Both ),
 		size( Platform::GetFramebufferSizeInPixels() ),
 		name( "Default Framebuffer" ),
 		clear_targets( ClearTarget::ColorBuffer ),
@@ -64,6 +60,8 @@ namespace Engine
 		clear_depth_value( 1.0f ),
 		clear_stencil_value( 0 )
 	{
+		ActivateForReadWrite();
+
 		/* Query attachments: */
 		{
 			int attachment;
@@ -93,7 +91,6 @@ namespace Engine
 	Framebuffer::Framebuffer( Framebuffer&& donor )
 		:
 		id( std::exchange( donor.id, {} ) ),
-		bind_point( std::exchange( donor.bind_point, BindPoint::Invalid ) ),
 		size( std::exchange( donor.size, ZERO_INITIALIZATION ) ),
 		msaa( std::exchange( donor.msaa, {} ) ),
 		clear_targets( std::exchange( donor.clear_targets, {} ) ),
@@ -114,7 +111,6 @@ namespace Engine
 		Destroy();
 
 		id                       = std::exchange( donor.id,							{} );
-		bind_point               = std::exchange( donor.bind_point,					BindPoint::Invalid );
 		size                     = std::exchange( donor.size,						ZERO_INITIALIZATION );
 		msaa                     = std::exchange( donor.msaa,						{} );
 		clear_targets            = std::exchange( donor.clear_targets,				{} );
@@ -138,7 +134,7 @@ namespace Engine
 
 	void Framebuffer::Resize( const int new_width_in_pixels, const int new_height_in_pixels )
 	{
-		Bind();
+		ActivateForWrite();
 
 		description.width_in_pixels  = new_width_in_pixels;
 		description.height_in_pixels = new_height_in_pixels;
@@ -156,8 +152,6 @@ namespace Engine
 #endif // _EDITOR
 
 		CreateAttachments();
-
-		Unbind();
 	}
 
 	void Framebuffer::SetName( const std::string& new_name )
@@ -165,21 +159,10 @@ namespace Engine
 		name = new_name;
 	}
 
-	void Framebuffer::Blit( const Framebuffer& source, const Framebuffer& destination, const Texture::Filtering filtering )
-	{
-		ASSERT_EDITOR_ONLY( filtering == Texture::Filtering::Nearest || filtering == Texture::Filtering::Linear );
-
-		glBindFramebuffer( GL_READ_FRAMEBUFFER, source.Id().Get() );
-		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, destination.Id().Get() );
-		glBlitFramebuffer( 0, 0, source.Width(), source.Height(),
-						   0, 0, destination.Width(), destination.Height(),
-						   GL_COLOR_BUFFER_BIT, ( int )filtering );
-	}
-
 	void Framebuffer::Create()
 	{
 		glGenFramebuffers( 1, id.Address() );
-		Bind();
+		ActivateForWrite();
 
 #ifdef _EDITOR
 		if( not name.empty() )
@@ -203,8 +186,6 @@ namespace Engine
 		ASSERT_DEBUG_ONLY( glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
 		if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
 			throw std::runtime_error( "ERROR::FRAMEBUFFER::Framebuffer is not complete!" );
-
-		Unbind();
 	}
 
 	void Framebuffer::CreateAttachments()
@@ -279,7 +260,7 @@ namespace Engine
 		}
 
 		constexpr int gl_spec_required_level = 0;
-		glFramebufferTexture2D( ( GLenum )bind_point,
+		glFramebufferTexture2D( ( GLenum )ActivationMode::Write,
 								attachment_type_enum,
 								msaa.IsEnabled()
 									? GL_TEXTURE_2D_MULTISAMPLE
@@ -374,28 +355,33 @@ namespace Engine
 		} );
 	}
 
-	void Framebuffer::SetClearColor()
+	void Framebuffer::SetClearColor() const
 	{
 		glClearColor( clear_color.R(), clear_color.G(), clear_color.B(), clear_color.A() );
 	}
 
-	void Framebuffer::SetClearDepthValue()
+	void Framebuffer::SetClearDepthValue() const
 	{
 		glClearDepthf( clear_depth_value );
 	}
 
-	void Framebuffer::SetClearStencilValue()
+	void Framebuffer::SetClearStencilValue() const
 	{
 		glClearStencil( clear_stencil_value );
 	}
 
-	void Framebuffer::Bind() const
+	void Framebuffer::ActivateForReadWrite() const
 	{
-		glBindFramebuffer( ( GLenum )bind_point, id.Get() );
+		glBindFramebuffer( ( GLenum )ActivationMode::Both, id.Get() );
 	}
 
-	void Framebuffer::Unbind() const
+	void Framebuffer::ActivateForRead() const
 	{
-		glBindFramebuffer( ( GLenum )bind_point, 0 );
+		glBindFramebuffer( ( GLenum )ActivationMode::Read, id.Get() );
+	}
+
+	void Framebuffer::ActivateForWrite() const
+	{
+		glBindFramebuffer( ( GLenum )ActivationMode::Write, id.Get() );
 	}
 }

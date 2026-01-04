@@ -38,7 +38,8 @@ namespace Engine
 		:
 		logger( ServiceLocator< GLLogger >::Get() ),
 		framebuffer_default( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR ),
-		framebuffer_current( &framebuffer_default ),
+		framebuffer_current_source( &framebuffer_default ),
+		framebuffer_current_destination( &framebuffer_default ),
 		framebuffer_main_msaa_sample_count( description.main_framebuffer_msaa_sample_count ),
 		framebuffer_main_color_format( description.main_framebuffer_color_format ),
 		lights_point_active_count( 0 ),
@@ -238,10 +239,10 @@ namespace Engine
 
 		// TODO: Find a prefix emoji for post-fx.
 
-		if( msaa_resolve.is_enabled )
+		if( msaa_resolve.is_enabled && framebuffer_main_msaa_sample_count > 1 )
 			RenderFullscreenEffect( msaa_resolve );
 		else
-			Framebuffer::Blit( framebuffer_main, framebuffer_postprocessing );
+			Blit( framebuffer_main, framebuffer_postprocessing );
 
 		const auto log_group( logger.TemporaryLogGroup( ( "[Post-Processing] " ) ) );
 
@@ -440,7 +441,8 @@ namespace Engine
 								ImGuiUtility::EndDisabledButInteractable();
 						};
 
-						DrawEffect( msaa_resolve.name.c_str(), msaa_resolve );
+						if( framebuffer_main_msaa_sample_count > 1 )
+							DrawEffect( msaa_resolve.name.c_str(), msaa_resolve );
 
 						for( auto& [ effect_name, effect ] : post_processing_effect_map )
 							DrawEffect( effect_name.c_str(), *effect );
@@ -704,7 +706,9 @@ namespace Engine
 				auto& custom_framebuffer = framebuffer_custom_array[ index ];
 				if( description->width_in_pixels == 0 || description->height_in_pixels == 0 )
 				{
-					auto copy             = *description;
+					
+					Framebuffer::Description copy = *description;
+
 					copy.width_in_pixels  = new_width_in_pixels;
 					copy.height_in_pixels = new_height_in_pixels;
 
@@ -1164,14 +1168,14 @@ namespace Engine
 		glBlendEquation( ( GLenum )function );
 	}
 
-	void Renderer::SetCurrentFramebuffer( Framebuffer* framebuffer )
+	void Renderer::SetDestinationFramebuffer( Framebuffer* framebuffer )
 	{
 		ASSERT_DEBUG_ONLY( framebuffer );
 
-		const Vector2I old_framebuffer_size = framebuffer_current->Size();
+		const Vector2I old_framebuffer_size = framebuffer_current_destination->Size();
 		
-		framebuffer_current = framebuffer;
-		framebuffer_current->Bind();
+		framebuffer_current_destination = framebuffer;
+		framebuffer_current_destination->ActivateForWrite();
 
 		if( framebuffer->Size() != old_framebuffer_size )
 			glViewport( 0, 0, framebuffer->Width(), framebuffer->Height() );
@@ -1179,18 +1183,18 @@ namespace Engine
 
 	void Renderer::ResetToDefaultFramebuffer()
 	{
-		framebuffer_current = &framebuffer_default;
-		framebuffer_current->Bind();
+		framebuffer_current_destination = &framebuffer_default;
+		framebuffer_current_destination->ActivateForWrite();
 	}
 
 	bool Renderer::DefaultFramebufferIsBound() const
 	{
-		return framebuffer_current == &framebuffer_default;
+		return framebuffer_current_destination == &framebuffer_default;
 	}
 
-	Framebuffer* Renderer::CurrentFramebuffer()
+	Framebuffer* Renderer::CurrentDestinationFramebuffer()
 	{
-		return framebuffer_current;
+		return framebuffer_current_destination;
 	}
 
 	Framebuffer& Renderer::MainFramebuffer()
@@ -1208,11 +1212,30 @@ namespace Engine
 	{
 		return framebuffer_editor_viewport;
 	}
+
+	Framebuffer& Renderer::FinalFramebuffer()
+	{
+		return *tone_mapping.steps.front().framebuffer_target;
+	}
 #endif // _EDITOR
 
 	Framebuffer& Renderer::CustomFramebuffer( const unsigned int framebuffer_index )
 	{
 		return framebuffer_custom_array[ framebuffer_index ];
+	}
+
+	void Renderer::Blit( Framebuffer& source, Framebuffer& destination, const Texture::Filtering filtering )
+	{
+		ASSERT_EDITOR_ONLY( filtering == Texture::Filtering::Nearest || filtering == Texture::Filtering::Linear );
+
+		framebuffer_current_source      = &source;
+		framebuffer_current_destination = &destination;
+
+		framebuffer_current_source->ActivateForRead();
+		framebuffer_current_destination->ActivateForWrite();
+		glBlitFramebuffer( 0, 0, source.Width(), source.Height(),
+						   0, 0, destination.Width(), destination.Height(),
+						   GL_COLOR_BUFFER_BIT, ( int )filtering );
 	}
 
 	/* Sets the sample count for main framebuffer MSAA. */
@@ -1237,7 +1260,7 @@ namespace Engine
 											.msaa            = new_msaa
 										} );
 
-		if( msaa_resolve.is_enabled = new_sample_count > 1 )
+		if( new_sample_count > 1 )
 		{
 			char buffer[ 48 ];
 			snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
@@ -1428,7 +1451,7 @@ namespace Engine
 
 			for( auto& step : effect.steps )
 			{
-				SetCurrentFramebuffer( step.framebuffer_target );
+				SetDestinationFramebuffer( step.framebuffer_target );
 
 				effect.material.SetTexture( "uniform_tex", step.texture_input );
 				effect.material.UploadUniforms();
@@ -1693,8 +1716,6 @@ namespace Engine
 			}
 		};
 
-		// TODO: Handle no tonemapping case.
-
 		tone_mapping.material.Set( "uniform_exposure_ev", 1.0f );
 		tone_mapping.material.Set( "uniform_bloom_intensity", 0.004f );
 	}
@@ -1807,7 +1828,7 @@ namespace Engine
 
 		bloom_downsampling.execution_routine = [ & ]( Renderer& renderer )
 		{
-			Framebuffer::Blit( framebuffer_postprocessing, bloom_downsampling.framebuffers.front() );
+			Blit( framebuffer_postprocessing, bloom_downsampling.framebuffers.front() );
 
 			bloom_downsampling.material.Bind();
 
@@ -1815,7 +1836,7 @@ namespace Engine
 
 			for( auto& downsample_step : bloom_downsampling.steps )
 			{
-				renderer.SetCurrentFramebuffer( downsample_step.framebuffer_target );
+				renderer.SetDestinationFramebuffer( downsample_step.framebuffer_target );
 
 				bloom_downsampling.material.SetTexture( "uniform_tex_source", downsample_step.texture_input );
 				bloom_downsampling.material.Set( "uniform_source_resolution", downsample_step.texture_input->Size() );
@@ -1833,7 +1854,7 @@ namespace Engine
 
 			for( auto& upsample_step : bloom_upsampling.steps )
 			{
-				SetCurrentFramebuffer( upsample_step.framebuffer_target );
+				SetDestinationFramebuffer( upsample_step.framebuffer_target );
 
 				bloom_upsampling.material.SetTexture( "uniform_tex_source", upsample_step.texture_input );
 				bloom_upsampling.material.UploadUniforms();
@@ -1852,7 +1873,6 @@ namespace Engine
 	}
 
 #ifdef _EDITOR
-	// TODO: Make it work without MSAA as well.
 	void Renderer::RenderOtherEditorShadingModes()
 	{
 		ASSERT_EDITOR_ONLY( editor_shading_mode != EditorShadingMode::Shaded );
@@ -1995,9 +2015,11 @@ namespace Engine
 			}
 		}
 
-		RenderFullscreenEffect( msaa_resolve );
+		if( msaa_resolve.is_enabled && framebuffer_main_msaa_sample_count > 1 )
+			RenderFullscreenEffect( msaa_resolve );
 
-		// No post-processing when non-shaded editor shading modes are active.
+		if( editor_shading_mode != EditorShadingMode::ShadedWireframe )
+			Blit( *framebuffer_current_destination, FinalFramebuffer() );
 	}
 #endif // _EDITOR
 
@@ -2045,10 +2067,10 @@ namespace Engine
 	{
 		ASSERT_DEBUG_ONLY( target_framebuffer );
 
-		if( framebuffer_current != target_framebuffer )
-			SetCurrentFramebuffer( target_framebuffer );
+		if( framebuffer_current_destination != target_framebuffer )
+			SetDestinationFramebuffer( target_framebuffer );
 
-		if( const auto framebuffer_uses_srgb_encoding = framebuffer_current->Is_sRGB();
+		if( const auto framebuffer_uses_srgb_encoding = framebuffer_current_destination->Is_sRGB();
 			framebuffer_uses_srgb_encoding != framebuffer_sRGB_encoding_is_enabled )
 		{
 			if( framebuffer_uses_srgb_encoding )
@@ -2060,7 +2082,7 @@ namespace Engine
 		SetRenderState( render_state_to_set );
 
 		if( clear_framebuffer )
-			framebuffer_current->Clear();
+			framebuffer_current_destination->Clear();
 	}
 
 	void Renderer::SortRenderablesInQueue( const Vector3& camera_position, std::vector< Renderable* >& renderable_array_to_sort, const SortingMode sorting_mode )

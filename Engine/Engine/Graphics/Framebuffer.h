@@ -22,11 +22,11 @@ namespace Engine
 	public:
 		using ID = ID< Framebuffer >;
 
-		enum class BindPoint
+		enum class ActivationMode
 		{
 			Invalid = 0,
 			Both    = GL_FRAMEBUFFER,
-			Draw    = GL_DRAW_FRAMEBUFFER,
+			Write   = GL_DRAW_FRAMEBUFFER,
 			Read    = GL_READ_FRAMEBUFFER
 		};
 
@@ -53,12 +53,12 @@ namespace Engine
 			Texture::Wrapping  wrap_u               = Texture::Wrapping::ClampToEdge;
 			Texture::Wrapping  wrap_v               = Texture::Wrapping::ClampToEdge;
 			Color4 border_color                     = Color4::Black();
-			BindPoint bind_point                    = BindPoint::Both;
 
 			Texture::Format color_format            = Texture::Format::RGBA;
 			BitFlags< AttachmentType > attachment_bits;
 			MSAA msaa; // No MSAA by default.
-			// 1 byte of padding.
+
+			// 5 bytes of padding.
 		};
 
 	public:
@@ -113,10 +113,11 @@ namespace Engine
 		Framebuffer( DefaultFramebuferConstructorTag );
 
 	/* Usage: */
-		void Bind() const;
-		void Unbind() const;
+		void ActivateForReadWrite() const;
+		void ActivateForRead() const;
+		void ActivateForWrite() const;
+
 		void SetName( const std::string& new_name );
-		static void Blit( const Framebuffer& source, const Framebuffer& destination, const Texture::Filtering filtering = Texture::Filtering::Nearest );
 
 		void Create();
 		void CreateAttachments();
@@ -146,13 +147,12 @@ namespace Engine
 
 	/* Clearing: */
 
-		void SetClearColor();
-		void SetClearDepthValue();
-		void SetClearStencilValue();
+		void SetClearColor() const;
+		void SetClearDepthValue() const;
+		void SetClearStencilValue() const;
 
 	private:
 		ID id;
-		BindPoint bind_point;
 
 		Vector2I size;
 
@@ -163,6 +163,8 @@ namespace Engine
 		Color4 clear_color;
 		float clear_depth_value;
 		int clear_stencil_value;
+
+		// 4 bytes of padding.
 
 		std::string name;
 

@@ -213,17 +213,20 @@ namespace Engine
 
 		// TODO: Make these private after some time if they are not used (as pass API makes explicit Framebuffer operations redundant).
 
-		void SetCurrentFramebuffer( Framebuffer* framebuffer );
+		void SetDestinationFramebuffer( Framebuffer* framebuffer );
 		void ResetToDefaultFramebuffer();
 		bool DefaultFramebufferIsBound() const;
-		Framebuffer* CurrentFramebuffer();
+		Framebuffer* CurrentDestinationFramebuffer();
 		Framebuffer& MainFramebuffer();
 		Framebuffer& PostProcessingFramebuffer();
 #ifdef _EDITOR
 		Framebuffer& EditorViewportFramebuffer();
 #endif // _EDITOR
+		Framebuffer& FinalFramebuffer();
 
 		Framebuffer& CustomFramebuffer( const unsigned int framebuffer_index = 0 );
+
+		void Blit( Framebuffer& source, Framebuffer& destination, const Texture::Filtering filtering = Texture::Filtering::Nearest );
 
 		/*
 		 * MSAA:
@@ -369,7 +372,8 @@ namespace Engine
 		 */
 
 		Framebuffer framebuffer_default;
-		Framebuffer* framebuffer_current;
+		Framebuffer* framebuffer_current_source;	  // Corresponds to READ  target of a GL blit operation.
+		Framebuffer* framebuffer_current_destination; // Corresponds to WRITE target of a GL blit operation.
 
 		Framebuffer framebuffer_shadow_map_light_directional;
 		Framebuffer framebuffer_main;
