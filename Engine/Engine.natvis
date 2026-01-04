@@ -384,10 +384,15 @@
 
   <!-- Framebuffer -->
   <Type Name="Engine::Framebuffer">
+    <Intrinsic Name="Is_Default_FB" Expression="id.id == 0"></Intrinsic>
+    <Intrinsic Name="HasColorAttachment" Expression="color_attachment.id.id > 0"></Intrinsic>
+    <Intrinsic Name="HasDepthStencilAttachment" Expression="depth_stencil_attachment.id.id > 0"></Intrinsic>
+    <Intrinsic Name="HasDepthAttachment" Expression="depth_attachment.id.id > 0"></Intrinsic>
+    <Intrinsic Name="HasStencilAttachment" Expression="stencil_attachment.id.id > 0"></Intrinsic>
     <Intrinsic Name="Has_MSAA" Expression="msaa.sample_count > 1"></Intrinsic>
-    <Intrinsic Name="Is_sRGB" Expression="color_attachment &amp;&amp; ( color_attachment->format == Engine::Texture::Format::SRGB || color_attachment->format == Engine::Texture::Format::SRGBA )"></Intrinsic>
-    <Intrinsic Name="Is_HDR" Expression="color_attachment &amp;&amp; ( color_attachment->format == Engine::Texture::Format::RGBA_16F || 
-      color_attachment->format == Engine::Texture::Format::RGBA_32F || color_attachment->format == Engine::Texture::Format::R11G11B10F )"></Intrinsic>
+    <Intrinsic Name="Is_sRGB" Expression="Is_Default_FB &amp;&amp; HasColorAttachment &amp;&amp; ( color_attachment.format == Engine::Texture::Format::SRGB || color_attachment.format == Engine::Texture::Format::SRGBA )"></Intrinsic>
+    <Intrinsic Name="Is_HDR" Expression="HasColorAttachment &amp;&amp; ( color_attachment.format == Engine::Texture::Format::RGBA_16F || 
+      color_attachment.format == Engine::Texture::Format::RGBA_32F || color_attachment.format == Engine::Texture::Format::R11G11B10F )"></Intrinsic>
 
     <!-- sRGB, HDR, and MSAA -->
     <DisplayString Condition="Is_sRGB() &amp;&amp; Is_HDR() &amp;&amp; Has_MSAA()">
@@ -436,11 +441,10 @@
       <Item Name="MSAA Samples" Condition="Has_MSAA()">(int)msaa.sample_count</Item>
       <Item Name="sRGB">Is_sRGB()</Item>
       <Item Name="HDR">Is_HDR()</Item>
-      <Item Name="Read/Draw">bind_point</Item>
-      <Item Name="Color"                Condition="color_attachment">*color_attachment</Item>
-      <Item Name="Depth Stencil Combo"  Condition="depth_stencil_attachment">*depth_stencil_attachment</Item>
-      <Item Name="Depth"                Condition="depth_attachment">*depth_attachment</Item>
-      <Item Name="Stencil"              Condition="stencil_attachment">*stencil_attachment</Item>
+      <Item Name="Color Attachment"          Condition="HasColorAttachment()">color_attachment</Item>
+      <Item Name="Depth Stencil Attachment"  Condition="HasDepthStencilAttachment()">depth_stencil_attachment</Item>
+      <Item Name="Depth Attachment"          Condition="HasDepthAttachment()">depth_attachment</Item>
+      <Item Name="Stencil Attachment"        Condition="HasStencilAttachment()">stencil_attachment</Item>
     </Expand>
   </Type>
 </AutoVisualizer>
