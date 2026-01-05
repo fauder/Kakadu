@@ -25,7 +25,7 @@ namespace Engine::Lighting
 		Color3_Padded ambient, diffuse, specular;
 		Vector3_AndScalar position_view_space_and_cos_cutoff_angle_inner, direction_view_space_and_cos_cutoff_angle_outer; // Expected to be in view space when passed to shaders.
 
-	/* End of GLSL equivalence. C++ only extras: */
+	/* End of GLSL correspondance. C++ only extras: */
 
 		Degrees cutoff_angle_inner, cutoff_angle_outer; // Easier to work with angles on the cpu/editor side.
 	};

@@ -14,7 +14,6 @@
 #include "Engine/Graphics/BuiltinShaders.h"
 #include "Engine/Graphics/BuiltinTextures.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
-#include "Engine/Graphics/Primitive/Primitive_Cube_FullScreen.h"
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad_FullScreen.h"
@@ -98,21 +97,6 @@ void SandboxApplication::Initialize()
 /* Textures: */
 	auto& texture_database = Engine::ServiceLocator< Engine::AssetDatabase< Engine::Texture > >::Get();
 
-	skybox_texture = texture_database.CreateAssetFromFile( "Skybox",
-														   {
-															   AssetDir R"(Skybox/right.jpg)",
-															   AssetDir R"(Skybox/left.jpg)",
-															   AssetDir R"(Skybox/top.jpg)",
-															   AssetDir R"(Skybox/bottom.jpg)",
-															   AssetDir R"(Skybox/front.jpg)",
-															   AssetDir R"(Skybox/back.jpg)"
-														   },
-														   Engine::Texture::ImportSettings
-														   {
-															   .min_filter      = Engine::Texture::Filtering::Linear,
-															   .flip_vertically = false,
-														   } );
-		
 	container_texture_diffuse_map  = texture_database.CreateAssetFromFile( "Container (Diffuse) Map",  AssetDir R"(container2.png)" );
 	container_texture_specular_map = texture_database.CreateAssetFromFile( "Container (Specular) Map", AssetDir R"(container2_specular.png)" );
 
@@ -150,7 +134,6 @@ void SandboxApplication::Initialize()
 																	} );
 
 /* Shaders: */
-	shader_skybox                                           = Engine::BuiltinShaders::Get( "Skybox" );
 	shader_blinn_phong                                      = Engine::BuiltinShaders::Get( "Blinn-Phong" );
 	shader_blinn_phong_shadowed                             = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed)" );
 	shader_blinn_phong_shadowed_parallax                    = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Parallax)" );
@@ -284,12 +267,6 @@ void SandboxApplication::Initialize()
 							  Engine::Primitive::Indexed::Cube::UVs,
 							  Engine::Primitive::Indexed::Cube::Indices,
 							  Engine::Primitive::Indexed::Cube::Tangents );
-
-	cube_mesh_fullscreen = Engine::Mesh( Engine::Primitive::NonIndexed::Cube_FullScreen::Positions,
-										 "Cube (Fullscreen)",
-										 { /* No normals.	*/ },
-										 { /* No uvs.		*/ },
-										 { /* No indices.	*/ } );
 
 	quad_mesh_uvs_only = Engine::Mesh( Engine::Primitive::Indexed::Quad::Positions,
 									   "Quad (UVs Only)",
@@ -443,11 +420,6 @@ void SandboxApplication::Initialize()
 	renderer->AddRenderable( &mirror_quad_renderable, Engine::Renderer::RENDER_QUEUE_ID_BEFORE_POSTPROCESSING );
 
 	mirror_quad_renderable.ToggleOnOff( not render_rear_view_cam_to_imgui );
-
-	skybox_renderable = Engine::Renderable( &cube_mesh_fullscreen, &skybox_material );
-	renderer->AddRenderable( &skybox_renderable, Engine::Renderer::RENDER_QUEUE_ID_SKYBOX );
-
-	// TODO: Do not create an explicit (or rather, Application-visible) Renderable for skybox; Make it Renderer-internal.
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
 	renderer->ToggleQueue( Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
@@ -710,7 +682,6 @@ void SandboxApplication::RenderImGui()
 
 	ImGui::End();
 
-	Engine::ImGuiDrawer::Draw( skybox_material, *renderer );
 	Engine::ImGuiDrawer::Draw( light_source_material, *renderer );
 	Engine::ImGuiDrawer::Draw( ground_material, *renderer );
 	Engine::ImGuiDrawer::Draw( wall_material, *renderer );
@@ -943,7 +914,7 @@ void SandboxApplication::ResetLightingData()
 			.diffuse  = Engine::Color3{  0.4f,   0.4f,   0.27f  },
 			.specular = Engine::Color3{  0.5f,   0.5f,   0.33f  },
 
-		/* End of GLSL equivalence. */
+		/* End of GLSL correspondance. */
 			.cutoff_angle_inner = 12.5_deg,
 			.cutoff_angle_outer = 17.5_deg
 		},
@@ -953,8 +924,15 @@ void SandboxApplication::ResetLightingData()
 
 void SandboxApplication::ResetMaterialData()
 {
-	skybox_material = Engine::Material( "Skybox", shader_skybox );
-	skybox_material.SetTexture( "uniform_tex", skybox_texture );
+	renderer->SetSkyboxTexture(
+		{
+			AssetDir R"(Skybox/right.jpg)",
+			AssetDir R"(Skybox/left.jpg)",
+			AssetDir R"(Skybox/top.jpg)",
+			AssetDir R"(Skybox/bottom.jpg)",
+			AssetDir R"(Skybox/front.jpg)",
+			AssetDir R"(Skybox/back.jpg)"
+		} );
 
 	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );
 	
@@ -964,7 +942,7 @@ void SandboxApplication::ResetMaterialData()
 	cube_reflected_material.SetTexture( "uniform_tex_specular", Engine::BuiltinTextures::Get( "Black" ) );
 	cube_reflected_material.SetTexture( "uniform_tex_normal", container_texture_normal_map );
 	cube_reflected_material.SetTexture( "uniform_tex_reflection", Engine::BuiltinTextures::Get( "Black" ) );
-	cube_reflected_material.SetTexture( "uniform_tex_skybox", skybox_texture );
+	cube_reflected_material.SetTexture( "uniform_tex_skybox", renderer->GetSkyboxTexture() );
 	cube_reflected_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 	cube_reflected_material.Set( "uniform_reflectivity", 1.0f );
 
@@ -996,7 +974,7 @@ void SandboxApplication::ResetMaterialData()
 	sphere_material = Engine::Material( "Sphere", shader_blinn_phong_skybox_reflection );
 	sphere_material.SetTexture( "uniform_tex_diffuse", Engine::ServiceLocator< Engine::BuiltinTextures >::Get().Get( "UV Test" ) );
 	//sphere_material.SetTexture( "uniform_tex_reflection", container_texture_specular_map );
-	sphere_material.SetTexture( "uniform_tex_skybox", skybox_texture );
+	sphere_material.SetTexture( "uniform_tex_skybox", renderer->GetSkyboxTexture() );
 	sphere_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 	sphere_material.Set( "uniform_reflectivity", 0.9f );
 

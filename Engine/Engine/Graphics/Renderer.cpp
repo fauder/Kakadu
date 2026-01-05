@@ -2,11 +2,13 @@
 #include "Renderer.h"
 #include "BuiltinShaders.h"
 #include "BuiltinTextures.h"
+#include "Core/AssetDatabase.hpp"
 #include "Core/ImGuiCustomColors.h"
 #include "Core/ImGuiDrawer.hpp"
 #include "Core/ImGuiUtility.h"
 #include "Core/MorphSystem.h"
 #include "Primitive/Primitive_Quad_FullScreen.h"
+#include "Primitive/Primitive_Cube_FullScreen.h"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -82,6 +84,9 @@ namespace Engine
 
 		InitializeBuiltinMeshes();
 		InitializeBuiltinShaders();
+
+		InitializeBuiltinMaterials();
+		InitializeBuiltinRenderables();
 
 #ifdef _EDITOR
 		ServiceLocator< MorphSystem >::Get().Add( Morph
@@ -621,6 +626,7 @@ namespace Engine
 			ImGuiDrawer::Draw( *shader );
 
 		/* Materials: */
+		ImGuiDrawer::Draw( skybox_material,				*this );
 		ImGuiDrawer::Draw( msaa_resolve.material,		*this );
 		ImGuiDrawer::Draw( bloom_downsampling.material, *this );
 		ImGuiDrawer::Draw( bloom_upsampling.material,	*this );
@@ -1003,6 +1009,25 @@ namespace Engine
 	void Renderer::RemoveAllSpotLights()
 	{
 		lights_spot.clear();
+	}
+
+	void Renderer::SetSkyboxTexture( const std::array< const char*, 6 > cube_map_face_file_paths )
+	{
+		skybox_texture = ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromFile( "Skybox",
+																								{
+																									cube_map_face_file_paths[ 0 ],
+																									cube_map_face_file_paths[ 1 ],
+																									cube_map_face_file_paths[ 2 ],
+																									cube_map_face_file_paths[ 3 ],
+																									cube_map_face_file_paths[ 4 ],
+																									cube_map_face_file_paths[ 5 ]
+																								},
+																								Engine::Texture::ImportSettings
+																								{
+																									.min_filter      = Engine::Texture::Filtering::Linear,
+																									.flip_vertically = false,
+																								} );
+		skybox_material.SetTexture( "uniform_tex", skybox_texture );
 	}
 
 	const void* Renderer::GetShaderGlobal( const std::string& buffer_name ) const
@@ -1679,10 +1704,18 @@ namespace Engine
 									  { /* No normals. */ },
 									  Primitive::NonIndexed::Quad_FullScreen::UVs,
 									  { /* No indices. */ } );
+
+		full_screen_cube_mesh = Engine::Mesh( Engine::Primitive::NonIndexed::Cube_FullScreen::Positions,
+											  "Cube (Fullscreen)",
+											  { /* No normals.	*/ },
+											  { /* No uvs.		*/ },
+											  { /* No indices.	*/ } );
 	}
 
 	void Renderer::InitializeBuiltinShaders()
 	{
+		skybox_shader = BuiltinShaders::Get( "Skybox" );
+
 		char buffer[ 48 ];
 		snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
 		msaa_resolve_shader = BuiltinShaders::Get( buffer );
@@ -1691,6 +1724,17 @@ namespace Engine
 		bloom_shader_upsample   = BuiltinShaders::Get( "Post-Process Bloom Upsample" );
 
 		tone_mapping_shader = BuiltinShaders::Get( "Tonemapping (Bloom)" );
+	}
+
+	void Renderer::InitializeBuiltinMaterials()
+	{
+		skybox_material = Engine::Material( "Skybox", skybox_shader );
+	}
+
+	void Renderer::InitializeBuiltinRenderables()
+	{
+		skybox_renderable = Renderable( &full_screen_cube_mesh, &skybox_material );
+		AddRenderable( &skybox_renderable, Engine::Renderer::RENDER_QUEUE_ID_SKYBOX );
 	}
 
 	void Renderer::InitializeBuiltinFullscreenEffects()

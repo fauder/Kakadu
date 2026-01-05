@@ -70,8 +70,6 @@ private:
 
 	Engine::Renderable* meteorite_renderable;
 
-	Engine::Renderable skybox_renderable;
-
 	Engine::Renderable ground_renderable;
 	Engine::Renderable wall_front_renderable;
 	Engine::Renderable wall_left_renderable;
@@ -86,8 +84,6 @@ private:
 	static constexpr Engine::RenderPass::ID RENDER_PASS_ID_LIGHTING_REAR_VIEW = Engine::RenderPass::ID( ( unsigned int )Engine::Renderer::RENDER_PASS_ID_LIGHTING - 1 );
 
 /* Textures: */
-	Engine::Texture* skybox_texture;
-
 	Engine::Texture* container_texture_diffuse_map;
 	Engine::Texture* container_texture_specular_map;
 	Engine::Texture* container_texture_normal_map;
@@ -100,14 +96,13 @@ private:
 	Engine::Texture* transparent_window_texture;
 
 /* Vertex Info.: */
-	Engine::Mesh cube_mesh, cube_mesh_fullscreen, quad_mesh, quad_mesh_uvs_only, quad_mesh_fullscreen, quad_mesh_mirror;
+	Engine::Mesh cube_mesh, quad_mesh, quad_mesh_uvs_only, quad_mesh_fullscreen, quad_mesh_mirror;
 	Engine::Mesh cube_mesh_instanced;
 	Engine::Mesh cube_reflected_mesh_instanced;
 	Engine::Mesh sphere_mesh_instanced_with_color; // For light sources.
 	Engine::Mesh sphere_mesh, sphere_mesh_lower_detail;
 
 /* Shaders: */
-	Engine::Shader* shader_skybox;
 	Engine::Shader* shader_blinn_phong;
 	Engine::Shader* shader_blinn_phong_shadowed;
 	Engine::Shader* shader_blinn_phong_shadowed_parallax;
@@ -130,8 +125,6 @@ private:
 	ModelInfo meteorite_model_info;
 
 /* Materials: */
-	Engine::Material skybox_material;
-
 	Engine::Material light_source_material;
 
 	Engine::Material cube_material;

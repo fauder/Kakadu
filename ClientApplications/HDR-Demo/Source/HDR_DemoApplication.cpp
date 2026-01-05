@@ -167,7 +167,7 @@ void HDR_DemoApplication::Update()
 
 	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo Update()" ) );
 
-	// TODO: Separate applicationg logs from GL logs.
+	// TODO: Separate application logs from GL logs.
 
 	current_time_as_angle = Radians( time_current );
 	const Radians current_time_mod_two_pi( std::fmod( time_current, Engine::Constants< float >::Two_Pi() ) );

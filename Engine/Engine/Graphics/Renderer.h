@@ -135,6 +135,13 @@ namespace Engine
 		void RemoveAllSpotLights();
 
 		/*
+		 * Skybox:
+		 */
+
+		Texture* GetSkyboxTexture() const { return skybox_texture; }
+		void SetSkyboxTexture( std::array< const char*, 6 > cube_map_face_file_paths );
+
+		/*
 		 * Shadow-mapping:
 		 */
 
@@ -283,6 +290,8 @@ namespace Engine
 
 		void InitializeBuiltinMeshes();
 		void InitializeBuiltinShaders();
+		void InitializeBuiltinMaterials();
+		void InitializeBuiltinRenderables();
 		void InitializeBuiltinFullscreenEffects();
 		void InitializeBuiltinPostprocessingEffects();
 
@@ -413,19 +422,30 @@ namespace Engine
 		std::unordered_set< Shader* > shaders_registered;
 		std::unordered_map< Shader*, Shader::ReferenceCount > shaders_registered_reference_count_map;
 
+		Mesh full_screen_cube_mesh;
+
+		/*
+		 * Skybox:
+		 */
+
+		Shader* skybox_shader;
+		Renderable skybox_renderable;
+		Material skybox_material;
+		Texture* skybox_texture;
+
 		/*
 		 * Fullscreen Effects:
 		 */
 
-		Engine::Mesh full_screen_quad_mesh;
+		Mesh full_screen_quad_mesh;
 
 		FullscreenEffect msaa_resolve;
-		Engine::Shader* msaa_resolve_shader;
+		Shader* msaa_resolve_shader;
 
 		std::map< Texture::Format, std::vector< std::uint8_t > > msaa_supported_sample_counts_per_format;
 
 		FullscreenEffect tone_mapping;
-		Engine::Shader* tone_mapping_shader;
+		Shader* tone_mapping_shader;
 
 		/*
 		 * Post-Processing:
