@@ -47,6 +47,10 @@ namespace Engine
 		Shader* GetShader();
 		void SetShader( Shader* shader );
 
+#ifdef _EDITOR
+		void OnShaderHotReload();
+#endif // _EDITOR
+
 	/* Uniforms: */
 		const std::unordered_map< std::string, Uniform::Information				>& GetUniformInfoMap()			const { return *uniform_info_map; }
 		const std::unordered_map< std::string, const Uniform::BufferInformation	>& GetUniformBufferInfoMap()	const { return uniform_buffer_management_regular

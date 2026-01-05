@@ -56,7 +56,7 @@ namespace Engine
 	{
 		/* Clean-up of previous data: */
 		uniform_buffer_management_regular.UnregisterAllBuffers();
-
+		
 		/* Setting new data: */
 		this->shader = shader;
 
@@ -71,6 +71,26 @@ namespace Engine
 
 		RepopulateTextureMap();
 	}
+
+#ifdef _EDITOR
+	void Material::OnShaderHotReload()
+	{
+		const std::size_t needed_bytes = shader->GetTotalUniformSize_DefaultBlockOnly();
+		const std::size_t current_blob_capacity = uniform_blob_default_block.CurrentSize();
+
+		if( needed_bytes > current_blob_capacity )
+			uniform_blob_default_block.Allocate( needed_bytes - current_blob_capacity );
+
+		uniform_info_map = ( &shader->GetUniformInfoMap() );
+
+		const auto& uniform_buffer_info_map = shader->GetUniformBufferInfoMap_Regular();
+
+		for( const auto& [uniform_buffer_name, uniform_buffer_info] : uniform_buffer_info_map )
+			uniform_buffer_management_regular.RegisterBuffer_ForceUpdateBufferInfoIfBufferExists( uniform_buffer_name,
+																								  uniform_buffer_info );
+		RepopulateTextureMap();
+	}
+#endif // _EDITOR
 
 	const void* Material::Get( const Uniform::Information& uniform_info ) const
 	{

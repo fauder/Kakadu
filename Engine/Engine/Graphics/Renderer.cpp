@@ -1659,6 +1659,11 @@ namespace Engine
 
 				RegisterShader( *shader );
 
+				for( auto& [ queue_ID, queue ] : render_queue_map )
+					for( auto& [ material_name, material ] : queue.materials_in_flight )
+						if( material->shader == shader )
+							material->OnShaderHotReload();
+
 				logger.Info( "Recompiled modified shader: \"" + shader->name + "\"" );
 			}
 			else
