@@ -7,13 +7,6 @@ namespace Engine
 {
 	void MorphSystem::Add( Morph&& new_morph )
 	{
-#ifdef _EDITOR
-		if( not new_morph.on_execute )
-		{
-			throw std::runtime_error( "MorphSystem::Add(): Attempt to Add() Morph with unset on_execute callback detected!" );
-		}
-#endif // _EDITOR
-
 		new_morph.remaining_duration_in_seconds = new_morph.duration_in_seconds;
 
 		morph_array.emplace_back( std::move( new_morph ) );
@@ -28,9 +21,12 @@ namespace Engine
 		{
 			if( morph.remaining_duration_in_seconds < delta_time_in_seconds )
 			{
-				const auto t = ( morph.duration_in_seconds - morph.remaining_duration_in_seconds ) / morph.duration_in_seconds;
+				if( morph.on_execute )
+				{
+					const auto t = ( morph.duration_in_seconds - morph.remaining_duration_in_seconds ) / morph.duration_in_seconds;
+					morph.on_execute( t );
+				}
 
-				morph.on_execute( t );
 				if( morph.on_complete )
 					morph.on_complete();
 
@@ -38,9 +34,11 @@ namespace Engine
 			}
 			else
 			{
-				const auto t = ( morph.duration_in_seconds - ( morph.remaining_duration_in_seconds - delta_time_in_seconds ) ) / morph.duration_in_seconds;
-
-				morph.on_execute( t );
+				if( morph.on_execute )
+				{
+					const auto t = ( morph.duration_in_seconds - ( morph.remaining_duration_in_seconds - delta_time_in_seconds ) ) / morph.duration_in_seconds;
+					morph.on_execute( t );
+				}
 
 				morph.remaining_duration_in_seconds -= delta_time_in_seconds;
 			}

@@ -27,8 +27,8 @@ namespace Engine
             return !( *this == other );
         }
 
-		CallableType on_execute;
-		OnCompleteCallableType on_complete = [](){};
+		CallableType			on_execute  = []( float ){};
+		OnCompleteCallableType	on_complete = [](){};
 
 		float duration_in_seconds;
 		float remaining_duration_in_seconds;
