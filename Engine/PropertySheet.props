@@ -7,6 +7,9 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile />
+    <ClCompile>
+      <ForcedIncludeFiles>$(SolutionDir)Engine\Engine\Config\Profiling.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

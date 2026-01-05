@@ -308,6 +308,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Engine\Asset\Resource\Resource.h" />
     <ClInclude Include="Engine\Asset\Paths.h" />
+    <ClInclude Include="Engine\Config\Profiling.h" />
     <ClInclude Include="Engine\Core\Application.h" />
     <ClInclude Include="Engine\Core\Assertion.h" />
     <ClInclude Include="Engine\Core\AssetDatabase.hpp" />
