@@ -45,6 +45,8 @@ namespace Engine
 			return reinterpret_cast< const Type& >( *( ( const Type* )pointer ) );
 		}
 
+		std::size_t CurrentSize() const { return bytes.size(); }
+
 	/* Allocation/Deallocation: */
 		void Allocate( const std::size_t size, const std::byte value = std::byte{ 0 } );
 		void Deallocate( const std::size_t size );
