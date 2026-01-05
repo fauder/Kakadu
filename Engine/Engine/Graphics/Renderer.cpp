@@ -5,6 +5,7 @@
 #include "Core/ImGuiCustomColors.h"
 #include "Core/ImGuiDrawer.hpp"
 #include "Core/ImGuiUtility.h"
+#include "Core/MorphSystem.h"
 #include "Primitive/Primitive_Quad_FullScreen.h"
 
 // Vendor Includes.
@@ -81,7 +82,19 @@ namespace Engine
 
 		InitializeBuiltinMeshes();
 		InitializeBuiltinShaders();
-	}
+
+#ifdef _EDITOR
+		ServiceLocator< MorphSystem >::Get().Add( Morph
+												  {
+													  .on_complete = [ this ]()
+													  {
+														  RecompileModifiedShaders();
+													  },
+													  .duration_in_seconds = 0.1f, // Seems enough.
+													  .is_looping = true
+												  } );
+#endif // _EDITOR
+	}                                             
 
 	Renderer::~Renderer()
 	{
@@ -89,8 +102,6 @@ namespace Engine
 
 	void Renderer::Update()
 	{
-		RecompileModifiedShaders();
-
 		CalculateShadowMappingInformation();
 	}
 
@@ -1624,12 +1635,12 @@ namespace Engine
 		}
 	}
 
+#ifdef _EDITOR
 	void Renderer::RecompileModifiedShaders()
 	{
-		/* Shader Recompilation: */
 		local_persist std::vector< Shader* > shaders_to_recompile;
 
-		/* Have to do two passes as shaders to be recompiled need to be removed from shaders_registered, which we can not do while traversing the container. */
+		/* Can not traverse registered shaders AND remove/add shaders to be recompiled at the same time. */
 
 		shaders_to_recompile.clear();
 
@@ -1654,6 +1665,7 @@ namespace Engine
 				logger.Error( "Failed to recompile modified shader: \"" + shader->name + "\"" );
 		}
 	}
+#endif // _EDITOR
 
 	void Renderer::InitializeBuiltinMeshes()
 	{

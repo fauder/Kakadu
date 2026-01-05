@@ -276,7 +276,10 @@ namespace Engine
 		void UploadGlobals();
 
 		void CalculateShadowMappingInformation();
+
+#ifdef _EDITOR
 		void RecompileModifiedShaders();
+#endif // _EDITOR
 
 		void InitializeBuiltinMeshes();
 		void InitializeBuiltinShaders();
