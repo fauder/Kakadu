@@ -187,41 +187,11 @@ namespace Engine
 		void UnregisterShader( Shader& shader );
 
 		/*
-		 * Stencil Test:
-		 */
-
-		void EnableStencilTest();
-		void DisableStencilTest();
-		void SetStencilWriteMask( const unsigned int mask );
-		void SetStencilTestResponses( const StencilTestResponse stencil_fail, const StencilTestResponse stencil_pass_depth_fail, const StencilTestResponse both_pass );
-		void SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const unsigned int mask );
-
-		/*
-		 * Depth Test:
-		 */
-
-		void EnableDepthTest();
-		void DisableDepthTest();
-		void ToggleDepthWrite( const bool enable );
-		void SetDepthComparisonFunction( const ComparisonFunction comparison_function );
-
-		/*
-		 * Blending:
-		 */
-
-		void EnableBlending();
-		void DisableBlending();
-		void SetBlendingFactors( const BlendingFactor source_color_factor, const BlendingFactor destination_color_factor,
-								 const BlendingFactor source_alpha_factor, const BlendingFactor destination_alpha_factor );
-		void SetBlendingFunction( const BlendingFunction function );
-
-		/*
 		 * Framebuffer:
 		 */
 
 		// TODO: Make these private after some time if they are not used (as pass API makes explicit Framebuffer operations redundant).
 
-		void SetDestinationFramebuffer( Framebuffer* framebuffer );
 		void ResetToDefaultFramebuffer();
 		bool DefaultFramebufferIsBound() const;
 		Framebuffer* CurrentDestinationFramebuffer();
@@ -240,16 +210,8 @@ namespace Engine
 		 * MSAA:
 		 */
 
-		/* Sets the sample count for the main framebuffer MSAA. */
-		MSAA SetMSAASampleCount( const std::uint8_t new_sample_count );
 		/* Returns the MSAA info. for the main framebuffer MSAA. */
 		MSAA GetMSAAInfo() const;
-
-		/*
-		 * Color Space:
-		 */
-		void EnableFramebuffer_sRGBEncoding();
-		void DisableFramebuffer_sRGBEncoding();
 
 		/*
 		 * Queries:
@@ -298,6 +260,44 @@ namespace Engine
 
 		void SetPolygonMode( const PolygonMode mode );
 
+		/*
+		 * Framebuffer:
+		 */
+
+		void SetDestinationFramebuffer( Framebuffer* framebuffer );
+
+		void EnableFramebuffer_sRGBEncoding();
+		void DisableFramebuffer_sRGBEncoding();
+
+		/*
+		 * Stencil Test:
+		 */
+
+		void EnableStencilTest();
+		void DisableStencilTest();
+		void SetStencilWriteMask( const unsigned int mask );
+		void SetStencilTestResponses( const StencilTestResponse stencil_fail, const StencilTestResponse stencil_pass_depth_fail, const StencilTestResponse both_pass );
+		void SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const unsigned int mask );
+
+		/*
+		 * Depth Test:
+		 */
+
+		void EnableDepthTest();
+		void DisableDepthTest();
+		void ToggleDepthWrite( const bool enable );
+		void SetDepthComparisonFunction( const ComparisonFunction comparison_function );
+
+		/*
+		 * Blending:
+		 */
+
+		void EnableBlending();
+		void DisableBlending();
+		void SetBlendingFactors( const BlendingFactor source_color_factor, const BlendingFactor destination_color_factor,
+								 const BlendingFactor source_alpha_factor, const BlendingFactor destination_alpha_factor );
+		void SetBlendingFunction( const BlendingFunction function );
+
 	#ifdef _EDITOR
 		/*
 		 * Editor:
@@ -325,6 +325,9 @@ namespace Engine
 		/*
 		 * MSAA:
 		 */
+
+		 /* Sets the sample count for the main framebuffer MSAA. */
+		MSAA SetMSAASampleCount( const std::uint8_t new_sample_count );
 
 		void DetermineMSAASampleCountsPerFormat();
 

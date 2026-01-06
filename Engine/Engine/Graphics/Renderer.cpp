@@ -756,78 +756,7 @@ namespace Engine
 		editor_shading_mode = new_editor_shading_mode;
 	}
 #endif // _EDITOR
-
-	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
-	{
-		auto& queue = render_queue_map[ queue_id ];
-
-		queue.renderable_list.push_back( renderable_to_add );
-
-		const auto& shader = renderable_to_add->material->shader;
-
-		queue.shaders_in_flight[ shader->name ] = shader;
-
-		if( ++queue.shader_reference_counts[ shader ] == 1 )
-		{
-			if( not shaders_registered.contains( shader ) )
-				RegisterShader( *shader );
-		}
-
-		queue.materials_in_flight.try_emplace( renderable_to_add->material->Name(), renderable_to_add->material );
-	}
-
-	void Renderer::RemoveRenderable( Renderable* renderable_to_remove )
-	{
-		for( auto& [ queue_id, queue ] : render_queue_map )
-		{
-			if( std::find( queue.renderable_list.cbegin(), queue.renderable_list.cend(), renderable_to_remove ) != queue.renderable_list.cend() )
-			{
-				// For now, stick to removing elements from a vector, which is sub-par performance but should be OK for the time being.
-				std::erase( queue.renderable_list, renderable_to_remove );
-
-				const auto& shader = renderable_to_remove->material->shader;
-
-				if( --queue.shader_reference_counts[ shader ] == 0 )
-				{
-					queue.shaders_in_flight.erase( shader->name );
-					queue.shader_reference_counts.erase( shader );
-					if( --shaders_registered_reference_count_map[ shader ] == 0 )
-						UnregisterShader( *shader );
-				}
-
-				queue.materials_in_flight.erase( renderable_to_remove->material->Name() );
-			}
-		}
-	}
-
-	void Renderer::OnShaderReassign( Shader* previous_shader, const std::string& name_of_material_whose_shader_changed )
-	{
-		for( auto& [ queue_id, queue ] : render_queue_map )
-		{
-			if( auto iterator = queue.materials_in_flight.find( name_of_material_whose_shader_changed );
-				iterator != queue.materials_in_flight.cend() )
-			{
-				Material* material = iterator->second;
-
-				if( const auto ref_count = queue.shader_reference_counts[ previous_shader ];
-					ref_count == 1 )
-				{
-					queue.shader_reference_counts.erase( previous_shader );
-					queue.shaders_in_flight.erase( previous_shader->name );
-				}
-
-				queue.shader_reference_counts[ material->shader ]++;
-				queue.shaders_in_flight[ material->shader->name ] = material->shader;
-
-				/* Log warning if the new shader is incompatible with mesh(es). */
-				for( auto& renderable : queue.renderable_list )
-					if( renderable->material == material &&
-						not renderable->mesh->IsCompatibleWith( renderable->material->shader->GetSourceVertexLayout() ) )
-						logger.Warning( "Mesh \"" + renderable->mesh->Name() + "\" is not compatible with its current shader \"" + material->shader->Name() + "\"." );
-			}
-		}
-	}
-
+	
 	RenderState& Renderer::GetRenderState( const RenderPass::ID pass_id_to_fetch )
 	{
 		return render_pass_map[ pass_id_to_fetch ].render_state;
@@ -955,6 +884,7 @@ namespace Engine
 			CONSOLE_ERROR( "Attempting to add a non-existing queue from a pass!" );
 	}
 
+#ifdef _EDITOR
 	void Renderer::SetFinalPassToUseEditorViewportFramebuffer()
 	{
 		tone_mapping.steps.front().framebuffer_target = &framebuffer_editor_viewport;
@@ -964,7 +894,79 @@ namespace Engine
 	{
 		tone_mapping.steps.front().framebuffer_target = &framebuffer_default;
 	}
+#endif // _EDITOR
 
+	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
+	{
+		auto& queue = render_queue_map[ queue_id ];
+
+		queue.renderable_list.push_back( renderable_to_add );
+
+		const auto& shader = renderable_to_add->material->shader;
+
+		queue.shaders_in_flight[ shader->name ] = shader;
+
+		if( ++queue.shader_reference_counts[ shader ] == 1 )
+		{
+			if( not shaders_registered.contains( shader ) )
+				RegisterShader( *shader );
+		}
+
+		queue.materials_in_flight.try_emplace( renderable_to_add->material->Name(), renderable_to_add->material );
+	}
+
+	void Renderer::RemoveRenderable( Renderable* renderable_to_remove )
+	{
+		for( auto& [ queue_id, queue ] : render_queue_map )
+		{
+			if( std::find( queue.renderable_list.cbegin(), queue.renderable_list.cend(), renderable_to_remove ) != queue.renderable_list.cend() )
+			{
+				// For now, stick to removing elements from a vector, which is sub-par performance but should be OK for the time being.
+				std::erase( queue.renderable_list, renderable_to_remove );
+
+				const auto& shader = renderable_to_remove->material->shader;
+
+				if( --queue.shader_reference_counts[ shader ] == 0 )
+				{
+					queue.shaders_in_flight.erase( shader->name );
+					queue.shader_reference_counts.erase( shader );
+					if( --shaders_registered_reference_count_map[ shader ] == 0 )
+						UnregisterShader( *shader );
+				}
+
+				queue.materials_in_flight.erase( renderable_to_remove->material->Name() );
+			}
+		}
+	}
+
+	void Renderer::OnShaderReassign( Shader* previous_shader, const std::string& name_of_material_whose_shader_changed )
+	{
+		for( auto& [ queue_id, queue ] : render_queue_map )
+		{
+			if( auto iterator = queue.materials_in_flight.find( name_of_material_whose_shader_changed );
+				iterator != queue.materials_in_flight.cend() )
+			{
+				Material* material = iterator->second;
+
+				if( const auto ref_count = queue.shader_reference_counts[ previous_shader ];
+					ref_count == 1 )
+				{
+					queue.shader_reference_counts.erase( previous_shader );
+					queue.shaders_in_flight.erase( previous_shader->name );
+				}
+
+				queue.shader_reference_counts[ material->shader ]++;
+				queue.shaders_in_flight[ material->shader->name ] = material->shader;
+
+				/* Log warning if the new shader is incompatible with mesh(es). */
+				for( auto& renderable : queue.renderable_list )
+					if( renderable->material == material &&
+						not renderable->mesh->IsCompatibleWith( renderable->material->shader->GetSourceVertexLayout() ) )
+						logger.Warning( "Mesh \"" + renderable->mesh->Name() + "\" is not compatible with its current shader \"" + material->shader->Name() + "\"." );
+			}
+		}
+	}
+	
 	void Renderer::AddDirectionalLight( DirectionalLight* light_to_add )
 	{
 		if( light_directional )
@@ -1140,91 +1142,6 @@ namespace Engine
 		shaders_registered_reference_count_map.erase( &shader );
 	}
 
-/*
- * 
- *	PRIVATE API:
- * 
- */
-
-	void Renderer::EnableStencilTest()
-	{
-		glEnable( GL_STENCIL_TEST );
-	}
-
-	void Renderer::DisableStencilTest()
-	{
-		glDisable( GL_STENCIL_TEST );
-	}
-
-	void Renderer::SetStencilWriteMask( const unsigned int mask )
-	{
-		glStencilMask( mask );
-	}
-
-	void Renderer::SetStencilTestResponses( const StencilTestResponse stencil_fail, const StencilTestResponse stencil_pass_depth_fail, const StencilTestResponse both_pass )
-	{
-		glStencilOp( ( GLenum )stencil_fail, ( GLenum )stencil_pass_depth_fail, ( GLenum )both_pass );
-	}
-
-	void Renderer::SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const unsigned int mask )
-	{
-		glStencilFunc( ( GLenum )comparison_function, reference_value, mask );
-	}
-
-	void Renderer::EnableDepthTest()
-	{
-		glEnable( GL_DEPTH_TEST );
-	}
-
-	void Renderer::DisableDepthTest()
-	{
-		glDisable( GL_DEPTH_TEST );
-	}
-
-	void Renderer::ToggleDepthWrite( const bool enable )
-	{
-		glDepthMask( ( GLint )enable );
-	}
-
-	void Renderer::SetDepthComparisonFunction( const ComparisonFunction comparison_function )
-	{
-		glDepthFunc( ( GLenum )comparison_function );
-	}
-
-	void Renderer::EnableBlending()
-	{
-		glEnable( GL_BLEND );
-	}
-
-	void Renderer::DisableBlending()
-	{
-		glDisable( GL_BLEND );
-	}
-
-	void Renderer::SetBlendingFactors( const BlendingFactor source_color_factor, const BlendingFactor destination_color_factor,
-									   const BlendingFactor source_alpha_factor, const BlendingFactor destination_alpha_factor )
-	{
-		glBlendFuncSeparate( ( GLenum )source_color_factor, ( GLenum )destination_color_factor, ( GLenum )source_alpha_factor, ( GLenum )destination_alpha_factor );
-	}
-
-	void Renderer::SetBlendingFunction( const BlendingFunction function )
-	{
-		glBlendEquation( ( GLenum )function );
-	}
-
-	void Renderer::SetDestinationFramebuffer( Framebuffer* framebuffer )
-	{
-		ASSERT_DEBUG_ONLY( framebuffer );
-
-		const Vector2I old_framebuffer_size = framebuffer_current_destination->Size();
-		
-		framebuffer_current_destination = framebuffer;
-		framebuffer_current_destination->ActivateForWrite();
-
-		if( framebuffer->Size() != old_framebuffer_size )
-			glViewport( 0, 0, framebuffer->Width(), framebuffer->Height() );
-	}
-
 	void Renderer::ResetToDefaultFramebuffer()
 	{
 		framebuffer_current_destination = &framebuffer_default;
@@ -1256,12 +1173,12 @@ namespace Engine
 	{
 		return framebuffer_editor_viewport;
 	}
+#endif // _EDITOR
 
 	Framebuffer& Renderer::FinalFramebuffer()
 	{
 		return *tone_mapping.steps.front().framebuffer_target;
 	}
-#endif // _EDITOR
 
 	Framebuffer& Renderer::CustomFramebuffer( const unsigned int framebuffer_index )
 	{
@@ -1282,56 +1199,9 @@ namespace Engine
 						   GL_COLOR_BUFFER_BIT, ( int )filtering );
 	}
 
-	/* Sets the sample count for main framebuffer MSAA. */
-	MSAA Renderer::SetMSAASampleCount( const std::uint8_t new_sample_count )
-	{
-		if( new_sample_count == framebuffer_main_msaa_sample_count )
-			return MSAA( framebuffer_main_msaa_sample_count );
-
-		framebuffer_main_msaa_sample_count = new_sample_count;
-
-		MSAA new_msaa = MSAA( framebuffer_main_msaa_sample_count );
-
-		framebuffer_main = Framebuffer( Framebuffer::Description
-										{
-											.name = "Main",
-
-											.width_in_pixels  = framebuffer_main.Width(),
-											.height_in_pixels = framebuffer_main.Height(),
-
-											.color_format    = framebuffer_main_color_format,
-											.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
-											.msaa            = new_msaa
-										} );
-
-		if( new_sample_count > 1 )
-		{
-			char buffer[ 48 ];
-			snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
-			msaa_resolve_shader = BuiltinShaders::Get( buffer );
-
-			msaa_resolve.material.SetShader( msaa_resolve_shader );
-			msaa_resolve.material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
-		}
-
-		return new_msaa;
-	}
-
 	MSAA Renderer::GetMSAAInfo() const
 	{
 		return framebuffer_main.msaa;
-	}
-
-	void Renderer::EnableFramebuffer_sRGBEncoding()
-	{
-		glEnable( GL_FRAMEBUFFER_SRGB );
-		framebuffer_sRGB_encoding_is_enabled = true;
-	}
-
-	void Renderer::DisableFramebuffer_sRGBEncoding()
-	{
-		glDisable( GL_FRAMEBUFFER_SRGB );
-		framebuffer_sRGB_encoding_is_enabled = false;
 	}
 
 	bool Renderer::CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query )
@@ -1366,6 +1236,12 @@ namespace Engine
 			list_of_strings.emplace_back( ext );
 		}
 	}
+
+/*
+ * 
+ *	PRIVATE API:
+ * 
+ */
 
 	void Renderer::InitializeBuiltinQueues()
 	{
@@ -1940,6 +1816,97 @@ namespace Engine
 		glPolygonMode( GL_FRONT_AND_BACK, ( GLenum )mode + GL_POINT );
 	}
 
+	void Renderer::SetDestinationFramebuffer( Framebuffer* framebuffer )
+	{
+		ASSERT_DEBUG_ONLY( framebuffer );
+
+		const Vector2I old_framebuffer_size = framebuffer_current_destination->Size();
+		
+		framebuffer_current_destination = framebuffer;
+		framebuffer_current_destination->ActivateForWrite();
+
+		if( framebuffer->Size() != old_framebuffer_size )
+			glViewport( 0, 0, framebuffer->Width(), framebuffer->Height() );
+	}
+
+	void Renderer::EnableFramebuffer_sRGBEncoding()
+	{
+		glEnable( GL_FRAMEBUFFER_SRGB );
+		framebuffer_sRGB_encoding_is_enabled = true;
+	}
+
+	void Renderer::DisableFramebuffer_sRGBEncoding()
+	{
+		glDisable( GL_FRAMEBUFFER_SRGB );
+		framebuffer_sRGB_encoding_is_enabled = false;
+	}
+
+	void Renderer::EnableStencilTest()
+	{
+		glEnable( GL_STENCIL_TEST );
+	}
+
+	void Renderer::DisableStencilTest()
+	{
+		glDisable( GL_STENCIL_TEST );
+	}
+
+	void Renderer::SetStencilWriteMask( const unsigned int mask )
+	{
+		glStencilMask( mask );
+	}
+
+	void Renderer::SetStencilTestResponses( const StencilTestResponse stencil_fail, const StencilTestResponse stencil_pass_depth_fail, const StencilTestResponse both_pass )
+	{
+		glStencilOp( ( GLenum )stencil_fail, ( GLenum )stencil_pass_depth_fail, ( GLenum )both_pass );
+	}
+
+	void Renderer::SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const unsigned int mask )
+	{
+		glStencilFunc( ( GLenum )comparison_function, reference_value, mask );
+	}
+
+	void Renderer::EnableDepthTest()
+	{
+		glEnable( GL_DEPTH_TEST );
+	}
+
+	void Renderer::DisableDepthTest()
+	{
+		glDisable( GL_DEPTH_TEST );
+	}
+
+	void Renderer::ToggleDepthWrite( const bool enable )
+	{
+		glDepthMask( ( GLint )enable );
+	}
+
+	void Renderer::SetDepthComparisonFunction( const ComparisonFunction comparison_function )
+	{
+		glDepthFunc( ( GLenum )comparison_function );
+	}
+
+	void Renderer::EnableBlending()
+	{
+		glEnable( GL_BLEND );
+	}
+
+	void Renderer::DisableBlending()
+	{
+		glDisable( GL_BLEND );
+	}
+
+	void Renderer::SetBlendingFactors( const BlendingFactor source_color_factor, const BlendingFactor destination_color_factor,
+									   const BlendingFactor source_alpha_factor, const BlendingFactor destination_alpha_factor )
+	{
+		glBlendFuncSeparate( ( GLenum )source_color_factor, ( GLenum )destination_color_factor, ( GLenum )source_alpha_factor, ( GLenum )destination_alpha_factor );
+	}
+
+	void Renderer::SetBlendingFunction( const BlendingFunction function )
+	{
+		glBlendEquation( ( GLenum )function );
+	}
+
 #ifdef _EDITOR
 	void Renderer::RenderOtherEditorShadingModes()
 	{
@@ -2207,6 +2174,41 @@ namespace Engine
 		glFrontFace( ( GLenum )winding_order_of_front_faces );
 	}
 
+	/* Sets the sample count for main framebuffer MSAA. */
+	MSAA Renderer::SetMSAASampleCount( const std::uint8_t new_sample_count )
+	{
+		if( new_sample_count == framebuffer_main_msaa_sample_count )
+			return MSAA( framebuffer_main_msaa_sample_count );
+
+		framebuffer_main_msaa_sample_count = new_sample_count;
+
+		MSAA new_msaa = MSAA( framebuffer_main_msaa_sample_count );
+
+		framebuffer_main = Framebuffer( Framebuffer::Description
+										{
+											.name = "Main",
+
+											.width_in_pixels  = framebuffer_main.Width(),
+											.height_in_pixels = framebuffer_main.Height(),
+
+											.color_format    = framebuffer_main_color_format,
+											.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
+											.msaa            = new_msaa
+										} );
+
+		if( new_sample_count > 1 )
+		{
+			char buffer[ 48 ];
+			snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
+			msaa_resolve_shader = BuiltinShaders::Get( buffer );
+
+			msaa_resolve.material.SetShader( msaa_resolve_shader );
+			msaa_resolve.material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
+		}
+
+		return new_msaa;
+	}
+	
 	void Renderer::DetermineMSAASampleCountsPerFormat()
 	{
 		GLint max_samples = 0;
