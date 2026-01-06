@@ -76,6 +76,11 @@ namespace Engine
 		void OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels );
 		void OnFramebufferResize( const Vector2I new_resolution_in_pixels );
 
+		/* Sets the clear color for the main lighting pass. */
+		void SetClearColor( const Color3& new_clear_color );
+		/* Sets the clear color for the main lighting pass. */
+		void SetClearColor( const Color4& new_clear_color );
+
 #ifdef _EDITOR
 		/*
 		 * Editor:
@@ -387,22 +392,24 @@ namespace Engine
 		 * Framebuffer:
 		 */
 
+		std::uint8_t framebuffer_main_msaa_sample_count;
+		Texture::Format framebuffer_main_color_format;
+
+		/* 6 bytes of padding. */
+
+		std::array< Framebuffer, FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_array;
+		std::array< std::optional< Framebuffer::Description >, FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_description_array;
+
 		Framebuffer framebuffer_default;
 		Framebuffer* framebuffer_current_source;	  // Corresponds to READ  target of a GL blit operation.
 		Framebuffer* framebuffer_current_destination; // Corresponds to WRITE target of a GL blit operation.
+
+		Framebuffer::Description framebuffer_main_description;
 
 		Framebuffer framebuffer_shadow_map_light_directional;
 		Framebuffer framebuffer_main;
 		Framebuffer framebuffer_postprocessing;
 		Framebuffer framebuffer_editor_viewport;
-
-		std::array< Framebuffer,								FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_array;
-		std::array< std::optional< Framebuffer::Description >,	FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_description_array;
-
-		std::uint8_t framebuffer_main_msaa_sample_count;
-		Texture::Format framebuffer_main_color_format;
-
-		/* 6 bytes of padding. */
 
 		/*
 		 * Lighting:

@@ -45,6 +45,16 @@ namespace Engine
 		framebuffer_current_destination( &framebuffer_default ),
 		framebuffer_main_msaa_sample_count( description.main_framebuffer_msaa_sample_count ),
 		framebuffer_main_color_format( description.main_framebuffer_color_format ),
+		framebuffer_main_description(
+			Framebuffer::Description
+			{
+				.name = "Main",
+
+				.color_format    = framebuffer_main_color_format,
+				.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
+				.msaa            = MSAA( framebuffer_main_msaa_sample_count )
+			}
+		),
 		lights_point_active_count( 0 ),
 		lights_spot_active_count( 0 ),
 		shadow_mapping_projection_parameters{ .left = -50.0f, .right = +50.0f, .bottom = -50.0f, .top = +50.0f, .near = 0.1f, .far = 100.0f },
@@ -78,6 +88,8 @@ namespace Engine
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Lighting", "_INTRINSIC_SHADOW_BIAS_MIN_MAX_2_RESERVED", Vector4( 0.005f, 0.05f, 0.0f, 0.0f ) );
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Lighting", "_INTRINSIC_SHADOW_SAMPLE_COUNT_X_Y",		Vector2I( 3, 3 ) );
 		}
+
+		framebuffer_main.SetClearColor( Color4::Gray( 0.064f ) ); // Same color as Unity's scene view, in linear color space.
 
 		InitializeBuiltinQueues();
 		InitializeBuiltinPasses();
@@ -668,19 +680,10 @@ namespace Engine
 
 
 		/* Main: */
-		framebuffer_main = Framebuffer( Framebuffer::Description
-										{
-											.name = "Main",
+		framebuffer_main_description.width_in_pixels  = new_width_in_pixels;
+		framebuffer_main_description.height_in_pixels = new_height_in_pixels;
 
-											.width_in_pixels  = new_width_in_pixels,
-											.height_in_pixels = new_height_in_pixels,
-
-											.color_format    = framebuffer_main_color_format,
-											.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
-											.msaa            = MSAA( framebuffer_main_msaa_sample_count )
-										} );
-
-		framebuffer_main.SetClearColor( Color4::Gray( 0.064f ) ); // Same color as Unity's scene view, in linear color space.
+		framebuffer_main = Framebuffer( framebuffer_main_description );
 
 		/* Same parameters as the main FBO. */
 		framebuffer_postprocessing = Framebuffer( Framebuffer::Description
@@ -748,6 +751,16 @@ namespace Engine
 	void Renderer::OnFramebufferResize( const Vector2I new_resolution_in_pixels )
 	{
 		OnFramebufferResize( new_resolution_in_pixels.X(), new_resolution_in_pixels.Y() );
+	}
+
+	void Renderer::SetClearColor( const Color3& new_clear_color )
+	{
+		framebuffer_main.SetClearColor( new_clear_color );
+	}
+
+	void Renderer::SetClearColor( const Color4& new_clear_color )
+	{
+		framebuffer_main.SetClearColor( new_clear_color );
 	}
 
 #ifdef _EDITOR
