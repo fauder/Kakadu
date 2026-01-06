@@ -1011,6 +1011,14 @@ namespace Engine
 		lights_spot.clear();
 	}
 
+	void Renderer::ToggleSkybox( const bool enable )
+	{
+		if( enable )
+			AddRenderable( &skybox_renderable, RENDER_QUEUE_ID_SKYBOX );
+		else
+			RemoveRenderable( &skybox_renderable );
+	}
+
 	void Renderer::SetSkyboxTexture( const std::array< const char*, 6 > cube_map_face_file_paths )
 	{
 		skybox_texture = ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromFile( "Skybox",
@@ -1734,7 +1742,6 @@ namespace Engine
 	void Renderer::InitializeBuiltinRenderables()
 	{
 		skybox_renderable = Renderable( &full_screen_cube_mesh, &skybox_material );
-		AddRenderable( &skybox_renderable, Engine::Renderer::RENDER_QUEUE_ID_SKYBOX );
 	}
 
 	void Renderer::InitializeBuiltinFullscreenEffects()

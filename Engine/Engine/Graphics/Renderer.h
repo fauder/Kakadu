@@ -112,7 +112,7 @@ namespace Engine
 		void SetFinalPassToUseDefaultFramebuffer();
 #endif // _EDITOR
 
-		void AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id = RenderQueue::ID{ 0 } );
+		void AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id );
 		// TODO: Switch to unsigned map of "Component" UUIDs when Component class is implemented.
 		void RemoveRenderable( Renderable* renderable_to_remove );
 
@@ -138,6 +138,7 @@ namespace Engine
 		 * Skybox:
 		 */
 
+		void ToggleSkybox( const bool enable );
 		Texture* GetSkyboxTexture() const { return skybox_texture; }
 		void SetSkyboxTexture( std::array< const char*, 6 > cube_map_face_file_paths );
 

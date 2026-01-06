@@ -860,6 +860,7 @@ void BloomDemoApplication::ResetLightingData()
 
 void BloomDemoApplication::ResetMaterialData()
 {
+	renderer->ToggleSkybox( true );
 	renderer->SetSkyboxTexture(
 		{
 			AssetDir R"(Skybox/right.jpg)",
@@ -1024,6 +1025,6 @@ void BloomDemoApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorit
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,
 											GL_STATIC_DRAW );
-		renderer->AddRenderable( &cube_renderable );
+		renderer->AddRenderable( &cube_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 	}
 }
