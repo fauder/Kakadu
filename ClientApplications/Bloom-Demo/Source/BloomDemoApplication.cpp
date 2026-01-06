@@ -396,6 +396,8 @@ void BloomDemoApplication::Initialize()
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
 	renderer->ToggleQueue( Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
 
+	renderer->SetClearColor( Engine::Color4::Black() );
+
 /* Camera: */
 	//ResetCamera(); // TODO: Game camera rendering.
 
@@ -860,7 +862,7 @@ void BloomDemoApplication::ResetLightingData()
 
 void BloomDemoApplication::ResetMaterialData()
 {
-	renderer->ToggleSkybox( true );
+	renderer->ToggleSkybox( false );
 	renderer->SetSkyboxTexture(
 		{
 			AssetDir R"(Skybox/right.jpg)",
