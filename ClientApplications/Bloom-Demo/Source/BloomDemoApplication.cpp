@@ -17,6 +17,7 @@
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad_FullScreen.h"
+#include "Engine/Graphics/Primitive/Primitive_Triangle.h"
 #include "Engine/Math/Math.hpp"
 #include "Engine/Math/Matrix.h"
 #include "Engine/Math/Random.hpp"
@@ -65,7 +66,8 @@ BloomDemoApplication::BloomDemoApplication( const Engine::BitFlags< Engine::Crea
 	},
 	light_point_transform_array( LIGHT_POINT_COUNT ),
 	cube_transform_array( CUBE_COUNT ),
-	cube_reflected_transform_array( CUBE_REFLECTED_COUNT )
+	cube_reflected_transform_array( CUBE_REFLECTED_COUNT ),
+	star_transform_array( STAR_COUNT )
 {
 	Initialize();
 }
@@ -138,7 +140,6 @@ void BloomDemoApplication::Initialize()
 	shader_basic_textured                                   = Engine::BuiltinShaders::Get( "Textured" );
 	shader_basic_textured_transparent_discard               = Engine::BuiltinShaders::Get( "Textured (Discard Transparent)" );
 	shader_outline                                          = Engine::BuiltinShaders::Get( "Outline" );
-	shader_texture_blit                                     = Engine::BuiltinShaders::Get( "Texture Blit" );
 
 /* Instancing Data: */
 	ResetInstanceData();
@@ -250,6 +251,26 @@ void BloomDemoApplication::Initialize()
 	window_transform_array[ 3 ].SetTranslation( Vector3( -0.3f,	5.0f, -2.3f  ) );
 	window_transform_array[ 4 ].SetTranslation( Vector3(  0.5f,	5.0f, -0.6f  ) );
 
+	const float star_distance = 0.9f * scene_camera->camera.GetFarPlaneOffset();
+
+	for( auto star_index = 0; star_index < STAR_COUNT; star_index++ )
+	{
+		Engine::Math::Polar3_Spherical_Game spherical_coords
+		{
+			star_distance,
+			Engine::Math::Random::Generate( 0.0_rad, Engine::Constants< Radians >::Two_Pi() ),
+			Engine::Math::Random::Generate( -Engine::Constants< Radians >::Pi_Over_Two(), +Engine::Constants< Radians >::Pi_Over_Two() )
+		};
+
+		star_transform_array[ star_index ]
+			.SetScaling( Engine::Math::Random::Generate( 0.08f, 0.12f ) )
+			.SetRotation( spherical_coords.Heading(), spherical_coords.Pitch(), 0.0_rad )
+			.SetTranslation( Engine::Math::ToVector3( spherical_coords ) );
+
+		star_instance_data_array[ star_index ].transform = star_transform_array[ star_index ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
+		star_instance_data_array[ star_index ].color = 1000.0f * Engine::Math::Random::Generate( Engine::Color3{ 180u, 180u, 180u }, Engine::Color3::White() );
+	}
+
 /* Vertex/Index Data: */
 	cube_mesh = Engine::Mesh( Engine::Primitive::Indexed::Cube::Positions,
 							  "Cube",
@@ -333,6 +354,18 @@ void BloomDemoApplication::Initialize()
 													 LIGHT_POINT_COUNT,
 													 GL_DYNAMIC_DRAW );
 
+	triangle_mesh_positions_only = Engine::Mesh( Engine::Primitive::NonIndexed::Triangle::Positions,
+												 "Triangle (Pos. Only)" );
+
+	triangle_mesh_instanced_with_color = Engine::Mesh( triangle_mesh_positions_only,
+													   {
+														   Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START     }, // Transform.
+														   Engine::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }  // Color.
+													   },
+													   reinterpret_cast< std::vector< float >& >( star_instance_data_array ),
+													   STAR_COUNT,
+													   GL_DYNAMIC_DRAW );
+
 /* Lighting: */
 	ResetLightingData();
 
@@ -350,6 +383,10 @@ void BloomDemoApplication::Initialize()
 	light_sources_renderable = Engine::Renderable( &sphere_mesh_instanced_with_color, &light_source_material, 
 												   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
 	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+
+	stars_renderable = Engine::Renderable( &triangle_mesh_instanced_with_color, &star_material,
+										   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
+	renderer->AddRenderable( &stars_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	cube_renderable = Engine::Renderable( &cube_mesh_instanced, &cube_material,
 										  nullptr /* => No Transform here, as we will provide the Transforms as instance data. */,
@@ -483,6 +520,24 @@ void BloomDemoApplication::Update()
 	}
 
 	sphere_mesh_instanced_with_color.UpdateInstanceData( light_source_instance_data_array.data() );
+
+	/* Stars' transform: */
+	for( auto i = 0; i < STAR_COUNT; i++ )
+	{
+		Engine::Math::Polar3_Spherical_Game spherical_coords( Engine::Math::ToPolar3_Spherical_Game( star_transform_array[ i ].GetTranslation() ) );
+
+		spherical_coords.Heading() += 0.01_rad * time_delta;
+
+		star_transform_array[ i ].SetRotation( spherical_coords.Heading(), spherical_coords.Pitch(), 0_rad );
+		star_transform_array[ i ].SetTranslation( Engine::Math::ToVector3( spherical_coords ) );
+
+		// Interesting effect once enough frames have passed:
+		//star_transform_array[ i ].OffsetTranslation( 0.1f * time_delta * ( star_transform_array[ ( i + 1 ) % STAR_COUNT ].GetTranslation() - star_transform_array[ i ].GetTranslation() ).Normalized() );
+
+		star_instance_data_array[ i ].transform = star_transform_array[ i ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
+	}
+
+	triangle_mesh_instanced_with_color.UpdateInstanceData( star_instance_data_array.data() );
 
 	/* Instanced cube's transform: */
 	{
@@ -634,7 +689,6 @@ void BloomDemoApplication::RenderImGui()
 	for( auto& test_material : meteorite_model_info.model_instance.Materials() )
 		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), *renderer );
 	Engine::ImGuiDrawer::Draw( outline_material, *renderer );
-	Engine::ImGuiDrawer::Draw( mirror_quad_material, *renderer );
 
 	if( ImGui::Begin( "Instance Data" ) )
 	{
@@ -795,9 +849,6 @@ void BloomDemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, co
 
 void BloomDemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 {
-	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
-
-	mirror_quad_material.SetTexture( "uniform_tex", &renderer->CustomFramebuffer( 0 ).ColorAttachment() );
 }
 
 void BloomDemoApplication::ResetLightingData()
@@ -874,6 +925,8 @@ void BloomDemoApplication::ResetMaterialData()
 		} );
 
 	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );
+
+	star_material = Engine::Material( "Star", shader_basic_color_instanced );
 	
 	/* Set the first cube's material to Blinn-Phong shader w/ skybox reflection: */
 	cube_reflected_material = Engine::Material( "Cube (Reflected)", shader_blinn_phong_skybox_reflection_shadowed_instanced );
@@ -924,8 +977,6 @@ void BloomDemoApplication::ResetMaterialData()
 
 	outline_material = Engine::Material( "Outline", shader_outline );
 
-	mirror_quad_material = Engine::Material( "Rear-view Mirror", shader_texture_blit );
-
 	ground_quad_surface_data = wall_surface_data = cube_surface_data =
 	{
 		.color_diffuse       = {},
@@ -951,6 +1002,7 @@ void BloomDemoApplication::ResetInstanceData()
 	cube_instance_data_array.resize( CUBE_COUNT );
 	cube_reflected_instance_data_array.resize( CUBE_REFLECTED_COUNT );
 	light_source_instance_data_array.resize( LIGHT_POINT_COUNT );
+	star_instance_data_array.resize( STAR_COUNT );
 }
 
 bool BloomDemoApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const std::string& file_path, const char* name )

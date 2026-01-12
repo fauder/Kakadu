@@ -57,6 +57,7 @@ private:
 private:
 /* Renderer: */
 	Engine::Renderable light_sources_renderable;
+	Engine::Renderable stars_renderable;
 
 	const static constexpr int CUBE_COUNT           = 200'000;
 	const static constexpr int CUBE_REFLECTED_COUNT = 10;
@@ -98,6 +99,8 @@ private:
 	Engine::Mesh cube_reflected_mesh_instanced;
 	Engine::Mesh sphere_mesh_instanced_with_color; // For light sources.
 	Engine::Mesh sphere_mesh, sphere_mesh_lower_detail;
+	Engine::Mesh triangle_mesh_instanced_with_color; // For stars.
+	Engine::Mesh triangle_mesh_positions_only;
 
 /* Shaders: */
 	Engine::Shader* shader_blinn_phong;
@@ -114,8 +117,6 @@ private:
 	Engine::Shader* shader_basic_textured;
 	Engine::Shader* shader_basic_textured_transparent_discard;
 	Engine::Shader* shader_outline;
-
-	Engine::Shader* shader_texture_blit;
 
 /* Models: */
 	ModelInfo test_model_info;
@@ -134,9 +135,9 @@ private:
 
 	Engine::Material outline_material;
 
-	Engine::Material mirror_quad_material;
-
 	Engine::Material sphere_material;
+
+	Engine::Material star_material;
 
 /* Instancing Data: */
 
@@ -149,6 +150,7 @@ private:
 	std::vector< Matrix4x4 > cube_instance_data_array;
 	std::vector< Matrix4x4 > cube_reflected_instance_data_array;
 	std::vector< LightInstanceData > light_source_instance_data_array;
+	std::vector< LightInstanceData > star_instance_data_array;
 
 /* Scene: */
 	/* Lights: */
@@ -159,6 +161,8 @@ private:
 	/* GameObjects: */
 	std::vector< Engine::Transform > cube_transform_array;
 	std::vector< Engine::Transform > cube_reflected_transform_array;
+
+	std::vector< Engine::Transform > star_transform_array;
 
 	Engine::Transform cube_parallax_transform;
 	Engine::Transform ground_transform;
@@ -172,6 +176,7 @@ private:
 	std::array< Engine::Transform, WINDOW_COUNT > window_transform_array;
 
 /* Lighting: */
+	const static constexpr int STAR_COUNT = 1000;
 	const static constexpr int LIGHT_POINT_COUNT = 15;
 
 	Engine::MaterialData::BlinnPhongMaterialData cube_surface_data;
