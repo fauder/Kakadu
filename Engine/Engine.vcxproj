@@ -341,6 +341,7 @@
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Quad_FullScreen.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Circle_Template.hpp" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Sphere.h" />
+    <ClInclude Include="Engine\Graphics\Primitive\Primitive_Triangle.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_UV_Sphere.hpp" />
     <ClInclude Include="Engine\Graphics\RenderPass.h" />
     <ClInclude Include="Engine\Graphics\ShaderIncludePreprocessing.h" />
