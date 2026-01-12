@@ -121,6 +121,8 @@ namespace Engine
 		// TODO: Switch to unsigned map of "Component" UUIDs when Component class is implemented.
 		void RemoveRenderable( Renderable* renderable_to_remove );
 
+		void IsolateRenderable( Renderable* renderable_to_isolate );
+
 		void OnShaderReassign( Shader* previous_shader, const std::string& name_of_material_whose_shader_changed );
 
 		/* 

@@ -952,6 +952,13 @@ namespace Engine
 		}
 	}
 
+	void Renderer::IsolateRenderable( Renderable* renderable_to_isolate )
+	{
+		for( auto& [ queue_id, queue ] : render_queue_map )
+			for( auto& renderable : queue.renderable_list )
+				renderable->ToggleOnOff( renderable == renderable_to_isolate );
+	}
+
 	void Renderer::OnShaderReassign( Shader* previous_shader, const std::string& name_of_material_whose_shader_changed )
 	{
 		for( auto& [ queue_id, queue ] : render_queue_map )
