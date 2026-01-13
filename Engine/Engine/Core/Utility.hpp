@@ -128,6 +128,9 @@ namespace Engine
 				return numeric_value;
 			}
 
+			std::string ToLowerAscii( const std::string_view s );
+			void LowerAscii( std::string& s );
+
 #ifdef _WIN32
 			std::wstring ToWideString( const std::string& string );
 			std::string ToNarrowString( const std::wstring& wstring );

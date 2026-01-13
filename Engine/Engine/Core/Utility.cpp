@@ -259,6 +259,21 @@ namespace Engine
 				return ParseTokenAndAdvance( source, "", end_delimiter );
 			}
 
+			std::string ToLowerAscii( const std::string_view s )
+			{
+				std::string out;
+				out.reserve( s.size() );
+				for( char c : s )
+					out.push_back( static_cast< char >( std::tolower( static_cast< unsigned char >( c ) ) ) );
+				return out;
+			}
+
+			void LowerAscii( std::string& s )
+			{
+				for( char& c : s )
+					c = static_cast< char >( std::tolower( static_cast< unsigned char >( c ) ) );
+			}
+
 #ifdef _WIN32
 			std::wstring ToWideString( const std::string& string )
 			{
