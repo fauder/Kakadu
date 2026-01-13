@@ -89,9 +89,9 @@ float CalculateShadowAmount( float light_dot_normal )
 	int y_limit = _INTRINSIC_SHADOW_SAMPLE_COUNT_X_Y.y / 2;
 	float sample_count = ( x_limit * 2 + 1 ) * ( y_limit * 2 + 1 );
 
-	for( int x = -x_limit; x < x_limit; x++ )
+	for( int x = -x_limit; x <= x_limit; x++ )
 	{
-		for( int y = -y_limit; y < y_limit; y++ )
+		for( int y = -y_limit; y <= y_limit; y++ )
 		{
 			float shadow_map_sample_z = texture( uniform_tex_shadow, ndc_unorm.xy + vec2( x, y ) * texel_size ).r;
 
