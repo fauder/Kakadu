@@ -321,7 +321,8 @@ namespace Engine::ImGuiDrawer
 	bool Draw(		 Math::Polar3_Spherical_Game& spherical_coords, const bool show_radius = true, const char* name = "##spherical_coords" );
 	void Draw( const Math::Polar3_Spherical_Game& spherical_coords,								   const char* name = "##spherical_coords" );
 
-	bool Draw(		 Texture* texture, const char* name = "##texture" );
+	/* non-const Texture* overload is not needed for now so it is removed. */
+
 	void Draw( const Texture* texture, const char* name = "##texture" );
 
 	void Draw( const std::map< std::string, Texture >& texture_map, const Vector2& window_size = { 512.0f, 512.0f } );

@@ -370,28 +370,6 @@ namespace Engine::ImGuiDrawer
 		Draw( spherical_coords.Radius(),  "Radius"  );
 	}
 
-	bool Draw( Texture* texture, const char* name )
-	{
-		// TODO: Implement texture selection.
-
-		if( texture )
-		{
-			if( texture->Type() == TextureType::Texture2D )
-				ImGui::Image( ( ImTextureID )texture->Id().Get(), ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
-			ImGui::SameLine();
-			ImGui::TextColored( ImVec4( 0.84f, 0.59f, 0.45f, 1.0f ), "%s (ID: %d)", texture->Name().c_str(), texture->Id().Get() );
-		}
-		else
-		{
-			const auto& style = ImGui::GetStyle();
-			ImGui::Dummy( ImVec2( 24, 24 ) + style.ItemInnerSpacing );
-			ImGui::SameLine();
-			ImGui::TextColored( ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ), "    <unassigned>" );
-		}
-
-		return false;
-	}
-
 	void Draw( const Texture* texture, const char* name )
 	{
 		if( texture )
