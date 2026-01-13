@@ -40,6 +40,7 @@ namespace Engine
 	Renderer::Renderer( Description&& description )
 		:
 		logger( ServiceLocator< GLLogger >::Get() ),
+		graphics_device_info( Graphics::QueryDeviceInfo() ),
 		framebuffer_default( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR ),
 		framebuffer_current_source( &framebuffer_default ),
 		framebuffer_current_destination( &framebuffer_default ),
@@ -70,6 +71,8 @@ namespace Engine
 #endif // _EDITOR
 	{
 		logger.IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
+
+		ServiceLocator< Graphics::DeviceInfo >::Register( &graphics_device_info );
 
 		if( description.custom_framebuffer_descriptions.size() <= FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT )
 			std::copy( description.custom_framebuffer_descriptions.begin(), description.custom_framebuffer_descriptions.end(), framebuffer_custom_description_array.begin() );

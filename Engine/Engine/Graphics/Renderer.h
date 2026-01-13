@@ -7,6 +7,7 @@
 // Engine Includes.
 #include "Framebuffer.h"
 #include "FullscreenEffect.h"
+#include "GraphicsDeviceInfo.h"
 #include "Renderable.h"
 #include "RenderPass.h"
 #include "Core/BitFlags.hpp"
@@ -389,6 +390,12 @@ namespace Engine
 		 */
 
 		GLLogger& logger;
+
+		/*
+		 * Graphics Device Info:
+		 */
+
+		Graphics::DeviceInfo graphics_device_info;
 
 		/*
 		 * Framebuffer:

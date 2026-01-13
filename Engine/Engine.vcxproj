@@ -347,6 +347,7 @@
     <ClInclude Include="Engine\Graphics\ShaderIncludePreprocessing.h" />
     <ClInclude Include="Engine\Graphics\ShaderSourcePath.hpp" />
     <ClInclude Include="Engine\Graphics\ShaderType.h" />
+    <ClInclude Include="Engine\Graphics\GraphicsDeviceInfo.h" />
     <ClInclude Include="Engine\Math\Intersect.h" />
     <ClInclude Include="Engine\Math\OrthographicProjectionParameters.h" />
     <ClInclude Include="Engine\Math\Rect.h" />
@@ -435,6 +436,7 @@
     <ClCompile Include="Engine\Graphics\TextureLoader.cpp" />
     <ClCompile Include="Engine\Graphics\UniformBlockBindingPointManager.cpp" />
     <ClCompile Include="Engine\Graphics\UniformBufferManager.cpp" />
+    <ClCompile Include="Engine\Graphics\GraphicsDeviceInfo.cpp" />
     <ClCompile Include="Engine\Graphics\VertexLayout.cpp" />
     <ClCompile Include="Engine\Scene\Camera.cpp" />
     <ClCompile Include="Engine\Core\Platform.cpp" />
