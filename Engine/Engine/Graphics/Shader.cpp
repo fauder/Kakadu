@@ -10,6 +10,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Utility.hpp"
 #include "GLLogger.h"
+#include "GraphicsDeviceInfo.h"
 #include "Shader.hpp"
 #include "ShaderIncludePreprocessing.h"
 #include "ShaderTypeInformation.h"
@@ -1413,19 +1414,103 @@ namespace Engine
 										const int log_length,
 										std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const
 	{
+		const auto& graphics_device_vendor = ServiceLocator< Graphics::DeviceInfo >::Get().vendor;
+
 		std::string info_log_str( "\n" );
 		info_log_str.reserve( log_length );
+
 		std::string_view info_log_view( log );
 		auto maybe_next_log_line = Utility::String::ParseNextLineAndAdvance( info_log_view );
+
 		while( maybe_next_log_line.has_value() )
 		{
-			const std::size_t paren_pos = maybe_next_log_line->find( "(" );
+			const std::string_view line = *maybe_next_log_line;
 
-			char file_ID_string[ 4 ];
-			strncpy_s( file_ID_string, maybe_next_log_line->data(), paren_pos );
-			const std::int16_t file_ID = std::atoi( file_ID_string );
+			/*
+			 * NVIDIA
+			 * 
+			 * Expected format: <id>(<line>) error ...
+			 * Example: 0(123) error ...
+			 */
+			if( graphics_device_vendor == Graphics::DeviceInfo::Vendor::Nvidia )
+			{
+				const std::size_t paren_pos = line.find( "(" );
 
-			info_log_str += '\t' + map_of_IDs_per_source_file[ file_ID ].string() + " -> line " + std::string( maybe_next_log_line->substr( paren_pos ) ) + ".\n";
+				char file_ID_string[ 8 ];
+				strncpy_s( file_ID_string, line.data(), paren_pos );
+
+				const std::int16_t file_ID = std::atoi( file_ID_string );
+
+				info_log_str += '\t' + map_of_IDs_per_source_file[ file_ID ].string() + " -> line " + std::string( line.substr( paren_pos ) ) + ".\n";
+
+			}
+			/*
+			 * AMD
+			 *
+			 * Expected format: <id>:<line>: error ...
+			 * Example: ERROR: 0:123: ...
+			 */
+			else if( graphics_device_vendor == Graphics::DeviceInfo::Vendor::Amd )
+			{
+				// Expected: ERROR: <id>:<line>: ...
+				const std::size_t first_colon = line.find( ':' );
+				if( first_colon != std::string_view::npos )
+				{
+					const std::size_t second_colon = line.find( ':', first_colon + 1 );
+
+					if( second_colon != std::string_view::npos )
+					{
+						const std::int16_t file_id = static_cast< std::int16_t >(
+							std::atoi( std::string( line.substr( first_colon + 1,
+																 second_colon - first_colon - 1 ) ).c_str() ) );
+
+						const std::size_t third_colon = line.find( ':', second_colon + 1 );
+
+						const int line_number = std::atoi( std::string( line.substr( second_colon + 1,
+																					 third_colon - second_colon - 1 ) ).c_str() );
+
+						info_log_str += '\t' + map_of_IDs_per_source_file[ file_id ].string() + " -> line " + std::to_string( line_number ) + ": " +
+							std::string( line.substr( third_colon + 1 ) ) + '\n';
+					}
+				}
+			}
+
+			/*
+			 * Intel/Mesa
+			 * 
+			 * Expected format: <id>:<line>(<col>): ...
+			 */
+			else if( graphics_device_vendor == Graphics::DeviceInfo::Vendor::Intel ||
+					 graphics_device_vendor == Graphics::DeviceInfo::Vendor::Mesa )
+			{
+				const std::size_t first_colon = line.find( ':' );
+				if( first_colon != std::string_view::npos )
+				{
+					const std::int16_t file_id =
+						static_cast< std::int16_t >(
+							std::atoi(
+								std::string( line.substr( 0, first_colon ) ).c_str() ) );
+
+					const std::size_t paren_pos = line.find( '(' );
+					if( paren_pos != std::string_view::npos )
+					{
+						const int line_number = std::atoi(
+							std::string( line.substr( first_colon + 1,
+													  paren_pos - first_colon - 1 ) ).c_str() );
+
+						info_log_str += '\t' + map_of_IDs_per_source_file[ file_id ].string() + " -> line " + std::to_string( line_number ) + ": " + std::string( line ) +'\n';
+					}
+				}
+			}
+			/*
+			 * Unknown:
+			 */
+			else
+			{
+				info_log_str += '\t';
+				info_log_str += line;
+				info_log_str += '\n';
+			}
 
 			maybe_next_log_line = Utility::String::ParseNextLineAndAdvance( info_log_view );
 		}
