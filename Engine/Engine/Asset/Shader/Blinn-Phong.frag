@@ -65,7 +65,8 @@ uniform uvec2 uniform_parallax_depth_layer_count_min_max;
 #endif
 
 #ifdef SHADOWS_ENABLED
-/* Returns either 1 = in-shadow or 0 = not in shadow. */
+/* Returns either 1 = in-shadow or 0 = not in shadow.
+ * For the soft-shadows case, it returns a value between 0 and 1 (inclusive). */
 float CalculateShadowAmount( float light_dot_normal )
 {
 	vec3 ndc       = fs_in.position_light_directional_clip_space.xyz / fs_in.position_light_directional_clip_space.w;
@@ -128,7 +129,7 @@ vec3 CalculateColorFromDirectionalLight( vec4 normal_view_space, vec4 viewing_di
 	vec3 specular               = specular_sample * _INTRINSIC_DIRECTIONAL_LIGHT.specular.rgb * specular_contribution;
 
 #ifdef SHADOWS_ENABLED
-	float shadow = CalculateShadowAmount( dot( _INTRINSIC_DIRECTIONAL_LIGHT.direction_view_space, normal_view_space ) );
+	float shadow = CalculateShadowAmount( dot( -_INTRINSIC_DIRECTIONAL_LIGHT.direction_view_space, normal_view_space ) );
 	return ambient + ( 1.0f - shadow ) * ( diffuse + specular );
 #else
 	return ambient + diffuse + specular;
