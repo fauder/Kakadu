@@ -325,7 +325,8 @@ namespace Engine::ImGuiDrawer
 
 	void Draw( const Texture* texture, const char* name = "##texture" );
 
-	void Draw( const std::map< std::string, Texture >& texture_map, const Vector2& window_size = { 512.0f, 512.0f } );
+	void Draw( const std::map< std::string, Texture  >& texture_map, const Vector2& window_size = { 512.0f, 512.0f } );
+	void Draw( const std::map< std::string, Texture* >& texture_map, const Vector2& window_size = { 512.0f, 512.0f } );
 
 	bool Draw(		 Camera& camera, const char* name = "##camera", const bool disable_aspect_ratio_and_fov = false );
 	void Draw( const Camera& camera, const char* name = "##camera" );

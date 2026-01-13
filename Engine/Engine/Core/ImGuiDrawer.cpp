@@ -479,6 +479,97 @@ namespace Engine::ImGuiDrawer
 		ImGui::End();
 	}
 
+	void Draw( const std::map< std::string, Texture* >& internal_texture_map, const Vector2& window_size )
+	{
+		local_persist const Texture* selected_texture = nullptr;
+
+		ImGui::SetNextWindowSize( reinterpret_cast< const ImVec2& >( window_size ) );
+		if( ImGui::Begin( ICON_FA_IMAGE " Textures (Internal)" ) )
+		{
+			const ImVec2 region_available( ImGui::GetContentRegionAvail() );
+			const auto& style = ImGui::GetStyle();
+			const float separator_height( style.ItemSpacing.y * 2.0f );
+			const float line_height( ImGui::CalcTextSize( "A" ).y );
+
+			const ImVec2 child_size( region_available.x, 
+									 selected_texture
+										? region_available.y / 2.0f - separator_height - line_height
+										: region_available.y );
+
+			if( ImGui::BeginChild( "Textures (Internal)", child_size ) )
+			{
+				for( const auto& [ texture_asset_name, texture ] : internal_texture_map )
+				{
+					ImGui::PushID( texture_asset_name.c_str() );
+					if( ImGui::Selectable( "", selected_texture == texture ) )
+						selected_texture = texture;
+					ImGui::PopID();
+					ImGui::SameLine();
+					Engine::ImGuiDrawer::Draw( texture, texture_asset_name.c_str() );
+				}
+			}
+
+			ImGui::EndChild();
+
+			if( selected_texture )
+			{
+				ImGui::Separator();
+
+				const ImVec2 preview_area_size( ImGui::GetContentRegionAvail() - ImVec2( 0.0f, line_height ) );
+
+				const float image_width( ( float )selected_texture->Width() );
+				const float image_height( ( float )selected_texture->Height() );
+				const float image_aspect_ratio = image_width / image_height;
+
+				const float image_width_fit  = preview_area_size.y < preview_area_size.x ? image_aspect_ratio * preview_area_size.y : preview_area_size.x;
+				const float image_height_fit = image_width_fit / image_aspect_ratio;
+
+				const float padding_x = ( preview_area_size.x - image_width_fit ) / 2.0f;
+				const float padding_y = ( preview_area_size.y - image_height_fit ) / 2.0f;
+
+				auto DisplayPreviewUnavailableTextInsteadOfImage = [ & ]( const char* text )
+				{
+					const auto indent = ( preview_area_size.x - ImGui::CalcTextSize( text ).x ) / 2.0f;
+					ImGui::Dummy( preview_area_size - ImVec2( 0.0f, line_height ) );
+					ImGui::Indent( indent );
+					ImGui::TextUnformatted( text );
+					ImGui::Unindent( indent );
+				};
+
+				switch( selected_texture->Type() )
+				{
+					case TextureType::Texture2D:
+						ImGui::SetCursorPos( ImGui::GetCursorPos() + ImVec2( padding_x, padding_y ) );
+						ImGui::Image( ( ImTextureID )selected_texture->Id().Get(), ImVec2( image_width_fit, image_height_fit ), { 0, 1 }, { 1, 0 } );
+						break;
+
+					case TextureType::Texture2D_MultiSample:
+						DisplayPreviewUnavailableTextInsteadOfImage( ICON_FA_NOTDEF " 2D Texture (Multisampled) Preview Unavailable" );
+						break;
+
+					case TextureType::Cubemap:
+						DisplayPreviewUnavailableTextInsteadOfImage( ICON_FA_NOTDEF " Cubemap Texture Preview Unavailable" );
+						break;
+
+					default:
+						DisplayPreviewUnavailableTextInsteadOfImage( ICON_FA_XMARK " Unknown texture type encountered!" );
+						break;
+				}
+
+				char info_line_buffer[ 255 ];
+				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( int )image_width, ( int )image_height, Texture::FormatName( selected_texture->PixelFormat() ) );
+				ImGui::Indent( ( preview_area_size.x - ImGui::CalcTextSize( info_line_buffer ).x ) / 2.0f );
+				ImGui::TextUnformatted( info_line_buffer );
+				ImGui::SameLine();
+				DrawTextureFormatDecorationsOnly( *selected_texture );
+			}
+			else
+				ImGui::Dummy( ImGui::GetContentRegionAvail() );
+		}
+
+		ImGui::End();
+	}
+
 	bool Draw( Camera& camera, const char* name, const bool disable_aspect_ratio_and_fov )
 	{
 		bool is_modified = false;

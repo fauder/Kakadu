@@ -3,6 +3,7 @@
 #include "BuiltinShaders.h"
 #include "BuiltinTextures.h"
 #include "Core/AssetDatabase.hpp"
+#include "Core/AssetDatabase_Tracked.hpp"
 #include "Core/ImGuiCustomColors.h"
 #include "Core/ImGuiDrawer.hpp"
 #include "Core/ImGuiUtility.h"
@@ -639,6 +640,9 @@ namespace Engine
 		/* Shaders: */
 		for( auto& shader : shaders_registered )
 			ImGuiDrawer::Draw( *shader );
+
+		/* Textures: */
+		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().Assets() );
 
 		/* Materials: */
 		ImGuiDrawer::Draw( skybox_material,				*this );
