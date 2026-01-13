@@ -104,6 +104,17 @@ namespace Engine
 		depth_attachment( std::exchange( donor.depth_attachment, Texture{} ) ),
 		stencil_attachment( std::exchange( donor.stencil_attachment, Texture{} ) )
 	{
+		if( HasColorAttachment() )
+			ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &color_attachment );
+		if( HasCombinedDepthStencilAttachment() )
+			ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &depth_stencil_attachment );
+		else
+		{
+			if( HasSeparateDepthAttachment() )
+				ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &depth_attachment );
+			if( HasSeparateStencilAttachment() )
+				ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &stencil_attachment );
+		}
 	}
 
 	Framebuffer& Framebuffer::operator=( Framebuffer&& donor )
@@ -123,6 +134,18 @@ namespace Engine
 		depth_stencil_attachment = std::exchange( donor.depth_stencil_attachment,	Texture{} );
 		depth_attachment         = std::exchange( donor.depth_attachment,			Texture{} );
 		stencil_attachment       = std::exchange( donor.stencil_attachment,			Texture{} );
+
+		if( HasColorAttachment() )
+			ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &color_attachment );
+		if( HasCombinedDepthStencilAttachment() )
+			ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &depth_stencil_attachment );
+		else
+		{
+			if( HasSeparateDepthAttachment() )
+				ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &depth_attachment );
+			if( HasSeparateStencilAttachment() )
+				ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &stencil_attachment );
+		}
 
 		return *this;
 	}
