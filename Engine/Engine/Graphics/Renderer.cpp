@@ -112,7 +112,8 @@ namespace Engine
 														  RecompileModifiedShaders();
 													  },
 													  .duration_in_seconds = 0.1f, // Seems enough.
-													  .is_looping = true
+													  .is_looping          = true,
+												      .use_real_time       = true
 												  } );
 #endif // _EDITOR
 	}                                             
