@@ -19,6 +19,7 @@ namespace Engine
 				on_execute.target< void( * )( float ) >() == other.on_execute.target< void( * )( float ) >() &&
 				on_complete.target< void( * )( float ) >() == other.on_complete.target< void( * )( float ) >() &&
 				is_looping == other.is_looping &&
+				use_real_time == other.use_real_time &&
 				Math::IsEqual( duration_in_seconds, other.duration_in_seconds ) &&
 				Math::IsEqual( remaining_duration_in_seconds, other.remaining_duration_in_seconds );
         }
@@ -34,5 +35,6 @@ namespace Engine
 		float duration_in_seconds;
 		float remaining_duration_in_seconds;
 		bool is_looping = false;
+		bool use_real_time = false; // If true, current time multiplier affects the passage of time for the Morph.
 	};
 }

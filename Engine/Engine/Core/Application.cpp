@@ -181,7 +181,7 @@ namespace Engine
 				Platform::OffsetMouseCursorPosition( 0.0f, -1.0f );
 		}
 
-		morph_system.Execute( time_delta );
+		morph_system.Execute( time_delta, time_delta_real );
 
 #ifdef _EDITOR
 		scene_camera->Update( time_current, time_delta, not ui_interaction_enabled );

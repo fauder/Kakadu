@@ -24,7 +24,7 @@ namespace Engine
 		 */
 
 		void Add( Morph&& new_morph );
-		void Execute( const float delta_time_in_seconds );
+		void Execute( const float delta_time_in_seconds, const float delta_time_in_real_seconds );
 
 	private:
 		std::vector< Morph > morph_array;

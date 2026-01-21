@@ -12,14 +12,16 @@ namespace Engine
 		morph_array.emplace_back( std::move( new_morph ) );
 	}
 
-	void MorphSystem::Execute( const float delta_time_in_seconds )
+	void MorphSystem::Execute( const float delta_time_in_seconds, const float delta_time_in_real_seconds )
 	{
 		// Use erase-remove idiom to remove finished Morphs.
 		auto remove_iterator = morph_array.end();
 
 		for( auto& morph : morph_array )
 		{
-			if( morph.remaining_duration_in_seconds < delta_time_in_seconds )
+			const float correct_delta_time_in_seconds = morph.use_real_time ? delta_time_in_real_seconds : delta_time_in_seconds;
+
+			if( morph.remaining_duration_in_seconds < correct_delta_time_in_seconds )
 			{
 				if( morph.on_execute )
 				{
@@ -39,11 +41,11 @@ namespace Engine
 			{
 				if( morph.on_execute )
 				{
-					const auto t = ( morph.duration_in_seconds - ( morph.remaining_duration_in_seconds - delta_time_in_seconds ) ) / morph.duration_in_seconds;
+					const auto t = ( morph.duration_in_seconds - ( morph.remaining_duration_in_seconds - correct_delta_time_in_seconds ) ) / morph.duration_in_seconds;
 					morph.on_execute( t );
 				}
 
-				morph.remaining_duration_in_seconds -= delta_time_in_seconds;
+				morph.remaining_duration_in_seconds -= correct_delta_time_in_seconds;
 			}
 		}
 
