@@ -233,7 +233,8 @@ namespace Engine
 					}
 					else
 					{
-						OnFramebufferResizeEvent( Platform::GetFramebufferSizeInPixels() );
+						const Vector2I framebuffer_size = Platform::GetFramebufferSizeInPixels();
+						HandleFramebufferResizeEvent( framebuffer_size.X(), framebuffer_size.Y() );
 						renderer->SetFinalPassToUseDefaultFramebuffer();
 					}
 				}
@@ -262,15 +263,6 @@ namespace Engine
 			OffsetViewportMagnifierZoomFactor( y_offset > 0 );
 	}
 
-	void Application::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
-	{
-	}
-
-	void Application::OnFramebufferResizeEvent( const Vector2I new_size_pixels )
-	{
-		OnFramebufferResizeEvent( new_size_pixels.X(), new_size_pixels.Y() );
-	}
-
 #ifdef _EDITOR
 	Vector2 Application::GetMouseScreenSpacePosition() const
 	{
@@ -294,28 +286,28 @@ namespace Engine
 	}
 #endif
 
-	void Application::OnKeyboardEventInternal( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
+	void Application::HandleKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
 		// No need to query ImGui::GetIO().WantCaptureKeyboard here because Platform already queries it before calling this function.
 
 		OnKeyboardEvent( key_code, key_action, key_mods );
 	}
 
-	void Application::OnMouseButtonEventInternal( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
+	void Application::HandleMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
 	{
 		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function.
 
 		OnMouseButtonEvent( button, button_action, key_mods );
 	}
 
-	void Application::OnMouseScrollEventInternal( const float x_offset, const float y_offset )
+	void Application::HandleMouseScrollEvent( const float x_offset, const float y_offset )
 	{
 		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function.
 
 		OnMouseScrollEvent( x_offset, y_offset );
 	}
 
-	void Application::OnFramebufferResizeEventInternal( const int width_new_pixels, const int height_new_pixels )
+	void Application::HandleFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 	{
 		/* Do nothing on minimize: */
 		if( width_new_pixels == 0 || height_new_pixels == 0 ||
@@ -401,7 +393,7 @@ namespace Engine
 			if( viewport_available_size != renderer->EditorViewportFramebuffer().Size() &&
 				( not imgui_io.WantCaptureMouse || not imgui_io.MouseDown[ 0 ] ) )
 			{
-				OnFramebufferResizeEvent( viewport_available_size.X(), viewport_available_size.Y() );
+				HandleFramebufferResizeEvent( viewport_available_size.X(), viewport_available_size.Y() );
 			}
 
 			/* Collect information for mouse hover/pos. info detection OUTSIDE the Begin()/End() block here. */
