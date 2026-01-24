@@ -33,10 +33,11 @@ namespace Engine
 					 Renderer::Description&& renderer_description );
 		virtual ~Application();
 
+		void Run();
+
+	protected:
 		virtual void Initialize();
 		virtual void Shutdown();
-
-		void Run();
 
 		virtual void Update();
 
@@ -55,7 +56,6 @@ namespace Engine
 		virtual void RenderImGui();
 #endif // _EDITOR
 
-	protected:
 		struct ViewportWindowInfo
 		{
 			static constexpr std::uint8_t SMALLEST_MAGNIFIER_ZOOM_FACTOR = 4;

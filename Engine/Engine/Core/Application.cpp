@@ -61,56 +61,6 @@ namespace Engine
 		Shutdown();
 	}
 
-	void Application::Initialize()
-	{
-		ServiceLocator< GLLogger >::Register( &gl_logger );
-		ServiceLocator< AssetDatabase< Texture > >::Register( &asset_database_texture );
-		ServiceLocator< AssetDatabase_Tracked< Texture* > >::Register( &asset_database_texture_tracked );
-		ServiceLocator< AssetDatabase< Model > >::Register( &asset_database_model );
-		ServiceLocator< MorphSystem >::Register( &morph_system );
-
-		Platform::InitializeAndCreateWindow( 800, 600, vsync_is_enabled );
-
-		const auto version = glGetString( GL_VERSION );
-		std::cout << version << "\n\n";
-
-		ImGuiSetup::Initialize( gamma_correction_is_enabled );
-		ImGuiDrawer::Initialize();
-
-		Platform::SetKeyboardEventCallback(
-			[ = ]( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
-			{
-				this->OnKeyboardEventInternal( key_code, key_action, key_mods );
-			} );
-
-		Platform::SetMouseButtonEventCallback(
-			[ = ]( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
-			{
-				this->OnMouseButtonEventInternal( button, button_action, key_mods );
-			} );
-
-		Platform::SetMouseScrollEventCallback(
-			[ = ]( const float x_offset, const float y_offset )
-			{
-				this->OnMouseScrollEventInternal( x_offset, y_offset );
-			} );
-
-		Platform::SetFramebufferResizeCallback(
-			[ = ]( const int width_new_pixels, const int height_new_pixels )
-			{
-				this->OnFramebufferResizeEventInternal( width_new_pixels, height_new_pixels );
-			} );
-
-#ifdef _EDITOR
-		Platform::SetGLDebugOutputCallback( gl_logger.GetCallback() );
-#endif // _EDITOR
-	}
-
-	void Application::Shutdown()
-	{
-		ImGuiSetup::Shutdown();
-	}
-
 	void Application::Run()
 	{
 		TracyGpuContext;
@@ -165,6 +115,56 @@ namespace Engine
 			TracyGpuCollect;
 			FrameMark;
 		}
+	}
+
+	void Application::Initialize()
+	{
+		ServiceLocator< GLLogger >::Register( &gl_logger );
+		ServiceLocator< AssetDatabase< Texture > >::Register( &asset_database_texture );
+		ServiceLocator< AssetDatabase_Tracked< Texture* > >::Register( &asset_database_texture_tracked );
+		ServiceLocator< AssetDatabase< Model > >::Register( &asset_database_model );
+		ServiceLocator< MorphSystem >::Register( &morph_system );
+
+		Platform::InitializeAndCreateWindow( 800, 600, vsync_is_enabled );
+
+		const auto version = glGetString( GL_VERSION );
+		std::cout << version << "\n\n";
+
+		ImGuiSetup::Initialize( gamma_correction_is_enabled );
+		ImGuiDrawer::Initialize();
+
+		Platform::SetKeyboardEventCallback(
+			[ = ]( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
+			{
+				this->HandleKeyboardEvent( key_code, key_action, key_mods );
+			} );
+
+		Platform::SetMouseButtonEventCallback(
+			[ = ]( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
+			{
+				this->HandleMouseButtonEvent( button, button_action, key_mods );
+			} );
+
+		Platform::SetMouseScrollEventCallback(
+			[ = ]( const float x_offset, const float y_offset )
+			{
+				this->HandleMouseScrollEvent( x_offset, y_offset );
+			} );
+
+		Platform::SetFramebufferResizeCallback(
+			[ = ]( const int width_new_pixels, const int height_new_pixels )
+			{
+				this->HandleFramebufferResizeEvent( width_new_pixels, height_new_pixels );
+			} );
+
+#ifdef _EDITOR
+		Platform::SetGLDebugOutputCallback( gl_logger.GetCallback() );
+#endif // _EDITOR
+	}
+
+	void Application::Shutdown()
+	{
+		ImGuiSetup::Shutdown();
 	}
 
 	void Application::Update()
