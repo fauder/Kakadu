@@ -1265,6 +1265,16 @@ namespace Engine
 		}
 	}
 
+	void Renderer::SetTonemappingExposure( const float new_exposure_ev )
+	{
+		tone_mapping.material.Set( "uniform_exposure_ev", new_exposure_ev );
+	}
+
+	void Renderer::SetTonemappingBloomIntensity( const float new_bloom_intensity )
+	{
+		tone_mapping.material.Set( "uniform_bloom_intensity", new_bloom_intensity );
+	}
+
 /*
  * 
  *	PRIVATE API:
@@ -1641,6 +1651,12 @@ namespace Engine
 	void Renderer::InitializeBuiltinMaterials()
 	{
 		skybox_material = Engine::Material( "Skybox", skybox_shader );
+
+		msaa_resolve.material = Material( "[Renderer] MSAA Resolve", msaa_resolve_shader );
+		tone_mapping.material = Material( "[Renderer] Tonemapping", tone_mapping_shader );
+
+		SetTonemappingExposure( 0.0f );
+		SetTonemappingBloomIntensity( 0.01f );
 	}
 
 	void Renderer::InitializeBuiltinRenderables()
@@ -1650,46 +1666,34 @@ namespace Engine
 
 	void Renderer::InitializeBuiltinFullscreenEffects()
 	{
-		msaa_resolve = FullscreenEffect
+		msaa_resolve.name = "MSAA Resolve";
+		msaa_resolve.steps = { 1, FullscreenEffect::Step
 		{
-			.name  = "MSAA Resolve",
-			.steps = { 1, FullscreenEffect::Step
-			{
-				.framebuffer_target = &framebuffer_postprocessing,
-				.texture_input      = &framebuffer_main.ColorAttachment()
-			} },
-			.material = Material( "[Renderer] MSAA Resolve", msaa_resolve_shader )
-			
-			// Execution routine is defaulted.
-		};
+			.framebuffer_target = &framebuffer_postprocessing,
+			.texture_input      = &framebuffer_main.ColorAttachment()
+		} };
+		msaa_resolve.execution_routine = {};
 
-		tone_mapping = FullscreenEffect
+		tone_mapping.name = "Tonemapping";
+		tone_mapping.steps = { 1, FullscreenEffect::Step
 		{
-			.name = "Tonemapping",
-			.steps = { 1, FullscreenEffect::Step
-			{
-				.framebuffer_target = &framebuffer_editor_viewport,
-				.texture_input      = &framebuffer_postprocessing.ColorAttachment()
-			} },
-			.material = Material( "[Renderer] Tonemapping", tone_mapping_shader ),
-			.execution_routine = [ & ]( Renderer& renderer )
-			{
-				tone_mapping.material.Bind();
+			.framebuffer_target = &framebuffer_editor_viewport,
+			.texture_input      = &framebuffer_postprocessing.ColorAttachment()
+		} };
+		tone_mapping.execution_routine = [ & ]( Renderer& renderer )
+		{
+			tone_mapping.material.Bind();
 
-				const auto& step = tone_mapping.steps.front();
+			const auto& step = tone_mapping.steps.front();
 
-				SetRenderState( tone_mapping.render_state, step.framebuffer_target );
+			SetRenderState( tone_mapping.render_state, step.framebuffer_target );
 
-				tone_mapping.material.SetTexture( "uniform_tex_color", step.texture_input );
-				tone_mapping.material.SetTexture( "uniform_tex_bloom", &bloom_downsampling.framebuffers.front().ColorAttachment() );
-				tone_mapping.material.UploadUniforms();
+			tone_mapping.material.SetTexture( "uniform_tex_color", step.texture_input );
+			tone_mapping.material.SetTexture( "uniform_tex_bloom", &bloom_downsampling.framebuffers.front().ColorAttachment() );
+			tone_mapping.material.UploadUniforms();
 
-				DrawPostProcessingEffectStep();
-			}
+			DrawPostProcessingEffectStep();
 		};
-
-		tone_mapping.material.Set( "uniform_exposure_ev", 1.0f );
-		tone_mapping.material.Set( "uniform_bloom_intensity", 0.001f );
 	}
 
 	void Renderer::InitializeBuiltinPostprocessingEffects()
