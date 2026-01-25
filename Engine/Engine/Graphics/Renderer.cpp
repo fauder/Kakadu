@@ -1270,9 +1270,9 @@ namespace Engine
 		tone_mapping.material.Set( "uniform_exposure_ev", new_exposure_ev );
 	}
 
-	void Renderer::SetTonemappingBloomIntensity( const float new_bloom_intensity )
+	void Renderer::SetTonemappingBloomIntensity( const Percentage new_bloom_intensity )
 	{
-		tone_mapping.material.Set( "uniform_bloom_intensity", new_bloom_intensity );
+		tone_mapping.material.Set( "uniform_bloom_intensity", new_bloom_intensity.Value() );
 	}
 
 /*
@@ -1655,8 +1655,10 @@ namespace Engine
 		msaa_resolve.material = Material( "[Renderer] MSAA Resolve", msaa_resolve_shader );
 		tone_mapping.material = Material( "[Renderer] Tonemapping", tone_mapping_shader );
 
+		using namespace Math::Literals;
+
 		SetTonemappingExposure( 0.0f );
-		SetTonemappingBloomIntensity( 0.01f );
+		SetTonemappingBloomIntensity( 5_percent );
 	}
 
 	void Renderer::InitializeBuiltinRenderables()

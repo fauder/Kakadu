@@ -17,6 +17,7 @@
 #include "Lighting/SpotLight.h"
 #include "UniformBufferManagement.hpp"
 #include "Math/OrthographicProjectionParameters.h"
+#include "Math/Percentage.hpp"
 #include "Scene/Camera.h"
 
 // std Includes.
@@ -234,7 +235,7 @@ namespace Engine
 		 */
 
 		void SetTonemappingExposure( const float new_exposure_ev );
-		void SetTonemappingBloomIntensity( const float new_bloom_intensity );
+		void SetTonemappingBloomIntensity( const Percentage new_bloom_intensity );
 
 	private:
 
