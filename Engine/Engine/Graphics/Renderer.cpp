@@ -1800,8 +1800,6 @@ namespace Engine
 			bloom_upsampling.steps.push_back( std::move( step ) );
 		}
 
-		bloom_upsampling.material.Set( "uniform_sample_radius", 0.004f );
-
 		bloom_downsampling.execution_routine = [ & ]( Renderer& renderer )
 		{
 			Blit( framebuffer_postprocessing, bloom_downsampling.framebuffers.front() );
