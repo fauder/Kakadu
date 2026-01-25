@@ -616,6 +616,34 @@ namespace Engine
 						ImGuiDrawer::Draw( editor_wireframe_color, "Wireframe Color" );
 					}
 
+					/* Bloom: */
+					ImGui::NewLine();
+					ImGui::SeparatorText( "Bloom" );
+					{
+						/* Anti-flicker: */
+						const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.ColorAttachment().PixelFormat() ];
+
+						local_persist int anti_flicker_option = 0;
+
+						anti_flicker_option =
+							int( bloom_shader_downsample->name == "Post-Process Bloom Downsample (Anti Flicker Coarse)" ) +
+							int( bloom_shader_downsample->name == "Post-Process Bloom Downsample (Anti Flicker Fine)" ) * 2;
+
+						const char* option_names[ 3 ] = { "Off", "Coarse", "Fine" };
+						if( ImGui::SliderInt( "Anti-flicker (Firefly Mitigation)", &anti_flicker_option, 0, 2, option_names[ anti_flicker_option ] ) )
+						{
+							switch( anti_flicker_option )
+							{
+								default:
+								case 0: bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample" ); break;
+								case 1: bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Coarse)" ); break;
+								case 2: bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Fine)" ); break;
+							}
+
+							bloom_downsampling.material.SetShader( bloom_shader_downsample );
+						}
+					}
+
 					/* Misc.: */
 					ImGui::NewLine();
 					ImGui::SeparatorText( "Misc." );
@@ -1642,7 +1670,7 @@ namespace Engine
 		snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
 		msaa_resolve_shader = BuiltinShaders::Get( buffer );
 
-		bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample" );
+		bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Fine)" );
 		bloom_shader_upsample   = BuiltinShaders::Get( "Post-Process Bloom Upsample" );
 
 		tone_mapping_shader = BuiltinShaders::Get( "Tonemapping (Bloom)" );
@@ -1810,12 +1838,18 @@ namespace Engine
 
 			renderer.SetRenderState( bloom_downsampling.render_state );
 
-			for( auto& downsample_step : bloom_downsampling.steps )
+			for( std::uint8_t step_index = 0; step_index < bloom_downsampling.steps.size(); step_index++ )
 			{
+				const auto& downsample_step = bloom_downsampling.steps[ step_index ];
+
 				renderer.SetDestinationFramebuffer( downsample_step.framebuffer_target );
 
 				bloom_downsampling.material.SetTexture( "uniform_tex_source", downsample_step.texture_input );
 				bloom_downsampling.material.Set( "uniform_source_resolution", downsample_step.texture_input->Size() );
+
+				if( bloom_shader_downsample->name.find( "flicker" ) != std::string::npos )
+					bloom_downsampling.material.Set( "uniform_mip_level", ( unsigned int )step_index );
+
 				bloom_downsampling.material.UploadUniforms();
 
 				renderer.DrawPostProcessingEffectStep();

@@ -183,6 +183,16 @@ namespace Engine
 								"Post-Process Bloom Downsample",
 								FullVertexShaderPath( "PassThrough_UVs.vert" ),
 								FullFragmentShaderPath( "BloomDownsample.frag" ) );
+		SHADER_MAP.try_emplace( "Post-Process Bloom Downsample (Anti Flicker Coarse)",
+								"Post-Process Bloom Downsample (Anti Flicker Coarse)",
+								FullVertexShaderPath( "PassThrough_UVs.vert" ),
+								FullFragmentShaderPath( "BloomDownsample.frag" ),
+								Shader::Features{ "ANTI_FLICKER_COARSE" } );
+		SHADER_MAP.try_emplace( "Post-Process Bloom Downsample (Anti Flicker Fine)",
+								"Post-Process Bloom Downsample (Anti Flicker Fine)",
+								FullVertexShaderPath( "PassThrough_UVs.vert" ),
+								FullFragmentShaderPath( "BloomDownsample.frag" ),
+								Shader::Features{ "ANTI_FLICKER_FINE" } );
 		SHADER_MAP.try_emplace( "Post-Process Bloom Upsample",
 								"Post-Process Bloom Upsample",
 								FullVertexShaderPath( "PassThrough_UVs.vert" ),
