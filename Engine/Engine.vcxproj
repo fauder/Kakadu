@@ -438,6 +438,7 @@
     <ClCompile Include="Engine\Graphics\UniformBufferManager.cpp" />
     <ClCompile Include="Engine\Graphics\GraphicsDeviceInfo.cpp" />
     <ClCompile Include="Engine\Graphics\VertexLayout.cpp" />
+    <ClCompile Include="Engine\Math\Percentage.hpp" />
     <ClCompile Include="Engine\Scene\Camera.cpp" />
     <ClCompile Include="Engine\Core\Platform.cpp" />
     <ClCompile Include="Engine\Graphics\Shader.cpp" />

@@ -449,6 +449,9 @@
     <ClCompile Include="Engine\Graphics\GraphicsDeviceInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Math\Percentage.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Engine.natvis" />
