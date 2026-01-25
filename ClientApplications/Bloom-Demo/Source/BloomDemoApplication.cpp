@@ -268,7 +268,7 @@ void BloomDemoApplication::Initialize()
 			.SetTranslation( Engine::Math::ToVector3( spherical_coords ) );
 
 		star_instance_data_array[ star_index ].transform = star_transform_array[ star_index ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
-		star_instance_data_array[ star_index ].color = 1000.0f * Engine::Math::Random::Generate( Engine::Color3{ 180u, 180u, 180u }, Engine::Color3::White() );
+		star_instance_data_array[ star_index ].color     = 1000.0f * Engine::Math::Random::Generate( Engine::Color3{ 180u, 180u, 180u }, Engine::Color3::White() );
 	}
 
 /* Vertex/Index Data: */
@@ -435,6 +435,8 @@ void BloomDemoApplication::Initialize()
 
 	renderer->SetClearColor( Engine::Color4::Black() );
 
+	cube_reflected_renderable.ToggleOnOff( false );
+
 /* Camera: */
 	//ResetCamera(); // TODO: Game camera rendering.
 
@@ -479,7 +481,8 @@ void BloomDemoApplication::Update()
 	// TODO: Separate application logs from GL logs.
 
 	current_time_as_angle = Radians( time_current );
-	const Radians current_time_mod_two_pi( std::fmod( time_current, Engine::Constants< float >::Two_Pi() ) );
+	constexpr float lights_slow_down_factor = 0.45f;
+	const Radians scaled_current_time_mod_two_pi( std::fmod( time_current * lights_slow_down_factor, Engine::Constants< float >::Two_Pi() ) );
 
 	/* Light sources' transform: */
 	constexpr Radians angle_increment( Engine::Constants< Radians >::Two_Pi() / LIGHT_POINT_COUNT );
@@ -494,7 +497,7 @@ void BloomDemoApplication::Update()
 			Radians old_heading, old_pitch, bank;
 			Engine::Math::QuaternionToEuler( old_rotation, old_heading, old_pitch, bank );
 
-			Radians new_angle( Engine::Constants< Radians >::Pi_Over_Two() + current_time_mod_two_pi + ( float )angle_increment * ( float )i );
+			Radians new_angle( Engine::Constants< Radians >::Pi_Over_Two() + scaled_current_time_mod_two_pi + ( float )angle_increment * ( float )i );
 			const Radians new_angle_mod_two_pi( std::fmod( new_angle.Value(), Engine::Constants< float >::Two_Pi() ) );
 
 			const bool heading_instead_of_pitching = new_angle_mod_two_pi <= Engine::Constants< Radians >::Pi();
@@ -516,7 +519,6 @@ void BloomDemoApplication::Update()
 		light_point_transform_array[ i ].SetTranslation( point_light_position_world_space );
 
 		light_source_instance_data_array[ i ].transform = light_point_transform_array[ i ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
-		light_source_instance_data_array[ i ].color     = 400.0f * Engine::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
 	}
 
 	sphere_mesh_instanced_with_color.UpdateInstanceData( light_source_instance_data_array.data() );
@@ -871,7 +873,7 @@ void BloomDemoApplication::ResetLightingData()
 
 	light_point_array_disable      = false;
 	light_point_array_is_animated  = true;
-	light_point_orbit_radius       = 20.0f;
+	light_point_orbit_radius       = 11.0f;
 
 	light_spot_array_disable = false;
 
@@ -926,6 +928,9 @@ void BloomDemoApplication::ResetMaterialData()
 
 	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );
 
+	for( int i = 0; i < LIGHT_POINT_COUNT; i++ )
+		light_source_instance_data_array[ i ].color = 100.0f * Engine::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
+
 	star_material = Engine::Material( "Star", shader_basic_color_instanced );
 	
 	/* Set the first cube's material to Blinn-Phong shader w/ skybox reflection: */
@@ -940,7 +945,7 @@ void BloomDemoApplication::ResetMaterialData()
 
 	cube_material = Engine::Material( "Cube", shader_blinn_phong_shadowed_instanced );
 	cube_material.SetTexture( "uniform_tex_diffuse", container_texture_diffuse_map );
-	cube_material.SetTexture( "uniform_tex_emission", Engine::BuiltinTextures::Get( "White" ) );
+	cube_material.SetTexture( "uniform_tex_emission", Engine::BuiltinTextures::Get( "Black" ) );
 	cube_material.SetTexture( "uniform_tex_specular", container_texture_specular_map );
 	cube_material.SetTexture( "uniform_tex_normal", container_texture_normal_map );
 	cube_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
@@ -985,7 +990,7 @@ void BloomDemoApplication::ResetMaterialData()
 		.shininess           = 32.0f
 	};
 
-	cube_surface_data.color_emission = Engine::Color3( 32.0f, 32.0f, 32.0f );
+	//cube_surface_data.color_emission = Engine::Color3( 32.0f, 32.0f, 32.0f );
 
 	ground_material.Set( "BlinnPhongMaterialData", ground_quad_surface_data );
 	wall_material.Set( "BlinnPhongMaterialData", wall_surface_data );
