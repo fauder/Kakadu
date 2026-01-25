@@ -485,7 +485,7 @@ namespace Engine
 		 * Builtin Post-processing Effects:
 		 */
 
-		std::uint8_t bloom_mip_chain_size = 3; // Denotes the step count for either downsampling or upsampling. Total step count is 2x that.
+		std::uint8_t bloom_mip_chain_size = 6; // Denotes the step count for either downsampling or upsampling. Total step count is 2x that.
 		/* 7 byte(s) of padding. */
 
 		FullscreenEffect bloom_downsampling;
