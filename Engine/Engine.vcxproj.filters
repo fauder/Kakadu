@@ -494,5 +494,6 @@
     <None Include="Engine\Asset\Shader\_Math.glsl" />
     <None Include="Engine\Asset\Shader\BloomDownsample.frag" />
     <None Include="Engine\Asset\Shader\BloomUpsample.frag" />
+    <None Include="Engine\Asset\Shader\_Light.glsl" />
   </ItemGroup>
 </Project>
