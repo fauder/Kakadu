@@ -1,5 +1,9 @@
-#ifndef _SRGB_GLSL
-#define _SRGB_GLSL
+#ifndef _COLOR_GLSL
+#define _COLOR_GLSL
+
+/*
+ * Color Conversion Routines:
+ */
 
 float sRGB_To_Linear_Single( float sRGB_color_channel )
 {
@@ -37,4 +41,4 @@ vec4 Linear_To_sRGBA( vec4 linear_color )
     return vec4( Linear_To_sRGB( linear_color.rgb ), linear_color.a );
 }
 
-#endif // _SRGB_GLSL
+#endif // _COLOR_GLSL

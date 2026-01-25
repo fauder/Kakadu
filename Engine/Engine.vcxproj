@@ -503,7 +503,7 @@
     <None Include="Engine\Asset\Shader\_Intrinsic_Lighting.glsl" />
     <None Include="Engine\Asset\Shader\_Intrinsic_Other.glsl" />
     <None Include="Engine\Asset\Shader\_Math.glsl" />
-    <None Include="Engine\Asset\Shader\_sRGB.glsl" />
+    <None Include="Engine\Asset\Shader\_Color.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

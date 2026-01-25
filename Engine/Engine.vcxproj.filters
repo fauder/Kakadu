@@ -458,7 +458,7 @@
     <None Include="Engine\Asset\Shader\_Global.glsl" />
     <None Include="Engine\Asset\Shader\_Intrinsic_Lighting.glsl" />
     <None Include="Engine\Asset\Shader\_Intrinsic_Other.glsl" />
-    <None Include="Engine\Asset\Shader\_sRGB.glsl" />
+    <None Include="Engine\Asset\Shader\_Color.glsl" />
     <None Include="Engine\Asset\Shader\Color.frag" />
     <None Include="Engine\Asset\Shader\Color.vert" />
     <None Include="Engine\Asset\Shader\Textured.frag" />
