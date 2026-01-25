@@ -12,7 +12,7 @@
 
 in vec2 varying_tex_coords;
 
-out vec3 out_color;
+out vec4 out_color;
 
 /* This texture needs:
  * 1) The wrapping mode to be set to clamp-to-edge.
@@ -102,13 +102,14 @@ void main()
 
         block_middle.w       = 0.5 / ( 1.0 + MaxBrightness( block_middle.rgb ) );
 
-        out_color = (
+        out_color = vec4( (
             block_top_left.rgb     * block_top_left.w +
             block_top_right.rgb    * block_top_right.w +
             block_bottom_left.rgb  * block_bottom_left.w +
             block_bottom_right.rgb * block_bottom_right.w +
             block_middle.rgb       * block_middle.w ) / 
-                ( block_top_left.w + block_top_right.w + block_bottom_left.w + block_bottom_right.w + block_middle.w );
+                ( block_top_left.w + block_top_right.w + block_bottom_left.w + block_bottom_right.w + block_middle.w ),
+            /* Alpha: */ 1.0f );
             
         return;
     }
@@ -128,19 +129,21 @@ void main()
         vec3 karis_averaged_block_bottom_right = KarisAverageOnBlock( e, f, h, i );
         vec3 karis_averaged_block_middle       = KarisAverageOnBlock( j, k, l, m );
 
-        out_color =
+        out_color = vec4( 
             ( karis_averaged_block_top_left    +
               karis_averaged_block_top_right   +
               karis_averaged_block_bottom_left +
               karis_averaged_block_bottom_right ) * 0.125 +
-            karis_averaged_block_middle * 0.5;
+            karis_averaged_block_middle * 0.5,
+            /* Alpha: */ 1.0f );
 
         return;
     }
 #endif //ANTI_FLICKER_FINE
 
-    out_color =
+    out_color = vec4( 
         ( b + d + f + h ) * 0.0625 +
         ( a + c + g + i ) * 0.03125 +
-        ( j + k + l + m + e ) * 0.125;
+        ( j + k + l + m + e ) * 0.125,
+        /* Alpha: */ 1.0f );
 }

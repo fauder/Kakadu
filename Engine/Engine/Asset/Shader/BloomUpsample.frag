@@ -42,4 +42,6 @@ void main()
         e * 0.25 +
         ( b + d + f + h ) * 0.125 +
         ( a + c + g + i ) * 0.0625;
+
+    out_color.a = 1.0f;
 }
