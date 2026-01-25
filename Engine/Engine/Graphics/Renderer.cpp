@@ -620,6 +620,15 @@ namespace Engine
 					ImGui::NewLine();
 					ImGui::SeparatorText( "Bloom" );
 					{
+						/* Mip count: */
+
+						if( ImGui::InputInt( "Step Count", ( int* )&bloom_mip_chain_size, 1, 0 ) )
+						{
+							const auto framebuffer_size = framebuffer_postprocessing.Size();
+							bloom_mip_chain_size = Math::Clamp( bloom_mip_chain_size, ( std::uint8_t )2, ( std::uint8_t )Math::Log2( Math::Min( framebuffer_size.X(), framebuffer_size.Y() ) ) );
+							InitializeBuiltinPostprocessingEffects();
+						}
+
 						/* Anti-flicker: */
 						const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.ColorAttachment().PixelFormat() ];
 
@@ -1728,6 +1737,11 @@ namespace Engine
 
 	void Renderer::InitializeBuiltinPostprocessingEffects()
 	{
+		{
+			const auto framebuffer_size = framebuffer_postprocessing.Size();
+			bloom_mip_chain_size = Math::Clamp( bloom_mip_chain_size, ( std::uint8_t )2, ( std::uint8_t )Math::Log2( Math::Min( framebuffer_size.X(), framebuffer_size.Y() ) ) );
+		}
+
 		bloom_downsampling = FullscreenEffect
 		{
 			.name     = "Bloom | Downsampling",
@@ -1761,7 +1775,9 @@ namespace Engine
 
 		bloom_downsampling.framebuffers.emplace_back( Framebuffer::Description
 													  {
-														  .name = "[Renderer] Bloom Full Res.",
+														  .name = bloom_mip_chain_size >= 10
+																	? "[Renderer] Bloom [00] Full Res."
+																	: "[Renderer] Bloom [0] Full Res.",
 
 														  .width_in_pixels  = output_texture_size.X(),
 														  .height_in_pixels = output_texture_size.Y(),
@@ -1773,11 +1789,13 @@ namespace Engine
 
 		const Texture* input_texture = &framebuffer_postprocessing.ColorAttachment();
 
+		const int digit_count = ( bloom_mip_chain_size >= 10 ) ? 2 : 1;
+
 		for( int i = 0; i < bloom_mip_chain_size; i++ )
 		{
 			constexpr std::uint8_t buffer_size = 64;
 			char buffer[ buffer_size ];
-			std::snprintf( buffer, buffer_size, "[Renderer] Bloom 1/%d Res.", Math::Pow2( i + 1 ) );
+			std::snprintf( buffer, buffer_size, "[Renderer] Bloom [%0*d] 1/%d Res.", digit_count, i + 1, Math::Pow2( i + 1 ) );
 
 			output_texture_size /= 2;
 
