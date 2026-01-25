@@ -8,6 +8,16 @@ float Max3( float x, float y, float z )
     return max( x, max( y, z ) );
 }
 
+float Max3( vec3 v )
+{
+    return max( v.x, max( v.y, v.z ) );
+}
+
+vec3 Pow( vec3 v, float p )
+{
+    return vec3( pow( v.x, p ), pow( v.y, p ), pow( v.z, p ) );
+}
+
 /* Liang-Barsky algorithm.
  * Returns t-enter and t-exit values calculated. */
 vec2 ClipLineAgainstViewport( const vec2 p1, const vec2 p2, bool is_infinite_line )
