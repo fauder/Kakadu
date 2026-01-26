@@ -1887,6 +1887,7 @@ namespace Engine
 				SetDestinationFramebuffer( upsample_step.framebuffer_target );
 
 				bloom_upsampling.material.SetTexture( "uniform_tex_source", upsample_step.texture_input );
+				bloom_upsampling.material.Set( "uniform_source_resolution", upsample_step.texture_input->Size() );
 				bloom_upsampling.material.UploadUniforms();
 
 				renderer.DrawPostProcessingEffectStep();

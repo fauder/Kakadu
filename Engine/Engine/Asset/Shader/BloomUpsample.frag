@@ -12,6 +12,8 @@ out vec4 out_color;
  * 2) The filtering set to bilinear. */
 #pragma driven
 uniform sampler2D uniform_tex_source;
+#pragma driven
+uniform ivec2 uniform_source_resolution;
 
 void main()
 {
@@ -26,7 +28,7 @@ void main()
      * Since the viewport size is given as an intrinsic uniform, we can simply use half that as the resolution.
      */
 
-    vec2 delta_uv = 1.0 / ( 0.5 * _INTRINSIC_VIEWPORT_SIZE );
+    vec2 delta_uv = 1.0 / vec2( uniform_source_resolution );
 
     vec4 a = texture( uniform_tex_source, varying_tex_coords + vec2( -delta_uv.s,   +delta_uv.t ) );
     vec4 b = texture( uniform_tex_source, varying_tex_coords + vec2(  0,            +delta_uv.t ) );
