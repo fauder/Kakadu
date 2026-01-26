@@ -124,7 +124,6 @@ namespace Engine
 		{
 			Wrapping wrap_u = Wrapping::ClampToEdge;
 			Wrapping wrap_v = Wrapping::ClampToEdge;
-			Wrapping wrap_w = Wrapping::ClampToEdge;
 
 			Color4 border_color = Color4::Black();
 
