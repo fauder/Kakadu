@@ -627,6 +627,8 @@ namespace Engine
 							const auto framebuffer_size = framebuffer_postprocessing.Size();
 							bloom_mip_chain_size = Math::Clamp( bloom_mip_chain_size, ( std::uint8_t )2, ( std::uint8_t )Math::Log2( Math::Min( framebuffer_size.X(), framebuffer_size.Y() ) ) );
 							InitializeBuiltinPostprocessingEffects();
+
+							tone_mapping.material.SetTexture( "uniform_tex_bloom", &bloom_downsampling.framebuffers.front().ColorAttachment() );
 						}
 
 						/* Anti-flicker: */
