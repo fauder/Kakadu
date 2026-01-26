@@ -10,10 +10,6 @@ namespace Engine
 /* Static member variable definitions: */
 	bool Texture::GAMMA_CORRECTION_IS_ENABLED = true;
 
-/* 
- * Texture
- */
-
 	Texture::Texture()
 		:
 		id( {} ),
@@ -93,13 +89,13 @@ namespace Engine
 		Unbind();
 	}
 
-	/* Cubemap allocate-only constructor (no data). */
+	/* Cubemap allocate-only constructor (no data).
+	 * No wrapping options for cubemaps as all three axes will default to clamp-to-edge, which is the only sensible option. */
 	Texture::Texture( CubeMapConstructorTag tag,
 					  const std::string_view name,
 					  //const std::byte* data, This is omitted from this public constructor.
 					  const Format format,
 					  const int width, const int height,
-					  const Wrapping wrap_u, const Wrapping wrap_v, const Wrapping wrap_w,
 					  Color4 border_color,
 					  const Filtering min_filter, const Filtering mag_filter )
 		:
@@ -124,12 +120,9 @@ namespace Engine
 
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	 ( GLenum )wrap_u );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	 ( GLenum )wrap_v );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 ( GLenum )wrap_w );
-
-		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder || wrap_w == Wrapping::ClampToBorder )
-			glTexParameterfv( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, border_color.data );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	 ( GLenum )Wrapping::ClampToEdge );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	 ( GLenum )Wrapping::ClampToEdge );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 ( GLenum )Wrapping::ClampToEdge );
 
 		Unbind();
 	}
@@ -266,13 +259,13 @@ namespace Engine
 		Unbind();
 	}
 
-	/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data. */
+	/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data.
+	 * No wrapping options for cubemaps as all three axes will default to clamp-to-edge, which is the only sensible option. */
 	Texture::Texture( CubeMapConstructorTag tag,
 					  const std::string_view name,
 					  const std::array< const std::byte*, 6 >& cubemap_data_array,
 					  const Format format, 
 					  const int width, const int height,
-					  const Wrapping wrap_u, const Wrapping wrap_v,	const Wrapping wrap_w,
 					  const Color4 border_color,
 					  const Filtering min_filter, const Filtering mag_filter )
 		:
@@ -296,12 +289,9 @@ namespace Engine
 
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
 		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	 ( GLenum )wrap_u );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	 ( GLenum )wrap_v );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 ( GLenum )wrap_w );
-
-		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder || wrap_w == Wrapping::ClampToBorder )
-			glTexParameterfv( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, border_color.data );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	 ( GLenum )Wrapping::ClampToEdge );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	 ( GLenum )Wrapping::ClampToEdge );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 ( GLenum )Wrapping::ClampToEdge );
 
 		Unbind();
 	}

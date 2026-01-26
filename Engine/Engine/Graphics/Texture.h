@@ -167,13 +167,13 @@ namespace Engine
 				 const std::uint8_t sample_count,
 				 const int width, const int height );
 
-		/* Cubemap allocate-only constructor (no data). */
+		/* Cubemap allocate-only constructor (no data).
+		 * No wrapping options for cubemaps as all three axes will default to clamp-to-edge, which is the only sensible option. */
 		Texture( CubeMapConstructorTag tag,
 				 const std::string_view name,
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
 				 const int width, const int height,
-				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge, const Wrapping wrap_w = Wrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
 
@@ -264,13 +264,13 @@ namespace Engine
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
 
-		/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data. */
-		Texture( CubeMapConstructorTag tag, 
+		/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data.
+		 * No wrapping options for cubemaps as all three axes will default to clamp-to-edge, which is the only sensible option. */
+		Texture( CubeMapConstructorTag tag,
 				 const std::string_view name,
 				 const std::array< const std::byte*, 6 >& cubemap_data_array,
 				 const Format format,
 				 const int width, const int height,
-				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge, const Wrapping wrap_w = Wrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
 

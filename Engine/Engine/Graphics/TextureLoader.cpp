@@ -84,7 +84,6 @@ namespace Engine
 								 ( const std::array< const std::byte*, 6 >& )image_data_array, 
 								 import_settings.format, 
 								 width, height,
-								 import_settings.wrap_u, import_settings.wrap_v, import_settings.wrap_w,
 								 import_settings.border_color,
 								 import_settings.min_filter, import_settings.mag_filter );
 
