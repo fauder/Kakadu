@@ -57,7 +57,7 @@ namespace Engine
 
 		struct ViewportWindowInfo
 		{
-			static constexpr std::uint8_t SMALLEST_MAGNIFIER_ZOOM_FACTOR = 4;
+			static constexpr std::uint8_t SMALLEST_MAGNIFIER_ZOOM_FACTOR = 2;
 			static constexpr std::uint8_t LARGEST_MAGNIFIER_ZOOM_FACTOR  = 32;
 
 			std::string imgui_window_name;
