@@ -135,7 +135,7 @@ namespace Engine
 
 			Format format = Format::SRGBA;
 			
-			/* 1 byte of padding. */
+			MSAA msaa;
 		};
 
 		static constexpr ImportSettings DEFAULT_IMPORT_SETTINGS = {};
@@ -187,18 +187,24 @@ namespace Engine
 	/* Queries: */
 		bool IsValid() const { return id.Get(); }
 
-		ID					Id()				const { return id;															}
-		const Vector2I&		Size()				const { return size;														}
-		int					Width()				const { return size.X();													}
-		int					Height()			const { return size.Y();													}
-		TextureType			Type()				const { return type;														}
-		const std::string&	Name()				const { return name;														}
-		int					SampleCount()		const { return msaa.sample_count;											}
-		bool				IsMultiSampled()	const { return msaa.IsEnabled();											}
-		bool				Is_sRGB()			const { return format == Format::SRGB || format == Format::SRGBA;			}
-		bool				IsHDR()				const { return format == Format::RGBA_16F || format == Format::RGBA_32F ||
-															   format == Format::R11G11B10F;								}
-		Format				PixelFormat()		const { return format;														}
+		ID					Id()						const { return id; }
+		const Vector2I&		Size()						const { return size; }
+		int					Width()						const { return size.X(); }
+		int					Height()					const { return size.Y(); }
+		TextureType			Type()						const { return type; }
+		const std::string&	Name()						const { return name; }
+		Wrapping			Wrapping_U()				const { return import_settings.wrap_u; }
+		Wrapping			Wrapping_V()				const { return import_settings.wrap_v; }
+		Filtering			MinificationFiltering()		const { return import_settings.min_filter; }
+		Filtering			MagnificationFiltering()	const { return import_settings.mag_filter; }
+		int					SampleCount()				const { return import_settings.msaa.sample_count; }
+		bool				IsMultiSampled()			const { return import_settings.msaa.IsEnabled(); }
+		bool				Is_sRGB()					const { return import_settings.format == Format::SRGB || import_settings.format == Format::SRGBA; }
+		bool				IsHDR()						const { return
+																	import_settings.format == Format::RGBA_16F ||
+																	import_settings.format == Format::RGBA_32F ||
+																	import_settings.format == Format::R11G11B10F; }
+		Format				PixelFormat()				const { return import_settings.format;														}
 
 	/* Usage: */
 		void SetName( const std::string& new_name );
@@ -285,10 +291,9 @@ namespace Engine
 		TextureType type;
 		std::string name;
 
-		Format format;
-		MSAA msaa;
+		ImportSettings import_settings;
 
-		/* 6 bytes of padding. */
+		/* 4 bytes of padding. */
 
 		static bool GAMMA_CORRECTION_IS_ENABLED;
 	};

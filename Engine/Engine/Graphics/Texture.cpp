@@ -16,8 +16,9 @@ namespace Engine
 		size( ZERO_INITIALIZATION ),
 		type( TextureType::None ),
 		name( "<defaulted>" ),
-		format( Format::NOT_ASSIGNED )
-	{}
+		import_settings{ .format = Format::NOT_ASSIGNED }
+	{
+	}
 
 	/* Allocate-only constructor (no data). */
 	Texture::Texture( const std::string_view name,
@@ -32,7 +33,15 @@ namespace Engine
 		size( width, height ),
 		type( TextureType::Texture2D ),
 		name( name ),
-		format( DetermineActualFormat( format ) )
+		import_settings
+		{
+			.wrap_u       = wrap_u,
+			.wrap_v       = wrap_v,
+			.border_color = border_color,
+			.min_filter   = min_filter,
+			.mag_filter   = mag_filter,
+			.format       = DetermineActualFormat( format )
+		}
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -68,8 +77,11 @@ namespace Engine
 		size( width, height ),
 		type( TextureType::Texture2D_MultiSample ),
 		name( multi_sample_texture_name ),
-		format( DetermineActualFormat( format ) ),
-		msaa{ Renderer::CheckMSAASupport( format, sample_count ) ? sample_count : std::uint8_t( 1 ) }
+		import_settings
+		{
+			.format = DetermineActualFormat( format ),
+			.msaa = MSAA{ Renderer::CheckMSAASupport( format, sample_count ) ? sample_count : std::uint8_t( 1 ) }
+		}
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -103,7 +115,13 @@ namespace Engine
 		size( width, height ),
 		type( TextureType::Cubemap ),
 		name( name ),
-		format( DetermineActualFormat( format ) )
+		import_settings
+		{
+			.border_color = border_color,
+			.min_filter   = min_filter,
+			.mag_filter   = mag_filter,
+			.format       = DetermineActualFormat( format )
+		}
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -137,8 +155,7 @@ namespace Engine
 #else
 		name( std::move( donor.name ) ),
 #endif // _DEBUG
-		msaa( std::exchange( donor.msaa, {} ) ),
-		format( std::exchange( donor.format, Format::NOT_ASSIGNED ) )
+		import_settings( std::exchange( donor.import_settings, { .format = Format::NOT_ASSIGNED } ) )
 	{
 	}
 
@@ -154,8 +171,7 @@ namespace Engine
 #else
 		name = std::move( donor.name );
 #endif // _DEBUG
-		msaa   = std::exchange( donor.msaa, {} );
-		format = std::exchange( donor.format, Format::NOT_ASSIGNED );
+		import_settings = std::exchange( donor.import_settings, { .format = Format::NOT_ASSIGNED } );
 
 		return *this;
 	}
@@ -233,7 +249,16 @@ namespace Engine
 		size( width, height ),
 		type( TextureType::Texture2D ),
 		name( name ),
-		format( DetermineActualFormat( format ) )
+		import_settings
+		{
+			.wrap_u           = wrap_u,
+			.wrap_v           = wrap_v,
+			.border_color     = border_color,
+			.min_filter       = min_filter,
+			.mag_filter       = mag_filter,
+			.generate_mipmaps = true,
+			.format           = DetermineActualFormat( format )
+		}
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
@@ -273,7 +298,13 @@ namespace Engine
 		size( width, height ),
 		type( TextureType::Cubemap ),
 		name( name ),
-		format( DetermineActualFormat( format ) )
+		import_settings
+		{
+			.border_color     = border_color,
+			.min_filter       = min_filter,
+			.mag_filter       = mag_filter,
+			.format           = DetermineActualFormat( format )
+		}
 	{
 		glGenTextures( 1, id.Address() );
 		Bind();
