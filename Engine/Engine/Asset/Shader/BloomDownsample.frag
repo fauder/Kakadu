@@ -23,6 +23,7 @@ uniform sampler2D uniform_tex_source;
 uniform ivec2 uniform_source_resolution;
 
 #if defined( ANTI_FLICKER_COARSE ) || defined( ANTI_FLICKER_FINE )
+#pragma driven
 uniform uint uniform_mip_level;
 #endif
 
