@@ -310,7 +310,7 @@ namespace Engine
 	void Application::HandleFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 	{
 		/* Do nothing on minimize: */
-		if( width_new_pixels == 0 || height_new_pixels == 0 ||
+		if( width_new_pixels <= 0 || height_new_pixels <= 0 ||
 			( renderer->EditorViewportFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
 			return;
 
