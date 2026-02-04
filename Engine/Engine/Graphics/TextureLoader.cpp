@@ -8,6 +8,7 @@
 
 // std Includes.
 #include <array>
+#include <execution>
 #include <iostream>
 
 namespace Engine
@@ -58,14 +59,16 @@ namespace Engine
 		 * BUT: cube-map coordinate space has the inverse v behavior, so the image's should not be flipped. */
 		stbi_set_flip_vertically_on_load( false ); // Override whatever is in import_settings.flip_vertically.
 
-		std::optional< Texture > maybe_texture;
-
 		std::array< stbi_uc*, 6 > image_data_array;
 
 		int width, height;
 		int number_of_channels = -1;
 
-		for( auto i = 0; i < 6; i++ )
+		bool error_encountered = false;
+
+		constexpr std::array< std::uint8_t, 6 > indices = { 0, 1, 2, 3, 4, 5 };
+
+		std::for_each( std::execution::par, indices.cbegin(), indices.cend(), [ & ]( std::uint8_t i )
 		{
 			const auto& file_path( ( cubemap_file_paths.begin() + i ) );
 
@@ -75,20 +78,27 @@ namespace Engine
 				std::cerr << R"(Cubemap texture ")" << cubemap_name << R"(": Could not load image data from file: ")" << *file_path << "\"\n";
 				ServiceLocator< GLLogger >::Get().Error( R"(Cubemap texture ")" + std::string( cubemap_name ) + R"(": Could not load image data from file: ")" + *file_path + "\"\n" );
 				stbi_image_free( image_data_array[ i ] );
-				return maybe_texture;
+				error_encountered = true;
 			}
-		}
+		} );
 
-		maybe_texture = Texture( CUBEMAP_CONSTRUCTOR, 
-								 cubemap_name, 
-								 ( const std::array< const std::byte*, 6 >& )image_data_array, 
-								 import_settings.format, 
-								 width, height,
-								 import_settings.border_color,
-								 import_settings.min_filter, import_settings.mag_filter );
+		if( error_encountered )
+			return std::nullopt;
 
-		for( auto i = 0; i < 6; i++ )
+		std::optional< Texture > maybe_texture = Texture( CUBEMAP_CONSTRUCTOR,
+														  cubemap_name,
+														  ( const std::array< const std::byte*, 6 >& )image_data_array,
+														  import_settings.format,
+														  width,
+														  height,
+														  import_settings.border_color,
+														  import_settings.min_filter,
+														  import_settings.mag_filter );
+
+		std::for_each( std::execution::par, indices.cbegin(), indices.cend(), [ & ]( std::uint8_t i )
+		{
 			stbi_image_free( image_data_array[ i ] );
+		} );
 		
 		return maybe_texture;
 	}
