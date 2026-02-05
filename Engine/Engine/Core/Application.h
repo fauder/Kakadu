@@ -158,9 +158,9 @@ namespace Engine
 
 		std::optional< int > msaa_sample_count;
 
-	private:
 		MorphSystem morph_system;
 
+	private:
 		float time_delta_real;
 		float time_previous;
 		float time_previous_since_start;
