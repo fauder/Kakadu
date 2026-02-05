@@ -767,7 +767,9 @@ namespace Engine::ImGuiDrawer
 								break;
 							}
 							case UniformAnnotation::Type::Driven:
+								ImGuiUtility::HelpMarker( ICON_FA_CODE, "Driven by code; Not editable." );
 								ImGui::BeginDisabled();
+								ImGui::SameLine();
 								is_modified |= Draw( type, uniform_memory );
 								ImGui::EndDisabled();
 								break;
@@ -949,6 +951,11 @@ namespace Engine::ImGuiDrawer
 
 								const auto& current_texture_name( texture_pointer ? ICON_FA_IMAGE " " + texture_pointer->Name() : "<unassigned>" );
 								
+								if( uniform_info.annotation_type == UniformAnnotation::Type::Driven )
+								{
+									ImGuiUtility::HelpMarker( ICON_FA_CODE, "Driven by code; Not editable." );
+									ImGui::SameLine();
+								}
 								ImGui::BeginDisabled( uniform_info.annotation_type == UniformAnnotation::Type::Driven );
 								if( ImGui::BeginCombo( ( "##Texture Selection Combobox-" + uniform_sampler_name ).c_str(),
 													   current_texture_name.c_str(),
