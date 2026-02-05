@@ -34,6 +34,7 @@ namespace Engine
 		show_gl_logger( true ),
 		ui_interaction_enabled( true ),
 #endif // _EDITOR
+		is_running( true ),
 		gamma_correction_is_enabled( renderer_description.enable_gamma_correction && not flags.IsSet( CreationFlags::OnStart_DisableGammaCorrection ) ),
 		vsync_is_enabled( false ),
 		time_current( 0.0f ),
@@ -66,7 +67,7 @@ namespace Engine
 		TracyGpuContext;
 
 		/* The main loop. */
-		while( !Platform::ShouldClose() )
+		while( is_running )
 		{
 			TracyGpuZone( "GPU Time" );
 
@@ -92,7 +93,6 @@ namespace Engine
 			}
 #endif // _EDITOR
 
-
 			{
 				ZoneScopedN( "RenderFrame" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
 				RenderFrame();
@@ -114,6 +114,8 @@ namespace Engine
 
 			TracyGpuCollect;
 			FrameMark;
+
+			is_running &= !Platform::ShouldClose();
 		}
 	}
 

@@ -69,6 +69,8 @@ namespace Engine
 			/* 3 bytes(s) of padding. */
 		};
 
+		void Quit() { is_running = false; }
+
 		void FreezeTime()   { time_multiplier = 0.0f; }
 		void UnfreezeTime() { time_multiplier = 1.0f; }
 		bool TimeIsFrozen() { return Math::IsZero( time_multiplier ); }
@@ -135,10 +137,12 @@ namespace Engine
 
 		std::unique_ptr< Renderer > renderer;
 
+		bool is_running;
+
 		bool gamma_correction_is_enabled;
 		bool vsync_is_enabled;
 
-		/* 2 byte(s) of padding. */
+		/* 1 byte(s) of padding. */
 
 		float time_delta;
 		float time_current;
