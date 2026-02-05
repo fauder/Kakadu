@@ -52,6 +52,21 @@ namespace Engine::ImGuiUtility
 		}
 	}
 
+    void HelpMarker( const char* text, const char* desc, const int wrap )
+    {
+        ImGui::TextDisabled( text );
+        if( ImGui::IsItemHovered() )
+        {
+            ImGui::BeginTooltip();
+            if( wrap )
+                ImGui::PushTextWrapPos( ImGui::GetFontSize() * wrap );
+            ImGui::TextUnformatted( desc );
+            if( wrap )
+                ImGui::PopTextWrapPos();
+            ImGui::EndTooltip();
+        }
+    }
+
     void CenterText( const char* text )
     {
         const float available_width = ImGui::GetContentRegionAvail().x;

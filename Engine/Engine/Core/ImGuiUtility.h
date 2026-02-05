@@ -29,6 +29,8 @@ namespace Engine::ImGuiUtility
 
 	/* Helper to display a little (?) mark which shows a tooltip when hovered. */
 	void HelpMarker( const char* desc, const int wrap = 35.0f );
+	/* Helper to display a custom text which shows a tooltip when hovered. */
+	void HelpMarker( const char* text, const char* desc, const int wrap = 35.0f );
 
 	void CenterText( const char* text );
 	void CenterItem( const int item_width );
