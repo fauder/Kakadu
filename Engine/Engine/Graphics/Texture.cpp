@@ -226,7 +226,7 @@ namespace Engine
 			case Format::STENCIL:		return GL_STENCIL_INDEX;
 
 			default:
-				throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
+				throw std::logic_error( "InternalFormat(): Unknown pixel data format encountered!" );
 				break;
 		}
 	};
