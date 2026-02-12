@@ -77,7 +77,7 @@ namespace Engine
 
 			if( Platform::IsWindowIconified() )
 			{
-				Platform::Sleep( 0.2f );
+				Platform::Sleep( std::chrono::milliseconds( 200 ) );
 				continue;
 			}
 

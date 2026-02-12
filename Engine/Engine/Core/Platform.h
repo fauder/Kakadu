@@ -4,6 +4,7 @@
 #include "Math/Vector.hpp"
 
 // std Includes.
+#include <chrono>
 #include <functional>
 #include <optional>
 #include <utility>
@@ -246,7 +247,7 @@ namespace Platform
 	bool ShouldClose();
 	void* GetWindowHandle();
 	void LaunchWithDefaultProgram( const std::string& file_path );
-	void Sleep( float duration_in_seconds );
+	void Sleep( std::chrono::nanoseconds duration );
 
 	/* Windows Only. */
 #ifdef _WIN32

@@ -26,6 +26,7 @@
 // std Includes.
 #include <iostream>
 #include <stdexcept>
+#include <thread>
 
 namespace Platform
 {
@@ -777,9 +778,9 @@ namespace Platform
 #endif // _WIN32
 	}
 
-	void Sleep( float duration_in_seconds )
+	void Sleep( std::chrono::nanoseconds duration )
 	{
-		glfwWaitEventsTimeout( 0.2f );
+		std::this_thread::sleep_for( duration );
 	}
 
 	/* Windows Only. */
