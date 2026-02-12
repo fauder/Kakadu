@@ -167,6 +167,8 @@ namespace Engine
 	void Application::Shutdown()
 	{
 		ImGuiSetup::Shutdown();
+
+		Platform::Shutdown();
 	}
 
 	void Application::Update()
