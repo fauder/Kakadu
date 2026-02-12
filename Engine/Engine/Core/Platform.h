@@ -238,7 +238,7 @@ namespace Platform
 	float CurrentTime();
 
 	/* Shutdown. */
-	void CleanUp();
+	void Shutdown();
 
 	/* Other. */
 	void ChangeTitle( const char* new_title );

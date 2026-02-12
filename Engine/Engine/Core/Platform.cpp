@@ -734,7 +734,7 @@ namespace Platform
 	 * Shutdown:
 	 */
 
-	void CleanUp()
+	void Shutdown()
 	{
 		glfwTerminate();
 	}
