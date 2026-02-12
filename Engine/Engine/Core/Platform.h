@@ -189,6 +189,7 @@ namespace Platform
 	int GetFramebufferHeightInPixels();
 	float GetAspectRatio();
 
+	bool GetMainMonitorResolution( int& width, int& height );
 	std::uint16_t GetMainMonitorRefreshRate();
 
 	void CenterWindow( const int width_pixels, const int height_pixels );
