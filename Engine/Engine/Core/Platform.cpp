@@ -11,6 +11,10 @@
 #include "Optimization.h"
 #include "Platform.h"
 #include "Utility.hpp"
+#ifdef _EDITOR
+#include "Editor/SplashScreen.h"  
+#include "Asset/Paths.h"
+#endif // _EDITOR
 
 // Vendor Includes.
 #include "GLFW/glfw3.h"
@@ -24,6 +28,7 @@
 #include <Tracy/tracy/Tracy.hpp>
 
 // std Includes.
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <thread>
@@ -38,11 +43,8 @@ namespace Platform
 
 	internal_variable WindowState WINDOW_STATE;
 
-#ifdef _WIN32
-	HWND WINDOWS_HWND = NULL;
-#endif // _WIN32
-
-	internal_variable GLFWwindow* WINDOW = nullptr;
+	internal_variable GLFWwindow* SPLASH_WINDOW = nullptr;
+	internal_variable GLFWwindow* MAIN_WINDOW   = nullptr;
 
 	internal_variable bool KEYS_THAT_ARE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
 	internal_variable bool KEYS_THAT_WERE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
@@ -67,11 +69,10 @@ namespace Platform
 
 	internal_function void OnResizeWindow( GLFWwindow* window, const int width_new_pixels, const int height_new_pixels )
 	{
-		if( glfwGetMouseButton( WINDOW, GLFW_MOUSE_BUTTON_LEFT ) != GLFW_RELEASE )
+		if( glfwGetMouseButton( MAIN_WINDOW, GLFW_MOUSE_BUTTON_LEFT ) != GLFW_RELEASE )
 			return;
 		
 		glfwSetWindowSize( window, width_new_pixels, height_new_pixels );
-
 		/* It is the client application's (renderer's) responsibility to call glViewport(). */
 
 		if( FRAMEBUFFER_RESIZE_CALLBACK )
@@ -142,6 +143,17 @@ namespace Platform
 	}
 
 #ifdef _EDITOR
+	internal_function void CreateGLDebugContext()
+	{
+		int gl_debug_context_flags = 0;
+		glGetIntegerv( GL_CONTEXT_FLAGS, &gl_debug_context_flags );
+
+		if( gl_debug_context_flags & GL_CONTEXT_FLAG_DEBUG_BIT )
+			std::cout << "OpenGL debug context is created successfully.\n";
+		else
+			std::cerr << "Could not create OpenGL debug context!\n";
+	}
+
 	internal_function void RegisterGLDebugOutputCallback()
 	{
 		glEnable( GL_DEBUG_OUTPUT );
@@ -153,17 +165,17 @@ namespace Platform
 
 	internal_function void RegisterFrameBufferResizeCallback()
 	{
-		glfwSetFramebufferSizeCallback( WINDOW, OnResizeWindow );
+		glfwSetFramebufferSizeCallback( MAIN_WINDOW, OnResizeWindow );
 	}
 
 	internal_function void RegisterMousePositionChangeCallback()
 	{
-		glfwSetCursorPosCallback( WINDOW, OnMouseCursorPositionChanged );
+		glfwSetCursorPosCallback( MAIN_WINDOW, OnMouseCursorPositionChanged );
 	}
 
 	internal_function void RegisterMouseScrollCallback()
 	{
-		glfwSetScrollCallback( WINDOW, OnMouseScrolled );
+		glfwSetScrollCallback( MAIN_WINDOW, OnMouseScrolled );
 	}
 
 	internal_function void RegisterWindowFocusCallback( GLFWwindow* window, int focused )
@@ -178,12 +190,64 @@ namespace Platform
 		state->is_iconified = ( iconified == GLFW_TRUE );
 	}
 
+	internal_function bool ReadLastKnownWindowSizeFromFile( int& x_pos, int& y_pos, int& width, int& height )
+	{
+		x_pos = -1, y_pos = -1, width = -1, height = -1;
+
+		if( auto config_file = std::ifstream( "window.cfg" ) )
+		{
+			std::string token;
+
+			config_file >> token;
+			if( token == "x_pos" )
+			{
+				config_file >> token /* '=' */ >> token;
+				if( not token.empty() )
+					x_pos = std::stoi( token );
+			}
+
+			config_file >> token;
+			if( token == "y_pos" )
+			{
+				config_file >> token /* '=' */ >> token;
+				if( not token.empty() )
+					y_pos = std::stoi( token );
+			}
+
+			config_file >> token;
+			if( token == "width" )
+			{
+				config_file >> token /* '=' */ >> token;
+				if( not token.empty() )
+					width = std::stoi( token );
+			}
+
+			config_file >> token;
+			if( token == "height" )
+			{
+				config_file >> token /* '=' */ >> token;
+				if( not token.empty() )
+					height = std::stoi( token );
+			}
+		}
+
+		return x_pos > 0 && y_pos > 0 && width > 0 && height > 0;
+	}
+
+	internal_function void CenterWindow( GLFWwindow* window, const int width_pixels, const int height_pixels )
+	{
+		const GLFWvidmode* mode = glfwGetVideoMode( glfwGetPrimaryMonitor() );
+
+		const auto max_width = mode->width;
+		const auto max_height = mode->height;
+		glfwSetWindowMonitor( window, NULL, ( max_width / 2 ) - ( width_pixels / 2 ), ( max_height / 2 ) - ( height_pixels / 2 ), width_pixels, height_pixels, GLFW_DONT_CARE );
+	}
+
 	/*
 	 * Initialization:
 	 */
 
-	void InitializeAndCreateWindow( const int width_pixels, const int height_pixels,
-									const bool enable_vsync )
+	void InitializeAndCreateWindows( const bool enable_vsync )
 	{
 #ifdef _WIN32
 		SetConsoleTitle( L"Kakadu Console" );
@@ -200,57 +264,105 @@ namespace Platform
 
 		//glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE ); // Needed for Mac OS X.
 
-		glfwWindowHint( GLFW_VISIBLE, GLFW_FALSE ); // Start hidden as we will move it shortly.
+		/*
+		 * 1) Create Splash Window
+		 */
 
-		WINDOW = glfwCreateWindow( width_pixels, height_pixels, "Kakadu Application", nullptr, nullptr );
-		if( WINDOW == nullptr )
-		{
-			glfwTerminate();
-			throw std::runtime_error( "ERROR::PLATFORM::GLFW::FAILED TO CREATE GLFW WINDOW!" );
-		}
+		glfwWindowHint( GLFW_DECORATED, GLFW_FALSE ); // No decorations during splash screen.
+		glfwWindowHint( GLFW_VISIBLE,   GLFW_FALSE ); // Start hidden as we will resize it shortly.
 
-#ifdef _WIN32
-		WINDOWS_HWND = glfwGetWin32Window( WINDOW );
-#endif // _WIN32
+		int width = 800, height = 600;
 
-#ifdef _DEBUG
-		MoveConsoleWindowToNonPrimaryMonitor();
-#endif // _DEBUG
+		SPLASH_WINDOW = glfwCreateWindow( width, height, "Kakadu", nullptr, nullptr );
+		if( !SPLASH_WINDOW )
+			throw std::runtime_error( "ERROR::PLATFORM::GLFW::FAILED TO CREATE SPLASH GLFW WINDOW!"  );
 
-		CenterWindow( width_pixels, height_pixels );
-
-		glfwShowWindow( WINDOW );
-
-		glfwMakeContextCurrent( WINDOW );
-
+		glfwMakeContextCurrent( SPLASH_WINDOW );
 		glfwSwapInterval( ( int )enable_vsync ); // Adaptive v-sync (interval >1) is not supported.
 
 		// GLAD needs the created window's context made current BEFORE it is initialized.
 		InitializeGLAD();
 
 #ifdef _EDITOR
-		int gl_debug_context_flags = 0;
-		glGetIntegerv( GL_CONTEXT_FLAGS, &gl_debug_context_flags );
+		Engine::Editor::SplashScreen splash_screen( ENGINE_TEXTURE_PATH_ABSOLUTE( "splash_screen.png" ) );
 
-		if( gl_debug_context_flags & GL_CONTEXT_FLAG_DEBUG_BIT )
-			std::cout << "OpenGL debug context is created successfully.\n";
+		if( not GetMainMonitorResolution( width, height ) )
+		{
+			width  = 800;
+			height = 600;
+		}
 		else
-			std::cerr << "Could not create OpenGL debug context!\n";
+		{
+			float splash_aspect_ratio = splash_screen.AspectRatio();
 
+			width /= 3;
+			height = ( int )( width / splash_aspect_ratio );
+		}
+
+		glfwSetWindowSize( SPLASH_WINDOW, width, height );
+		CenterWindow( SPLASH_WINDOW, width, height );
+		glfwShowWindow( SPLASH_WINDOW );
+
+		splash_screen.RenderOnce();
+#endif
+		
+		/*
+		 * 2) Create Main Window (Hidden, Decorated, Shared Context)
+		 */
+
+		glfwWindowHint( GLFW_DECORATED, GLFW_TRUE );
+		glfwWindowHint( GLFW_VISIBLE,   GLFW_FALSE ); // Start hidden until init. finishes and we replace the splash window with this one.
+
+		int x_pos = -1, y_pos = -1;
+		const bool known_size_is_used = ReadLastKnownWindowSizeFromFile( x_pos, y_pos, width, height );
+
+		if( not known_size_is_used )
+		{
+			// Revert:
+			width  = 800;
+			height = 600;
+		}
+
+		MAIN_WINDOW = glfwCreateWindow( width, height, "Kakadu", nullptr, SPLASH_WINDOW );
+		if( MAIN_WINDOW == nullptr )
+		{
+			glfwTerminate();
+			throw std::runtime_error( "ERROR::PLATFORM::GLFW::FAILED TO CREATE MAIN GLFW WINDOW!" );
+		}
+
+		// Switch current context to main:
+		glfwMakeContextCurrent( MAIN_WINDOW );
+
+#ifdef _EDITOR
+		CreateGLDebugContext();
 		RegisterGLDebugOutputCallback();
 #endif // _EDITOR
 
-		SetWindowIcon();
+		if( known_size_is_used )
+			glfwSetWindowPos( MAIN_WINDOW, x_pos, y_pos );
+		else
+			CenterWindow( width, height );
 
-		ResizeWindow( width_pixels, height_pixels );
+		SetWindowIcon();
 
 		RegisterFrameBufferResizeCallback();
 		RegisterMousePositionChangeCallback();
 		RegisterMouseScrollCallback();
 
-		glfwSetWindowUserPointer( WINDOW, &WINDOW_STATE );
-		glfwSetWindowFocusCallback(	 WINDOW, RegisterWindowFocusCallback );
-		glfwSetWindowIconifyCallback( WINDOW, RegisterWindowIconifyCallback );
+		glfwSetWindowUserPointer( MAIN_WINDOW, &WINDOW_STATE );
+		glfwSetWindowFocusCallback(	 MAIN_WINDOW, RegisterWindowFocusCallback );
+		glfwSetWindowIconifyCallback( MAIN_WINDOW, RegisterWindowIconifyCallback );
+	}
+
+	void DestroySplashScreenAndSwitchToMainWindow()
+	{
+		if( SPLASH_WINDOW )
+		{
+			glfwDestroyWindow( SPLASH_WINDOW );
+			SPLASH_WINDOW = nullptr;
+		}
+
+		glfwShowWindow( MAIN_WINDOW );
 	}
 
 	/*
@@ -259,31 +371,41 @@ namespace Platform
 
 	void ResizeWindow( const int width_new_pixels, const int height_new_pixels )
 	{
-		OnResizeWindow( WINDOW, width_new_pixels, height_new_pixels );
+		OnResizeWindow( MAIN_WINDOW, width_new_pixels, height_new_pixels );
 	}
 
 	void MinimizeWindow()
 	{
-		glfwIconifyWindow( WINDOW );
+		glfwIconifyWindow( MAIN_WINDOW );
 	}
 
 	void MaximizeWindow()
 	{
-		glfwMaximizeWindow( WINDOW );
+		glfwMaximizeWindow( MAIN_WINDOW );
 	}
 
 	void RestoreWindow()
 	{
-		glfwRestoreWindow( WINDOW );
+		glfwRestoreWindow( MAIN_WINDOW );
+	}
+
+	void HideWindow()
+	{
+		glfwHideWindow( MAIN_WINDOW );
+	}
+
+	void ShowWindow()
+	{
+		glfwShowWindow( MAIN_WINDOW );
 	}
 
 	void SetFramebufferResizeCallback( std::function< void( const int width_new_pixels, const int height_new_pixels ) > callback )
 	{
 		FRAMEBUFFER_RESIZE_CALLBACK = callback;
 
-		ImGui_ImplGlfw_RestoreCallbacks( WINDOW );
-		glfwSetFramebufferSizeCallback( WINDOW, OnResizeWindow );
-		ImGui_ImplGlfw_InstallCallbacks( WINDOW );
+		ImGui_ImplGlfw_RestoreCallbacks( MAIN_WINDOW );
+		glfwSetFramebufferSizeCallback( MAIN_WINDOW, OnResizeWindow );
+		ImGui_ImplGlfw_InstallCallbacks( MAIN_WINDOW );
 	}
 
 	bool IsWindowFocused()
@@ -295,11 +417,11 @@ namespace Platform
 	{
 		return WINDOW_STATE.is_iconified;
 	}
-
+	
 	Engine::Vector2I GetFramebufferSizeInPixels()
 	{
 		int width, height;
-		glfwGetFramebufferSize( WINDOW, &width, &height );
+		glfwGetFramebufferSize( MAIN_WINDOW, &width, &height );
 		return Engine::Vector2I( width, height );
 	}
 
@@ -316,7 +438,7 @@ namespace Platform
 	float GetAspectRatio()
 	{
 		int width, height;
-		glfwGetFramebufferSize( WINDOW, &width, &height );
+		glfwGetFramebufferSize( MAIN_WINDOW, &width, &height );
 		return float( width ) / height;
 	}
 
@@ -362,11 +484,7 @@ namespace Platform
 
 	void CenterWindow( const int width_pixels, const int height_pixels )
 	{
-		const GLFWvidmode* mode = glfwGetVideoMode( glfwGetPrimaryMonitor() );
-
-		const auto max_width = mode->width;
-		const auto max_height = mode->height;
-		glfwSetWindowMonitor( WINDOW, NULL, ( max_width / 2 ) - ( width_pixels / 2 ), ( max_height / 2 ) - ( height_pixels / 2 ), width_pixels, height_pixels, GLFW_DONT_CARE );
+		CenterWindow( MAIN_WINDOW, width_pixels, height_pixels );
 	}
 
 	bool SetWindowIcon()
@@ -420,7 +538,7 @@ namespace Platform
 						icon[ 0 ].height = bmp.bmHeight;
 						icon[ 0 ].pixels = pixels.data();
 
-						glfwSetWindowIcon( WINDOW, 1, icon );
+						glfwSetWindowIcon( MAIN_WINDOW, 1, icon );
 
 						ReleaseDC( NULL, hdc );
 
@@ -440,7 +558,7 @@ namespace Platform
 
 	void SwapBuffers()
 	{
-		glfwSwapBuffers( WINDOW );
+		glfwSwapBuffers( MAIN_WINDOW );
 	}
 
 	/*
@@ -454,7 +572,7 @@ namespace Platform
 
 		for( auto button_index = 0; button_index < GLFW_MOUSE_BUTTON_LAST; button_index++ )
 		{
-			const auto action_this_frame = MouseButtonAction( glfwGetMouseButton( WINDOW, button_index ) );
+			const auto action_this_frame = MouseButtonAction( glfwGetMouseButton( MAIN_WINDOW, button_index ) );
 			MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME[ button_index ] = action_this_frame != MOUSE_BUTTON_STATES[ button_index ]; // First update status change.
 			MOUSE_BUTTON_STATES[ button_index ] = action_this_frame; // Then update actual button state.
 		}
@@ -462,7 +580,7 @@ namespace Platform
 		std::copy_n( KEYS_THAT_ARE_PRESSED, sizeof( KEYS_THAT_ARE_PRESSED ), KEYS_THAT_WERE_PRESSED );
 
 		for( auto i = 0; i < ( int )KeyCode::KEY_LAST + 1; i++ )
-			KEYS_THAT_ARE_PRESSED[ i ] = glfwGetKey( WINDOW, i ) == GLFW_PRESS;
+			KEYS_THAT_ARE_PRESSED[ i ] = glfwGetKey( MAIN_WINDOW, i ) == GLFW_PRESS;
 
 		glfwPollEvents();
 	}
@@ -486,9 +604,9 @@ namespace Platform
 	{
 		KEYBOARD_CALLBACK = callback;
 
-		ImGui_ImplGlfw_RestoreCallbacks( WINDOW );
-		glfwSetKeyCallback( WINDOW, OnKeyboardEvent );
-		ImGui_ImplGlfw_InstallCallbacks( WINDOW );
+		ImGui_ImplGlfw_RestoreCallbacks( MAIN_WINDOW );
+		glfwSetKeyCallback( MAIN_WINDOW, OnKeyboardEvent );
+		ImGui_ImplGlfw_InstallCallbacks( MAIN_WINDOW );
 	}
 
 	bool IsKeyPressed( const KeyCode key_code )
@@ -530,12 +648,12 @@ namespace Platform
 
 		switch( key_mod )
 		{
-			case KeyMods::SHIFT:		return glfwGetKey( WINDOW, int( KeyCode::KEY_LEFT_SHIFT		) ) || glfwGetKey( WINDOW, int( KeyCode::KEY_RIGHT_SHIFT	) );
-			case KeyMods::CONTROL:		return glfwGetKey( WINDOW, int( KeyCode::KEY_LEFT_CONTROL	) ) || glfwGetKey( WINDOW, int( KeyCode::KEY_RIGHT_CONTROL	) );
-			case KeyMods::ALT:			return glfwGetKey( WINDOW, int( KeyCode::KEY_LEFT_ALT		) ) || glfwGetKey( WINDOW, int( KeyCode::KEY_RIGHT_ALT		) );
-			case KeyMods::SUPER:		return glfwGetKey( WINDOW, int( KeyCode::KEY_LEFT_SUPER		) ) || glfwGetKey( WINDOW, int( KeyCode::KEY_RIGHT_SUPER	) );
-			case KeyMods::CAPS_LOCK:	return glfwGetKey( WINDOW, int( KeyCode::KEY_CAPS_LOCK		) );
-			case KeyMods::NUM_LOCK:		return glfwGetKey( WINDOW, int( KeyCode::KEY_NUM_LOCK		) );
+			case KeyMods::SHIFT:		return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_LEFT_SHIFT	) ) || glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_RIGHT_SHIFT	) );
+			case KeyMods::CONTROL:		return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_LEFT_CONTROL	) ) || glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_RIGHT_CONTROL	) );
+			case KeyMods::ALT:			return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_LEFT_ALT		) ) || glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_RIGHT_ALT		) );
+			case KeyMods::SUPER:		return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_LEFT_SUPER	) ) || glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_RIGHT_SUPER	) );
+			case KeyMods::CAPS_LOCK:	return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_CAPS_LOCK		) );
+			case KeyMods::NUM_LOCK:		return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_NUM_LOCK		) );
 
 			default:
 				UNREACHABLE();
@@ -551,23 +669,23 @@ namespace Platform
 	{
 		MOUSE_BUTTON_CALLBACK = callback;
 
-		ImGui_ImplGlfw_RestoreCallbacks( WINDOW );
-		glfwSetMouseButtonCallback( WINDOW, OnMouseButtonEvent );
-		ImGui_ImplGlfw_InstallCallbacks( WINDOW );
+		ImGui_ImplGlfw_RestoreCallbacks( MAIN_WINDOW );
+		glfwSetMouseButtonCallback( MAIN_WINDOW, OnMouseButtonEvent );
+		ImGui_ImplGlfw_InstallCallbacks( MAIN_WINDOW );
 	}
 
 	void SetMouseScrollEventCallback( std::function< void( const float x_offset, const float y_offset ) > callback )
 	{
 		MOUSE_SCROLL_CALLBACK = callback;
 
-		ImGui_ImplGlfw_RestoreCallbacks( WINDOW );
-		glfwSetScrollCallback( WINDOW, OnMouseScrolled );
-		ImGui_ImplGlfw_InstallCallbacks( WINDOW );
+		ImGui_ImplGlfw_RestoreCallbacks( MAIN_WINDOW );
+		glfwSetScrollCallback( MAIN_WINDOW, OnMouseScrolled );
+		ImGui_ImplGlfw_InstallCallbacks( MAIN_WINDOW );
 	}
 
 	bool IsMouseButtonPressed( const MouseButton mouse_button )
 	{
-		return glfwGetMouseButton( WINDOW, ( int )mouse_button ) == GLFW_PRESS;
+		return glfwGetMouseButton( MAIN_WINDOW, ( int )mouse_button ) == GLFW_PRESS;
 	}
 
 	bool IsMouseButtonPressed_ThisFrame( const MouseButton mouse_button )
@@ -577,7 +695,7 @@ namespace Platform
 	
 	bool IsMouseButtonReleased( const MouseButton mouse_button )
 	{
-		return glfwGetMouseButton( WINDOW, ( int )mouse_button ) == GLFW_RELEASE;
+		return glfwGetMouseButton( MAIN_WINDOW, ( int )mouse_button ) == GLFW_RELEASE;
 	}
 
 	bool IsMouseButtonReleased_ThisFrame( const MouseButton mouse_button )
@@ -594,11 +712,11 @@ namespace Platform
 	void CaptureMouse( const bool should_capture )
 	{
 		if( !MOUSE_CAPTURE_ENABLED && should_capture )
-			glfwSetInputMode( WINDOW, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+			glfwSetInputMode( MAIN_WINDOW, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
 		else if( MOUSE_CAPTURE_ENABLED && !should_capture )
 		{
 			MOUSE_CAPTURE_IS_RESET = true;
-			glfwSetInputMode( WINDOW, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
+			glfwSetInputMode( MAIN_WINDOW, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 		}
 
 		MOUSE_CAPTURE_ENABLED = should_capture;
@@ -621,7 +739,7 @@ namespace Platform
 
 	void SetMouseCursorPosition( const float x_position, const float y_position )
 	{
-		glfwSetCursorPos( WINDOW, x_position, y_position );
+		glfwSetCursorPos( MAIN_WINDOW, x_position, y_position );
 	}
 
 	void OffsetMouseCursorPosition( const float delta_x, const float delta_y )
@@ -759,6 +877,18 @@ namespace Platform
 
 	void Shutdown()
 	{
+		/* Save window pos. and size to file: */
+		{
+			int x_pos, y_pos;
+			glfwGetWindowPos( MAIN_WINDOW, &x_pos, &y_pos );
+			const auto framebuffer_size = GetFramebufferSizeInPixels();
+			std::ofstream output_file( "window.cfg" );
+			output_file << "x_pos = " << x_pos << "\n";
+			output_file << "y_pos = " << y_pos << "\n";
+			output_file << "width = " << framebuffer_size.X() << "\n";
+			output_file << "height = " << framebuffer_size.Y() << "\n";
+		}
+
 		glfwTerminate();
 	}
 
@@ -768,23 +898,23 @@ namespace Platform
 
 	void SetShouldClose( const bool value )
 	{
-		glfwSetWindowShouldClose( WINDOW, value );
+		glfwSetWindowShouldClose( MAIN_WINDOW, value );
 	}
 
 	bool ShouldClose()
 	{
 		ZoneScoped;
-		return glfwWindowShouldClose( WINDOW );
+		return glfwWindowShouldClose( MAIN_WINDOW );
 	}
 
 	void ChangeTitle( const char* new_title )
 	{
-		glfwSetWindowTitle( WINDOW, new_title );
+		glfwSetWindowTitle( MAIN_WINDOW, new_title );
 	}
 
 	void* GetWindowHandle()
 	{
-		return reinterpret_cast< void* >( WINDOW );
+		return reinterpret_cast< void* >( MAIN_WINDOW );
 	}
 
 	void LaunchWithDefaultProgram( const std::string& file_path )

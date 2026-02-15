@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -326,6 +326,7 @@
     <ClInclude Include="Engine\Core\Morph.h" />
     <ClInclude Include="Engine\Core\MorphSystem.h" />
     <ClInclude Include="Engine\Editor\SceneCamera.h" />
+    <ClInclude Include="Engine\Editor\SplashScreen.h" />
     <ClInclude Include="Engine\Graphics\FullscreenEffect.h" />
     <ClInclude Include="Engine\Graphics\BuiltinTextures.h" />
     <ClInclude Include="Engine\Graphics\Enums.h" />
@@ -419,6 +420,7 @@
     <ClCompile Include="Engine\Core\ImGuiSetup.cpp" />
     <ClCompile Include="Engine\Core\ImGuiUtility.cpp" />
     <ClCompile Include="Engine\Core\MorphSystem.cpp" />
+    <ClCompile Include="Engine\Editor\SplashScreen.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinShaders.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinTextures.cpp" />
     <ClCompile Include="Engine\Graphics\GLLabelPrefixes.h" />

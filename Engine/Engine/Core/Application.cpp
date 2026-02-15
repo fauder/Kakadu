@@ -64,6 +64,11 @@ namespace Engine
 
 	void Application::Run()
 	{
+#ifdef _EDITOR
+		Platform::DestroySplashScreenAndSwitchToMainWindow();
+		Platform::SwapBuffers();
+#endif // _EDITOR
+
 		TracyGpuContext;
 
 		/* The main loop. */
@@ -127,7 +132,7 @@ namespace Engine
 		ServiceLocator< AssetDatabase< Model > >::Register( &asset_database_model );
 		ServiceLocator< MorphSystem >::Register( &morph_system );
 
-		Platform::InitializeAndCreateWindow( 800, 600, vsync_is_enabled );
+		Platform::InitializeAndCreateWindows( vsync_is_enabled );
 
 		const auto version = glGetString( GL_VERSION );
 		std::cout << version << "\n\n";

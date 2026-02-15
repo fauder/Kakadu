@@ -172,14 +172,16 @@ namespace Platform
 	};
 
 	/* Initialization. */
-	void InitializeAndCreateWindow( const int width_pixels = 800, const int height_pixels = 600, 
-									const bool enable_vsync = false );
+	void InitializeAndCreateWindows( const bool enable_vsync = false );
+	void DestroySplashScreenAndSwitchToMainWindow();
 
 	/* Window/Framebuffer. */
 	void ResizeWindow( const int width_pixels, const int height_pixels );
 	void MinimizeWindow();
 	void MaximizeWindow();
 	void RestoreWindow();
+	void HideWindow();
+	void ShowWindow();
 	void SetFramebufferResizeCallback( std::function< void( const int width_new_pixels, const int height_new_pixels ) > callback = {} );
 	bool IsWindowFocused();
 	bool IsWindowIconified();
