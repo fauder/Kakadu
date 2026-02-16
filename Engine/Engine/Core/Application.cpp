@@ -48,13 +48,32 @@ namespace Engine
 	{
 		NatVis::ForceIncludeInBuild();
 
-		Initialize();
+		const auto begin = std::chrono::system_clock::now();
 
-		renderer_description.enable_gamma_correction = gamma_correction_is_enabled;
-		renderer = std::make_unique< Renderer >( std::move( renderer_description ) );
-		renderer->OnFramebufferResize( Platform::GetFramebufferSizeInPixels() );
+		// Application init.:
+		{
+			const auto begin = std::chrono::system_clock::now();
+			Initialize();
+			const auto end = std::chrono::system_clock::now();
+
+			std::cout << "Engine-side Application Initialization:\n";
+			std::cout << "  Application::Initialize(): " << std::chrono::duration_cast< std::chrono::milliseconds >( ( end - begin ) ).count() << " ms.\n";
+		}
+
+		// Renderer init.:
+		{
+			renderer_description.enable_gamma_correction = gamma_correction_is_enabled;
+			const auto begin = std::chrono::system_clock::now();
+			renderer = std::make_unique< Renderer >( std::move( renderer_description ) );
+			renderer->OnFramebufferResize( Platform::GetFramebufferSizeInPixels() );
+			const auto end = std::chrono::system_clock::now();
+			std::cout << "  Renderer::Renderer(): " << std::chrono::duration_cast< std::chrono::milliseconds >( ( end - begin ) ).count() << " ms.\n";
+		}
 
 		scene_camera = std::make_unique< Editor::SceneCamera >(); // Needs to be initialized after the Platform layer is initialized to be able to query framebuffer size for aspect ratio.
+
+		const auto end = std::chrono::system_clock::now();
+		std::cout << "    Engine-side total: " << std::chrono::duration_cast< std::chrono::milliseconds >( ( end - begin ) ).count() << " ms.\n";
 	}
 
 	Application::~Application()
