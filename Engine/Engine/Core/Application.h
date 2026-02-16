@@ -97,8 +97,6 @@ namespace Engine
 
 		void CalculateTimeInformation();
 
-	private:
-
 #ifdef _EDITOR
 		void RenderImGui_Viewport();
 		void RenderImGui_ViewportControls();
@@ -168,7 +166,16 @@ namespace Engine
 
 		bool mouse_screen_space_position_overlay_is_active;
 
-		/* 7 byte(s) of padding. */
+		/* 1 byte(s) of padding. */
+
+		std::uint16_t rolling_avg_fps;
+		int rolling_avg_index;
+
+		float rolling_avg_frame_time;
+
+		static constexpr std::uint8_t ROLLING_AVG_FPS_FRAME_COUNT = 144;
+		std::array< float, ROLLING_AVG_FPS_FRAME_COUNT > last_N_fps_values;
+		std::array< float, ROLLING_AVG_FPS_FRAME_COUNT > last_N_frame_times;
 	};
 
 	/* Needs to be implemented by the CLIENT Application. */

@@ -44,7 +44,12 @@ namespace Engine
 		time_previous( 0.0f ),
 		time_previous_since_start( 0.0f ),
 		time_since_start( 0.0f ),
-		mouse_screen_space_position_overlay_is_active( false )
+		mouse_screen_space_position_overlay_is_active( false ),
+		rolling_avg_fps( 0 ),
+		rolling_avg_index( 0 ),
+		rolling_avg_frame_time( 0.0f ),
+		last_N_fps_values( {} ),
+		last_N_frame_times( {} )
 	{
 		NatVis::ForceIncludeInBuild();
 
@@ -372,6 +377,35 @@ namespace Engine
 		time_mod_2_pi = std::fmod( time_current, Constants< float >::Two_Pi() );
 
 		frame_count++;
+
+		/*
+		 * Calculate frame statistics:
+		 */
+
+		const float fps = 1.0f / time_delta_real;
+		const float frame_time = time_delta_real * 1000.0f;
+
+		/* Calculate rolling avg. fps & frame time: */
+		{
+			/* Since only 1 value in the ring buffer changes every frame, no need to re-calculate the total sum. Just add the difference between current value and
+			 * the element at the current index in the ring buffer to the total sum. */
+			local_persist float last_N_fps_values_sum  = 0;
+			local_persist float last_N_frame_times_sum = 0;
+
+			const float previous_fps_at_this_index = last_N_fps_values[ rolling_avg_index ];
+			last_N_fps_values_sum += fps - previous_fps_at_this_index;
+
+			const float previous_frame_time_at_this_index = last_N_frame_times[ rolling_avg_index ];
+			last_N_frame_times_sum += frame_time - previous_frame_time_at_this_index;
+
+			last_N_fps_values[ rolling_avg_index ] = fps;
+			last_N_frame_times[ rolling_avg_index++ ] = frame_time;
+
+			rolling_avg_index = rolling_avg_index % ROLLING_AVG_FPS_FRAME_COUNT;
+
+			rolling_avg_fps        = ( std::uint16_t )Math::Round( last_N_fps_values_sum / ROLLING_AVG_FPS_FRAME_COUNT );
+			rolling_avg_frame_time = last_N_frame_times_sum / ROLLING_AVG_FPS_FRAME_COUNT;
+		}
 	}
 
 #ifdef _EDITOR
@@ -580,38 +614,6 @@ namespace Engine
 										ImGuiUtility::HorizontalPosition::RIGHT, ImGuiUtility::VerticalPosition::TOP,
 										&show_frame_statistics_overlay ) )
 		{
-			const float fps        = 1.0f / time_delta_real;
-			const float frame_time = time_delta_real * 1000.0f;
-
-			constexpr std::uint8_t rolling_avg_fps_frame_count = 144;
-			local_persist std::array< float, rolling_avg_fps_frame_count > last_N_fps_values = {};
-			local_persist std::array< float, rolling_avg_fps_frame_count > last_N_frame_times = {};
-			std::uint16_t rolling_avg_fps;
-			float rolling_avg_frame_time;
-			local_persist int rolling_avg_index = 0;
-
-			/* Calculate rolling avg. fps & frame time: */
-			{
-				/* Since only 1 value in the ring buffer changes every frame, no need to re-calculate the total sum. Just add the difference between current value and
-				 * the element at the current index in the ring buffer to the total sum. */
-				local_persist float last_N_fps_values_sum = 0;
-				local_persist float last_N_frame_times_sum = 0;
-
-				const float previous_fps_at_this_index = last_N_fps_values[ rolling_avg_index ];
-				last_N_fps_values_sum += fps - previous_fps_at_this_index;
-
-				const float previous_frame_time_at_this_index = last_N_frame_times[ rolling_avg_index ];
-				last_N_frame_times_sum += frame_time - previous_frame_time_at_this_index;
-
-				last_N_fps_values[ rolling_avg_index ] = fps;
-				last_N_frame_times[ rolling_avg_index++ ] = frame_time;
-
-				rolling_avg_index = rolling_avg_index % rolling_avg_fps_frame_count;
-
-				rolling_avg_fps        = ( std::uint16_t )Math::Round( last_N_fps_values_sum / rolling_avg_fps_frame_count );
-				rolling_avg_frame_time = last_N_frame_times_sum / rolling_avg_fps_frame_count;
-			}
-
 			const auto& style = ImGui::GetStyle();
 
 			const ImVec2 max_size( ImGui::CalcTextSize( "FPS: 999.9 fps  |  # Frames: 99999999" ) + style.ItemInnerSpacing );
@@ -628,7 +630,7 @@ namespace Engine
 					   rolling_avg_fps, rolling_avg_frame_time, time_since_start, frame_count );
 			local_persist float refresh_rate = Platform::GetMainMonitorRefreshRate();
 			ImGui::PushStyleColor( ImGuiCol_PlotLines, Math::ToImVec4( Math::Lerp( Color4::Red(), Color4::Green(), ( float )rolling_avg_fps / refresh_rate ) ) );
-			ImGui::PlotLines( "##FPS", last_N_fps_values.data(), rolling_avg_fps_frame_count, rolling_avg_index, text,
+			ImGui::PlotLines( "##FPS", last_N_fps_values.data(), ROLLING_AVG_FPS_FRAME_COUNT, rolling_avg_index, text,
 							  rolling_avg_fps * 0.9f, rolling_avg_fps * 1.2f, ImVec2{ -1.0f, ImGui::GetTextLineHeight() * 6 } );
 			ImGui::PopStyleColor();
 			ImGui::SetWindowFontScale( 1.0f );
