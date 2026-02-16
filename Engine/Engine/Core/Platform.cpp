@@ -190,48 +190,45 @@ namespace Platform
 		state->is_iconified = ( iconified == GLFW_TRUE );
 	}
 
-	internal_function bool ReadLastKnownWindowSizeFromFile( int& x_pos, int& y_pos, int& width, int& height )
+	struct WindowPositionAndSize
 	{
-		x_pos = -1, y_pos = -1, width = -1, height = -1;
+		int x_pos, y_pos, width, height;
+	};
+
+	internal_function bool ReadLastKnownWindowSizeFromFile( WindowPositionAndSize& main_window_info, WindowPositionAndSize& console_window_info )
+	{
+		main_window_info.x_pos = main_window_info.y_pos = main_window_info.width = main_window_info.height = -1;
 
 		if( auto config_file = std::ifstream( "window.cfg" ) )
 		{
-			std::string token;
+			std::string token_string;
 
-			config_file >> token;
-			if( token == "x_pos" )
+			auto ParseToken = [ & ]( int& token_to_set, const char* token_name )
 			{
-				config_file >> token /* '=' */ >> token;
-				if( not token.empty() )
-					x_pos = std::stoi( token );
-			}
+				if( config_file >> token_string && token_string == token_name )
+				{
+					if( config_file >> token_string /* '=' */ >> token_string && not token_string.empty() )
+					{
+						token_to_set = std::stoi( token_string );
+						return true;
+					}
+				}
 
-			config_file >> token;
-			if( token == "y_pos" )
-			{
-				config_file >> token /* '=' */ >> token;
-				if( not token.empty() )
-					y_pos = std::stoi( token );
-			}
+				return false;
+			};
 
-			config_file >> token;
-			if( token == "width" )
-			{
-				config_file >> token /* '=' */ >> token;
-				if( not token.empty() )
-					width = std::stoi( token );
-			}
-
-			config_file >> token;
-			if( token == "height" )
-			{
-				config_file >> token /* '=' */ >> token;
-				if( not token.empty() )
-					height = std::stoi( token );
-			}
+			return 
+				ParseToken( main_window_info.x_pos,  "main_x_pos" ) &&
+				ParseToken( main_window_info.y_pos,  "main_y_pos" ) &&
+				ParseToken( main_window_info.width,  "main_width" ) &&
+				ParseToken( main_window_info.height, "main_height" ) &&
+				ParseToken( console_window_info.x_pos,  "console_x_pos" ) &&
+				ParseToken( console_window_info.y_pos,  "console_y_pos" ) &&
+				ParseToken( console_window_info.width,  "console_width" ) &&
+				ParseToken( console_window_info.height, "console_height" );
 		}
 
-		return x_pos > 0 && y_pos > 0 && width > 0 && height > 0;
+		return false;
 	}
 
 	internal_function void CenterWindow( GLFWwindow* window, const int width_pixels, const int height_pixels )
@@ -271,9 +268,7 @@ namespace Platform
 		glfwWindowHint( GLFW_DECORATED, GLFW_FALSE ); // No decorations during splash screen.
 		glfwWindowHint( GLFW_VISIBLE,   GLFW_FALSE ); // Start hidden as we will resize it shortly.
 
-		int width = 800, height = 600;
-
-		SPLASH_WINDOW = glfwCreateWindow( width, height, "Kakadu", nullptr, nullptr );
+		SPLASH_WINDOW = glfwCreateWindow( 100, 100, "Kakadu", nullptr, nullptr ); // Size doesn't matter; will be resized shortly.
 		if( !SPLASH_WINDOW )
 			throw std::runtime_error( "ERROR::PLATFORM::GLFW::FAILED TO CREATE SPLASH GLFW WINDOW!"  );
 
@@ -286,21 +281,22 @@ namespace Platform
 #ifdef _EDITOR
 		Engine::Editor::SplashScreen splash_screen( ENGINE_TEXTURE_PATH_ABSOLUTE( "splash_screen.png" ) );
 
-		if( not GetMainMonitorResolution( width, height ) )
+		int splash_width, splash_height;
+		if( not GetMainMonitorResolution( splash_width, splash_height ) )
 		{
-			width  = 800;
-			height = 600;
+			splash_width  = 800;
+			splash_height = 600;
 		}
 		else
 		{
 			float splash_aspect_ratio = splash_screen.AspectRatio();
 
-			width /= 3;
-			height = ( int )( width / splash_aspect_ratio );
+			splash_width /= 3;
+			splash_height = ( int )( splash_width / splash_aspect_ratio );
 		}
 
-		glfwSetWindowSize( SPLASH_WINDOW, width, height );
-		CenterWindow( SPLASH_WINDOW, width, height );
+		glfwSetWindowSize( SPLASH_WINDOW, splash_width, splash_height );
+		CenterWindow( SPLASH_WINDOW, splash_width, splash_height );
 		glfwShowWindow( SPLASH_WINDOW );
 
 		splash_screen.RenderOnce();
@@ -313,17 +309,24 @@ namespace Platform
 		glfwWindowHint( GLFW_DECORATED, GLFW_TRUE );
 		glfwWindowHint( GLFW_VISIBLE,   GLFW_FALSE ); // Start hidden until init. finishes and we replace the splash window with this one.
 
-		int x_pos = -1, y_pos = -1;
-		const bool known_size_is_used = ReadLastKnownWindowSizeFromFile( x_pos, y_pos, width, height );
+		WindowPositionAndSize main_window_info, console_window_info;
+		const bool known_size_is_used = ReadLastKnownWindowSizeFromFile( main_window_info, console_window_info );
 
-		if( not known_size_is_used )
+		if( known_size_is_used )
+		{
+#ifdef _WIN32
+			// Set console window to last known pos/size.
+			SetWindowPos( GetConsoleWindow(), nullptr, console_window_info.x_pos, console_window_info.y_pos, console_window_info.width, console_window_info.height, SWP_NOZORDER );
+#endif // _WIN32
+		}
+		else
 		{
 			// Revert:
-			width  = 800;
-			height = 600;
+			main_window_info.width  = 800;
+			main_window_info.height = 600;
 		}
 
-		MAIN_WINDOW = glfwCreateWindow( width, height, "Kakadu", nullptr, SPLASH_WINDOW );
+		MAIN_WINDOW = glfwCreateWindow( main_window_info.width, main_window_info.height, "Kakadu", nullptr, SPLASH_WINDOW );
 		if( MAIN_WINDOW == nullptr )
 		{
 			glfwTerminate();
@@ -339,9 +342,9 @@ namespace Platform
 #endif // _EDITOR
 
 		if( known_size_is_used )
-			glfwSetWindowPos( MAIN_WINDOW, x_pos, y_pos );
+			glfwSetWindowPos( MAIN_WINDOW, main_window_info.x_pos, main_window_info.y_pos );
 		else
-			CenterWindow( width, height );
+			CenterWindow( main_window_info.width, main_window_info.height );
 
 		SetWindowIcon();
 
@@ -879,14 +882,38 @@ namespace Platform
 	{
 		/* Save window pos. and size to file: */
 		{
-			int x_pos, y_pos;
-			glfwGetWindowPos( MAIN_WINDOW, &x_pos, &y_pos );
-			const auto framebuffer_size = GetFramebufferSizeInPixels();
+			/* Main Window: */
 			std::ofstream output_file( "window.cfg" );
-			output_file << "x_pos = " << x_pos << "\n";
-			output_file << "y_pos = " << y_pos << "\n";
-			output_file << "width = " << framebuffer_size.X() << "\n";
-			output_file << "height = " << framebuffer_size.Y() << "\n";
+
+			{
+				int x_pos, y_pos;
+				glfwGetWindowPos( MAIN_WINDOW, &x_pos, &y_pos );
+				const auto framebuffer_size = GetFramebufferSizeInPixels();
+				output_file << "main_x_pos = " << x_pos << "\n";
+				output_file << "main_y_pos = " << y_pos << "\n";
+				output_file << "main_width = " << framebuffer_size.X() << "\n";
+				output_file << "main_height = " << framebuffer_size.Y() << "\n";
+			}
+
+			/* Console Window: */
+			{
+#ifdef _WIN32
+				HWND hwnd = GetConsoleWindow();
+
+				RECT rect{};
+				GetWindowRect( hwnd, &rect );
+
+				int x_pos  = rect.left;
+				int y_pos  = rect.top;
+				int width  = rect.right - rect.left;
+				int height = rect.bottom - rect.top;
+
+				output_file << "console_x_pos = " << x_pos << "\n";
+				output_file << "console_y_pos = " << y_pos << "\n";
+				output_file << "console_width = " << width << "\n";
+				output_file << "console_height = " << height << "\n";
+#endif // _WIN32
+			}
 		}
 
 		glfwTerminate();
