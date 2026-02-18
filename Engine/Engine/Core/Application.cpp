@@ -70,7 +70,6 @@ namespace Engine
 			renderer_description.enable_gamma_correction = gamma_correction_is_enabled;
 			const auto begin = std::chrono::system_clock::now();
 			renderer = std::make_unique< Renderer >( std::move( renderer_description ) );
-			renderer->OnFramebufferResize( Platform::GetFramebufferSizeInPixels() );
 			const auto end = std::chrono::system_clock::now();
 			std::cout << "  Renderer::Renderer(): " << std::chrono::duration_cast< std::chrono::milliseconds >( ( end - begin ) ).count() << " ms.\n";
 		}
@@ -90,7 +89,6 @@ namespace Engine
 	{
 #ifdef _EDITOR
 		Platform::DestroySplashScreenAndSwitchToMainWindow();
-		Platform::SwapBuffers();
 #endif // _EDITOR
 
 		TracyGpuContext;

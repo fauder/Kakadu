@@ -366,6 +366,8 @@ namespace Platform
 		}
 
 		glfwShowWindow( MAIN_WINDOW );
+
+		glfwSwapBuffers( MAIN_WINDOW ); // To prevent the white screen before anything gets rendered.
 	}
 
 	/*
