@@ -22,8 +22,6 @@ namespace Engine::Editor
 			CUSTOM_1,
 		};
 
-		void RenderImGui( const Vector2I viewport_resolution );
-
 		void Update( const float current_time, const float delta_time, const bool mouse_controls_the_camera );
 
 		header_function void SetRotationCenter( const Vector3& point ) { rotation_center = point; }

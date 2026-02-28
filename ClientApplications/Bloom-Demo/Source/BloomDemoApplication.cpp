@@ -251,7 +251,7 @@ void BloomDemoApplication::Initialize()
 	window_transform_array[ 3 ].SetTranslation( Vector3( -0.3f,	5.0f, -2.3f  ) );
 	window_transform_array[ 4 ].SetTranslation( Vector3(  0.5f,	5.0f, -0.6f  ) );
 
-	const float star_distance = 0.9f * scene_camera->camera.GetFarPlaneOffset();
+	const float star_distance = 0.9f * editor_context->scene_camera.camera.GetFarPlaneOffset();
 
 	for( auto star_index = 0; star_index < STAR_COUNT; star_index++ )
 	{
@@ -480,9 +480,9 @@ void BloomDemoApplication::Update()
 
 	// TODO: Separate application logs from GL logs.
 
-	current_time_as_angle = Radians( time_current );
+	current_time_as_angle = Radians( frame_time.time_current );
 	constexpr float lights_slow_down_factor = 0.45f;
-	const Radians scaled_current_time_mod_two_pi( std::fmod( time_current * lights_slow_down_factor, Engine::Constants< float >::Two_Pi() ) );
+	const Radians scaled_current_time_mod_two_pi( std::fmod( frame_time.time_current * lights_slow_down_factor, Engine::Constants< float >::Two_Pi() ) );
 
 	/* Light sources' transform: */
 	constexpr Radians angle_increment( Engine::Constants< Radians >::Two_Pi() / LIGHT_POINT_COUNT );
@@ -528,13 +528,13 @@ void BloomDemoApplication::Update()
 	{
 		Engine::Math::Polar3_Spherical_Game spherical_coords( Engine::Math::ToPolar3_Spherical_Game( star_transform_array[ i ].GetTranslation() ) );
 
-		spherical_coords.Heading() += 0.01_rad * time_delta;
+		spherical_coords.Heading() += 0.01_rad * frame_time.time_delta;
 
 		star_transform_array[ i ].SetRotation( spherical_coords.Heading(), spherical_coords.Pitch(), 0_rad );
 		star_transform_array[ i ].SetTranslation( Engine::Math::ToVector3( spherical_coords ) );
 
 		// Interesting effect once enough frames have passed:
-		//star_transform_array[ i ].OffsetTranslation( 0.1f * time_delta * ( star_transform_array[ ( i + 1 ) % STAR_COUNT ].GetTranslation() - star_transform_array[ i ].GetTranslation() ).Normalized() );
+		//star_transform_array[ i ].OffsetTranslation( 0.1f * frame_time.time_delta * ( star_transform_array[ ( i + 1 ) % STAR_COUNT ].GetTranslation() - star_transform_array[ i ].GetTranslation() ).Normalized() );
 
 		star_instance_data_array[ i ].transform = star_transform_array[ i ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
 	}
@@ -545,9 +545,9 @@ void BloomDemoApplication::Update()
 	{
 		Radians old_heading, old_pitch, old_bank;
 		Engine::Math::QuaternionToEuler( cube_transform_array[ CUBE_COUNT - 1 ].GetRotation(), old_heading, old_pitch, old_bank );
-		cube_transform_array[ CUBE_COUNT - 1 ].SetRotation( old_heading + angle_increment * time_delta, old_pitch, old_bank );
+		cube_transform_array[ CUBE_COUNT - 1 ].SetRotation( old_heading + angle_increment * frame_time.time_delta, old_pitch, old_bank );
 		cube_instance_data_array[ CUBE_COUNT - 1 ] = cube_transform_array[ CUBE_COUNT - 1 ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
-		
+
 		cube_mesh_instanced.UpdateInstanceData_Partial( std::span( cube_instance_data_array.data(), 1 ), 0 );
 	}
 
@@ -555,7 +555,7 @@ void BloomDemoApplication::Update()
 	{
 		Radians old_heading, old_pitch, old_bank;
 		Engine::Math::QuaternionToEuler( cube_parallax_transform.GetRotation(), old_heading, old_pitch, old_bank );
-		cube_parallax_transform.SetRotation( old_heading + angle_increment * time_delta, old_pitch, old_bank );
+		cube_parallax_transform.SetRotation( old_heading + angle_increment * frame_time.time_delta, old_pitch, old_bank );
 	}
 
 	/* Sphere's transform; Same as the parallax cube: */
@@ -573,18 +573,13 @@ void BloomDemoApplication::RenderFrame()
 	//renderer->Render();
 }
 
-void BloomDemoApplication::RenderImGui()
+void BloomDemoApplication::RenderToolsUI()
 {
 	/* Reminder: The rest of the rendering code (namely, ImGui) will be working in sRGB for the remainder of this frame,
 	 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the editor FBO). */
 
 	/* Need to switch to the default framebuffer, so ImGui can render onto it. */
 	renderer->ResetToDefaultFramebuffer();
-
-	Application::RenderImGui();
-
-	if( show_imgui_demo_window )
-		ImGui::ShowDemoWindow();
 
 	const auto& style = ImGui::GetStyle();
 

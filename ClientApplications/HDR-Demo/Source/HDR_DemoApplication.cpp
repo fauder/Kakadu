@@ -169,8 +169,8 @@ void HDR_DemoApplication::Update()
 
 	// TODO: Separate application logs from GL logs.
 
-	current_time_as_angle = Radians( time_current );
-	const Radians current_time_mod_two_pi( std::fmod( time_current, Engine::Constants< float >::Two_Pi() ) );
+	current_time_as_angle = Radians( frame_time.time_current );
+	const Radians current_time_mod_two_pi( std::fmod( frame_time.time_current, Engine::Constants< float >::Two_Pi() ) );
 }
 
 void HDR_DemoApplication::RenderFrame()
@@ -182,18 +182,13 @@ void HDR_DemoApplication::RenderFrame()
 	//renderer->Render();
 }
 
-void HDR_DemoApplication::RenderImGui()
+void HDR_DemoApplication::RenderToolsUI()
 {
 	/* Reminder: The rest of the rendering code (namely, ImGui) will be working in sRGB for the remainder of this frame,
 	 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the final FBO). */
 
 	/* Need to switch to the default framebuffer, so ImGui can render onto it. */
 	renderer->ResetToDefaultFramebuffer();
-
-	Application::RenderImGui();
-
-	if( show_imgui_demo_window )
-		ImGui::ShowDemoWindow();
 
 	const auto& style = ImGui::GetStyle();
 

@@ -305,6 +305,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Editor\FrameStatisticsOverlay.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Engine\Asset\Resource\Resource.h" />
     <ClInclude Include="Engine\Asset\Paths.h" />
@@ -325,8 +326,16 @@
     <ClInclude Include="Engine\Core\Macros_SpaceshipOperator.h" />
     <ClInclude Include="Engine\Core\Morph.h" />
     <ClInclude Include="Engine\Core\MorphSystem.h" />
+    <ClInclude Include="Engine\Core\FrameTime.h" />
+    <ClInclude Include="Engine\Editor\EditorContext.h" />
+    <ClInclude Include="Engine\Editor\EditorCommand.h" />
+    <ClInclude Include="Engine\Editor\MagnifierOverlay.h" />
     <ClInclude Include="Engine\Editor\SceneCamera.h" />
+    <ClInclude Include="Engine\Editor\SceneCameraInspectorPanel.h" />
     <ClInclude Include="Engine\Editor\SplashScreen.h" />
+    <ClInclude Include="Engine\Editor\ViewportControlsOverlay.h" />
+    <ClInclude Include="Engine\Editor\ViewportPanel.h" />
+    <ClInclude Include="Engine\Editor\ViewportScene.h" />
     <ClInclude Include="Engine\Graphics\FullscreenEffect.h" />
     <ClInclude Include="Engine\Graphics\BuiltinTextures.h" />
     <ClInclude Include="Engine\Graphics\Enums.h" />
@@ -412,6 +421,8 @@
     <ClInclude Include="Engine\Graphics\RenderState.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Core\FrameTime.cpp" />
+    <ClCompile Include="Engine\Editor\EditorContext.cpp" />
     <ClCompile Include="Engine\Core\Application.cpp" />
     <ClCompile Include="Engine\Core\Blob.cpp" />
     <ClCompile Include="Engine\Core\DirtyBlob.cpp" />
@@ -420,7 +431,13 @@
     <ClCompile Include="Engine\Core\ImGuiSetup.cpp" />
     <ClCompile Include="Engine\Core\ImGuiUtility.cpp" />
     <ClCompile Include="Engine\Core\MorphSystem.cpp" />
+    <ClCompile Include="Engine\Editor\FrameStatisticsOverlay.cpp" />
+    <ClCompile Include="Engine\Editor\MagnifierOverlay.cpp" />
+    <ClCompile Include="Engine\Editor\SceneCameraInspectorPanel.cpp" />
     <ClCompile Include="Engine\Editor\SplashScreen.cpp" />
+    <ClCompile Include="Engine\Editor\ViewportControlsOverlay.cpp" />
+    <ClCompile Include="Engine\Editor\ViewportPanel.cpp" />
+    <ClCompile Include="Engine\Editor\ViewportScene.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinShaders.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinTextures.cpp" />
     <ClCompile Include="Engine\Graphics\GLLabelPrefixes.h" />

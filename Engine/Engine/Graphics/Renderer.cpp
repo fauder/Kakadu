@@ -902,7 +902,7 @@ namespace Engine
 
 	void Renderer::ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable )
 	{
-	#ifdef _EDITOR
+#ifdef _EDITOR
 		if( auto iterator = render_queue_map.find( queue_id_to_toggle );
 			iterator != render_queue_map.cend() )
 		{
@@ -910,9 +910,9 @@ namespace Engine
 		}
 		else
 			CONSOLE_ERROR( "Attempting to toggle a non-existing queue!" );
-	#else
+#else
 		render_queue_map[ queue_id_to_toggle ].is_enabled = enable;
-	#endif // _EDITOR
+#endif // _EDITOR
 	}
 
 	bool Renderer::QueueHasContentToRender( const RenderQueue& queue_to_query ) const
@@ -945,12 +945,12 @@ namespace Engine
 	}
 
 #ifdef _EDITOR
-	void Renderer::SetFinalPassToUseEditorViewportFramebuffer()
+	void Renderer::SetFinalOutputToEditorViewport()
 	{
 		tone_mapping.steps.front().framebuffer_target = &framebuffer_editor_viewport;
 	}
 
-	void Renderer::SetFinalPassToUseDefaultFramebuffer()
+	void Renderer::SetFinalOutputToDefaultFramebuffer()
 	{
 		tone_mapping.steps.front().framebuffer_target = &framebuffer_default;
 	}
@@ -1237,6 +1237,11 @@ namespace Engine
 
 #ifdef _EDITOR
 	Framebuffer& Renderer::EditorViewportFramebuffer()
+	{
+		return framebuffer_editor_viewport;
+	}
+
+	const Framebuffer& Renderer::EditorViewportFramebuffer() const
 	{
 		return framebuffer_editor_viewport;
 	}

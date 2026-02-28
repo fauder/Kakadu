@@ -23,7 +23,8 @@ public:
 
 	virtual void RenderFrame() override;
 
-	virtual void RenderImGui() override;
+	virtual void RenderToolsUI() override;
+
 	virtual void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods ) override;
 	virtual void OnMouseScrollEvent( const float x_offset, const float y_offset ) override;
 	virtual void OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods ) override;

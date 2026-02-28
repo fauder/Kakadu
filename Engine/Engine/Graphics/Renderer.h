@@ -115,8 +115,8 @@ namespace Engine
 		void RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from );
 
 #ifdef _EDITOR
-		void SetFinalPassToUseEditorViewportFramebuffer();
-		void SetFinalPassToUseDefaultFramebuffer();
+		void SetFinalOutputToEditorViewport();
+		void SetFinalOutputToDefaultFramebuffer();
 #endif // _EDITOR
 
 		void AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id );
@@ -208,6 +208,7 @@ namespace Engine
 		Framebuffer& PostProcessingFramebuffer();
 #ifdef _EDITOR
 		Framebuffer& EditorViewportFramebuffer();
+		const Framebuffer& EditorViewportFramebuffer() const;
 #endif // _EDITOR
 		Framebuffer& FinalFramebuffer();
 

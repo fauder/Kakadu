@@ -467,8 +467,8 @@ void SandboxApplication::Update()
 
 	// TODO: Separate application logs from GL logs.
 
-	current_time_as_angle = Radians( time_current );
-	const Radians current_time_mod_two_pi( std::fmod( time_current, Engine::Constants< float >::Two_Pi() ) );
+	current_time_as_angle = Radians( frame_time.time_current );
+	const Radians current_time_mod_two_pi( std::fmod( frame_time.time_current, Engine::Constants< float >::Two_Pi() ) );
 
 	/* Light sources' transform: */
 	constexpr Radians angle_increment( Engine::Constants< Radians >::Two_Pi() / LIGHT_POINT_COUNT );
@@ -514,7 +514,7 @@ void SandboxApplication::Update()
 	{
 		Radians old_heading, old_pitch, old_bank;
 		Engine::Math::QuaternionToEuler( cube_transform_array[ CUBE_COUNT - 1 ].GetRotation(), old_heading, old_pitch, old_bank );
-		cube_transform_array[ CUBE_COUNT - 1 ].SetRotation( old_heading + angle_increment * time_delta, old_pitch, old_bank );
+		cube_transform_array[ CUBE_COUNT - 1 ].SetRotation( old_heading + angle_increment * frame_time.time_delta, old_pitch, old_bank );
 		cube_instance_data_array[ CUBE_COUNT - 1 ] = cube_transform_array[ CUBE_COUNT - 1 ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
 		
 		cube_mesh_instanced.UpdateInstanceData_Partial( std::span( cube_instance_data_array.data(), 1 ), 0 );
@@ -524,7 +524,7 @@ void SandboxApplication::Update()
 	{
 		Radians old_heading, old_pitch, old_bank;
 		Engine::Math::QuaternionToEuler( cube_parallax_transform.GetRotation(), old_heading, old_pitch, old_bank );
-		cube_parallax_transform.SetRotation( old_heading + angle_increment * time_delta, old_pitch, old_bank );
+		cube_parallax_transform.SetRotation( old_heading + angle_increment * frame_time.time_delta, old_pitch, old_bank );
 	}
 
 	/* Sphere's transform; Same as the parallax cube: */
@@ -561,18 +561,13 @@ void SandboxApplication::RenderFrame()
 	//renderer->Render();
 }
 
-void SandboxApplication::RenderImGui()
+void SandboxApplication::RenderToolsUI()
 {
 	/* Reminder: The rest of the rendering code (namely, ImGui) will be working in sRGB for the remainder of this frame,
 	 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the editor FBO). */
 
 	/* Need to switch to the default framebuffer, so ImGui can render onto it. */
 	renderer->ResetToDefaultFramebuffer();
-
-	Application::RenderImGui();
-
-	if( show_imgui_demo_window )
-		ImGui::ShowDemoWindow();
 
 	const auto& style = ImGui::GetStyle();
 
