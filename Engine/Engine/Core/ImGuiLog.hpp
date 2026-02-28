@@ -15,7 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	/* Only allow enums as the templated type. */
 	template< typename Type, typename std::size_t Size, typename Enable = void >

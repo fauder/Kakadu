@@ -3,7 +3,7 @@
 #include "Math/Math.hpp"
 #include "Math/Matrix.h"
 
-namespace Engine::Matrix
+namespace Kakadu::Matrix
 {
 	/* In row-major form. Coordinates are in a left-handed coordinate system (both before & after multiplication). */
 	Matrix4x4 PerspectiveProjection( const float near_plane_offset, const float far_plane_offset, const float aspect_ratio, const Radians vertical_field_of_view )

@@ -8,7 +8,7 @@
 #define FullGeometryShaderPath( file_path ) ENGINE_SHADER_PATH_ABSOLUTE( file_path ) ""_geom
 #define FullFragmentShaderPath( file_path ) ENGINE_SHADER_PATH_ABSOLUTE( file_path ) ""_frag
 
-namespace Engine
+namespace Kakadu
 {
 	/* Static member variable definitions: */
 	std::unordered_map< std::string, Shader > BuiltinShaders::SHADER_MAP;

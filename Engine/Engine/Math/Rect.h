@@ -3,7 +3,7 @@
 // Engine Includes.
 #include "Vector.hpp"
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
 	struct Rect
 	{

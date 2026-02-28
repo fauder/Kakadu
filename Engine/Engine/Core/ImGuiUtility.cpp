@@ -9,7 +9,7 @@
 #include <ImGui/imgui_internal.h>
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
-namespace Engine::ImGuiUtility
+namespace Kakadu::ImGuiUtility
 {
 	void Table_Header_ManuallySubmit( const int column_index )
 	{

@@ -5,7 +5,7 @@
 // std Includes.
 #include <stdexcept> // std::logic_error.
 
-namespace Engine
+namespace Kakadu
 {
 	Blob::Blob( const std::size_t size )
 		:

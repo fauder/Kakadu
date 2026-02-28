@@ -3,7 +3,7 @@
 #include "UniformBlockBindingPointManager.h"
 #include "Core/Optimization.h"
 
-namespace Engine
+namespace Kakadu
 {
 	UniformBuffer* UniformBufferManager::CreateOrRequest( const std::string& buffer_name, const Uniform::BufferInformation& buffer_info )
 	{

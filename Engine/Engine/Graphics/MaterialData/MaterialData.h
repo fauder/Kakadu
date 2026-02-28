@@ -5,7 +5,7 @@
 #include "Graphics/PaddedAndCombinedTypes.h"
 #include "Graphics/Std140StructTag.h"
 
-namespace Engine::MaterialData
+namespace Kakadu::MaterialData
 {
 	struct BlinnPhongMaterialData : public Std140StructTag
 	{

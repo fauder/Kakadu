@@ -8,7 +8,7 @@
 #include <optional>
 #include <set>
 
-namespace Engine
+namespace Kakadu
 {
 	/* Forward declarations: */
 	class Renderer;

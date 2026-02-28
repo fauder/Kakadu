@@ -12,7 +12,7 @@
 #include <fstream>
 #include <iostream>
 
-namespace Engine
+namespace Kakadu
 {
 	namespace Utility
 	{

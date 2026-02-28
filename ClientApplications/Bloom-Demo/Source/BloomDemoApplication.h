@@ -13,22 +13,22 @@
 // std Includes.
 #include <numeric> // std::accumulate().
 
-class BloomDemoApplication : public Engine::Application
+class BloomDemoApplication : public Kakadu::Application
 {
 	DEFINE_MATH_TYPES()
 
 	struct ModelInfo
 	{
-		Engine::ModelInstance model_instance;
-		Engine::Shader* shader;
-		Engine::Shader* shader_shadow_receiving;
+		Kakadu::ModelInstance model_instance;
+		Kakadu::Shader* shader;
+		Kakadu::Shader* shader_shadow_receiving;
 		std::string file_path;
 		bool is_receiving_shadows;
 		bool is_casting_shadows;
 	};
 
 public:
-	BloomDemoApplication( const Engine::BitFlags< Engine::CreationFlags > );
+	BloomDemoApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > );
 	virtual ~BloomDemoApplication();
 
 	virtual void Initialize() override;
@@ -57,95 +57,95 @@ private:
 
 private:
 /* Renderer: */
-	Engine::Renderable light_sources_renderable;
-	Engine::Renderable stars_renderable;
+	Kakadu::Renderable light_sources_renderable;
+	Kakadu::Renderable stars_renderable;
 
 	const static constexpr int CUBE_COUNT           = 200'000;
 	const static constexpr int CUBE_REFLECTED_COUNT = 10;
-	Engine::Renderable cube_renderable;
-	Engine::Renderable cube_renderable_outline;
+	Kakadu::Renderable cube_renderable;
+	Kakadu::Renderable cube_renderable_outline;
 
-	Engine::Renderable sphere_renderable;
+	Kakadu::Renderable sphere_renderable;
 
-	Engine::Renderable cube_parallax_renderable;
+	Kakadu::Renderable cube_parallax_renderable;
 
-	Engine::Renderable cube_reflected_renderable;
+	Kakadu::Renderable cube_reflected_renderable;
 
-	Engine::Renderable* meteorite_renderable;
+	Kakadu::Renderable* meteorite_renderable;
 
-	Engine::Renderable ground_renderable;
-	Engine::Renderable wall_front_renderable;
-	Engine::Renderable wall_left_renderable;
-	Engine::Renderable wall_right_renderable;
-	Engine::Renderable wall_back_renderable;
+	Kakadu::Renderable ground_renderable;
+	Kakadu::Renderable wall_front_renderable;
+	Kakadu::Renderable wall_left_renderable;
+	Kakadu::Renderable wall_right_renderable;
+	Kakadu::Renderable wall_back_renderable;
 
 	const static constexpr int WINDOW_COUNT = 5;
-	std::array< Engine::Renderable, WINDOW_COUNT > window_renderable_array;
+	std::array< Kakadu::Renderable, WINDOW_COUNT > window_renderable_array;
 
 /* Textures: */
-	Engine::Texture* container_texture_diffuse_map;
-	Engine::Texture* container_texture_specular_map;
-	Engine::Texture* container_texture_normal_map;
+	Kakadu::Texture* container_texture_diffuse_map;
+	Kakadu::Texture* container_texture_specular_map;
+	Kakadu::Texture* container_texture_normal_map;
 
-	Engine::Texture* brickwall_diffuse_map;
-	Engine::Texture* brickwall_normal_map;
-	Engine::Texture* brickwall_displacement_map;
+	Kakadu::Texture* brickwall_diffuse_map;
+	Kakadu::Texture* brickwall_normal_map;
+	Kakadu::Texture* brickwall_displacement_map;
 
-	Engine::Texture* checker_pattern_texture;
-	Engine::Texture* transparent_window_texture;
+	Kakadu::Texture* checker_pattern_texture;
+	Kakadu::Texture* transparent_window_texture;
 
 /* Vertex Info.: */
-	Engine::Mesh cube_mesh, quad_mesh, quad_mesh_uvs_only, quad_mesh_fullscreen, quad_mesh_mirror;
-	Engine::Mesh cube_mesh_instanced;
-	Engine::Mesh cube_reflected_mesh_instanced;
-	Engine::Mesh sphere_mesh_instanced_with_color; // For light sources.
-	Engine::Mesh sphere_mesh, sphere_mesh_lower_detail;
-	Engine::Mesh triangle_mesh_instanced_with_color; // For stars.
-	Engine::Mesh triangle_mesh_positions_only;
+	Kakadu::Mesh cube_mesh, quad_mesh, quad_mesh_uvs_only, quad_mesh_fullscreen, quad_mesh_mirror;
+	Kakadu::Mesh cube_mesh_instanced;
+	Kakadu::Mesh cube_reflected_mesh_instanced;
+	Kakadu::Mesh sphere_mesh_instanced_with_color; // For light sources.
+	Kakadu::Mesh sphere_mesh, sphere_mesh_lower_detail;
+	Kakadu::Mesh triangle_mesh_instanced_with_color; // For stars.
+	Kakadu::Mesh triangle_mesh_positions_only;
 
 /* Shaders: */
-	Engine::Shader* shader_blinn_phong;
-	Engine::Shader* shader_blinn_phong_shadowed;
-	Engine::Shader* shader_blinn_phong_shadowed_parallax;
-	Engine::Shader* shader_blinn_phong_instanced;
-	Engine::Shader* shader_blinn_phong_shadowed_instanced;
-	Engine::Shader* shader_blinn_phong_shadowed_parallax_instanced;
-	Engine::Shader* shader_blinn_phong_skybox_reflection;
-	Engine::Shader* shader_blinn_phong_skybox_reflection_instanced;
-	Engine::Shader* shader_blinn_phong_skybox_reflection_shadowed_instanced;
-	Engine::Shader* shader_basic_color;
-	Engine::Shader* shader_basic_color_instanced;
-	Engine::Shader* shader_basic_textured;
-	Engine::Shader* shader_basic_textured_transparent_discard;
-	Engine::Shader* shader_outline;
+	Kakadu::Shader* shader_blinn_phong;
+	Kakadu::Shader* shader_blinn_phong_shadowed;
+	Kakadu::Shader* shader_blinn_phong_shadowed_parallax;
+	Kakadu::Shader* shader_blinn_phong_instanced;
+	Kakadu::Shader* shader_blinn_phong_shadowed_instanced;
+	Kakadu::Shader* shader_blinn_phong_shadowed_parallax_instanced;
+	Kakadu::Shader* shader_blinn_phong_skybox_reflection;
+	Kakadu::Shader* shader_blinn_phong_skybox_reflection_instanced;
+	Kakadu::Shader* shader_blinn_phong_skybox_reflection_shadowed_instanced;
+	Kakadu::Shader* shader_basic_color;
+	Kakadu::Shader* shader_basic_color_instanced;
+	Kakadu::Shader* shader_basic_textured;
+	Kakadu::Shader* shader_basic_textured_transparent_discard;
+	Kakadu::Shader* shader_outline;
 
 /* Models: */
 	ModelInfo test_model_info;
 	ModelInfo meteorite_model_info;
 
 /* Materials: */
-	Engine::Material light_source_material;
+	Kakadu::Material light_source_material;
 
-	Engine::Material cube_material;
-	Engine::Material cube_reflected_material;
+	Kakadu::Material cube_material;
+	Kakadu::Material cube_reflected_material;
 
-	Engine::Material ground_material;
-	Engine::Material wall_material;
+	Kakadu::Material ground_material;
+	Kakadu::Material wall_material;
 
-	Engine::Material window_material;
+	Kakadu::Material window_material;
 
-	Engine::Material outline_material;
+	Kakadu::Material outline_material;
 
-	Engine::Material sphere_material;
+	Kakadu::Material sphere_material;
 
-	Engine::Material star_material;
+	Kakadu::Material star_material;
 
 /* Instancing Data: */
 
 	struct LightInstanceData
 	{
 		Matrix4x4 transform;
-		Engine::Color4 color;
+		Kakadu::Color4 color;
 	};
 
 	std::vector< Matrix4x4 > cube_instance_data_array;
@@ -155,39 +155,39 @@ private:
 
 /* Scene: */
 	/* Lights: */
-	Engine::Transform light_directional_transform;
-	std::vector< Engine::Transform > light_point_transform_array;
-	Engine::Transform light_spot_transform;
+	Kakadu::Transform light_directional_transform;
+	std::vector< Kakadu::Transform > light_point_transform_array;
+	Kakadu::Transform light_spot_transform;
 
 	/* GameObjects: */
-	std::vector< Engine::Transform > cube_transform_array;
-	std::vector< Engine::Transform > cube_reflected_transform_array;
+	std::vector< Kakadu::Transform > cube_transform_array;
+	std::vector< Kakadu::Transform > cube_reflected_transform_array;
 
-	std::vector< Engine::Transform > star_transform_array;
+	std::vector< Kakadu::Transform > star_transform_array;
 
-	Engine::Transform cube_parallax_transform;
-	Engine::Transform ground_transform;
-	Engine::Transform wall_front_transform;
-	Engine::Transform wall_left_transform;
-	Engine::Transform wall_right_transform;
-	Engine::Transform wall_back_transform;
+	Kakadu::Transform cube_parallax_transform;
+	Kakadu::Transform ground_transform;
+	Kakadu::Transform wall_front_transform;
+	Kakadu::Transform wall_left_transform;
+	Kakadu::Transform wall_right_transform;
+	Kakadu::Transform wall_back_transform;
 
-	Engine::Transform sphere_transform;
+	Kakadu::Transform sphere_transform;
 
-	std::array< Engine::Transform, WINDOW_COUNT > window_transform_array;
+	std::array< Kakadu::Transform, WINDOW_COUNT > window_transform_array;
 
 /* Lighting: */
 	const static constexpr int STAR_COUNT = 1000;
 	const static constexpr int LIGHT_POINT_COUNT = 15;
 
-	Engine::MaterialData::BlinnPhongMaterialData cube_surface_data;
-	Engine::MaterialData::BlinnPhongMaterialData ground_quad_surface_data;
-	Engine::MaterialData::BlinnPhongMaterialData wall_surface_data;
-	std::vector< Engine::MaterialData::BlinnPhongMaterialData > test_model_node_surface_data_array;
+	Kakadu::MaterialData::BlinnPhongMaterialData cube_surface_data;
+	Kakadu::MaterialData::BlinnPhongMaterialData ground_quad_surface_data;
+	Kakadu::MaterialData::BlinnPhongMaterialData wall_surface_data;
+	std::vector< Kakadu::MaterialData::BlinnPhongMaterialData > test_model_node_surface_data_array;
 
-	Engine::DirectionalLight light_directional;
-	std::vector< Engine::PointLight > light_point_array;
-	Engine::SpotLight light_spot;
+	Kakadu::DirectionalLight light_directional;
+	std::vector< Kakadu::PointLight > light_point_array;
+	Kakadu::SpotLight light_spot;
 
 	bool light_is_enabled;
 	bool light_point_array_disable;

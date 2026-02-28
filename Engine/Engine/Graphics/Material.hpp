@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	class Renderer;
 

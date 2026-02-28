@@ -2,7 +2,7 @@
 #include "Camera.h"
 #include "Math/Matrix.h"
 
-namespace Engine
+namespace Kakadu
 {
 	Camera::Camera( Transform* const transform, float aspect_ratio, Radians vertical_field_of_view, const float near_plane, const float far_plane)
 		:
@@ -123,7 +123,7 @@ namespace Engine
 
 /* Other:*/
 
-	Vector3 Camera::ConvertFromScreenSpaceToViewSpace( const Engine::Vector2 screen_space_coordinate, const Engine::Vector2I screen_dimensions )
+	Vector3 Camera::ConvertFromScreenSpaceToViewSpace( const Kakadu::Vector2 screen_space_coordinate, const Kakadu::Vector2I screen_dimensions )
 	{
 		/* Viewport transform converts the NDC coordinates at the near plane (-1 to + 1 both horizontally & vertically)
 			* to viewport coordinates (for example 0 to 1600 from left to right and 0 to 900 from top to bottom). So it is a scale & offset:

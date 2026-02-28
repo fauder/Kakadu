@@ -7,7 +7,7 @@
 // std Includes.
 #include <compare>
 
-namespace Engine
+namespace Kakadu
 {
 	template< Concepts::IsEnum EnumType >
 	class BitFlags

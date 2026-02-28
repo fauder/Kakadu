@@ -7,7 +7,7 @@
 #include <array>
 #include <functional>
 
-namespace Engine::Primitive::Indexed::CircleTemplate
+namespace Kakadu::Primitive::Indexed::CircleTemplate
 {
 	template< std::uint8_t VertexCount = 20, float Diameter = 1.0f > requires( VertexCount >= 3 )
 	std::array< Vector3, VertexCount > Positions()

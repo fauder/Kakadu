@@ -12,12 +12,12 @@
 #include <queue>
 
 /* Forward Declarations: */
-namespace Engine
+namespace Kakadu
 {
 	class Renderer;
 }
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	struct Context
 	{

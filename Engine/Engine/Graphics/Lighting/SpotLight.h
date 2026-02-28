@@ -4,7 +4,7 @@
 #include "Light.hpp"
 #include "Lighting.h"
 
-namespace Engine
+namespace Kakadu
 {
 	using SpotLight = Light< Lighting::SpotLightData >;
 }

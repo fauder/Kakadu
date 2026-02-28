@@ -3,7 +3,7 @@
 // std Includes.
 #include <string>
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	class SplashScreen
 	{

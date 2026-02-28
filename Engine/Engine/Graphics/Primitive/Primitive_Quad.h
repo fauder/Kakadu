@@ -6,7 +6,7 @@
 // std Includes.
 #include <array>
 
-namespace Engine::Primitive::NonIndexed::Quad
+namespace Kakadu::Primitive::NonIndexed::Quad
 {
 	constexpr std::array< Vector3, 6 > Positions
 	( {
@@ -49,7 +49,7 @@ namespace Engine::Primitive::NonIndexed::Quad
 	} );
 }
 
-namespace Engine::Primitive::Indexed::Quad
+namespace Kakadu::Primitive::Indexed::Quad
 {
 	constexpr std::array< Vector3, 4 > Positions
 	( {

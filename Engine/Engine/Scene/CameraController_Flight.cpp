@@ -2,7 +2,7 @@
 #include "CameraController_Flight.h"
 #include "Math/Math.hpp"
 
-namespace Engine
+namespace Kakadu
 {
 	using namespace Math::Literals;
 

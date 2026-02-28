@@ -7,7 +7,7 @@
 // std Includes.
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	class MorphSystem
 	{

@@ -9,7 +9,7 @@
 // std Includes.
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	struct VertexAttribute
 	{

@@ -1,13 +1,13 @@
 #pragma once
 
 /* Forward Declarations: */
-namespace Engine
+namespace Kakadu
 {
 	class Renderer;
 	class Camera;
 }
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	void RenderViewportScene( Renderer& renderer, Camera& scene_camera );
 }

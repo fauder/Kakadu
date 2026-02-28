@@ -8,7 +8,7 @@
 #include "TypeTraits.h"
 #include "Vector.hpp"
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
 /* Forward Declarations. */
 	template< std::floating_point ComponentType >
@@ -408,7 +408,7 @@ namespace Engine::Math
 
 		const auto cos_theta = dot < 0 ? -dot : +dot;
 
-		if( cos_theta > Engine::TypeTraits< ComponentType >::OneMinusEpsilon() )
+		if( cos_theta > Kakadu::TypeTraits< ComponentType >::OneMinusEpsilon() )
 			/* Quaternions are too close; Revert back to a simple Nlerp(). */
 			return Nlerp( q1, q2, t );
 
@@ -654,7 +654,7 @@ namespace Engine::Math
 	}
 }
 
-namespace Engine
+namespace Kakadu
 {
 	using Quaternion  = Math::Quaternion< float  >;
 	using QuaternionD = Math::Quaternion< double >;

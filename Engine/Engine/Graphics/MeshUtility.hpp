@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	namespace MeshUtility
 	{

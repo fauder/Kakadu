@@ -8,7 +8,7 @@
 #include "Shader.hpp"
 #include "UniformBlockBindingPointManager.h"
 
-namespace Engine
+namespace Kakadu
 {
 	Uniform::BindingPoint UniformBlockBindingPointManager::RegisterUniformBlock( const Shader& shader, const std::string& block_name, Uniform::BufferInformation& uniform_buffer_info )
 	{

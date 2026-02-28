@@ -16,7 +16,7 @@
 // Vendor Includes.
 #include "ImGui/imgui.h"
 
-namespace Engine::ImGuiDrawer
+namespace Kakadu::ImGuiDrawer
 {
 	struct State
 	{

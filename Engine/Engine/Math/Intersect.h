@@ -4,7 +4,7 @@
 #include "Rect.h"
 #include "Vector.hpp"
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
     /* Liang-Barsky algorithm.
      * Returns t-enter and t-exit values calculated. */

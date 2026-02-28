@@ -3,7 +3,7 @@
 
 #include "Asset/Shader/_Attributes.glsl"
 
-namespace Engine
+namespace Kakadu
 {
 	VertexLayout::VertexLayout()
 	{}

@@ -3,7 +3,7 @@
 // Project Includes.
 #include "Primitive_UV_Sphere.hpp"
 
-namespace Engine::Primitive::Indexed::Sphere
+namespace Kakadu::Primitive::Indexed::Sphere
 {
 	header_function const auto& Positions()
 	{

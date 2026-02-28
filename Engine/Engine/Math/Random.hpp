@@ -8,7 +8,7 @@
 // std Includes.
 #include <random>
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
 	// Singleton.
 	class Random

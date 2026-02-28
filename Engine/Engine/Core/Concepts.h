@@ -3,7 +3,7 @@
 // std Includes.
 #include <concepts>
 
-namespace Engine::Concepts
+namespace Kakadu::Concepts
 {
 	template< typename T > concept Pointer    = std::is_pointer_v< T >;
 	template< typename T > concept NotPointer = not Pointer< T >;

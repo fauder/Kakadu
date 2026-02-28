@@ -1,7 +1,7 @@
 // Engine Includes.
 #include "ImGuiCustomColors.h"
 
-namespace Engine::ImGuiCustomColors
+namespace Kakadu::ImGuiCustomColors
 {
 	void Text( const char* text, const CustomColorType type )
 	{

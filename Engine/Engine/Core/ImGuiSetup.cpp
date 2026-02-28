@@ -9,7 +9,7 @@
 #include <ImGui/backends/imgui_impl_opengl3.h>
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
-namespace Engine::ImGuiSetup
+namespace Kakadu::ImGuiSetup
 {
 	void Initialize( const bool enable_gamma_correction )
 	{
@@ -83,7 +83,7 @@ namespace Engine::ImGuiSetup
     {
         ImGuiStyle& style = ImGui::GetStyle();
 
-        using namespace Engine::Math;
+        using namespace Kakadu::Math;
 
         /*
          * As ImGui is not gamma-aware, we'll just gamma-correct the ImGui style colors here and be done with it.

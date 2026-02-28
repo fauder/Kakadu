@@ -4,7 +4,7 @@
 #include "Core/Initialization.h"
 #include "Math/Angle.hpp"
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
 	/* In classical mathematical notation (r, theta). X is right & Y is forward & Z is up (right-handed space.) */
 	class Polar2
@@ -17,7 +17,7 @@ namespace Engine::Math
 			theta()
 		{}
 
-		Polar2( const float radius, Engine::Radians theta )
+		Polar2( const float radius, Kakadu::Radians theta )
 			:
 			radius( radius ),
 			theta( theta )
@@ -28,12 +28,12 @@ namespace Engine::Math
 	/* Getters & Setters. */
 		constexpr float Radius() const { return radius; }
 		float& Radius() { return radius; }
-		constexpr Engine::Radians Theta() const { return theta; }
-		Engine::Radians& Theta() { return theta; }
+		constexpr Kakadu::Radians Theta() const { return theta; }
+		Kakadu::Radians& Theta() { return theta; }
 
 	private:
 		float radius;
-		Engine::Radians theta;
+		Kakadu::Radians theta;
 	};
 
 	/* Deviates from classical mathematical notation (r, theta, phi), more in-line with video game conventions/needs.
@@ -53,7 +53,7 @@ namespace Engine::Math
 			pitch()
 		{}
 
-		Polar3_Spherical_Game( const float radius, const Engine::Radians heading, const Engine::Radians pitch )
+		Polar3_Spherical_Game( const float radius, const Kakadu::Radians heading, const Kakadu::Radians pitch )
 			:
 			radius( radius ),
 			heading( heading ),
@@ -68,23 +68,23 @@ namespace Engine::Math
 		/* Heading = 0 means forward (<0,0,+1>) (assuming Pitch is also zero).
 		 * Increasing Heading means clockwise rotation around the Y axis.
 		 */
-		constexpr Engine::Radians Heading() const { return heading; }
+		constexpr Kakadu::Radians Heading() const { return heading; }
 		/* Heading = 0 means forward (<0,0,+1>) (assuming Pitch is also zero).
 		 * Increasing Heading means clockwise rotation around the Y axis.
 		 */
-		Engine::Radians& Heading() { return heading; }
+		Kakadu::Radians& Heading() { return heading; }
 		/* Pitch = 0 means horizontal.
 		 * Also called the Angle of Declination, as Z decreases with increasing Pitch.
 		 */
-		constexpr Engine::Radians Pitch() const { return pitch; }
+		constexpr Kakadu::Radians Pitch() const { return pitch; }
 		/* Pitch = 0 means horizontal.
 		 * Also called the Angle of Declination, as Z decreases with increasing Pitch.
 		 */
-		Engine::Radians& Pitch() { return pitch; }
+		Kakadu::Radians& Pitch() { return pitch; }
 
 	private:
 		float radius;
-		Engine::Radians heading;
-		Engine::Radians pitch;
+		Kakadu::Radians heading;
+		Kakadu::Radians pitch;
 	};
 }

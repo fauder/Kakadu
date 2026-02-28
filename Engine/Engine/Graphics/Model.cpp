@@ -3,7 +3,7 @@
 #include "Core/AssetDatabase.hpp"
 #include "Core/ServiceLocator.h"
 
-namespace Engine
+namespace Kakadu
 {
 	Model::Node::Node( const std::string& name, const Matrix4x4& transform_local, MeshGroup* mesh_group )
 		:

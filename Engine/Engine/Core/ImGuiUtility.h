@@ -7,13 +7,13 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <ImGui/imgui.h>
 
-namespace Engine
+namespace Kakadu
 {
 	class Color3;
 	class Color4;
 };
 
-namespace Engine::ImGuiUtility
+namespace Kakadu::ImGuiUtility
 {
 	enum class HorizontalPosition	{ LEFT, CENTER, RIGHT };
 	enum class VerticalPosition		{ TOP, CENTER, BOTTOM };

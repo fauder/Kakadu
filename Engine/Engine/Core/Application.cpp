@@ -25,7 +25,7 @@
 // std Includes.
 #include <iostream>
 
-namespace Engine
+namespace Kakadu
 {
 	Application::Application( const BitFlags< CreationFlags > flags,
 							  Renderer::Description&& renderer_description )

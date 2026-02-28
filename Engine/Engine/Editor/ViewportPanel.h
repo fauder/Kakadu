@@ -10,7 +10,7 @@
 // Vendor Includes
 #include <imgui.h>
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	/* Forward Declarations: */
 	struct Context;

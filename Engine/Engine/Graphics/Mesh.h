@@ -8,7 +8,7 @@
 // std Includes.
 #include <array>
 
-namespace Engine
+namespace Kakadu
 {
 	class Mesh
 	{

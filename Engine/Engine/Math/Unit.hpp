@@ -9,7 +9,7 @@
 // std Includes.
 #include <compare>
 
-namespace Engine
+namespace Kakadu
 {
 	template< Concepts::Arithmetic Type, 
 			  template< class > class Derived > /* Explicitly restrict to template classes */

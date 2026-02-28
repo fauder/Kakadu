@@ -30,7 +30,7 @@
 // For example, currently the client creates/stores Renderables and calls Renderer::AddRenderable( Renderable* ... ).
 // Instead client should request a new Renderable from the Renderer and keep a pointer to it.
 
-namespace Engine
+namespace Kakadu
 {
 	class Renderer
 	{

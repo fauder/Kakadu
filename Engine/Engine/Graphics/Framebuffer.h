@@ -10,7 +10,7 @@
 // std Includes.
 #include <string>
 
-namespace Engine
+namespace Kakadu
 {
 	/* Forward Declarations: */
 	class Renderer;

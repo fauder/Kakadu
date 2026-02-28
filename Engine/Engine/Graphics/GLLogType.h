@@ -7,7 +7,7 @@
 // std Includes.
 #include <iostream>
 
-namespace Engine
+namespace Kakadu
 {
 	enum class GLLogType
 	{

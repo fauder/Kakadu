@@ -10,7 +10,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace Engine
+namespace Kakadu
 {
 	class Uniform // Acts more like a namespace to conceal its inner classes from all but those listed below.
 	{

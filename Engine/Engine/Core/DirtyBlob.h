@@ -6,7 +6,7 @@
 // std Includes.
 #include <span>
 
-namespace Engine
+namespace Kakadu
 {
 	class DirtyBlob : public Blob
 	{

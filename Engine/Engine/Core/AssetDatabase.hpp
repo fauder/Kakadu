@@ -10,7 +10,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace Engine
+namespace Kakadu
 {
 	template< Concepts::NotPointer AssetType >
 	class AssetDatabase

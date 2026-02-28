@@ -6,7 +6,7 @@
 // std Includes.
 #include <unordered_map>
 
-namespace Engine
+namespace Kakadu
 {
 	/* Forward declarations: */
 	class Renderer;

@@ -4,7 +4,7 @@
 // std Includes.
 #include <algorithm>
 
-namespace Engine
+namespace Kakadu
 {
 	DirtyBlob::DirtyBlob( const std::size_t size )
 		:

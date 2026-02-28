@@ -186,7 +186,7 @@ namespace Platform
 	bool IsWindowFocused();
 	bool IsWindowIconified();
 
-	Engine::Vector2I GetFramebufferSizeInPixels();
+	Kakadu::Vector2I GetFramebufferSizeInPixels();
 	int GetFramebufferWidthInPixels();
 	int GetFramebufferHeightInPixels();
 	float GetAspectRatio();

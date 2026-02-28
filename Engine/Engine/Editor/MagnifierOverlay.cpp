@@ -5,7 +5,7 @@
 #include "Core/ImGuiUtility.h"
 #include "Math/VectorConversion.hpp"
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	void RenderMagnifierOverlay( Context& context, const unsigned int viewport_texture_id )
 	{
@@ -59,7 +59,7 @@ namespace Engine::Editor
 			draw_list->AddRect( rect_min, rect_max, IM_COL32( 255, 0, 0, 255 ), zoom / 5, 0, zoom / 8 );
 		}
 
-		Engine::ImGuiUtility::EndOverlay();
+		Kakadu::ImGuiUtility::EndOverlay();
 
 		/* Display zoom level in a small centered overlay: */
 		{
@@ -84,11 +84,11 @@ namespace Engine::Editor
 		{
 			const auto imgui_mouse_pos = ImGui::GetMousePos() + ImVec2( 5, -( ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y * 2 ) );
 
-			if( Engine::ImGuiUtility::BeginOverlay( viewport_panel.imgui_window_name.c_str(), "##Fragment Pos.", imgui_mouse_pos, &context.mouse_screen_space_position_overlay_is_active,
+			if( Kakadu::ImGuiUtility::BeginOverlay( viewport_panel.imgui_window_name.c_str(), "##Fragment Pos.", imgui_mouse_pos, &context.mouse_screen_space_position_overlay_is_active,
 													/* No input: */ false ) )
 				ImGui::TextDisabled( "(%d, %d)", viewport_panel.mouse_relative_position.X(), viewport_panel.mouse_relative_position.Y() );
 
-			Engine::ImGuiUtility::EndOverlay();
+			Kakadu::ImGuiUtility::EndOverlay();
 		}
 	}
 }

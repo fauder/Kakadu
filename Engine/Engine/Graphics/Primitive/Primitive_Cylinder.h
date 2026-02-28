@@ -3,7 +3,7 @@
 // Project Includes.
 #include "Primitive_Cylinder.hpp"
 
-namespace Engine::Primitive::Indexed::Cylinder
+namespace Kakadu::Primitive::Indexed::Cylinder
 {
 	header_function const auto& Positions()
 	{

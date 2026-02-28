@@ -7,7 +7,7 @@
 // std Includes.
 #include <optional>
 
-namespace Engine
+namespace Kakadu
 {
 	/* Forward declaration: */
 	class Shader;

@@ -3,7 +3,7 @@
 // Project Includes.
 #include "Primitive_Circle_Template.hpp"
 
-namespace Engine::Primitive::Indexed::Circle
+namespace Kakadu::Primitive::Indexed::Circle
 {
 	header_function const auto& Positions()
 	{

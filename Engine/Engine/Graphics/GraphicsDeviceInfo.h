@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace Engine::Graphics
+namespace Kakadu::Graphics
 {
 	struct DeviceInfo
 	{

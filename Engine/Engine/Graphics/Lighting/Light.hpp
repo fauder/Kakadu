@@ -3,7 +3,7 @@
 // Engine Includes.
 #include "Scene/Transform.h"
 
-namespace Engine
+namespace Kakadu
 {
 	template< typename LightDataType >
 	struct Light

@@ -3,7 +3,7 @@
 // std Includes.
 #include <numbers>
 
-namespace Engine
+namespace Kakadu
 {
 	template< typename T > struct Constants
 	{};

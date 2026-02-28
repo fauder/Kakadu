@@ -6,7 +6,7 @@
 // std Includes.
 #include <array>
 
-namespace Engine::Primitive::NonIndexed::Cube_FullScreen
+namespace Kakadu::Primitive::NonIndexed::Cube_FullScreen
 {
 	header_function constexpr std::array< Vector3, 36 > Positions
 	( {

@@ -4,14 +4,14 @@
 #include "Polar.h"
 #include "Vector.hpp"
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
 /* Conversions Between Rotation Representations. */
 
 	/* In row-major form. Results in counter-clockwise rotation.
 	 * Describes the intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * equal to  the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
-	Engine::Matrix4x4 EulerToMatrix( Engine::Radians heading_around_y, Engine::Radians pitch_around_x, Engine::Radians bank_around_z )
+	Kakadu::Matrix4x4 EulerToMatrix( Kakadu::Radians heading_around_y, Kakadu::Radians pitch_around_x, Kakadu::Radians bank_around_z )
 	{
 		const auto sin_pitch   = Math::Sin( pitch_around_x );
 		const auto sin_heading = Math::Sin( heading_around_y );
@@ -24,7 +24,7 @@ namespace Engine::Math
 		const auto cos_bank_cos_heading  = cos_bank * cos_heading;
 		const auto sin_pitch_sin_heading = sin_pitch * sin_heading;
 
-		return Engine::Matrix4x4
+		return Kakadu::Matrix4x4
 		(
 			{
 				cos_bank_cos_heading + sin_bank * sin_pitch_sin_heading,		sin_bank * cos_pitch,		-cos_bank * sin_heading + sin_bank * sin_pitch * cos_heading,	0.0f,
@@ -38,7 +38,7 @@ namespace Engine::Math
 	/* In row-major form. Results in counter-clockwise rotation.
 	 * Describes the intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * equal to  the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
-	Engine::Matrix3x3 EulerToMatrix3x3( Engine::Radians heading_around_y, Engine::Radians pitch_around_x, Engine::Radians bank_around_z )
+	Kakadu::Matrix3x3 EulerToMatrix3x3( Kakadu::Radians heading_around_y, Kakadu::Radians pitch_around_x, Kakadu::Radians bank_around_z )
 	{
 		const auto sin_pitch   = Math::Sin( pitch_around_x );
 		const auto sin_heading = Math::Sin( heading_around_y );
@@ -51,7 +51,7 @@ namespace Engine::Math
 		const auto cos_bank_cos_heading  = cos_bank * cos_heading;
 		const auto sin_pitch_sin_heading = sin_pitch * sin_heading;
 
-		return Engine::Matrix3x3
+		return Kakadu::Matrix3x3
 		(
 			{
 				cos_bank_cos_heading + sin_bank * sin_pitch_sin_heading,		sin_bank * cos_pitch,		-cos_bank * sin_heading + sin_bank * sin_pitch * cos_heading,

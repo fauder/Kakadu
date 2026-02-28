@@ -7,7 +7,7 @@
 // std Includes.
 #include <unordered_map>
 
-namespace Engine
+namespace Kakadu
 {
 	// Singleton.
 	class UniformBufferManager

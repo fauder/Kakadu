@@ -4,7 +4,7 @@
 #include "Math/Concepts_Math.h"
 #include "Math/Vector.hpp"
 
-namespace Engine
+namespace Kakadu
 {
 	class Color3 : public Vector3
 	{

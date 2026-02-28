@@ -8,7 +8,7 @@
 #include <concepts>
 #include <limits>
 
-namespace Engine
+namespace Kakadu
 {
 	template< typename T > struct TypeTraits
 	{};

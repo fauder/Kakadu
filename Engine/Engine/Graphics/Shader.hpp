@@ -20,7 +20,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	/* Forward Declarations: */
 	class Renderer;
@@ -218,13 +218,13 @@ namespace Engine
 		}
 
 		template<>
-		void SetUniform< Color3 >( const int location, const Engine::Color3& value )
+		void SetUniform< Color3 >( const int location, const Kakadu::Color3& value )
 		{
 			SetUniform( location, reinterpret_cast< const Vector3& >( value ) );
 		}
 
 		template<>
-		void SetUniform< Color4 >( const int location, const Engine::Color4& value )
+		void SetUniform< Color4 >( const int location, const Kakadu::Color4& value )
 		{
 			SetUniform( location, reinterpret_cast< const Vector4& >( value ) );
 		}
@@ -366,13 +366,13 @@ namespace Engine
 		}
 
 		template<>
-		void SetUniformArray< Color3 >( const int location, const Engine::Color3* address, const int element_count )
+		void SetUniformArray< Color3 >( const int location, const Kakadu::Color3* address, const int element_count )
 		{
 			SetUniformArray( location, address, element_count );
 		}
 
 		template<>
-		void SetUniformArray< Color4 >( const int location, const Engine::Color4* address, const int element_count )
+		void SetUniformArray< Color4 >( const int location, const Kakadu::Color4* address, const int element_count )
 		{
 			SetUniformArray( location, address, element_count );
 		}

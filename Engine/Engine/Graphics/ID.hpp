@@ -4,7 +4,7 @@
 #include "Core/Macros.h"
 #include "Core/Macros_SpaceshipOperator.h"
 
-namespace Engine
+namespace Kakadu
 {
 	template< typename IDType >
 	class ID

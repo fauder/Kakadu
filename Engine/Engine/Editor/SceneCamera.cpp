@@ -8,14 +8,14 @@
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 #include <ImGui.h>
 
-using namespace Engine::Math::Literals;
+using namespace Kakadu::Math::Literals;
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	SceneCamera::SceneCamera()
 		:
 		animation_is_enabled( false ),
-		camera( &transform, Platform::GetAspectRatio(), CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), Platform::GetAspectRatio() ) ),
+		camera( &transform, Platform::GetAspectRatio(), CalculateVerticalFieldOfView( Kakadu::Constants< Radians >::Pi_Over_Two(), Platform::GetAspectRatio() ) ),
 		rotation_speed( 5.0f ),
 		move_speed( 5.0f ),
 		controller_flight( &camera, rotation_speed )
@@ -31,10 +31,10 @@ namespace Engine::Editor
 		{
 			/* Orbit motion: */
 
-			Engine::Math::Vector< Radians, 3 > old_euler_angles;
-			Engine::Math::QuaternionToEuler( transform.GetRotation(), old_euler_angles );
+			Kakadu::Math::Vector< Radians, 3 > old_euler_angles;
+			Kakadu::Math::QuaternionToEuler( transform.GetRotation(), old_euler_angles );
 			// Don't modify X & Z euler angles; Allow the user to modify them.
-			transform.SetRotation( Engine::Math::EulerToQuaternion( -current_time_as_angle * 0.33f, old_euler_angles.X(), old_euler_angles.Z() ) );
+			transform.SetRotation( Kakadu::Math::EulerToQuaternion( -current_time_as_angle * 0.33f, old_euler_angles.X(), old_euler_angles.Z() ) );
 
 			auto new_pos = rotation_center - ( transform.Forward() * animation_orbit_radius );
 			new_pos.SetY( transform.GetTranslation().Y() ); // Don't modify Y position; Allow the user to modify it.
@@ -48,7 +48,7 @@ namespace Engine::Editor
 				const auto [ mouse_x_delta_pos, mouse_y_delta_pos ] = Platform::GetMouseCursorDeltas();
 				controller_flight
 					.OffsetHeading( Radians( +mouse_x_delta_pos ) )
-					.OffsetPitch( Radians( +mouse_y_delta_pos ), -( Engine::Constants< Radians >::Pi_Over_Two() - 0.01_rad ), Engine::Constants< Radians >::Pi_Over_Two() - 0.01_rad );
+					.OffsetPitch( Radians( +mouse_y_delta_pos ), -( Kakadu::Constants< Radians >::Pi_Over_Two() - 0.01_rad ), Kakadu::Constants< Radians >::Pi_Over_Two() - 0.01_rad );
 			}
 		}
 
@@ -73,7 +73,7 @@ namespace Engine::Editor
 
 	void SceneCamera::ResetProjection()
 	{
-		camera = Engine::Camera( &transform, camera.GetAspectRatio(), camera.GetVerticalFieldOfView() ); // Keep current aspect ratio & v-fov.
+		camera = Kakadu::Camera( &transform, camera.GetAspectRatio(), camera.GetVerticalFieldOfView() ); // Keep current aspect ratio & v-fov.
 	}
 
 	void SceneCamera::SwitchView( const View view )
@@ -120,13 +120,13 @@ namespace Engine::Editor
 
 	Radians SceneCamera::CalculateVerticalFieldOfView( const Radians horizontal_field_of_view, const float aspect_ratio ) const
 	{
-		return 2.0f * Engine::Math::Atan2( Engine::Math::Tan( horizontal_field_of_view / 2.0f ), aspect_ratio );
+		return 2.0f * Kakadu::Math::Atan2( Kakadu::Math::Tan( horizontal_field_of_view / 2.0f ), aspect_ratio );
 	}
 
 	void SceneCamera::RecalculateProjectionParameters( const int width_new_pixels, const int height_new_pixels )
 	{
 		camera.SetAspectRatio( float( width_new_pixels ) / height_new_pixels );
-		camera.SetVerticalFieldOfView( CalculateVerticalFieldOfView( Engine::Constants< Radians >::Pi_Over_Two(), camera.GetAspectRatio() ) );
+		camera.SetVerticalFieldOfView( CalculateVerticalFieldOfView( Kakadu::Constants< Radians >::Pi_Over_Two(), camera.GetAspectRatio() ) );
 	}
 
 	void SceneCamera::RecalculateProjectionParameters( const Vector2I new_size_pixels )

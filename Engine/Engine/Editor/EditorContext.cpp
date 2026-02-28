@@ -11,7 +11,7 @@
 
 // TODO: Add the menu bar => and a window entry => ability to close/reopen desired panels.
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	internal_variable FrameStatisticsOverlay FRAME_STATS_OVERLAY;
 
@@ -117,7 +117,7 @@ namespace Engine::Editor
 
 		RenderSceneCameraInspectorPanel( scene_camera, viewport_resolution );
 
-		Engine::ImGuiDrawer::Draw( ServiceLocator< AssetDatabase< Texture > >::Get().Assets(), { 400.0f, 512.0f } );
+		Kakadu::ImGuiDrawer::Draw( ServiceLocator< AssetDatabase< Texture > >::Get().Assets(), { 400.0f, 512.0f } );
 
 		renderer.RenderImGui();
 

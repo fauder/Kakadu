@@ -4,7 +4,7 @@
 #include "Color.hpp"
 #include "Math/Vector.hpp"
 
-namespace Engine
+namespace Kakadu
 {
 	using Color3_Padded = Color4;
 	

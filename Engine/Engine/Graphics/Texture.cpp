@@ -5,7 +5,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Assertion.h"
 
-namespace Engine
+namespace Kakadu
 {
 /* Static member variable definitions: */
 	bool Texture::GAMMA_CORRECTION_IS_ENABLED = true;

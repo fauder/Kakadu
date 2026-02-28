@@ -5,7 +5,7 @@
 // std Includes.
 #include <utility>
 
-namespace Engine
+namespace Kakadu
 {
 	VertexArray::VertexArray( const std::string& name )
 		:

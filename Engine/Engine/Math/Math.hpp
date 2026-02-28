@@ -9,7 +9,7 @@
 #include <cmath>
 
 /* Forward Declarations. */
-namespace Engine::Math
+namespace Kakadu::Math
 {
 	class Polar2;
 	class Polar3_Spherical_Game;
@@ -22,7 +22,7 @@ namespace Engine::Math
 	struct Matrix;
 }
 
-namespace Engine
+namespace Kakadu
 {
 	using Vector2 = Math::Vector< float, 2 >;
 	using Vector3 = Math::Vector< float, 3 >;
@@ -31,7 +31,7 @@ namespace Engine
 	using Matrix4x4 = Math::Matrix< float, 4, 4 >;
 }
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
 /* Arithmetic. */
 	template< std::floating_point Value >
@@ -210,11 +210,11 @@ namespace Engine::Math
 	/* In row-major form. Results in counter-clockwise rotation.
 	 * Describes the intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * equal to  the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
-	Engine::Matrix4x4 EulerToMatrix( Engine::Radians heading_around_y, Engine::Radians pitch_around_x, Engine::Radians bank_around_z );
+	Kakadu::Matrix4x4 EulerToMatrix( Kakadu::Radians heading_around_y, Kakadu::Radians pitch_around_x, Kakadu::Radians bank_around_z );
 	/* In row-major form. Results in counter-clockwise rotation.
 	 * Describes the intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * equal to  the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
-	Engine::Matrix3x3 EulerToMatrix3x3( Engine::Radians heading_around_y, Engine::Radians pitch_around_x, Engine::Radians bank_around_z );
+	Kakadu::Matrix3x3 EulerToMatrix3x3( Kakadu::Radians heading_around_y, Kakadu::Radians pitch_around_x, Kakadu::Radians bank_around_z );
 	
 	/* In-place modification of the upper-left 3x3 portion.
 	 *
@@ -222,7 +222,7 @@ namespace Engine::Math
 	 * Describes the intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * equal to  the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
 	template< Concepts::Arithmetic_NotBool Type, std::size_t MatrixSize >
-	void EulerToMatrix( Matrix< Type, MatrixSize, MatrixSize >& matrix, Engine::Radians heading_around_y, Engine::Radians pitch_around_x, Engine::Radians bank_around_z ) requires( MatrixSize >= 3 )
+	void EulerToMatrix( Matrix< Type, MatrixSize, MatrixSize >& matrix, Kakadu::Radians heading_around_y, Kakadu::Radians pitch_around_x, Kakadu::Radians bank_around_z ) requires( MatrixSize >= 3 )
 	{
 		const auto sin_pitch   = Math::Sin( pitch_around_x );
 		const auto sin_heading = Math::Sin( heading_around_y );
@@ -244,7 +244,7 @@ namespace Engine::Math
 	 * The matrix should describe  an intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * which would be the same as the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
 	template< Concepts::Arithmetic_NotBool Type, std::size_t MatrixSize >
-	void MatrixToEuler( const Matrix< Type, MatrixSize, MatrixSize >& matrix, Engine::Radians& heading_around_y, Engine::Radians& pitch_around_x, Engine::Radians& bank_around_z ) requires( MatrixSize >= 3 )
+	void MatrixToEuler( const Matrix< Type, MatrixSize, MatrixSize >& matrix, Kakadu::Radians& heading_around_y, Kakadu::Radians& pitch_around_x, Kakadu::Radians& bank_around_z ) requires( MatrixSize >= 3 )
 	{
 		/* The matrix' values for reference:
 		{
@@ -303,15 +303,15 @@ namespace Engine::Math
 	 * The matrix should describe  an intrinsic  (body-axis) rotation, in the order:	 heading (around y) -> pitch (around x) ->    bank (around z),
 	 * which would be the same as the extrinsic (fixed-axis) rotation, in the order:		bank (around z) -> pitch (around x) -> heading (around y). */
 	template< Concepts::Arithmetic_NotBool Type, std::size_t MatrixSize >
-	void MatrixToEuler( const Matrix< Type, MatrixSize, MatrixSize >& matrix, Engine::Degrees& heading_around_y, Engine::Degrees& pitch_around_x, Engine::Degrees& bank_around_z ) requires( MatrixSize >= 3 )
+	void MatrixToEuler( const Matrix< Type, MatrixSize, MatrixSize >& matrix, Kakadu::Degrees& heading_around_y, Kakadu::Degrees& pitch_around_x, Kakadu::Degrees& bank_around_z ) requires( MatrixSize >= 3 )
 	{
-		Engine::Radians heading( heading_around_y ), pitch( pitch_around_x ), bank( bank_around_z );
+		Kakadu::Radians heading( heading_around_y ), pitch( pitch_around_x ), bank( bank_around_z );
 
 		MatrixToEuler( matrix, heading, pitch, bank );
 
-		heading_around_y = Engine::Degrees( heading );
-		pitch_around_x   = Engine::Degrees( pitch );
-		bank_around_z    = Engine::Degrees( bank );
+		heading_around_y = Kakadu::Degrees( heading );
+		pitch_around_x   = Kakadu::Degrees( pitch );
+		bank_around_z    = Kakadu::Degrees( bank );
 	}
 
 /* Conversions Between Cartesian, Polar, Cylindrical & Spherical Coordinates. */

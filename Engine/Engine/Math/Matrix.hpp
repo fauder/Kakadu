@@ -7,7 +7,7 @@
 #include "Math/TypeTraits.h"
 #include "Math/Vector.hpp"
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
 	/* Row-major. Post-multiplies a row vector to transform it. */
 	template< Concepts::Arithmetic_NotBool Type, std::size_t RowSize, std::size_t ColumnSize >
@@ -367,7 +367,7 @@ namespace Engine::Math
 	}
 }
 
-namespace Engine
+namespace Kakadu
 {
 	using Matrix2x2  = Math::Matrix< float,		2, 2 >;
 	using Matrix3x3  = Math::Matrix< float,		3, 3 >;

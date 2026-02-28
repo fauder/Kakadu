@@ -6,7 +6,7 @@
 #include "Graphics/Std140StructTag.h"
 #include "Math/Vector.hpp"
 
-namespace Engine::Lighting
+namespace Kakadu::Lighting
 {
 	struct DirectionalLightData : public Std140StructTag
 	{

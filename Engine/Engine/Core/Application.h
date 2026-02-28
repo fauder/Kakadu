@@ -18,7 +18,7 @@
 #include "Editor/EditorContext.h" 
 #endif // _EDITOR
 
-namespace Engine
+namespace Kakadu
 {
 	enum class CreationFlags
 	{

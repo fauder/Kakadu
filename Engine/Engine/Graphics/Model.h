@@ -8,7 +8,7 @@
 #include <optional>
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	template< Concepts::NotPointer AssetType >
 	class AssetDatabase;

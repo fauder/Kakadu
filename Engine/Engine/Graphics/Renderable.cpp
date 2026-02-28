@@ -7,7 +7,7 @@
 // Engine Includes.
 #include "Renderable.h"
 
-namespace Engine
+namespace Kakadu
 {
 	Renderable::Renderable()
 		:

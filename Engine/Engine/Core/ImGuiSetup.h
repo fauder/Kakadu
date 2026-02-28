@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Engine::ImGuiSetup
+namespace Kakadu::ImGuiSetup
 {
     void Initialize( const bool enable_gamma_correction );
     void Shutdown();

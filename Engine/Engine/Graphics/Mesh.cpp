@@ -2,7 +2,7 @@
 #include "Mesh.h"
 #include "Asset/Shader/_Attributes.glsl"
 
-namespace Engine
+namespace Kakadu
 {
 	Mesh::Mesh()
 		:

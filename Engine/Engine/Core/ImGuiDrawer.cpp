@@ -12,11 +12,11 @@
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
-namespace Engine::ImGuiDrawer
+namespace Kakadu::ImGuiDrawer
 {
 	State STATE;
 
-	using namespace Engine::Math::Literals;
+	using namespace Kakadu::Math::Literals;
 
 	void Initialize()
 	{
@@ -306,7 +306,7 @@ namespace Engine::ImGuiDrawer
 		return is_modified;
 	}
 
-	void Draw( const Engine::Transform& transform, const BitFlags< Transform::Mask > flags, const char* name )
+	void Draw( const Kakadu::Transform& transform, const BitFlags< Transform::Mask > flags, const char* name )
 	{
 		ImGuiUtility::BeginGroupPanel( name );
 
@@ -414,7 +414,7 @@ namespace Engine::ImGuiDrawer
 						selected_texture = &texture;
 					ImGui::PopID();
 					ImGui::SameLine();
-					Engine::ImGuiDrawer::Draw( &texture, texture_asset_name.c_str() );
+					Kakadu::ImGuiDrawer::Draw( &texture, texture_asset_name.c_str() );
 				}
 			}
 
@@ -505,7 +505,7 @@ namespace Engine::ImGuiDrawer
 						selected_texture = texture;
 					ImGui::PopID();
 					ImGui::SameLine();
-					Engine::ImGuiDrawer::Draw( texture, texture_asset_name.c_str() );
+					Kakadu::ImGuiDrawer::Draw( texture, texture_asset_name.c_str() );
 				}
 			}
 

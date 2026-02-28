@@ -25,19 +25,19 @@
 
 #define AssetDir "../Common/Asset/Texture/"
 
-using namespace Engine::Math::Literals;
+using namespace Kakadu::Math::Literals;
 
-Engine::Application* Engine::CreateApplication( const Engine::BitFlags< Engine::CreationFlags > flags )
+Kakadu::Application* Kakadu::CreateApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
 {
 	return new HDR_DemoApplication( flags );
 }
 
-HDR_DemoApplication::HDR_DemoApplication( const Engine::BitFlags< Engine::CreationFlags > flags )
+HDR_DemoApplication::HDR_DemoApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
 	:
-	Engine::Application( flags,
-						 Engine::Renderer::Description
+	Kakadu::Application( flags,
+						 Kakadu::Renderer::Description
 						 {
-							 .main_framebuffer_color_format      = Engine::Texture::Format::RGBA_16F,
+							 .main_framebuffer_color_format      = Kakadu::Texture::Format::RGBA_16F,
 							 .main_framebuffer_msaa_sample_count = 4
 						 } ),
 	light_point_transform_array( LIGHT_POINT_COUNT )
@@ -54,22 +54,22 @@ void HDR_DemoApplication::Initialize()
 {
 	Platform::ChangeTitle( "Kakadu - HDR-Demo" );
 
-	//Engine::Math::Random::SeedRandom();
+	//Kakadu::Math::Random::SeedRandom();
 
 	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo GL Init." ) );
 
 /* Textures: */
-	wood_diffuse_map = Engine::ServiceLocator< Engine::AssetDatabase< Engine::Texture > >::Get().CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)",
-																													  Engine::Texture::ImportSettings
+	wood_diffuse_map = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::Texture > >::Get().CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)",
+																													  Kakadu::Texture::ImportSettings
 																													  {
-																														  .wrap_u = Engine::Texture::Wrapping::Repeat,
-																														  .wrap_v = Engine::Texture::Wrapping::Repeat
+																														  .wrap_u = Kakadu::Texture::Wrapping::Repeat,
+																														  .wrap_v = Kakadu::Texture::Wrapping::Repeat
 																													  } );
 
 /* Shaders: */
-	shader_blinn_phong           = Engine::BuiltinShaders::Get( "Blinn-Phong" );
-	shader_basic_color_instanced = Engine::BuiltinShaders::Get( "Color (Instanced)" );
-	shader_texture_blit          = Engine::BuiltinShaders::Get( "Texture Blit" );
+	shader_blinn_phong           = Kakadu::BuiltinShaders::Get( "Blinn-Phong" );
+	shader_basic_color_instanced = Kakadu::BuiltinShaders::Get( "Color (Instanced)" );
+	shader_texture_blit          = Kakadu::BuiltinShaders::Get( "Texture Blit" );
 
 /* Instance Data: */
 	ResetInstanceData();
@@ -88,7 +88,7 @@ void HDR_DemoApplication::Initialize()
 	for( auto i = 0; i < LIGHT_POINT_COUNT; i++ )
 	{
 		light_source_instance_data_array[ i ].transform = light_point_transform_array[ i ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
-		light_source_instance_data_array[ i ].color     = Engine::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
+		light_source_instance_data_array[ i ].color     = Kakadu::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
 	}
 
 /* Vertex/Index Data: */
@@ -99,27 +99,27 @@ void HDR_DemoApplication::Initialize()
 		return copy;
 	};
 
-	constexpr auto cube_tangents_inverted = InvertAttributeArray( Engine::Primitive::Indexed::Cube::Tangents );
-	constexpr auto cube_normals_inverted  = InvertAttributeArray( Engine::Primitive::Indexed::Cube::Normals );
+	constexpr auto cube_tangents_inverted = InvertAttributeArray( Kakadu::Primitive::Indexed::Cube::Tangents );
+	constexpr auto cube_normals_inverted  = InvertAttributeArray( Kakadu::Primitive::Indexed::Cube::Normals );
 
-	cube_mesh_inverted = Engine::Mesh( Engine::Primitive::Indexed::Cube::Positions,
+	cube_mesh_inverted = Kakadu::Mesh( Kakadu::Primitive::Indexed::Cube::Positions,
 									   "Cube (Inverted)",
 									   cube_normals_inverted,
-									   Engine::Primitive::Indexed::Cube::UVs,
-									   Engine::Primitive::Indexed::Cube::Indices,
+									   Kakadu::Primitive::Indexed::Cube::UVs,
+									   Kakadu::Primitive::Indexed::Cube::Indices,
 									   cube_tangents_inverted );
 
-	const auto sphere_mesh = Engine::Mesh( Engine::Primitive::Indexed::Sphere::Positions(),
+	const auto sphere_mesh = Kakadu::Mesh( Kakadu::Primitive::Indexed::Sphere::Positions(),
 										   "Sphere",
-										   Engine::Primitive::Indexed::Sphere::Normals(),
-										   Engine::Primitive::Indexed::Sphere::UVs(),
-										   Engine::Primitive::Indexed::Sphere::Indices(),
-										   Engine::Primitive::Indexed::Sphere::Tangents() );
+										   Kakadu::Primitive::Indexed::Sphere::Normals(),
+										   Kakadu::Primitive::Indexed::Sphere::UVs(),
+										   Kakadu::Primitive::Indexed::Sphere::Indices(),
+										   Kakadu::Primitive::Indexed::Sphere::Tangents() );
 
-	light_source_sphere_mesh = Engine::Mesh( sphere_mesh,
+	light_source_sphere_mesh = Kakadu::Mesh( sphere_mesh,
 											 {
-												 Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START },    // Transform.
-												 Engine::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 } // Color.
+												 Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START },    // Transform.
+												 Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 } // Color.
 											 },
 											 reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
 											 LIGHT_POINT_COUNT,
@@ -132,26 +132,26 @@ void HDR_DemoApplication::Initialize()
 
 /* Renderer: */
 	renderer->AddQueue( RENDER_QUEUE_ID_CUSTOM,
-						Engine::RenderQueue
+						Kakadu::RenderQueue
 						{
 						    .name = "Custom (Inverted)",
-						    .render_state_override = Engine::RenderState
+						    .render_state_override = Kakadu::RenderState
 						    {
-							    .face_culling_face_to_cull = Engine::Face::Front
+							    .face_culling_face_to_cull = Kakadu::Face::Front
 						    }
 						} );
 
-	renderer->AddQueueToPass( RENDER_QUEUE_ID_CUSTOM, Engine::Renderer::RENDER_PASS_ID_LIGHTING );
+	renderer->AddQueueToPass( RENDER_QUEUE_ID_CUSTOM, Kakadu::Renderer::RENDER_PASS_ID_LIGHTING );
 
-	tunnel_renderable = Engine::Renderable( &cube_mesh_inverted, &wood_material, &tunnel_transform );
+	tunnel_renderable = Kakadu::Renderable( &cube_mesh_inverted, &wood_material, &tunnel_transform );
 	renderer->AddRenderable( &tunnel_renderable, RENDER_QUEUE_ID_CUSTOM );
 
-	light_sources_renderable = Engine::Renderable( &light_source_sphere_mesh, &light_source_material, nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
-	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	light_sources_renderable = Kakadu::Renderable( &light_source_sphere_mesh, &light_source_material, nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
+	renderer->AddRenderable( &light_sources_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
-	renderer->TogglePass( Engine::Renderer::RENDER_PASS_ID_SHADOW_MAPPING, false ); // No shadows necessary for this demo.
-	renderer->ToggleQueue( Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
+	renderer->TogglePass( Kakadu::Renderer::RENDER_PASS_ID_SHADOW_MAPPING, false ); // No shadows necessary for this demo.
+	renderer->ToggleQueue( Kakadu::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
 
 /* Camera: */
 	//ResetCamera(); // TODO: Game camera rendering.
@@ -170,12 +170,12 @@ void HDR_DemoApplication::Update()
 	// TODO: Separate application logs from GL logs.
 
 	current_time_as_angle = Radians( frame_time.time_current );
-	const Radians current_time_mod_two_pi( std::fmod( frame_time.time_current, Engine::Constants< float >::Two_Pi() ) );
+	const Radians current_time_mod_two_pi( std::fmod( frame_time.time_current, Kakadu::Constants< float >::Two_Pi() ) );
 }
 
 void HDR_DemoApplication::RenderFrame()
 {
-	Engine::Application::RenderFrame();
+	Kakadu::Application::RenderFrame();
 
 	// Scene-view Camera moved into Application.
 
@@ -192,8 +192,8 @@ void HDR_DemoApplication::RenderToolsUI()
 
 	const auto& style = ImGui::GetStyle();
 
-	Engine::ImGuiDrawer::Draw( wood_material, *renderer );
-	Engine::ImGuiDrawer::Draw( light_source_material, *renderer );
+	Kakadu::ImGuiDrawer::Draw( wood_material, *renderer );
+	Kakadu::ImGuiDrawer::Draw( light_source_material, *renderer );
 
 	if( ImGui::Begin( ICON_FA_LIGHTBULB " Lighting", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
@@ -216,7 +216,7 @@ void HDR_DemoApplication::RenderToolsUI()
 		{
 			if( ImGui::BeginTabItem( "Point Lights" ) )
 			{
-				Engine::ImGuiUtility::BeginGroupPanel( "Options" );
+				Kakadu::ImGuiUtility::BeginGroupPanel( "Options" );
 				if( ImGui::Checkbox( "Disable All", &light_point_array_disable ) )
 				{
 					for( auto i = 0; i < LIGHT_POINT_COUNT; i++ )
@@ -224,7 +224,7 @@ void HDR_DemoApplication::RenderToolsUI()
 						light_point_array[ i ].is_enabled = light_is_enabled && not light_point_array_disable;
 					}
 				}
-				Engine::ImGuiUtility::EndGroupPanel();
+				Kakadu::ImGuiUtility::EndGroupPanel();
 
 				if( ImGui::TreeNodeEx( "Point Lights", ImGuiTreeNodeFlags_Framed ) )
 				{
@@ -233,7 +233,7 @@ void HDR_DemoApplication::RenderToolsUI()
 					{
 						const std::string name( "Point Light # " + std::to_string( i ) );
 						const bool was_enabled = light_point_array[ i ].is_enabled;
-						if( Engine::ImGuiDrawer::Draw( light_point_array[ i ], name.c_str() ) )
+						if( Kakadu::ImGuiDrawer::Draw( light_point_array[ i ], name.c_str() ) )
 						{
 							light_source_instance_data_array[ i ].transform = light_point_array[ i ].transform->GetFinalMatrix().Transposed();
 							update_light_instance_buffer = true;
@@ -291,10 +291,10 @@ void HDR_DemoApplication::ResetLightingData()
 
 	light_point_array_disable = false;
 
-	light_point_transform_array[ 0 ] = Engine::Transform( Vector3::One(), Vector3(  0.0f,  0.0f, +49.5f ) );
-	light_point_transform_array[ 1 ] = Engine::Transform( Vector3::One(), Vector3(  1.4f, -1.9f,  +9.0f ) );
-	light_point_transform_array[ 2 ] = Engine::Transform( Vector3::One(), Vector3(  0.0f, -1.8f,  +4.0f ) );
-	light_point_transform_array[ 3 ] = Engine::Transform( Vector3::One(), Vector3( -0.8f, -1.7f,  +6.0f ) );
+	light_point_transform_array[ 0 ] = Kakadu::Transform( Vector3::One(), Vector3(  0.0f,  0.0f, +49.5f ) );
+	light_point_transform_array[ 1 ] = Kakadu::Transform( Vector3::One(), Vector3(  1.4f, -1.9f,  +9.0f ) );
+	light_point_transform_array[ 2 ] = Kakadu::Transform( Vector3::One(), Vector3(  0.0f, -1.8f,  +4.0f ) );
+	light_point_transform_array[ 3 ] = Kakadu::Transform( Vector3::One(), Vector3( -0.8f, -1.7f,  +6.0f ) );
 
 	light_point_array.resize( LIGHT_POINT_COUNT );
 	light_point_array[ 0 ] =
@@ -303,7 +303,7 @@ void HDR_DemoApplication::ResetLightingData()
 		.data =
 		{
 			.ambient_and_attenuation_constant = {.color = {},										.scalar = 0.0f },
-			.diffuse_and_attenuation_linear   = {.color = Engine::Color3( 200.0f, 200.0f, 200.0f ), .scalar = 0.0f },
+			.diffuse_and_attenuation_linear   = {.color = Kakadu::Color3( 200.0f, 200.0f, 200.0f ), .scalar = 0.0f },
 			.specular_attenuation_quadratic   = {.color = {},										.scalar = 1.0f },
 		},
 		.transform = &light_point_transform_array[ 0 ]
@@ -314,7 +314,7 @@ void HDR_DemoApplication::ResetLightingData()
 		.data =
 		{
 			.ambient_and_attenuation_constant = {.color = {},									.scalar = 0.0f },
-			.diffuse_and_attenuation_linear   = {.color = Engine::Color3( 0.1f, 0.0f, 0.0f ),	.scalar = 0.0f },
+			.diffuse_and_attenuation_linear   = {.color = Kakadu::Color3( 0.1f, 0.0f, 0.0f ),	.scalar = 0.0f },
 			.specular_attenuation_quadratic   = {.color = {},									.scalar = 1.0f },
 		},
 		.transform = &light_point_transform_array[ 1 ]
@@ -325,7 +325,7 @@ void HDR_DemoApplication::ResetLightingData()
 		.data =
 		{
 			.ambient_and_attenuation_constant = {.color = {},									.scalar = 0.0f },
-			.diffuse_and_attenuation_linear   = {.color = Engine::Color3( 0.0f, 0.0f, 0.2f ),	.scalar = 0.0f },
+			.diffuse_and_attenuation_linear   = {.color = Kakadu::Color3( 0.0f, 0.0f, 0.2f ),	.scalar = 0.0f },
 			.specular_attenuation_quadratic   = {.color = {},									.scalar = 1.0f },
 		},
 		.transform = &light_point_transform_array[ 2 ]
@@ -336,7 +336,7 @@ void HDR_DemoApplication::ResetLightingData()
 		.data =
 		{
 			.ambient_and_attenuation_constant = {.color = {},									.scalar = 0.0f },
-			.diffuse_and_attenuation_linear   = {.color = Engine::Color3( 0.0f, 0.1f, 0.0f ),	.scalar = 0.0f },
+			.diffuse_and_attenuation_linear   = {.color = Kakadu::Color3( 0.0f, 0.1f, 0.0f ),	.scalar = 0.0f },
 			.specular_attenuation_quadratic   = {.color = {},									.scalar = 1.0f },
 		},
 		.transform = &light_point_transform_array[ 3 ]
@@ -345,12 +345,12 @@ void HDR_DemoApplication::ResetLightingData()
 
 void HDR_DemoApplication::ResetMaterialData()
 {
-	wood_material = Engine::Material( "Wood", shader_blinn_phong );
+	wood_material = Kakadu::Material( "Wood", shader_blinn_phong );
 	wood_material.SetTexture( "uniform_tex_diffuse", wood_diffuse_map );
-	wood_material.SetTexture( "uniform_tex_specular", Engine::ServiceLocator< Engine::BuiltinTextures >::Get().Get( "White" ) );
+	wood_material.SetTexture( "uniform_tex_specular", Kakadu::ServiceLocator< Kakadu::BuiltinTextures >::Get().Get( "White" ) );
 	wood_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
-	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );
+	light_source_material = Kakadu::Material( "Light Source", shader_basic_color_instanced );
 
 	tunnel_surface_data =
 	{

@@ -10,7 +10,7 @@
 // std Includes.
 #include <unordered_map>
 
-namespace Engine
+namespace Kakadu
 {
 	template< typename BlobType > requires( std::is_base_of_v< Blob, BlobType > )
 	class UniformBufferManagement

@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 
-namespace Engine
+namespace Kakadu
 {
 	template< Concepts::Pointer AssetPointerType >
 	class AssetDatabase_Tracked

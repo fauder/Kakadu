@@ -6,7 +6,7 @@
 // std Includes.
 #include <array>
 
-namespace Engine
+namespace Kakadu
 {
 	enum class ShaderType
 	{

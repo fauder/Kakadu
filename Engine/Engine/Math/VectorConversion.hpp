@@ -6,7 +6,7 @@
 // Vendor Includes.
 #include "ImGui/imgui.h"
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
 	template< std::floating_point Component >
 	const ImVec2& ToImVec2( const Vector< Component, 2 >& source )

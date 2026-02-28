@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <variant>
 
-namespace Engine::GL::Type
+namespace Kakadu::GL::Type
 {
 	header_function	int SizeOf( const GLenum type )
 	{

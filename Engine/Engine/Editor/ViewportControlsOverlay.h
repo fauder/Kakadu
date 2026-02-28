@@ -4,12 +4,12 @@
 #include "EditorContext.h"
 
 /* Forward Declarations: */
-namespace Engine
+namespace Kakadu
 {
 	class Renderer;
 }
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	void RenderViewportControlsOverlay( Context& editor_context, const Renderer& renderer );
 }

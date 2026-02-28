@@ -4,7 +4,7 @@
 #include "Core/Macros.h"
 #include "Core/Utility.hpp"
 
-namespace Engine::Graphics
+namespace Kakadu::Graphics
 {
 	internal_function DeviceInfo::Vendor DetectVendor( const std::string_view vendor_string )
 	{

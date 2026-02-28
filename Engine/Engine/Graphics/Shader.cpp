@@ -20,7 +20,7 @@
 #include <numeric> // std::iota.
 #include <charconv>
 
-namespace Engine
+namespace Kakadu
 {
 	/* Will be initialized later with FromFile(). */
 	Shader::Shader( const char* name )
@@ -476,7 +476,7 @@ namespace Engine
 	{
 		const std::string error_prompt( std::string( "Shader Error (parsing): " ) + ShaderTypeString( shader_type ) + " shader \"" + name + "\" could not be read successfully." );
 
-		if( const auto source = Engine::Utility::ReadFileIntoString( file_path, error_prompt.c_str() );
+		if( const auto source = Kakadu::Utility::ReadFileIntoString( file_path, error_prompt.c_str() );
 			source )
 			return *source;
 

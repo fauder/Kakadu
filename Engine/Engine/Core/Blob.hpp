@@ -7,7 +7,7 @@
 #include <cstddef> // std::byte.
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	class Blob
 	{

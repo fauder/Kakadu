@@ -4,7 +4,7 @@
 #include "Transform.h"
 #include "Math/Matrix.h"
 
-namespace Engine
+namespace Kakadu
 {
 	class Camera
 	{
@@ -54,7 +54,7 @@ namespace Engine
 
 	/* Other:*/
 
-		Vector3 ConvertFromScreenSpaceToViewSpace( const Engine::Vector2 screen_space_coordinate, const Engine::Vector2I screen_dimensions );
+		Vector3 ConvertFromScreenSpaceToViewSpace( const Kakadu::Vector2 screen_space_coordinate, const Kakadu::Vector2I screen_dimensions );
 
 	private:
 		void SetProjectionMatrixDirty();

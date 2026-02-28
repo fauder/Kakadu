@@ -4,7 +4,7 @@
 #include <array>
 #include <cstddef>
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	struct Command
 	{

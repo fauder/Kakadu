@@ -2,7 +2,7 @@
 #include "BuiltinTextures.h"
 #include "Material.hpp"
 
-namespace Engine
+namespace Kakadu
 {
 	Material::Material()
 		:

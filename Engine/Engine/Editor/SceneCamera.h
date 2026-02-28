@@ -4,7 +4,7 @@
 #include "Scene/Camera.h"
 #include "Scene/CameraController_Flight.h"
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	struct SceneCamera
 	{
@@ -39,14 +39,14 @@ namespace Engine::Editor
 
 		float animation_orbit_radius;
 
-		Engine::Transform transform;
+		Kakadu::Transform transform;
 
-		Engine::Camera camera;
+		Kakadu::Camera camera;
 		float rotation_speed;
 		float move_speed;
 		Vector3 rotation_center;
 		/* 4 bytes(s) of padding. */
 
-		Engine::CameraController_Flight controller_flight;
+		Kakadu::CameraController_Flight controller_flight;
 	};
 }

@@ -36,7 +36,7 @@ if( not render_queue_map.contains( queue_id ) )\
 #define CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id ) do {} while( false )
 #endif // _EDITOR
 
-namespace Engine
+namespace Kakadu
 {
 	Renderer::Renderer( Description&& description )
 		:
@@ -779,10 +779,10 @@ namespace Engine
 					copy.width_in_pixels  = new_width_in_pixels;
 					copy.height_in_pixels = new_height_in_pixels;
 
-					custom_framebuffer = Engine::Framebuffer( copy );
+					custom_framebuffer = Kakadu::Framebuffer( copy );
 				}
 				else
-					custom_framebuffer = Engine::Framebuffer( *description );
+					custom_framebuffer = Kakadu::Framebuffer( *description );
 			}
 		}
 
@@ -1099,9 +1099,9 @@ namespace Engine
 																									cube_map_face_file_paths[ 4 ],
 																									cube_map_face_file_paths[ 5 ]
 																								},
-																								Engine::Texture::ImportSettings
+																								Kakadu::Texture::ImportSettings
 																								{
-																									.min_filter      = Engine::Texture::Filtering::Linear,
+																									.min_filter      = Kakadu::Texture::Filtering::Linear,
 																									.flip_vertically = false,
 																								} );
 		skybox_material.SetTexture( "uniform_tex", skybox_texture );
@@ -1345,7 +1345,7 @@ namespace Engine
 					  {
 						  .blending_enable = true,
 
-						  .sorting_mode = Engine::SortingMode::BackToFront,
+						  .sorting_mode = Kakadu::SortingMode::BackToFront,
 
 						  .blending_source_color_factor      = BlendingFactor::SourceAlpha,
 						  .blending_destination_color_factor = BlendingFactor::OneMinusSourceAlpha,
@@ -1671,7 +1671,7 @@ namespace Engine
 									  Primitive::NonIndexed::Quad_FullScreen::UVs,
 									  { /* No indices. */ } );
 
-		full_screen_cube_mesh = Engine::Mesh( Engine::Primitive::NonIndexed::Cube_FullScreen::Positions,
+		full_screen_cube_mesh = Kakadu::Mesh( Kakadu::Primitive::NonIndexed::Cube_FullScreen::Positions,
 											  "Cube (Fullscreen)",
 											  { /* No normals.	*/ },
 											  { /* No uvs.		*/ },
@@ -1694,7 +1694,7 @@ namespace Engine
 
 	void Renderer::InitializeBuiltinMaterials()
 	{
-		skybox_material = Engine::Material( "Skybox", skybox_shader );
+		skybox_material = Kakadu::Material( "Skybox", skybox_shader );
 
 		msaa_resolve.material = Material( "[Renderer] MSAA Resolve", msaa_resolve_shader );
 		tone_mapping.material = Material( "[Renderer] Tonemapping", tone_mapping_shader );
@@ -2016,7 +2016,7 @@ namespace Engine
 
 			.blending_enable = true,
 
-			.sorting_mode = Engine::SortingMode::None, // No point in sorting, since depth test is disabled.
+			.sorting_mode = Kakadu::SortingMode::None, // No point in sorting, since depth test is disabled.
 
 			.blending_source_color_factor      = BlendingFactor::SourceAlpha,
 			.blending_destination_color_factor = BlendingFactor::OneMinusSourceAlpha,
@@ -2027,7 +2027,7 @@ namespace Engine
 		{
 			.blending_enable = true,
 
-			.sorting_mode = Engine::SortingMode::BackToFront,
+			.sorting_mode = Kakadu::SortingMode::BackToFront,
 
 			.blending_source_color_factor      = BlendingFactor::SourceAlpha,
 			.blending_destination_color_factor = BlendingFactor::OneMinusSourceAlpha,

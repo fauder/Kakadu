@@ -31,26 +31,26 @@
 
 #define AssetDir "../Common/Asset/Texture/"
 
-using namespace Engine::Math::Literals;
+using namespace Kakadu::Math::Literals;
 
-Engine::Application* Engine::CreateApplication( const Engine::BitFlags< Engine::CreationFlags > flags )
+Kakadu::Application* Kakadu::CreateApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
 {
     return new BloomDemoApplication( flags );
 }
 
-BloomDemoApplication::BloomDemoApplication( const Engine::BitFlags< Engine::CreationFlags > flags )
+BloomDemoApplication::BloomDemoApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
 	:
-	Engine::Application( flags,
-						 Engine::Renderer::Description
+	Kakadu::Application( flags,
+						 Kakadu::Renderer::Description
 						 {
-							 .main_framebuffer_color_format      = Engine::Texture::Format::RGBA_16F,
+							 .main_framebuffer_color_format      = Kakadu::Texture::Format::RGBA_16F,
 							 .main_framebuffer_msaa_sample_count = 4
 						 } ),
 	test_model_info
 	{
 		.model_instance          = {},
-		.shader                  = Engine::BuiltinShaders::Get( "Blinn-Phong" ),
-		.shader_shadow_receiving = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed)" ),
+		.shader                  = Kakadu::BuiltinShaders::Get( "Blinn-Phong" ),
+		.shader_shadow_receiving = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Shadowed)" ),
 		.file_path               = {},
 		.is_receiving_shadows    = true,
 		.is_casting_shadows      = true
@@ -58,8 +58,8 @@ BloomDemoApplication::BloomDemoApplication( const Engine::BitFlags< Engine::Crea
 	meteorite_model_info
 	{
 		.model_instance          = {},
-		.shader                  = Engine::BuiltinShaders::Get( "Blinn-Phong (Instanced)" ),
-		.shader_shadow_receiving = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Instanced)" ),
+		.shader                  = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Instanced)" ),
+		.shader_shadow_receiving = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Instanced)" ),
 		.file_path               = {},
 		.is_receiving_shadows    = true,
 		.is_casting_shadows      = true
@@ -81,37 +81,37 @@ void BloomDemoApplication::Initialize()
 {
 	Platform::ChangeTitle( "Kakadu - Bloom Demo" );
 	
-	//Engine::Math::Random::SeedRandom();
+	//Kakadu::Math::Random::SeedRandom();
 
 	auto log_group( gl_logger.TemporaryLogGroup( "Bloom Demo GL Init." ) );
 
 /* Textures: */
-	auto& texture_database = Engine::ServiceLocator< Engine::AssetDatabase< Engine::Texture > >::Get();
+	auto& texture_database = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::Texture > >::Get();
 
 	container_texture_diffuse_map  = texture_database.CreateAssetFromFile( "Container (Diffuse) Map",  AssetDir R"(container2.png)" );
 	container_texture_specular_map = texture_database.CreateAssetFromFile( "Container (Specular) Map", AssetDir R"(container2_specular.png)" );
 
 	brickwall_diffuse_map = texture_database.CreateAssetFromFile( "Brickwall (Diffuse) Map",
 																  AssetDir R"(bricks2.jpg)",
-																  Engine::Texture::ImportSettings
+																  Kakadu::Texture::ImportSettings
 																  {
-																	  .wrap_u = Engine::Texture::Wrapping::Repeat,
-																	  .wrap_v = Engine::Texture::Wrapping::Repeat
+																	  .wrap_u = Kakadu::Texture::Wrapping::Repeat,
+																	  .wrap_v = Kakadu::Texture::Wrapping::Repeat
 																  } );
 	brickwall_normal_map   = texture_database.CreateAssetFromFile( "Brickwall (Normal) Map", 
 																   AssetDir R"(bricks2_normal.jpg)",
-																   Engine::Texture::ImportSettings
+																   Kakadu::Texture::ImportSettings
 																   {
-																	   .wrap_u = Engine::Texture::Wrapping::Repeat,
-																	   .wrap_v = Engine::Texture::Wrapping::Repeat,
-																	   .format = Engine::Texture::Format::RGBA,
+																	   .wrap_u = Kakadu::Texture::Wrapping::Repeat,
+																	   .wrap_v = Kakadu::Texture::Wrapping::Repeat,
+																	   .format = Kakadu::Texture::Format::RGBA,
 																   } );
 
 	brickwall_displacement_map = texture_database.CreateAssetFromFile( "Brickwall (Displacement) Map",
 																	   AssetDir R"(bricks2_disp.jpg)",
-																	   Engine::Texture::ImportSettings
+																	   Kakadu::Texture::ImportSettings
 																	   {
-																		   .format = Engine::Texture::Format::RGBA,
+																		   .format = Kakadu::Texture::Format::RGBA,
 																	   } );
 
 	transparent_window_texture = texture_database.CreateAssetFromFile( "Transparent Window",
@@ -119,27 +119,27 @@ void BloomDemoApplication::Initialize()
 	
 	checker_pattern_texture = texture_database.CreateAssetFromFile( "Checkerboard Pattern 09",
 																	AssetDir R"(kenney_prototype/texture_09.png)", 
-																	Engine::Texture::ImportSettings
+																	Kakadu::Texture::ImportSettings
 																	{
-																		.wrap_u = Engine::Texture::Wrapping::Repeat,
-																		.wrap_v = Engine::Texture::Wrapping::Repeat
+																		.wrap_u = Kakadu::Texture::Wrapping::Repeat,
+																		.wrap_v = Kakadu::Texture::Wrapping::Repeat
 																	} );
 
 /* Shaders: */
-	shader_blinn_phong                                      = Engine::BuiltinShaders::Get( "Blinn-Phong" );
-	shader_blinn_phong_shadowed                             = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed)" );
-	shader_blinn_phong_shadowed_parallax                    = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Parallax)" );
-	shader_blinn_phong_instanced                            = Engine::BuiltinShaders::Get( "Blinn-Phong (Instanced)" );
-	shader_blinn_phong_shadowed_instanced                   = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Instanced)" );
-	shader_blinn_phong_shadowed_parallax_instanced          = Engine::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Parallax | Instanced)" );
-	shader_blinn_phong_skybox_reflection                    = Engine::BuiltinShaders::Get( "Blinn-Phong (Skybox Reflection)" );
-	shader_blinn_phong_skybox_reflection_instanced          = Engine::BuiltinShaders::Get( "Blinn-Phong (Skybox Reflection | Instanced)" );
-	shader_blinn_phong_skybox_reflection_shadowed_instanced = Engine::BuiltinShaders::Get( "Blinn-Phong (Skybox Reflection | Shadowed | Instanced)" );
-	shader_basic_color                                      = Engine::BuiltinShaders::Get( "Color" );
-	shader_basic_color_instanced                            = Engine::BuiltinShaders::Get( "Color (Instanced)" );
-	shader_basic_textured                                   = Engine::BuiltinShaders::Get( "Textured" );
-	shader_basic_textured_transparent_discard               = Engine::BuiltinShaders::Get( "Textured (Discard Transparent)" );
-	shader_outline                                          = Engine::BuiltinShaders::Get( "Outline" );
+	shader_blinn_phong                                      = Kakadu::BuiltinShaders::Get( "Blinn-Phong" );
+	shader_blinn_phong_shadowed                             = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Shadowed)" );
+	shader_blinn_phong_shadowed_parallax                    = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Parallax)" );
+	shader_blinn_phong_instanced                            = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Instanced)" );
+	shader_blinn_phong_shadowed_instanced                   = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Instanced)" );
+	shader_blinn_phong_shadowed_parallax_instanced          = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Shadowed | Parallax | Instanced)" );
+	shader_blinn_phong_skybox_reflection                    = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Skybox Reflection)" );
+	shader_blinn_phong_skybox_reflection_instanced          = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Skybox Reflection | Instanced)" );
+	shader_blinn_phong_skybox_reflection_shadowed_instanced = Kakadu::BuiltinShaders::Get( "Blinn-Phong (Skybox Reflection | Shadowed | Instanced)" );
+	shader_basic_color                                      = Kakadu::BuiltinShaders::Get( "Color" );
+	shader_basic_color_instanced                            = Kakadu::BuiltinShaders::Get( "Color (Instanced)" );
+	shader_basic_textured                                   = Kakadu::BuiltinShaders::Get( "Textured" );
+	shader_basic_textured_transparent_discard               = Kakadu::BuiltinShaders::Get( "Textured (Discard Transparent)" );
+	shader_outline                                          = Kakadu::BuiltinShaders::Get( "Outline" );
 
 /* Instancing Data: */
 	ResetInstanceData();
@@ -196,8 +196,8 @@ void BloomDemoApplication::Initialize()
 
 		for( int i = 0; i < CUBE_COUNT; i++ )
 		{
-			random_angles[ i ].xz_angle          = Engine::Math::Random::Generate( 0.0_rad, Engine::Constants< Radians >::Two_Pi() );
-			random_angles[ i ].inclination_angle = Engine::Math::Random::Generate( 0.0_rad, inclination_limit );
+			random_angles[ i ].xz_angle          = Kakadu::Math::Random::Generate( 0.0_rad, Kakadu::Constants< Radians >::Two_Pi() );
+			random_angles[ i ].inclination_angle = Kakadu::Math::Random::Generate( 0.0_rad, inclination_limit );
 		}
 
 		constexpr int thread_work_size = 1000;
@@ -216,7 +216,7 @@ void BloomDemoApplication::Initialize()
 		{
 			// Calculate the range of indices for this group:
 			const int start_index = thread_group_index * thread_work_size;
-			const int end_index   = Engine::Math::Min( start_index + thread_work_size, CUBE_COUNT );
+			const int end_index   = Kakadu::Math::Min( start_index + thread_work_size, CUBE_COUNT );
 
 			for( auto cube_index = start_index; cube_index < end_index; cube_index++ )
 			{
@@ -227,9 +227,9 @@ void BloomDemoApplication::Initialize()
 					.SetScaling( 0.3f )
 					.SetRotation( Quaternion( angle, Vector3{ 1.0f, 0.3f, 0.5f }.Normalized() ) )
 					.SetTranslation( CUBES_ORIGIN + 
-									 Vector3( Engine::Math::Cos( random_xz_angle ), 
-											  Engine::Math::Sin( random_inclination_angle ),
-											  Engine::Math::Sin( random_xz_angle ) )
+									 Vector3( Kakadu::Math::Cos( random_xz_angle ), 
+											  Kakadu::Math::Sin( random_inclination_angle ),
+											  Kakadu::Math::Sin( random_xz_angle ) )
 									 * ( float )( ( cube_index % 90 ) + 10 ) );
 			}
 		} );
@@ -255,60 +255,60 @@ void BloomDemoApplication::Initialize()
 
 	for( auto star_index = 0; star_index < STAR_COUNT; star_index++ )
 	{
-		Engine::Math::Polar3_Spherical_Game spherical_coords
+		Kakadu::Math::Polar3_Spherical_Game spherical_coords
 		{
 			star_distance,
-			Engine::Math::Random::Generate( 0.0_rad, Engine::Constants< Radians >::Two_Pi() ),
-			Engine::Math::Random::Generate( -Engine::Constants< Radians >::Pi_Over_Two(), +Engine::Constants< Radians >::Pi_Over_Two() )
+			Kakadu::Math::Random::Generate( 0.0_rad, Kakadu::Constants< Radians >::Two_Pi() ),
+			Kakadu::Math::Random::Generate( -Kakadu::Constants< Radians >::Pi_Over_Two(), +Kakadu::Constants< Radians >::Pi_Over_Two() )
 		};
 
 		star_transform_array[ star_index ]
-			.SetScaling( Engine::Math::Random::Generate( 0.08f, 0.12f ) )
+			.SetScaling( Kakadu::Math::Random::Generate( 0.08f, 0.12f ) )
 			.SetRotation( spherical_coords.Heading(), spherical_coords.Pitch(), 0.0_rad )
-			.SetTranslation( Engine::Math::ToVector3( spherical_coords ) );
+			.SetTranslation( Kakadu::Math::ToVector3( spherical_coords ) );
 
 		star_instance_data_array[ star_index ].transform = star_transform_array[ star_index ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
-		star_instance_data_array[ star_index ].color     = 1000.0f * Engine::Math::Random::Generate( Engine::Color3{ 180u, 180u, 180u }, Engine::Color3::White() );
+		star_instance_data_array[ star_index ].color     = 1000.0f * Kakadu::Math::Random::Generate( Kakadu::Color3{ 180u, 180u, 180u }, Kakadu::Color3::White() );
 	}
 
 /* Vertex/Index Data: */
-	cube_mesh = Engine::Mesh( Engine::Primitive::Indexed::Cube::Positions,
+	cube_mesh = Kakadu::Mesh( Kakadu::Primitive::Indexed::Cube::Positions,
 							  "Cube",
-							  Engine::Primitive::Indexed::Cube::Normals,
-							  Engine::Primitive::Indexed::Cube::UVs,
-							  Engine::Primitive::Indexed::Cube::Indices,
-							  Engine::Primitive::Indexed::Cube::Tangents );
+							  Kakadu::Primitive::Indexed::Cube::Normals,
+							  Kakadu::Primitive::Indexed::Cube::UVs,
+							  Kakadu::Primitive::Indexed::Cube::Indices,
+							  Kakadu::Primitive::Indexed::Cube::Tangents );
 
-	quad_mesh_uvs_only = Engine::Mesh( Engine::Primitive::Indexed::Quad::Positions,
+	quad_mesh_uvs_only = Kakadu::Mesh( Kakadu::Primitive::Indexed::Quad::Positions,
 									   "Quad (UVs Only)",
 									   { /* No normals. */ },
-									   Engine::Primitive::Indexed::Quad::UVs,
-									   Engine::Primitive::Indexed::Quad::Indices );
+									   Kakadu::Primitive::Indexed::Quad::UVs,
+									   Kakadu::Primitive::Indexed::Quad::Indices );
 
-	quad_mesh = Engine::Mesh( Engine::Primitive::Indexed::Quad::Positions,
+	quad_mesh = Kakadu::Mesh( Kakadu::Primitive::Indexed::Quad::Positions,
 							  "Quad",
-							  Engine::Primitive::Indexed::Quad::Normals,
-							  Engine::Primitive::Indexed::Quad::UVs,
-							  Engine::Primitive::Indexed::Quad::Indices,
-							  Engine::Primitive::Indexed::Quad::Tangents );
+							  Kakadu::Primitive::Indexed::Quad::Normals,
+							  Kakadu::Primitive::Indexed::Quad::UVs,
+							  Kakadu::Primitive::Indexed::Quad::Indices,
+							  Kakadu::Primitive::Indexed::Quad::Tangents );
 
-	quad_mesh_fullscreen = Engine::Mesh( Engine::Primitive::NonIndexed::Quad_FullScreen::Positions,
+	quad_mesh_fullscreen = Kakadu::Mesh( Kakadu::Primitive::NonIndexed::Quad_FullScreen::Positions,
 										 "Quad (FullScreen)",
 										 { /* No normals. */ },
-										 Engine::Primitive::NonIndexed::Quad_FullScreen::UVs,
+										 Kakadu::Primitive::NonIndexed::Quad_FullScreen::UVs,
 										 { /* No indices. */ } );
 
-	cube_mesh_instanced = Engine::Mesh( cube_mesh,
+	cube_mesh_instanced = Kakadu::Mesh( cube_mesh,
 										{
-											Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
+											Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
 										},
 										reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 										CUBE_COUNT,
 										GL_STATIC_DRAW );
 
-	cube_reflected_mesh_instanced = Engine::Mesh( cube_mesh,
+	cube_reflected_mesh_instanced = Kakadu::Mesh( cube_mesh,
 												  {
-													  Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
+													  Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
 												  },
 												  reinterpret_cast< std::vector< float >& >( cube_reflected_instance_data_array ),
 												  CUBE_REFLECTED_COUNT,
@@ -325,42 +325,42 @@ void BloomDemoApplication::Initialize()
 		{ -0.425f, 0.35f, -0.01f }  // A little z offset backwards to make sure this is rendered in front & shows.
 	} );
 
-	quad_mesh_mirror = Engine::Mesh( quad_mesh_positions_ndc,
+	quad_mesh_mirror = Kakadu::Mesh( quad_mesh_positions_ndc,
 									 "Quad (Rear-view mirror)",
 									 { /* No normals. */ },
-									 Engine::Primitive::NonIndexed::Quad_FullScreen::UVs,
+									 Kakadu::Primitive::NonIndexed::Quad_FullScreen::UVs,
 									 { /* No indices. */ } );
 
-	sphere_mesh = Engine::Mesh( Engine::Primitive::Indexed::UVSphereTemplate::Positions< 40 >(),
+	sphere_mesh = Kakadu::Mesh( Kakadu::Primitive::Indexed::UVSphereTemplate::Positions< 40 >(),
 								"Sphere",
-								Engine::Primitive::Indexed::UVSphereTemplate::Normals< 40 >(),
-								Engine::Primitive::Indexed::UVSphereTemplate::UVs< 40 >(),
-								Engine::Primitive::Indexed::UVSphereTemplate::Indices< 40 >(),
-								Engine::Primitive::Indexed::UVSphereTemplate::Tangents< 40 >() );
+								Kakadu::Primitive::Indexed::UVSphereTemplate::Normals< 40 >(),
+								Kakadu::Primitive::Indexed::UVSphereTemplate::UVs< 40 >(),
+								Kakadu::Primitive::Indexed::UVSphereTemplate::Indices< 40 >(),
+								Kakadu::Primitive::Indexed::UVSphereTemplate::Tangents< 40 >() );
 
-	sphere_mesh_lower_detail = Engine::Mesh( Engine::Primitive::Indexed::UVSphereTemplate::Positions(),
+	sphere_mesh_lower_detail = Kakadu::Mesh( Kakadu::Primitive::Indexed::UVSphereTemplate::Positions(),
 											 "Sphere (Lower Detail)",
-											 Engine::Primitive::Indexed::UVSphereTemplate::Normals(),
-											 Engine::Primitive::Indexed::UVSphereTemplate::UVs(),
-											 Engine::Primitive::Indexed::UVSphereTemplate::Indices(),
-											 Engine::Primitive::Indexed::UVSphereTemplate::Tangents() );
+											 Kakadu::Primitive::Indexed::UVSphereTemplate::Normals(),
+											 Kakadu::Primitive::Indexed::UVSphereTemplate::UVs(),
+											 Kakadu::Primitive::Indexed::UVSphereTemplate::Indices(),
+											 Kakadu::Primitive::Indexed::UVSphereTemplate::Tangents() );
 
-	sphere_mesh_instanced_with_color = Engine::Mesh( sphere_mesh_lower_detail,
+	sphere_mesh_instanced_with_color = Kakadu::Mesh( sphere_mesh_lower_detail,
 													 {
-														 Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START     }, // Transform.
-														 Engine::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }	// Color.
+														 Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START     }, // Transform.
+														 Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }	// Color.
 													 },
 													 reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
 													 LIGHT_POINT_COUNT,
 													 GL_DYNAMIC_DRAW );
 
-	triangle_mesh_positions_only = Engine::Mesh( Engine::Primitive::NonIndexed::Triangle::Positions,
+	triangle_mesh_positions_only = Kakadu::Mesh( Kakadu::Primitive::NonIndexed::Triangle::Positions,
 												 "Triangle (Pos. Only)" );
 
-	triangle_mesh_instanced_with_color = Engine::Mesh( triangle_mesh_positions_only,
+	triangle_mesh_instanced_with_color = Kakadu::Mesh( triangle_mesh_positions_only,
 													   {
-														   Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START     }, // Transform.
-														   Engine::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }  // Color.
+														   Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START     }, // Transform.
+														   Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }  // Color.
 													   },
 													   reinterpret_cast< std::vector< float >& >( star_instance_data_array ),
 													   STAR_COUNT,
@@ -380,60 +380,60 @@ void BloomDemoApplication::Initialize()
 	ResetMaterialData();
 
 /* Renderer: */
-	light_sources_renderable = Engine::Renderable( &sphere_mesh_instanced_with_color, &light_source_material, 
+	light_sources_renderable = Kakadu::Renderable( &sphere_mesh_instanced_with_color, &light_source_material, 
 												   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
-	renderer->AddRenderable( &light_sources_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &light_sources_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
-	stars_renderable = Engine::Renderable( &triangle_mesh_instanced_with_color, &star_material,
+	stars_renderable = Kakadu::Renderable( &triangle_mesh_instanced_with_color, &star_material,
 										   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
-	renderer->AddRenderable( &stars_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &stars_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
-	cube_renderable = Engine::Renderable( &cube_mesh_instanced, &cube_material,
+	cube_renderable = Kakadu::Renderable( &cube_mesh_instanced, &cube_material,
 										  nullptr /* => No Transform here, as we will provide the Transforms as instance data. */,
 										  true /* => has shadows. */,
 										  true /* => casts shadows. */ );
-	renderer->AddRenderable( &cube_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &cube_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
-	cube_parallax_renderable = Engine::Renderable( &cube_mesh, &wall_material,
+	cube_parallax_renderable = Kakadu::Renderable( &cube_mesh, &wall_material,
 												   &cube_parallax_transform, 
 												   true /* => has shadows. */,
 												   true /* => casts shadows. */ );
-	renderer->AddRenderable( &cube_parallax_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &cube_parallax_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
-	cube_reflected_renderable = Engine::Renderable( &cube_reflected_mesh_instanced, &cube_reflected_material,
+	cube_reflected_renderable = Kakadu::Renderable( &cube_reflected_mesh_instanced, &cube_reflected_material,
 													nullptr /* => No Transform here, as we will provide the Transforms as instance data. */,
 													true /* => has shadows. */,
 													true /* => casts shadows. */ );
-	renderer->AddRenderable( &cube_reflected_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &cube_reflected_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
-	ground_renderable = Engine::Renderable( &quad_mesh, &ground_material, 
+	ground_renderable = Kakadu::Renderable( &quad_mesh, &ground_material, 
 											&ground_transform, 
 											true /* => has shadows. */,
 											true /* => casts shadows. */ );
-	renderer->AddRenderable( &ground_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &ground_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
-	wall_front_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_front_transform, true /* => has shadows. */, true /* => casts shadows. */ );
-	wall_left_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_left_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
-	wall_right_renderable = Engine::Renderable( &quad_mesh, &wall_material, &wall_right_transform, true /* => has shadows. */, true /* => casts shadows. */ );
-	wall_back_renderable  = Engine::Renderable( &quad_mesh, &wall_material, &wall_back_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
-	renderer->AddRenderable( &wall_front_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
-	renderer->AddRenderable( &wall_left_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
-	renderer->AddRenderable( &wall_right_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
-	renderer->AddRenderable( &wall_back_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	wall_front_renderable = Kakadu::Renderable( &quad_mesh, &wall_material, &wall_front_transform, true /* => has shadows. */, true /* => casts shadows. */ );
+	wall_left_renderable  = Kakadu::Renderable( &quad_mesh, &wall_material, &wall_left_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
+	wall_right_renderable = Kakadu::Renderable( &quad_mesh, &wall_material, &wall_right_transform, true /* => has shadows. */, true /* => casts shadows. */ );
+	wall_back_renderable  = Kakadu::Renderable( &quad_mesh, &wall_material, &wall_back_transform,  true /* => has shadows. */, true /* => casts shadows. */ );
+	renderer->AddRenderable( &wall_front_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_left_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_right_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	renderer->AddRenderable( &wall_back_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
-	sphere_renderable = Engine::Renderable( &sphere_mesh, &sphere_material, &sphere_transform, false /* => does not have shadows. */, true /* => casts shadows. */ );
-	renderer->AddRenderable( &sphere_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+	sphere_renderable = Kakadu::Renderable( &sphere_mesh, &sphere_material, &sphere_transform, false /* => does not have shadows. */, true /* => casts shadows. */ );
+	renderer->AddRenderable( &sphere_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 	for( auto i = 0; i < WINDOW_COUNT; i++ )
 	{
-		window_renderable_array[ i ] = Engine::Renderable( &quad_mesh_uvs_only, &window_material, &window_transform_array[ i ] );
-		renderer->AddRenderable( &window_renderable_array[ i ], Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT );
+		window_renderable_array[ i ] = Kakadu::Renderable( &quad_mesh_uvs_only, &window_material, &window_transform_array[ i ] );
+		renderer->AddRenderable( &window_renderable_array[ i ], Kakadu::Renderer::RENDER_QUEUE_ID_TRANSPARENT );
 	}
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
-	renderer->ToggleQueue( Engine::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
+	renderer->ToggleQueue( Kakadu::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
 
-	renderer->SetClearColor( Engine::Color4::Black() );
+	renderer->SetClearColor( Kakadu::Color4::Black() );
 
 	cube_reflected_renderable.ToggleOnOff( false );
 
@@ -482,10 +482,10 @@ void BloomDemoApplication::Update()
 
 	current_time_as_angle = Radians( frame_time.time_current );
 	constexpr float lights_slow_down_factor = 0.45f;
-	const Radians scaled_current_time_mod_two_pi( std::fmod( frame_time.time_current * lights_slow_down_factor, Engine::Constants< float >::Two_Pi() ) );
+	const Radians scaled_current_time_mod_two_pi( std::fmod( frame_time.time_current * lights_slow_down_factor, Kakadu::Constants< float >::Two_Pi() ) );
 
 	/* Light sources' transform: */
-	constexpr Radians angle_increment( Engine::Constants< Radians >::Two_Pi() / LIGHT_POINT_COUNT );
+	constexpr Radians angle_increment( Kakadu::Constants< Radians >::Two_Pi() / LIGHT_POINT_COUNT );
 	for( auto i = 0; i < LIGHT_POINT_COUNT; i++ )
 	{
 		/* Light source transform: */
@@ -495,25 +495,25 @@ void BloomDemoApplication::Update()
 		{
 			const auto& old_rotation( light_point_transform_array[ i ].GetRotation() );
 			Radians old_heading, old_pitch, bank;
-			Engine::Math::QuaternionToEuler( old_rotation, old_heading, old_pitch, bank );
+			Kakadu::Math::QuaternionToEuler( old_rotation, old_heading, old_pitch, bank );
 
-			Radians new_angle( Engine::Constants< Radians >::Pi_Over_Two() + scaled_current_time_mod_two_pi + ( float )angle_increment * ( float )i );
-			const Radians new_angle_mod_two_pi( std::fmod( new_angle.Value(), Engine::Constants< float >::Two_Pi() ) );
+			Radians new_angle( Kakadu::Constants< Radians >::Pi_Over_Two() + scaled_current_time_mod_two_pi + ( float )angle_increment * ( float )i );
+			const Radians new_angle_mod_two_pi( std::fmod( new_angle.Value(), Kakadu::Constants< float >::Two_Pi() ) );
 
-			const bool heading_instead_of_pitching = new_angle_mod_two_pi <= Engine::Constants< Radians >::Pi();
+			const bool heading_instead_of_pitching = new_angle_mod_two_pi <= Kakadu::Constants< Radians >::Pi();
 			
-			const auto point_light_rotation( Engine::Math::EulerToMatrix( /* Offset heading by 45 degrees to prevent light sources rotating directly in front of the scene camera. */
-																		  Engine::Math::Lerp( Engine::Constants< Radians >::Pi_Over_Four(),
-																							  new_angle_mod_two_pi + Engine::Constants< Radians >::Pi_Over_Four(),
+			const auto point_light_rotation( Kakadu::Math::EulerToMatrix( /* Offset heading by 45 degrees to prevent light sources rotating directly in front of the scene camera. */
+																		  Kakadu::Math::Lerp( Kakadu::Constants< Radians >::Pi_Over_Four(),
+																							  new_angle_mod_two_pi + Kakadu::Constants< Radians >::Pi_Over_Four(),
 																							  float( heading_instead_of_pitching ) ),
-																		  float( !heading_instead_of_pitching ) * ( new_angle_mod_two_pi - 3.0f * Engine::Constants< Radians >::Pi_Over_Two() ),
+																		  float( !heading_instead_of_pitching ) * ( new_angle_mod_two_pi - 3.0f * Kakadu::Constants< Radians >::Pi_Over_Two() ),
 																		  bank ) );
 
 			point_light_position_world_space = ( ( ( heading_instead_of_pitching ? Vector4::Forward() : Vector4::Up() ) * light_point_orbit_radius ) *
-												 ( point_light_rotation * Engine::Matrix::Translation( CAMERA_ROTATION_ORIGIN ) ) ).XYZ();
+												 ( point_light_rotation * Kakadu::Matrix::Translation( CAMERA_ROTATION_ORIGIN ) ) ).XYZ();
 			point_light_position_world_space.SetY( point_light_position_world_space.Y() + 2.0f );
 
-			light_point_transform_array[ i ].SetRotation( Engine::Math::MatrixToQuaternion( point_light_rotation ) );
+			light_point_transform_array[ i ].SetRotation( Kakadu::Math::MatrixToQuaternion( point_light_rotation ) );
 		}
 
 		light_point_transform_array[ i ].SetTranslation( point_light_position_world_space );
@@ -526,12 +526,12 @@ void BloomDemoApplication::Update()
 	/* Stars' transform: */
 	for( auto i = 0; i < STAR_COUNT; i++ )
 	{
-		Engine::Math::Polar3_Spherical_Game spherical_coords( Engine::Math::ToPolar3_Spherical_Game( star_transform_array[ i ].GetTranslation() ) );
+		Kakadu::Math::Polar3_Spherical_Game spherical_coords( Kakadu::Math::ToPolar3_Spherical_Game( star_transform_array[ i ].GetTranslation() ) );
 
 		spherical_coords.Heading() += 0.01_rad * frame_time.time_delta;
 
 		star_transform_array[ i ].SetRotation( spherical_coords.Heading(), spherical_coords.Pitch(), 0_rad );
-		star_transform_array[ i ].SetTranslation( Engine::Math::ToVector3( spherical_coords ) );
+		star_transform_array[ i ].SetTranslation( Kakadu::Math::ToVector3( spherical_coords ) );
 
 		// Interesting effect once enough frames have passed:
 		//star_transform_array[ i ].OffsetTranslation( 0.1f * frame_time.time_delta * ( star_transform_array[ ( i + 1 ) % STAR_COUNT ].GetTranslation() - star_transform_array[ i ].GetTranslation() ).Normalized() );
@@ -544,7 +544,7 @@ void BloomDemoApplication::Update()
 	/* Instanced cube's transform: */
 	{
 		Radians old_heading, old_pitch, old_bank;
-		Engine::Math::QuaternionToEuler( cube_transform_array[ CUBE_COUNT - 1 ].GetRotation(), old_heading, old_pitch, old_bank );
+		Kakadu::Math::QuaternionToEuler( cube_transform_array[ CUBE_COUNT - 1 ].GetRotation(), old_heading, old_pitch, old_bank );
 		cube_transform_array[ CUBE_COUNT - 1 ].SetRotation( old_heading + angle_increment * frame_time.time_delta, old_pitch, old_bank );
 		cube_instance_data_array[ CUBE_COUNT - 1 ] = cube_transform_array[ CUBE_COUNT - 1 ].GetFinalMatrix().Transposed(); // Vertex attribute matrices' major can not be flipped in GLSL.
 
@@ -554,7 +554,7 @@ void BloomDemoApplication::Update()
 	/* Parallax cube's transform: */
 	{
 		Radians old_heading, old_pitch, old_bank;
-		Engine::Math::QuaternionToEuler( cube_parallax_transform.GetRotation(), old_heading, old_pitch, old_bank );
+		Kakadu::Math::QuaternionToEuler( cube_parallax_transform.GetRotation(), old_heading, old_pitch, old_bank );
 		cube_parallax_transform.SetRotation( old_heading + angle_increment * frame_time.time_delta, old_pitch, old_bank );
 	}
 
@@ -566,7 +566,7 @@ void BloomDemoApplication::Update()
 
 void BloomDemoApplication::RenderFrame()
 {
-	Engine::Application::RenderFrame();
+	Kakadu::Application::RenderFrame();
 
 	// Scene-view Camera moved into Application.
 
@@ -611,7 +611,7 @@ void BloomDemoApplication::RenderToolsUI()
 					model_info.model_instance.ToggleShadowReceivingStatus( model_info.is_receiving_shadows );
 
 					for( auto& renderable : model_info.model_instance.Renderables() )
-						renderer->AddRenderable( &renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+						renderer->AddRenderable( &renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 				}
 				ImGui::SameLine();
 				if( ImGui::Checkbox( "Casts Shadows", &model_info.is_casting_shadows ) )
@@ -674,18 +674,18 @@ void BloomDemoApplication::RenderToolsUI()
 
 	ImGui::End();
 
-	Engine::ImGuiDrawer::Draw( light_source_material, *renderer );
-	Engine::ImGuiDrawer::Draw( ground_material, *renderer );
-	Engine::ImGuiDrawer::Draw( wall_material, *renderer );
-	Engine::ImGuiDrawer::Draw( sphere_material, *renderer );
-	Engine::ImGuiDrawer::Draw( window_material, *renderer );
-	Engine::ImGuiDrawer::Draw( cube_material, *renderer );
-	Engine::ImGuiDrawer::Draw( cube_reflected_material, *renderer );
+	Kakadu::ImGuiDrawer::Draw( light_source_material, *renderer );
+	Kakadu::ImGuiDrawer::Draw( ground_material, *renderer );
+	Kakadu::ImGuiDrawer::Draw( wall_material, *renderer );
+	Kakadu::ImGuiDrawer::Draw( sphere_material, *renderer );
+	Kakadu::ImGuiDrawer::Draw( window_material, *renderer );
+	Kakadu::ImGuiDrawer::Draw( cube_material, *renderer );
+	Kakadu::ImGuiDrawer::Draw( cube_reflected_material, *renderer );
 	for( auto& test_material : test_model_info.model_instance.Materials() )
-		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), *renderer );
+		Kakadu::ImGuiDrawer::Draw( const_cast< Kakadu::Material& >( test_material ), *renderer );
 	for( auto& test_material : meteorite_model_info.model_instance.Materials() )
-		Engine::ImGuiDrawer::Draw( const_cast< Engine::Material& >( test_material ), *renderer );
-	Engine::ImGuiDrawer::Draw( outline_material, *renderer );
+		Kakadu::ImGuiDrawer::Draw( const_cast< Kakadu::Material& >( test_material ), *renderer );
+	Kakadu::ImGuiDrawer::Draw( outline_material, *renderer );
 
 	if( ImGui::Begin( "Instance Data" ) )
 	{
@@ -715,10 +715,10 @@ void BloomDemoApplication::RenderToolsUI()
 				ImGui::PopItemWidth();
 
 				ImGui::TableNextColumn();
-				Engine::ImGuiDrawer::Draw( instance_data.color );
+				Kakadu::ImGuiDrawer::Draw( instance_data.color );
 				
 				ImGui::TableNextColumn();
-				Engine::ImGuiDrawer::Draw( instance_data.transform );
+				Kakadu::ImGuiDrawer::Draw( instance_data.transform );
 
 
 				ImGui::PopID();
@@ -756,13 +756,13 @@ void BloomDemoApplication::RenderToolsUI()
 		{
 			if( ImGui::BeginTabItem( "Directional Light" ) )
 			{
-				Engine::ImGuiDrawer::Draw( light_directional, "Directional Light" );
+				Kakadu::ImGuiDrawer::Draw( light_directional, "Directional Light" );
 				ImGui::EndTabItem();
 			}
 
 			if( ImGui::BeginTabItem( "Point Lights" ) )
 			{
-				Engine::ImGuiUtility::BeginGroupPanel( "Options" );
+				Kakadu::ImGuiUtility::BeginGroupPanel( "Options" );
 				if( ImGui::Checkbox( "Disable All", &light_point_array_disable ) )
 				{
 					for( auto i = 0; i < LIGHT_POINT_COUNT; i++ )
@@ -774,7 +774,7 @@ void BloomDemoApplication::RenderToolsUI()
 				ImGui::Checkbox( "Animate (Orbit) Point Lights", &light_point_array_is_animated );
 				if( light_point_array_is_animated )
 					ImGui::SliderFloat( "Light Orbit Radius", &light_point_orbit_radius, 0.0f, 30.0f );
-				Engine::ImGuiUtility::EndGroupPanel();
+				Kakadu::ImGuiUtility::EndGroupPanel();
 
 				if( ImGui::TreeNodeEx( "Point Lights", ImGuiTreeNodeFlags_Framed ) )
 				{
@@ -782,9 +782,9 @@ void BloomDemoApplication::RenderToolsUI()
 					{
 						const std::string name( "Point Light # " + std::to_string( i ) );
 						const bool was_enabled = light_point_array[ i ].is_enabled;
-						if( Engine::ImGuiDrawer::Draw( light_point_array[ i ], name.c_str(), light_point_array_is_animated /* hide position. */ ) )
+						if( Kakadu::ImGuiDrawer::Draw( light_point_array[ i ], name.c_str(), light_point_array_is_animated /* hide position. */ ) )
 						{
-							light_source_instance_data_array[ i ].color = Engine::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
+							light_source_instance_data_array[ i ].color = Kakadu::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
 							if( was_enabled != light_point_array[ i ].is_enabled )
 								light_source_instance_data_array[ i ].color.SetW( 1.0f - light_source_instance_data_array[ i ].color.W() );
 						}
@@ -800,7 +800,7 @@ void BloomDemoApplication::RenderToolsUI()
 			{
 				if( ImGui::TreeNodeEx( "Spot Lights", ImGuiTreeNodeFlags_Framed ) )
 				{
-					Engine::ImGuiDrawer::Draw( light_spot, "Spot Light" );
+					Kakadu::ImGuiDrawer::Draw( light_spot, "Spot Light" );
 
 					ImGui::TreePop();
 				}
@@ -833,11 +833,11 @@ void BloomDemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, co
 			break;*/
 		case Platform::KeyCode::KEY_U:
 			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
-				light_spot.data.cutoff_angle_inner = Engine::Math::Min( light_spot.data.cutoff_angle_inner + 0.33_deg, light_spot.data.cutoff_angle_outer );
+				light_spot.data.cutoff_angle_inner = Kakadu::Math::Min( light_spot.data.cutoff_angle_inner + 0.33_deg, light_spot.data.cutoff_angle_outer );
 			break;
 		case Platform::KeyCode::KEY_Y:
 			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
-				light_spot.data.cutoff_angle_inner = Engine::Math::Max( light_spot.data.cutoff_angle_inner - 0.33_deg, 0_deg );
+				light_spot.data.cutoff_angle_inner = Kakadu::Math::Max( light_spot.data.cutoff_angle_inner - 0.33_deg, 0_deg );
 			break;
 		default:
 			Application::OnKeyboardEvent( key_code, key_action, key_mods );
@@ -850,16 +850,16 @@ void BloomDemoApplication::OnFramebufferResizeEvent( const int width_new_pixels,
 
 void BloomDemoApplication::ResetLightingData()
 {
-	light_directional_transform = Engine::Transform();
+	light_directional_transform = Kakadu::Transform();
 
 	light_directional = 
 	{
 		.is_enabled = true,
 		.data =
 		{
-			.ambient  = Engine::Color3{ 0.1f, 0.1f, 0.1f },
-			.diffuse  = Engine::Color3{ 0.4f, 0.4f, 0.4f },
-			.specular = Engine::Color3{ 0.5f, 0.5f, 0.5f },
+			.ambient  = Kakadu::Color3{ 0.1f, 0.1f, 0.1f },
+			.diffuse  = Kakadu::Color3{ 0.4f, 0.4f, 0.4f },
+			.specular = Kakadu::Color3{ 0.5f, 0.5f, 0.5f },
 		},
 		.transform = &light_directional_transform
 	};
@@ -875,7 +875,7 @@ void BloomDemoApplication::ResetLightingData()
 	light_point_array.resize( LIGHT_POINT_COUNT );
 	for( auto i = 0; i < LIGHT_POINT_COUNT; i++ )
 	{
-		const auto random_color( Engine::Math::Random::Generate< Engine::Color3 >() );
+		const auto random_color( Kakadu::Math::Random::Generate< Kakadu::Color3 >() );
 		light_point_array[ i ] =
 		{
 			.is_enabled = true,
@@ -889,16 +889,16 @@ void BloomDemoApplication::ResetLightingData()
 		};
 	}
 
-	light_spot_transform = Engine::Transform();
+	light_spot_transform = Kakadu::Transform();
 
 	light_spot =
 	{
 		.is_enabled = true,
 		.data =
 		{
-			.ambient  = Engine::Color3{  0.05f,  0.05f,  0.03f },
-			.diffuse  = Engine::Color3{  0.4f,   0.4f,   0.27f  },
-			.specular = Engine::Color3{  0.5f,   0.5f,   0.33f  },
+			.ambient  = Kakadu::Color3{  0.05f,  0.05f,  0.03f },
+			.diffuse  = Kakadu::Color3{  0.4f,   0.4f,   0.27f  },
+			.specular = Kakadu::Color3{  0.5f,   0.5f,   0.33f  },
 
 		/* End of GLSL correspondance. */
 			.cutoff_angle_inner = 12.5_deg,
@@ -921,38 +921,38 @@ void BloomDemoApplication::ResetMaterialData()
 			AssetDir R"(Skybox/back.jpg)"
 		} );
 
-	light_source_material = Engine::Material( "Light Source", shader_basic_color_instanced );
+	light_source_material = Kakadu::Material( "Light Source", shader_basic_color_instanced );
 
 	for( int i = 0; i < LIGHT_POINT_COUNT; i++ )
-		light_source_instance_data_array[ i ].color = 100.0f * Engine::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
+		light_source_instance_data_array[ i ].color = 100.0f * Kakadu::Color4( light_point_array[ i ].data.diffuse_and_attenuation_linear.color, 1.0f );
 
-	star_material = Engine::Material( "Star", shader_basic_color_instanced );
+	star_material = Kakadu::Material( "Star", shader_basic_color_instanced );
 	
 	/* Set the first cube's material to Blinn-Phong shader w/ skybox reflection: */
-	cube_reflected_material = Engine::Material( "Cube (Reflected)", shader_blinn_phong_skybox_reflection_shadowed_instanced );
-	cube_reflected_material.SetTexture( "uniform_tex_diffuse", Engine::BuiltinTextures::Get( "UV Test" ) );
-	cube_reflected_material.SetTexture( "uniform_tex_specular", Engine::BuiltinTextures::Get( "Black" ) );
+	cube_reflected_material = Kakadu::Material( "Cube (Reflected)", shader_blinn_phong_skybox_reflection_shadowed_instanced );
+	cube_reflected_material.SetTexture( "uniform_tex_diffuse", Kakadu::BuiltinTextures::Get( "UV Test" ) );
+	cube_reflected_material.SetTexture( "uniform_tex_specular", Kakadu::BuiltinTextures::Get( "Black" ) );
 	cube_reflected_material.SetTexture( "uniform_tex_normal", container_texture_normal_map );
-	cube_reflected_material.SetTexture( "uniform_tex_reflection", Engine::BuiltinTextures::Get( "Black" ) );
+	cube_reflected_material.SetTexture( "uniform_tex_reflection", Kakadu::BuiltinTextures::Get( "Black" ) );
 	cube_reflected_material.SetTexture( "uniform_tex_skybox", renderer->GetSkyboxTexture() );
 	cube_reflected_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 	cube_reflected_material.Set( "uniform_reflectivity", 1.0f );
 
-	cube_material = Engine::Material( "Cube", shader_blinn_phong_shadowed_instanced );
+	cube_material = Kakadu::Material( "Cube", shader_blinn_phong_shadowed_instanced );
 	cube_material.SetTexture( "uniform_tex_diffuse", container_texture_diffuse_map );
-	cube_material.SetTexture( "uniform_tex_emission", Engine::BuiltinTextures::Get( "Black" ) );
+	cube_material.SetTexture( "uniform_tex_emission", Kakadu::BuiltinTextures::Get( "Black" ) );
 	cube_material.SetTexture( "uniform_tex_specular", container_texture_specular_map );
 	cube_material.SetTexture( "uniform_tex_normal", container_texture_normal_map );
 	cube_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
-	ground_material = Engine::Material( "Ground", shader_blinn_phong_shadowed );
+	ground_material = Kakadu::Material( "Ground", shader_blinn_phong_shadowed );
 	ground_material.SetTexture( "uniform_tex_diffuse", checker_pattern_texture );
 	ground_material.SetTexture( "uniform_tex_specular", checker_pattern_texture );
 	const auto& ground_quad_scale( ground_transform.GetScaling().XY() );
 	Vector4 ground_texture_scale_and_offset( ground_quad_scale.X(), ground_quad_scale.Y() /* Offset is 0 so no need to set it explicitly. */ );
 	ground_material.Set( "uniform_texture_scale_and_offset", ground_texture_scale_and_offset );
 
-	wall_material = Engine::Material( "Wall", shader_blinn_phong_shadowed_parallax );
+	wall_material = Kakadu::Material( "Wall", shader_blinn_phong_shadowed_parallax );
 	wall_material.SetTexture( "uniform_tex_diffuse", brickwall_diffuse_map );
 	wall_material.SetTexture( "uniform_tex_specular", checker_pattern_texture );
 	wall_material.SetTexture( "uniform_tex_normal", brickwall_normal_map );
@@ -964,18 +964,18 @@ void BloomDemoApplication::ResetMaterialData()
 	wall_material.Set( "uniform_parallax_height_scale", 0.1f );
 	wall_material.Set( "uniform_parallax_depth_layer_count_min_max", Vector2U( 8u, 32u ) );
 
-	sphere_material = Engine::Material( "Sphere", shader_blinn_phong_skybox_reflection );
-	sphere_material.SetTexture( "uniform_tex_diffuse", Engine::ServiceLocator< Engine::BuiltinTextures >::Get().Get( "UV Test" ) );
+	sphere_material = Kakadu::Material( "Sphere", shader_blinn_phong_skybox_reflection );
+	sphere_material.SetTexture( "uniform_tex_diffuse", Kakadu::ServiceLocator< Kakadu::BuiltinTextures >::Get().Get( "UV Test" ) );
 	//sphere_material.SetTexture( "uniform_tex_reflection", container_texture_specular_map );
 	sphere_material.SetTexture( "uniform_tex_skybox", renderer->GetSkyboxTexture() );
 	sphere_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 	sphere_material.Set( "uniform_reflectivity", 0.9f );
 
-	window_material = Engine::Material( "Transparent Window", shader_basic_textured );
+	window_material = Kakadu::Material( "Transparent Window", shader_basic_textured );
 	window_material.SetTexture( "uniform_tex", transparent_window_texture );
 	window_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
-	outline_material = Engine::Material( "Outline", shader_outline );
+	outline_material = Kakadu::Material( "Outline", shader_outline );
 
 	ground_quad_surface_data = wall_surface_data = cube_surface_data =
 	{
@@ -985,7 +985,7 @@ void BloomDemoApplication::ResetMaterialData()
 		.shininess           = 32.0f
 	};
 
-	//cube_surface_data.color_emission = Engine::Color3( 32.0f, 32.0f, 32.0f );
+	//cube_surface_data.color_emission = Kakadu::Color3( 32.0f, 32.0f, 32.0f );
 
 	ground_material.Set( "BlinnPhongMaterialData", ground_quad_surface_data );
 	wall_material.Set( "BlinnPhongMaterialData", wall_surface_data );
@@ -993,7 +993,7 @@ void BloomDemoApplication::ResetMaterialData()
 	cube_reflected_material.Set( "BlinnPhongMaterialData", cube_surface_data );
 	sphere_material.Set( "BlinnPhongMaterialData", cube_surface_data );
 
-	outline_material.Set( "uniform_color", Engine::Color4::Orange() );
+	outline_material.Set( "uniform_color", Kakadu::Color4::Orange() );
 	outline_material.Set( "uniform_outline_thickness", 0.1f );
 }
 
@@ -1007,7 +1007,7 @@ void BloomDemoApplication::ResetInstanceData()
 
 bool BloomDemoApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const std::string& file_path, const char* name )
 {
-	auto& model_database = Engine::ServiceLocator< Engine::AssetDatabase< Engine::Model > >::Get();
+	auto& model_database = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::Model > >::Get();
 
 	model_database.RemoveAsset( name );
 
@@ -1021,7 +1021,7 @@ bool BloomDemoApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, cons
 		for( auto& renderable_to_remove : model_instance_to_load_into.Renderables() )
 			renderer->RemoveRenderable( &renderable_to_remove );
 
-		model_instance_to_load_into = Engine::ModelInstance( new_model,
+		model_instance_to_load_into = Kakadu::ModelInstance( new_model,
 															 model_info_to_be_loaded.shader,
 															 model_info_to_be_loaded.shader_shadow_receiving,
 															 Vector3::One(),
@@ -1033,7 +1033,7 @@ bool BloomDemoApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, cons
 															 Vector4{ 1.0f, 1.0f, 0.0f, 0.0f } );
 
 		for( auto& renderable_to_add : model_instance_to_load_into.Renderables() )
-			renderer->AddRenderable( &renderable_to_add, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+			renderer->AddRenderable( &renderable_to_add, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 
 		return true;
 	}
@@ -1048,7 +1048,7 @@ void BloomDemoApplication::UnloadModel( ModelInfo& model_info_to_be_loaded, cons
 	for( auto& renderable_to_remove : model_info_to_be_loaded.model_instance.Renderables() )
 		renderer->RemoveRenderable( &renderable_to_remove );
 
-	Engine::ServiceLocator< Engine::AssetDatabase< Engine::Model > >::Get().RemoveAsset( name );
+	Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::Model > >::Get().RemoveAsset( name );
 
 	model_info_to_be_loaded.model_instance = {};
 }
@@ -1058,9 +1058,9 @@ void BloomDemoApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorit
 	if( use_meteorites )
 	{
 		meteorite_renderable = &meteorite_model_info.model_instance.Renderables().front();
-		cube_mesh_instanced = Engine::Mesh( *meteorite_renderable->GetMesh(),
+		cube_mesh_instanced = Kakadu::Mesh( *meteorite_renderable->GetMesh(),
 											{
-												Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
+												Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
 											},
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,
@@ -1072,13 +1072,13 @@ void BloomDemoApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorit
 	{
 		renderer->RemoveRenderable( meteorite_renderable );
 		meteorite_renderable = nullptr;
-		cube_mesh_instanced = Engine::Mesh( cube_mesh,
+		cube_mesh_instanced = Kakadu::Mesh( cube_mesh,
 											{
-												Engine::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
+												Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
 											},
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,
 											GL_STATIC_DRAW );
-		renderer->AddRenderable( &cube_renderable, Engine::Renderer::RENDER_QUEUE_ID_GEOMETRY );
+		renderer->AddRenderable( &cube_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 	}
 }

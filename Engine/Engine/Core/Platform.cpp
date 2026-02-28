@@ -279,7 +279,7 @@ namespace Platform
 		InitializeGLAD();
 
 #ifdef _EDITOR
-		Engine::Editor::SplashScreen splash_screen( ENGINE_TEXTURE_PATH_ABSOLUTE( "splash_screen.png" ) );
+		Kakadu::Editor::SplashScreen splash_screen( ENGINE_TEXTURE_PATH_ABSOLUTE( "splash_screen.png" ) );
 
 		int splash_width, splash_height;
 		if( not GetMainMonitorResolution( splash_width, splash_height ) )
@@ -423,11 +423,11 @@ namespace Platform
 		return WINDOW_STATE.is_iconified;
 	}
 	
-	Engine::Vector2I GetFramebufferSizeInPixels()
+	Kakadu::Vector2I GetFramebufferSizeInPixels()
 	{
 		int width, height;
 		glfwGetFramebufferSize( MAIN_WINDOW, &width, &height );
-		return Engine::Vector2I( width, height );
+		return Kakadu::Vector2I( width, height );
 	}
 
 	int GetFramebufferWidthInPixels()
@@ -824,7 +824,7 @@ namespace Platform
 		// Create the FileOpenDialog object.
 		if( SUCCEEDED( CoCreateInstance( CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast< void** >( &file_open_dialog ) ) ) )
 		{
-			file_open_dialog->SetTitle( Engine::Utility::String::ToWideString( title ).c_str() );
+			file_open_dialog->SetTitle( Kakadu::Utility::String::ToWideString( title ).c_str() );
 
 			/* Set default directory. */
 			const std::wstring directory_path_wide( directory_path.begin(), directory_path.end() );
@@ -852,7 +852,7 @@ namespace Platform
 					{
 						std::wstring selected_directory_path_wide( pszFilePath );
 						CoTaskMemFree( pszFilePath );
-						return Engine::Utility::String::ToNarrowString( selected_directory_path_wide );
+						return Kakadu::Utility::String::ToNarrowString( selected_directory_path_wide );
 					}
 					pItem->Release();
 				}
@@ -950,7 +950,7 @@ namespace Platform
 	{
 #ifdef _WIN32
 		ShellExecute( nullptr, L"open",
-					  Engine::Utility::String::ToWideString( file_path ).c_str(),
+					  Kakadu::Utility::String::ToWideString( file_path ).c_str(),
 					  nullptr,
 					  nullptr,
 					  SW_SHOWNORMAL );

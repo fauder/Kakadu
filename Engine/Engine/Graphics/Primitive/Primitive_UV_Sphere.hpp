@@ -7,7 +7,7 @@
 // std Includes.
 #include <array>
 
-namespace Engine::Primitive::Indexed::UVSphereTemplate
+namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 {
 	/* Ordering:
 	 * 1) North pole.

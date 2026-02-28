@@ -10,7 +10,7 @@
 // std Includes.
 #include <algorithm>
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
 	template< typename Component, std::size_t Size > requires( Size > 1 )
 	struct Vector
@@ -555,21 +555,21 @@ namespace Engine::Math
 	}
 
 	// Suppress implicit instantiation everywhere else:
-	extern template struct Engine::Math::Vector< float, 2 >;
-	extern template struct Engine::Math::Vector< float, 3 >;
-	extern template struct Engine::Math::Vector< float, 4 >;
-	extern template struct Engine::Math::Vector< double, 2 >;
-	extern template struct Engine::Math::Vector< double, 3 >;
-	extern template struct Engine::Math::Vector< double, 4 >;
-	extern template struct Engine::Math::Vector< int, 2 >;
-	extern template struct Engine::Math::Vector< int, 3 >;
-	extern template struct Engine::Math::Vector< int, 4 >;
-	extern template struct Engine::Math::Vector< unsigned int, 2 >;
-	extern template struct Engine::Math::Vector< unsigned int, 3 >;
-	extern template struct Engine::Math::Vector< unsigned int, 4 >;
+	extern template struct Kakadu::Math::Vector< float, 2 >;
+	extern template struct Kakadu::Math::Vector< float, 3 >;
+	extern template struct Kakadu::Math::Vector< float, 4 >;
+	extern template struct Kakadu::Math::Vector< double, 2 >;
+	extern template struct Kakadu::Math::Vector< double, 3 >;
+	extern template struct Kakadu::Math::Vector< double, 4 >;
+	extern template struct Kakadu::Math::Vector< int, 2 >;
+	extern template struct Kakadu::Math::Vector< int, 3 >;
+	extern template struct Kakadu::Math::Vector< int, 4 >;
+	extern template struct Kakadu::Math::Vector< unsigned int, 2 >;
+	extern template struct Kakadu::Math::Vector< unsigned int, 3 >;
+	extern template struct Kakadu::Math::Vector< unsigned int, 4 >;
 }
 
-namespace Engine
+namespace Kakadu
 {
 	using Vector2  = Math::Vector< float,			2 >;
 	using Vector3  = Math::Vector< float,			3 >;

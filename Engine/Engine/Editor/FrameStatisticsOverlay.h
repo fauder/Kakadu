@@ -3,7 +3,7 @@
 // Engine Includes.
 #include "EditorContext.h"
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	struct FrameStatisticsOverlay
 	{

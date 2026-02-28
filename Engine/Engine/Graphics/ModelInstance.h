@@ -8,17 +8,17 @@
 // std Includes.
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	class ModelInstance
 	{
 	public:
 		ModelInstance();
 		ModelInstance( const Model* model,
-					   Engine::Shader* const shader,
-					   Engine::Shader* const shader_shadow_receiving,
+					   Kakadu::Shader* const shader,
+					   Kakadu::Shader* const shader_shadow_receiving,
 					   const Vector3 scale, const Quaternion& rotation, const Vector3& translation,
-					   Engine::Material* material,
+					   Kakadu::Material* material,
 					   const bool receives_shadows            = false,
 					   const bool casts_shadows               = false,
 					   const Vector4 texture_scale_and_offset = Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
@@ -35,25 +35,25 @@ namespace Engine
 		bool IsReceivingShadows()	const { return node_renderable_array.front().IsReceivingShadows(); }
 		bool IsCastingShadows()		const { return node_renderable_array.front().IsCastingShadows(); }
 
-		void SetMaterialData( Engine::Shader* const shader, const Vector4 texture_scale_and_offset = Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
+		void SetMaterialData( Kakadu::Shader* const shader, const Vector4 texture_scale_and_offset = Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
 		void ToggleShadowReceivingStatus( const bool receive_shadows );
 		void ToggleShadowCastingStatus( const bool cast_shadows );
 
 	/* Queries: */
-			  std::vector< Engine::Renderable >& Renderables()		 { return node_renderable_array; }
-		const std::vector< Engine::Material	  >& Materials()   const { return node_material_array; }
+			  std::vector< Kakadu::Renderable >& Renderables()		 { return node_renderable_array; }
+		const std::vector< Kakadu::Material	  >& Materials()   const { return node_material_array; }
 
 	private:
-		const Engine::Model* model;
+		const Kakadu::Model* model;
 
-		Engine::Shader* shader;
-		Engine::Shader* shader_shadow_receiving;
+		Kakadu::Shader* shader;
+		Kakadu::Shader* shader_shadow_receiving;
 
-		std::vector< Engine::Renderable > node_renderable_array;
-		std::vector< Engine::Material	> node_material_array;
-		std::vector< Engine::Transform	> node_transform_array;
-		std::vector< Engine::MaterialData::BlinnPhongMaterialData > blinn_phong_material_data_array;
+		std::vector< Kakadu::Renderable > node_renderable_array;
+		std::vector< Kakadu::Material	> node_material_array;
+		std::vector< Kakadu::Transform	> node_transform_array;
+		std::vector< Kakadu::MaterialData::BlinnPhongMaterialData > blinn_phong_material_data_array;
 		
 		Vector4 texture_scale_and_offset;
 	};

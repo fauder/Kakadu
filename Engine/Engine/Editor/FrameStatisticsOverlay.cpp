@@ -9,7 +9,7 @@
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	void FrameStatisticsOverlay::Update( const float time_delta_real )
 	{

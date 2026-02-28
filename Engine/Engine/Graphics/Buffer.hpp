@@ -17,7 +17,7 @@
 
 // TODO: Keep track of buffer ids and debug/inspect them via ImGuiDrawer::Draw() or something.
 
-namespace Engine
+namespace Kakadu
 {
 	/* This is so we can explicitly work with instance buffers in higher level code while it maps down to a vertex buffer behind the scenes. */
 	enum class BufferType

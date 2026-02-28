@@ -9,7 +9,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/MorphSystem.h"
 
-namespace Engine
+namespace Kakadu
 {
 	Framebuffer::Framebuffer()
 		:
@@ -259,18 +259,18 @@ namespace Engine
 		{
 			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) +
 								   " (MSAA " + std::to_string( msaa.sample_count ) + "x)" );
-			attachment_texture = Engine::Texture( full_name,
+			attachment_texture = Kakadu::Texture( full_name,
 												  format,
 												  msaa.sample_count,
 												  size.X(),
 												  size.Y() );
 				
-			Engine::ServiceLocator< AssetDatabase_Tracked< Engine::Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
+			Kakadu::ServiceLocator< AssetDatabase_Tracked< Kakadu::Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
 		}
 		else
 		{
 			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) );
-			attachment_texture = Engine::Texture( full_name, format,
+			attachment_texture = Kakadu::Texture( full_name, format,
 												  size.X(),
 												  size.Y(),
 												  description.wrap_u,
@@ -279,7 +279,7 @@ namespace Engine
 												  description.minification_filter,
 												  description.magnification_filter );
 
-			Engine::ServiceLocator< AssetDatabase_Tracked< Engine::Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
+			Kakadu::ServiceLocator< AssetDatabase_Tracked< Kakadu::Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
 		}
 
 		constexpr int gl_spec_required_level = 0;
@@ -330,7 +330,7 @@ namespace Engine
 	{
 		if( IsValid() ) // Also prevents the default framebuffer from getting processed here.
 		{
-			auto& texture_database = Engine::ServiceLocator< AssetDatabase_Tracked< Engine::Texture* > >::Get();
+			auto& texture_database = Kakadu::ServiceLocator< AssetDatabase_Tracked< Kakadu::Texture* > >::Get();
 
 			if( HasColorAttachment() )
 				texture_database.RemoveAsset( color_attachment.Name() );

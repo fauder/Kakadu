@@ -4,7 +4,7 @@
 // std Include.
 #include <filesystem>
 
-namespace Engine
+namespace Kakadu
 {
 	template< ShaderType Type > 
 	class ShaderSourcePath

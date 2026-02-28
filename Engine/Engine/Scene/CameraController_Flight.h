@@ -5,7 +5,7 @@
 #include "Math/Polar.h"
 #include "Core/Macros.h"
 
-namespace Engine
+namespace Kakadu
 {
 	class CameraController_Flight
 	{

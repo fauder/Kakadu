@@ -5,7 +5,7 @@
 #include "Mesh.h"
 #include "Scene/Transform.h"
 
-namespace Engine
+namespace Kakadu
 {
 	class Renderer;
 

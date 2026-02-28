@@ -11,7 +11,7 @@
 #include <execution>
 #include <iostream>
 
-namespace Engine
+namespace Kakadu
 {
 	constexpr int DESIRED_CHANNELS = 4;
 

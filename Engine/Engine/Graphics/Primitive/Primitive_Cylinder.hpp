@@ -8,7 +8,7 @@
 // std Includes.
 #include <array>
 
-namespace Engine::Primitive::Indexed::CylinderTemplate
+namespace Kakadu::Primitive::Indexed::CylinderTemplate
 {
 	/* Ordering:
 	 * 1) Top cap vertices.

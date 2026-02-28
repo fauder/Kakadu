@@ -9,7 +9,7 @@
 // std Includes.
 #include <cmath>
 
-namespace Engine
+namespace Kakadu
 {
 	namespace Math
 	{

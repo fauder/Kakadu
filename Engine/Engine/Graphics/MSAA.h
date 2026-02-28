@@ -3,7 +3,7 @@
 // std Includes.
 #include <cstdint>
 
-namespace Engine
+namespace Kakadu
 {
 	struct MSAA
 	{

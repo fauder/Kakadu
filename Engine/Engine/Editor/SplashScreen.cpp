@@ -9,7 +9,7 @@
 // std Includes.
 #include <stdexcept>
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	SplashScreen::SplashScreen( const std::string& image_file_path )
 		:

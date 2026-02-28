@@ -7,7 +7,7 @@
 #include "Core/Platform.h"
 #include "Math/VectorConversion.hpp"
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	/* This returns the viewport coordinates (bottom-left origin for OpenGL). Beware: may return garbage when the mouse is outside the viewport. */
 	Vector2 ViewportPanel::GetMouseScreenSpacePosition() const

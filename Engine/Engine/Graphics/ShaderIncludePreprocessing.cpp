@@ -2,7 +2,7 @@
 #include "ShaderIncludePreprocessing.h"
 #include "Core/Utility.hpp"
 
-namespace Engine::ShaderIncludePreprocessing
+namespace Kakadu::ShaderIncludePreprocessing
 {
 	/* Implementation Function prototype: */
 	std::string Resolve( const std::filesystem::path& source_path,

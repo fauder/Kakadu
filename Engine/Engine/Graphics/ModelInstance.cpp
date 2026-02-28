@@ -2,7 +2,7 @@
 #include "ModelInstance.h"
 #include "Graphics/BuiltinTextures.h"
 
-namespace Engine
+namespace Kakadu
 {
 	ModelInstance::ModelInstance()
 		:
@@ -11,11 +11,11 @@ namespace Engine
 		shader_shadow_receiving( nullptr )
 	{}
 
-	ModelInstance::ModelInstance( const Engine::Model* model, 
-								  Engine::Shader* const shader,
-								  Engine::Shader* const shader_shadow_receiving,
+	ModelInstance::ModelInstance( const Kakadu::Model* model, 
+								  Kakadu::Shader* const shader,
+								  Kakadu::Shader* const shader_shadow_receiving,
 								  const Vector3 scale, const Quaternion& rotation, const Vector3& translation,
-								  Engine::Material* material,
+								  Kakadu::Material* material,
 								  const bool receives_shadows,
 								  const bool casts_shadows,
 								  const Vector4 texture_scale_and_offset )
@@ -42,7 +42,7 @@ namespace Engine
 
 		for( auto i = 0; i < mesh_instance_count; i++ )
 		{
-			node_renderable_array[ i ] = Engine::Renderable( &meshes[ i ], ( material ? material : &node_material_array[ i ] ),
+			node_renderable_array[ i ] = Kakadu::Renderable( &meshes[ i ], ( material ? material : &node_material_array[ i ] ),
 															 node_material_array[ i ].HasUniform( "uniform_transform_world" ) ? &node_transform_array[ i ] : nullptr,
 															 receives_shadows, casts_shadows );
 		}
@@ -65,13 +65,13 @@ namespace Engine
 		};
 
 		for( auto top_level_node_index : model->TopLevelNodeIndices() )
-			ProcessNode( top_level_node_index, Engine::Matrix::Scaling( scale ) * Engine::Math::QuaternionToMatrix( rotation ) * Engine::Matrix::Translation( translation ) );
+			ProcessNode( top_level_node_index, Kakadu::Matrix::Scaling( scale ) * Kakadu::Math::QuaternionToMatrix( rotation ) * Kakadu::Matrix::Translation( translation ) );
 	}
 
 	ModelInstance::~ModelInstance()
 	{}
 
-	void ModelInstance::SetMaterialData( Engine::Shader* const shader, const Vector4 texture_scale_and_offset )
+	void ModelInstance::SetMaterialData( Kakadu::Shader* const shader, const Vector4 texture_scale_and_offset )
 	{
 		int material_index = 0;
 
@@ -89,7 +89,7 @@ namespace Engine
 			{
 				for( auto& sub_mesh : node.mesh_group->sub_meshes )
 				{
-					auto& material = node_material_array[ material_index ] = Engine::Material( model->Name() + "_" + sub_mesh.name, shader );
+					auto& material = node_material_array[ material_index ] = Kakadu::Material( model->Name() + "_" + sub_mesh.name, shader );
 
 					if( sub_mesh.texture_albedo )
 					{
@@ -112,8 +112,8 @@ namespace Engine
 						};
 					}
 
-					const Texture* default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
-					const Texture* white_texture              = Engine::BuiltinTextures::Get( "White" );
+					const Texture* default_normal_map_texture = Kakadu::BuiltinTextures::Get( "Normal Map" );
+					const Texture* white_texture              = Kakadu::BuiltinTextures::Get( "White" );
 
 					material.SetTexture( "uniform_tex_normal", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
 					material.SetTexture( "uniform_tex_specular", white_texture );
@@ -178,8 +178,8 @@ namespace Engine
 						};
 					}
 
-					const Texture* default_normal_map_texture = Engine::BuiltinTextures::Get( "Normal Map" );
-					const Texture* white_texture              = Engine::BuiltinTextures::Get( "White" );
+					const Texture* default_normal_map_texture = Kakadu::BuiltinTextures::Get( "Normal Map" );
+					const Texture* white_texture              = Kakadu::BuiltinTextures::Get( "White" );
 
 					material.SetTexture( "uniform_tex_normal", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
 					material.SetTexture( "uniform_tex_specular", white_texture );

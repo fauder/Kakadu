@@ -4,7 +4,7 @@
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
-namespace Engine
+namespace Kakadu
 {
 	GLLogger::GLLogGroup::GLLogGroup( GLLogger* logger, const char* group_name )
 		:

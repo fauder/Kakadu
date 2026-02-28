@@ -3,7 +3,7 @@
 // std Includes.
 #include <string>
 
-namespace Engine::UniformAnnotation
+namespace Kakadu::UniformAnnotation
 {
 	enum class Type : std::uint8_t
 	{

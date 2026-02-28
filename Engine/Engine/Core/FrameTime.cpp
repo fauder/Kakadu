@@ -3,7 +3,7 @@
 #include "Platform.h"
 #include "Math/TypeTraits.h"
 
-namespace Engine
+namespace Kakadu
 {
 	void FrameTime::Update()
 	{

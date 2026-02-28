@@ -5,7 +5,7 @@
 #include <span>
 #include <unordered_map>
 
-namespace Engine::ShaderIncludePreprocessing
+namespace Kakadu::ShaderIncludePreprocessing
 {
 	std::string Resolve( const std::filesystem::path& source_path, 
 						 std::initializer_list< std::string > include_directories_with_trailing_slashes,

@@ -4,7 +4,7 @@
 #include "Core/ImGuiSetup.h"
 #include "Graphics/Renderer.h"
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	internal_function void RenderShadingModeCombobox( Context& editor_context, const EditorShadingMode editor_shading_mode )
 	{

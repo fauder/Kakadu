@@ -10,7 +10,7 @@
 #include <stack>
 #include <string>
 
-namespace Engine
+namespace Kakadu
 {
 	class GLLogger
 	{

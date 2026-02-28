@@ -3,7 +3,7 @@
 // Engine Includes.
 #include "Enums.h"
 
-namespace Engine
+namespace Kakadu
 {
 	struct RenderState
 	{

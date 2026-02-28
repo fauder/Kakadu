@@ -6,7 +6,7 @@
 // std Includes.
 #include <array>
 
-namespace Engine::Primitive::NonIndexed::Triangle
+namespace Kakadu::Primitive::NonIndexed::Triangle
 {
 	constexpr std::array< Vector3, 3 > Positions
 	( {

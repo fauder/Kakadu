@@ -5,7 +5,7 @@
 #include "Core/Utility.hpp"
 #include "Asset/Paths.h"
 
-namespace Engine
+namespace Kakadu
 {
 	/* Static member variable definitions: */
 	std::unordered_map< std::string, Texture* > BuiltinTextures::TEXTURE_MAP;

@@ -6,7 +6,7 @@
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
-namespace Engine::Editor
+namespace Kakadu::Editor
 {
 	void RenderSceneCameraInspectorPanel( SceneCamera& scene_camera, const Vector2I viewport_resolution )
 	{
@@ -58,22 +58,22 @@ namespace Engine::Editor
 					if( scene_camera.animation_is_enabled )
 						ImGui::SliderFloat( "Camera Orbit Radius", &scene_camera.animation_orbit_radius, 0.0f, 50.0f );
 
-					Engine::ImGuiDrawer::Draw( scene_camera.transform, Engine::Transform::Mask::NoScale );
+					Kakadu::ImGuiDrawer::Draw( scene_camera.transform, Kakadu::Transform::Mask::NoScale );
 
 					ImGui::EndTabItem();
 				}
 
 				if( ImGui::BeginTabItem( "Projection" ) )
 				{
-					Engine::ImGuiUtility::BeginGroupPanel();
+					Kakadu::ImGuiUtility::BeginGroupPanel();
 					{
 						if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Reset##Projection" ) )
 							scene_camera.ResetProjection();
 
-						if( Engine::ImGuiDrawer::Draw( scene_camera.camera, "Main Camera", true ) )
+						if( Kakadu::ImGuiDrawer::Draw( scene_camera.camera, "Main Camera", true ) )
 							scene_camera.RecalculateProjectionParameters( viewport_resolution );
 					}
-					Engine::ImGuiUtility::EndGroupPanel();
+					Kakadu::ImGuiUtility::EndGroupPanel();
 
 					ImGui::EndTabItem();
 				}

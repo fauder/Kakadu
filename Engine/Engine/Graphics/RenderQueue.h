@@ -4,7 +4,7 @@
 #include "Renderable.h"
 #include "RenderState.h"
 
-namespace Engine
+namespace Kakadu
 {
 	/* Forward declarations: */
 	class Renderer;

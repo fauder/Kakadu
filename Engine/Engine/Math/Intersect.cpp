@@ -1,7 +1,7 @@
 // Engine Includes
 #include "Intersect.h"
 
-namespace Engine::Math
+namespace Kakadu::Math
 {
     /* Liang-Barsky algorithm.
      * Returns t-enter and t-exit values calculated. */

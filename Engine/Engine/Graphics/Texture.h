@@ -13,7 +13,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace Engine
+namespace Kakadu
 {
 	template< Concepts::NotPointer AssetType >
 	class AssetDatabase;

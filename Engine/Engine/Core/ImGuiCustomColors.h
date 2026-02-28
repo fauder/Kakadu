@@ -6,7 +6,7 @@
 // std Includes.
 #include <cstdint>
 
-namespace Engine::ImGuiCustomColors
+namespace Kakadu::ImGuiCustomColors
 {
 	constexpr ImU32 COLOR_HDR  = IM_COL32( 245, 194, 10, 255 );
 	constexpr ImU32 COLOR_MSAA = IM_COL32( 92, 46, 145, 255 );

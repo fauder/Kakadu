@@ -12,7 +12,7 @@
 #include <string_view>
 #include <vector>
 
-namespace Engine
+namespace Kakadu
 {
 	namespace Utility
 	{
@@ -105,7 +105,7 @@ namespace Engine
 #ifdef _EDITOR
 				auto [ ptr, ec ] = std::from_chars( as_string.data(), as_string.data() + as_string.size(), numeric_value );
 				if( ec == std::errc::invalid_argument )
-					std::cerr << "Engine::Utility::String::ConvertToNumber< " << typeid( Type ).name() << " >(): String \"" << as_string
+					std::cerr << "Kakadu::Utility::String::ConvertToNumber< " << typeid( Type ).name() << " >(): String \"" << as_string
 							  << "\" can not be converted to a number.\n";
 #else
 				std::from_chars( as_string.data(), as_string.data() + as_string.size(), numeric_value );
@@ -120,7 +120,7 @@ namespace Engine
 #ifdef _EDITOR
 				auto [ ptr, ec ] = std::from_chars( as_string.data(), as_string.data() + as_string.size(), numeric_value, format );
 				if( ec == std::errc::invalid_argument )
-					std::cerr << "Engine::Utility::String::ConvertToNumber< " << typeid( Type ).name() << " >(): String \"" << as_string
+					std::cerr << "Kakadu::Utility::String::ConvertToNumber< " << typeid( Type ).name() << " >(): String \"" << as_string
 							  << "\" can not be converted to a number.\n";
 #else
 				std::from_chars( as_string.data(), as_string.data() + as_string.size(), numeric_value );

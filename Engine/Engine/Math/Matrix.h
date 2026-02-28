@@ -7,7 +7,7 @@
 #include "Quaternion.hpp"
 #include "OrthographicProjectionParameters.h"
 
-namespace Engine::Matrix
+namespace Kakadu::Matrix
 {
 	/* In row-major form. Coordinates are in a left-handed coordinate system (both before & after multiplication). */
 	constexpr Matrix4x4 OrthographicProjection( const float left_plane_offset, const float right_plane_offset, const float bottom_plane_offset, const float top_plane_offset, 

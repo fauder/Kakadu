@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Engine
+namespace Kakadu
 {
 	template< class Service >
 	class ServiceLocator

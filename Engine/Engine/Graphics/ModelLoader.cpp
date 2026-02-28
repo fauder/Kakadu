@@ -15,31 +15,31 @@
 #include <numeric>
 
 template <>
-struct fastgltf::ElementTraits< Engine::Vector2  > : fastgltf::ElementTraitsBase< Engine::Vector2,  AccessorType::Vec2, float> {};
+struct fastgltf::ElementTraits< Kakadu::Vector2  > : fastgltf::ElementTraitsBase< Kakadu::Vector2,  AccessorType::Vec2, float> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector3  > : fastgltf::ElementTraitsBase< Engine::Vector3,  AccessorType::Vec3, float> {};
+struct fastgltf::ElementTraits< Kakadu::Vector3  > : fastgltf::ElementTraitsBase< Kakadu::Vector3,  AccessorType::Vec3, float> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector4  > : fastgltf::ElementTraitsBase< Engine::Vector4,  AccessorType::Vec4, float> {};
+struct fastgltf::ElementTraits< Kakadu::Vector4  > : fastgltf::ElementTraitsBase< Kakadu::Vector4,  AccessorType::Vec4, float> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector2D > : fastgltf::ElementTraitsBase< Engine::Vector2D, AccessorType::Vec2, double> {};
+struct fastgltf::ElementTraits< Kakadu::Vector2D > : fastgltf::ElementTraitsBase< Kakadu::Vector2D, AccessorType::Vec2, double> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector3D > : fastgltf::ElementTraitsBase< Engine::Vector3D, AccessorType::Vec3, double> {};
+struct fastgltf::ElementTraits< Kakadu::Vector3D > : fastgltf::ElementTraitsBase< Kakadu::Vector3D, AccessorType::Vec3, double> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector4D > : fastgltf::ElementTraitsBase< Engine::Vector4D, AccessorType::Vec4, double> {};
+struct fastgltf::ElementTraits< Kakadu::Vector4D > : fastgltf::ElementTraitsBase< Kakadu::Vector4D, AccessorType::Vec4, double> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector2U > : fastgltf::ElementTraitsBase< Engine::Vector2U, AccessorType::Vec2, unsigned int> {};
+struct fastgltf::ElementTraits< Kakadu::Vector2U > : fastgltf::ElementTraitsBase< Kakadu::Vector2U, AccessorType::Vec2, unsigned int> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector3U > : fastgltf::ElementTraitsBase< Engine::Vector3U, AccessorType::Vec3, unsigned int> {};
+struct fastgltf::ElementTraits< Kakadu::Vector3U > : fastgltf::ElementTraitsBase< Kakadu::Vector3U, AccessorType::Vec3, unsigned int> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector4U > : fastgltf::ElementTraitsBase< Engine::Vector4U, AccessorType::Vec4, unsigned int> {};
+struct fastgltf::ElementTraits< Kakadu::Vector4U > : fastgltf::ElementTraitsBase< Kakadu::Vector4U, AccessorType::Vec4, unsigned int> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector2I > : fastgltf::ElementTraitsBase< Engine::Vector2I, AccessorType::Vec2, int> {};
+struct fastgltf::ElementTraits< Kakadu::Vector2I > : fastgltf::ElementTraitsBase< Kakadu::Vector2I, AccessorType::Vec2, int> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector3I > : fastgltf::ElementTraitsBase< Engine::Vector3I, AccessorType::Vec3, int> {};
+struct fastgltf::ElementTraits< Kakadu::Vector3I > : fastgltf::ElementTraitsBase< Kakadu::Vector3I, AccessorType::Vec3, int> {};
 template <>
-struct fastgltf::ElementTraits< Engine::Vector4I > : fastgltf::ElementTraitsBase< Engine::Vector4I, AccessorType::Vec4, int> {};
+struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase< Kakadu::Vector4I, AccessorType::Vec4, int> {};
 
-namespace Engine
+namespace Kakadu
 {
 	bool LoadMesh( const fastgltf::Asset& gltf_asset, const fastgltf::Mesh& gltf_mesh,
                    Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes, const std::vector< Texture* >& textures )
@@ -325,7 +325,7 @@ namespace Engine
     }
 
     bool LoadTexture( const fastgltf::Asset& gltf_asset, const fastgltf::Image& gltf_image,
-                      Texture*& texture_to_load, const Engine::Texture::ImportSettings& import_settings )
+                      Texture*& texture_to_load, const Kakadu::Texture::ImportSettings& import_settings )
     {
         auto& texture_database = ServiceLocator< AssetDatabase< Texture > >::Get();
 
