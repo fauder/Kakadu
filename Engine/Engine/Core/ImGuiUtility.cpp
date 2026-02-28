@@ -493,15 +493,13 @@ namespace Engine::ImGuiUtility
             if( not *is_enabled )
 				ImGui::BeginDisabled();
         }
-        else if( name != nullptr )
+        else if( name != nullptr && name[ 0 ] != '#' )
             ImGui::TextUnformatted( name );
         const auto labelMin = ImGui::GetItemRectMin();
         const auto labelMax = ImGui::GetItemRectMax();
         ImGui::SameLine( 0.0f, 0.0f );
         ImGui::Dummy( ImVec2( 0.0, frameHeight + itemSpacing.y ) );
         ImGui::BeginGroup();
-
-        //ImGui::GetWindowDrawList()->AddRect(labelMin, labelMax, IM_COL32(255, 0, 255, 255));
 
         ImGui::PopStyleVar( 2 );
 
