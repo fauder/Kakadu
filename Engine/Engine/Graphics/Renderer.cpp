@@ -241,7 +241,7 @@ namespace Kakadu
 
 											for( auto& renderable : queue.renderable_list )
 											{
-												if( renderable->is_enabled && renderable->material->Name() == material_name )
+												if( renderable->is_enabled && renderable->material == material )
 												{
 													renderable->mesh->Bind();
 
