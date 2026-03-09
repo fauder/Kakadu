@@ -136,17 +136,18 @@ namespace Kakadu
 				Editor::RenderViewportScene( *renderer, editor_context->scene_camera.camera );
 			}
 
+			ImGuiSetup::BeginFrame();
 			{
-				ImGuiSetup::BeginFrame();
 				ZoneScopedN( "Editor::Context::RenderUI" );
 				editor_context->RenderUI();
 			}
 
+			if( editor_context->show_imgui )
 			{
 				ZoneScopedN( "RenderToolsUI" ); // Is overridden in the client app. Makes sense to instrument here instead.
 				RenderToolsUI();
-				ImGuiSetup::EndFrame();
 			}
+			ImGuiSetup::EndFrame();
 #else
 			{
 				ZoneScopedN( "RenderFrame" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
