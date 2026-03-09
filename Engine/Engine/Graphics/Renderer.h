@@ -387,14 +387,12 @@ namespace Kakadu
 		static constexpr RenderQueue::ID RENDER_QUEUE_ID_GEOMETRY              = RenderQueue::ID( 2'000u );
 		static constexpr RenderQueue::ID RENDER_QUEUE_ID_TRANSPARENT           = RenderQueue::ID( 2'450u );
 		static constexpr RenderQueue::ID RENDER_QUEUE_ID_SKYBOX                = RenderQueue::ID( 2'900u );
-		static constexpr RenderQueue::ID RENDER_QUEUE_ID_BEFORE_POSTPROCESSING = RenderQueue::ID( 2'905u ); // TODO: Remove this and move current usage to Post-fx.
 
-		static constexpr std::array< RenderQueue::ID, 4 > BUILTIN_RENDER_QUEUE_ID_LIST =
+		static constexpr std::array< RenderQueue::ID, 3 > BUILTIN_RENDER_QUEUE_ID_LIST =
 		{
 			RENDER_QUEUE_ID_GEOMETRY,
 			RENDER_QUEUE_ID_TRANSPARENT,
-			RENDER_QUEUE_ID_SKYBOX,
-			RENDER_QUEUE_ID_BEFORE_POSTPROCESSING
+			RENDER_QUEUE_ID_SKYBOX
 		};
 
 		/* Wireframe Rendering: */

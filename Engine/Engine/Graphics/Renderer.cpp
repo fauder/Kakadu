@@ -974,21 +974,6 @@ namespace Kakadu
 						 .depth_comparison_function = ComparisonFunction::LessOrEqual
 					  }
 				  } );
-
-		AddQueue( RENDER_QUEUE_ID_BEFORE_POSTPROCESSING,
-				  RenderQueue
-				  {
-					  .name = "Before Post-processing",
-					  .render_state_override = RenderState
-					  {
-						  .face_culling_enable = false,
-
-				          .depth_test_enable  = false,
-						  .depth_write_enable = false,
-
-						  .sorting_mode = SortingMode::None // Preserve effect insertion order.
-                      }
-				  } );
 	}
 
 	void Renderer::InitializeBuiltinPasses()
