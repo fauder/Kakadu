@@ -2,7 +2,6 @@
 
 // Engine Includes.
 #include "EditorCommand.h"
-#include "RendererPanel.h"
 #include "SceneCamera.h"
 #include "ViewportPanel.h"
 #include "Core/Platform.h"
@@ -42,7 +41,6 @@ namespace Kakadu::Editor
 
 		ViewportPanel viewport_panel;
 
-		RendererPanel renderer_panel;
 		RendererIntrospectionSurface renderer_introspection_surface;
 
 		std::queue< Command > commands_queue;

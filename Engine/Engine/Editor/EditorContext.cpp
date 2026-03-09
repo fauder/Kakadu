@@ -2,6 +2,7 @@
 #include "EditorContext.h"
 #include "FrameStatisticsOverlay.h"
 #include "ViewportControlsOverlay.h"
+#include "RendererPanel.h"
 #include "SceneCameraInspectorPanel.h"
 #include "Core/AssetDatabase.hpp"
 #include "Core/AssetDatabase_Tracked.hpp"
@@ -15,7 +16,8 @@
 
 namespace Kakadu::Editor
 {
-	internal_variable FrameStatisticsOverlay FRAME_STATS_OVERLAY;
+	internal_variable FrameStatisticsOverlay	FRAME_STATS_OVERLAY;
+	internal_variable RendererPanel				RENDERER_PANEL;
 
 	internal_function void EnableShaderHotReloading( Renderer* renderer )
 	{
@@ -124,7 +126,7 @@ namespace Kakadu::Editor
 
 		ImGuiDrawer::Update();
 
-		renderer_panel.Render( *renderer, renderer_introspection_surface );
+		RENDERER_PANEL.Render( *renderer, renderer_introspection_surface );
 
 		{
 			const auto& framebuffer_color_attachment = renderer->OutputFramebuffer().color_attachment;
