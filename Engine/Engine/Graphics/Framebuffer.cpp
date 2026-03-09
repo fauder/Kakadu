@@ -177,9 +177,19 @@ namespace Kakadu
 		CreateAttachments();
 	}
 
-	void Framebuffer::SetName( const std::string& new_name )
+	void Framebuffer::ActivateForReadWrite() const
 	{
-		name = new_name;
+		glBindFramebuffer( ( GLenum )ActivationMode::Both, id.Get() );
+	}
+
+	void Framebuffer::ActivateForRead() const
+	{
+		glBindFramebuffer( ( GLenum )ActivationMode::Read, id.Get() );
+	}
+
+	void Framebuffer::ActivateForWrite() const
+	{
+		glBindFramebuffer( ( GLenum )ActivationMode::Write, id.Get() );
 	}
 
 	void Framebuffer::Create()
@@ -316,11 +326,6 @@ namespace Kakadu
 		SetClearStencilValue();
 	}
 
-	void Framebuffer::SetClearTargets( const BitFlags< ClearTarget > targets )
-	{
-		clear_targets = targets;
-	}
-
 	void Framebuffer::Clear() const
 	{
 		glClear( ( GLbitfield )clear_targets.ToBits() );
@@ -350,34 +355,6 @@ namespace Kakadu
 		}
 	}
 
-	void Framebuffer::Debug_FlashClearColor( bool& is_running, const Color4& start, const Color4& end, const float duration_in_seconds, const std::uint8_t ping_pong_count )
-	{
-		const auto current_clear_color = clear_color;
-
-		ServiceLocator< MorphSystem >::Get().Add( Morph
-		{
-			.on_execute = [ this, start, end, ping_pong_count ]( float t )
-			{
-				const float single_lerp_duration = 1.0f / ( float )ping_pong_count;
-
-				const std::uint8_t ping_pong_index = int( t / single_lerp_duration );
-
-				if( ping_pong_index % 2 == 0 )
-					clear_color = Math::Lerp( start, end, t * ping_pong_count - ping_pong_index );
-				else
-					clear_color = Math::Lerp( end, start, t * ping_pong_count - ping_pong_index );
-
-				SetClearColor( clear_color );
-			},
-			.on_complete = [ this, current_clear_color, &is_running ]()
-			{
-				SetClearColor( clear_color = current_clear_color );
-				is_running = false;
-			},
-			.duration_in_seconds = duration_in_seconds
-		} );
-	}
-
 	void Framebuffer::SetClearColor() const
 	{
 		glClearColor( clear_color.R(), clear_color.G(), clear_color.B(), clear_color.A() );
@@ -393,18 +370,34 @@ namespace Kakadu
 		glClearStencil( clear_stencil_value );
 	}
 
-	void Framebuffer::ActivateForReadWrite() const
+	void Framebuffer::Debug_FlashClearColor( bool& is_running,
+											 const Color4& start, const Color4& end,
+											 const float duration_in_seconds, const std::uint8_t ping_pong_count )
 	{
-		glBindFramebuffer( ( GLenum )ActivationMode::Both, id.Get() );
-	}
+		const auto current_clear_color = clear_color;
 
-	void Framebuffer::ActivateForRead() const
-	{
-		glBindFramebuffer( ( GLenum )ActivationMode::Read, id.Get() );
-	}
+		ServiceLocator< MorphSystem >::Get().Add( Morph
+												  {
+													  .on_execute = [ this, start, end, ping_pong_count ]( float t )
+													  {
+														  const float single_lerp_duration = 1.0f / ( float )ping_pong_count;
 
-	void Framebuffer::ActivateForWrite() const
-	{
-		glBindFramebuffer( ( GLenum )ActivationMode::Write, id.Get() );
+														  const std::uint8_t ping_pong_index = int( t / single_lerp_duration );
+
+														  if( ping_pong_index % 2 == 0 )
+															  clear_color = Math::Lerp( start, end, t * ping_pong_count - ping_pong_index );
+														  else
+															  clear_color = Math::Lerp( end, start, t * ping_pong_count - ping_pong_index );
+
+														  SetClearColor( clear_color );
+													  },
+													  .on_complete = [ this, current_clear_color, &is_running ]()
+													  {
+														  SetClearColor( clear_color = current_clear_color );
+														  is_running = false;
+													  },
+													  .duration_in_seconds = duration_in_seconds
+												  } );
+
 	}
 }

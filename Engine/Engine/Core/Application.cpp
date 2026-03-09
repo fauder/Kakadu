@@ -1,5 +1,3 @@
-#define IMGUI_DEFINE_MATH_PERATORS
-
 // Engine Includes.
 #include "Application.h"
 #include "Graphics/Graphics.h"
@@ -8,14 +6,12 @@
 #include "ImGuiUtility.h"
 #include "Graphics/Enums.h"
 #include "Math/Math.hpp"
-#include "Math/VectorConversion.hpp"
 
 #ifdef _EDITOR
 #include "Editor/ViewportScene.h"
 #endif // _EDITOR
 
 // Vendor Includes.
-#include <IconFontCppHeaders/IconsFontAwesome6.h>
 #include <Tracy/tracy/Tracy.hpp>
 #include <Tracy/tracy/TracyOpenGL.hpp>
 
@@ -31,10 +27,11 @@ namespace Kakadu
 							  Renderer::Description&& renderer_description )
 		:
 		is_running( true ),
-		gamma_correction_is_enabled( renderer_description.enable_gamma_correction && not flags.IsSet( CreationFlags::OnStart_DisableGammaCorrection ) ),
 		vsync_is_enabled( false ),
-		msaa_sample_count( renderer_description.main_framebuffer_msaa_sample_count )
+		msaa_sample_count( renderer_description.msaa_sample_count )
 	{
+		renderer_description.output_to_composite_framebuffer = true; // TODO: Remove this from here when editor becomes its own project & executable.
+
 		NatVis::ForceIncludeInBuild();
 
 		const auto begin = std::chrono::system_clock::now();
@@ -49,25 +46,41 @@ namespace Kakadu
 			std::cout << "  Application::Initialize(): " << std::chrono::duration_cast< std::chrono::milliseconds >( ( end - begin ) ).count() << " ms.\n";
 		}
 
+#ifdef _EDITOR
+		// Editor context needs to be initialized after the Platform layer as scene camera etc. depend on framebuffer size etc.
+		editor_context = std::make_unique< Editor::Context >( frame_time );
+#endif // _EDITOR
+
 		// Renderer init.:
 		{
-			renderer_description.enable_gamma_correction = gamma_correction_is_enabled;
 			const auto begin = std::chrono::system_clock::now();
-			renderer = std::make_unique< Renderer >( std::move( renderer_description ) );
+#ifdef _EDITOR
+			renderer = std::make_unique< Renderer >( std::move( renderer_description ), &editor_context->renderer_introspection_surface );
+#else
+			renderer = std::make_unique< Renderer >( std::move( renderer_description ), nullptr );
+#endif // _EDITOR
 			const auto end = std::chrono::system_clock::now();
 			std::cout << "  Renderer::Renderer(): " << std::chrono::duration_cast< std::chrono::milliseconds >( ( end - begin ) ).count() << " ms.\n";
 		}
 
 #ifdef _EDITOR
-		// Editor context needs to be initialized after the Platform layer as scene camera etc. depend on framebuffer size etc.
-		editor_context = std::make_unique< Editor::Context >( frame_time );
+		// Editor Context init.:  
+		{
+			const auto begin = std::chrono::system_clock::now();
 
-		editor_context->show_imgui                               = not flags.IsSet( CreationFlags::OnStart_DisableImGui );
-		editor_context->show_imgui_demo_window                   = false;
-		editor_context->show_frame_statistics_overlay            = true;
-		editor_context->show_mouse_screen_space_position_overlay = false;
-		editor_context->show_gl_logger                           = true;
-		editor_context->ui_interaction_enabled                   = true;
+			editor_context->renderer                                 = renderer.get();
+			editor_context->show_imgui                               = not flags.IsSet( CreationFlags::OnStart_DisableImGui );
+			editor_context->show_imgui_demo_window                   = false;
+			editor_context->show_frame_statistics_overlay            = true;
+			editor_context->show_mouse_screen_space_position_overlay = false;
+			editor_context->show_gl_logger                           = true;
+			editor_context->ui_interaction_enabled                   = true;
+
+			editor_context->Initialize();
+
+			const auto end = std::chrono::system_clock::now();
+			std::cout << "  EditorContext::Initialize(): " << std::chrono::duration_cast< std::chrono::milliseconds >( ( end - begin ) ).count() << " ms.\n";
+		}
 #endif // _EDITOR
 
 		const auto end = std::chrono::system_clock::now();
@@ -126,7 +139,7 @@ namespace Kakadu
 			{
 				ImGuiSetup::BeginFrame();
 				ZoneScopedN( "Editor::Context::RenderUI" );
-				editor_context->RenderUI( *renderer );
+				editor_context->RenderUI();
 			}
 
 			{
@@ -166,7 +179,7 @@ namespace Kakadu
 		const auto version = glGetString( GL_VERSION );
 		std::cout << version << "\n\n";
 
-		ImGuiSetup::Initialize( gamma_correction_is_enabled );
+		ImGuiSetup::Initialize();
 		ImGuiDrawer::Initialize();
 
 		Platform::SetKeyboardEventCallback(
@@ -268,7 +281,7 @@ namespace Kakadu
 	{
 		/* Do nothing on minimize: */
 		if( width_new_pixels <= 0 || height_new_pixels <= 0 ||
-			( renderer->EditorViewportFramebuffer().Size() == Vector2I{ width_new_pixels, height_new_pixels } ) )
+			( renderer->OutputFramebuffer().size == Vector2I{ width_new_pixels, height_new_pixels } ) )
 			return;
 
 		renderer->OnFramebufferResize( width_new_pixels, height_new_pixels );
@@ -298,26 +311,26 @@ namespace Kakadu
 				{
 					if( editor_context->show_imgui )
 					{
-						renderer->SetFinalOutputToEditorViewport();
+						renderer->OutputToCompositeFramebuffer();
 					}
 					else
 					{
 						const Vector2I framebuffer_size = Platform::GetFramebufferSizeInPixels();
 						HandleFramebufferResizeEvent( framebuffer_size.X(), framebuffer_size.Y() );
-						renderer->SetFinalOutputToDefaultFramebuffer();
+						renderer->OutputToDefaultFramebuffer();
 					}
 					break;
 				}
-				case Editor::Command::Type::Renderer_ChangeEditorShadingMode:
+				case Editor::Command::Type::Renderer_ChangeViewportShadingMode:
 				{
 					int option;
 					std::memcpy( &option, command.payload.data(), sizeof( option ) );
 
-					renderer->SetEditorShadingMode( ( EditorShadingMode )option );
+					renderer->SetViewportShadingMode( ( ViewportShadingMode )option );
 					const auto size = Platform::GetFramebufferSizeInPixels();
 					Platform::ResizeWindow( size.X(), size.Y() ); // This is to prompt the Renderer to re-create the framebuffers and change the sRGBA status accordingly.
-					ImGuiSetup::SetStyle( ( EditorShadingMode )option == EditorShadingMode::Shaded ||
-										  ( EditorShadingMode )option == EditorShadingMode::ShadedWireframe );
+					ImGuiSetup::SetStyle( ( ViewportShadingMode )option == ViewportShadingMode::Shaded ||
+										  ( ViewportShadingMode )option == ViewportShadingMode::ShadedWireframe );
 
 					break;
 				}

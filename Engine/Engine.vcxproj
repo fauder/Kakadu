@@ -330,6 +330,7 @@
     <ClInclude Include="Engine\Editor\EditorContext.h" />
     <ClInclude Include="Engine\Editor\EditorCommand.h" />
     <ClInclude Include="Engine\Editor\MagnifierOverlay.h" />
+    <ClInclude Include="Engine\Editor\RendererPanel.h" />
     <ClInclude Include="Engine\Editor\SceneCamera.h" />
     <ClInclude Include="Engine\Editor\SceneCameraInspectorPanel.h" />
     <ClInclude Include="Engine\Editor\SplashScreen.h" />
@@ -358,6 +359,7 @@
     <ClInclude Include="Engine\Graphics\ShaderSourcePath.hpp" />
     <ClInclude Include="Engine\Graphics\ShaderType.h" />
     <ClInclude Include="Engine\Graphics\GraphicsDeviceInfo.h" />
+    <ClInclude Include="Engine\Introspection\RendererIntrospectionSurface.h" />
     <ClInclude Include="Engine\Math\Intersect.h" />
     <ClInclude Include="Engine\Math\OrthographicProjectionParameters.h" />
     <ClInclude Include="Engine\Math\Rect.h" />
@@ -433,6 +435,7 @@
     <ClCompile Include="Engine\Core\MorphSystem.cpp" />
     <ClCompile Include="Engine\Editor\FrameStatisticsOverlay.cpp" />
     <ClCompile Include="Engine\Editor\MagnifierOverlay.cpp" />
+    <ClCompile Include="Engine\Editor\RendererPanel.cpp" />
     <ClCompile Include="Engine\Editor\SceneCameraInspectorPanel.cpp" />
     <ClCompile Include="Engine\Editor\SplashScreen.cpp" />
     <ClCompile Include="Engine\Editor\ViewportControlsOverlay.cpp" />
@@ -457,6 +460,7 @@
     <ClCompile Include="Engine\Graphics\UniformBufferManager.cpp" />
     <ClCompile Include="Engine\Graphics\GraphicsDeviceInfo.cpp" />
     <ClCompile Include="Engine\Graphics\VertexLayout.cpp" />
+    <ClCompile Include="Engine\Graphics\ViewportShadingMode.h" />
     <ClCompile Include="Engine\Math\Percentage.hpp" />
     <ClCompile Include="Engine\Scene\Camera.cpp" />
     <ClCompile Include="Engine\Core\Platform.cpp" />

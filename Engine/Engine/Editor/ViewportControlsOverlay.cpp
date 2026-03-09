@@ -6,7 +6,7 @@
 
 namespace Kakadu::Editor
 {
-	internal_function void RenderShadingModeCombobox( Context& editor_context, const EditorShadingMode editor_shading_mode )
+	internal_function void RenderShadingModeCombobox( Context& editor_context, const ViewportShadingMode editor_shading_mode )
 	{
 		int option = ( int )editor_shading_mode;
 		if( ImGuiUtility::DrawShadedSphereComboButton( "ShadingMode", &option,
@@ -23,7 +23,7 @@ namespace Kakadu::Editor
 														   "Shading Normals"
 													   } ) )
 		{
-			Command command{ .type = Command::Type::Renderer_ChangeEditorShadingMode };
+			Command command{ .type = Command::Type::Renderer_ChangeViewportShadingMode };
 			std::memcpy( command.payload.data(), &option, sizeof( option ) );
 			editor_context.commands_queue.push( command );
 		}
@@ -35,7 +35,7 @@ namespace Kakadu::Editor
 										ImGuiUtility::HorizontalPosition::LEFT, ImGuiUtility::VerticalPosition::TOP,
 										&editor_context.show_frame_statistics_overlay ) )
 		{
-			RenderShadingModeCombobox( editor_context, renderer.GetEditorShadingMode() );
+			RenderShadingModeCombobox( editor_context, renderer.GetViewportShadingMode() );
 		}
 
 		ImGuiUtility::EndOverlay();

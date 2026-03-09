@@ -80,8 +80,6 @@ private:
 	const static constexpr int WINDOW_COUNT = 5;
 	std::array< Kakadu::Renderable, WINDOW_COUNT > window_renderable_array;
 
-	Kakadu::Renderable mirror_quad_renderable;
-
 	static constexpr Kakadu::RenderPass::ID RENDER_PASS_ID_LIGHTING_REAR_VIEW = Kakadu::RenderPass::ID( ( unsigned int )Kakadu::Renderer::RENDER_PASS_ID_LIGHTING - 1 );
 
 /* Textures: */
@@ -97,7 +95,7 @@ private:
 	Kakadu::Texture* transparent_window_texture;
 
 /* Vertex Info.: */
-	Kakadu::Mesh cube_mesh, quad_mesh, quad_mesh_uvs_only, quad_mesh_fullscreen, quad_mesh_mirror;
+	Kakadu::Mesh cube_mesh, quad_mesh, quad_mesh_uvs_only, quad_mesh_fullscreen;
 	Kakadu::Mesh cube_mesh_instanced;
 	Kakadu::Mesh cube_reflected_mesh_instanced;
 	Kakadu::Mesh sphere_mesh_instanced_with_color; // For light sources.
@@ -137,8 +135,6 @@ private:
 	Kakadu::Material window_material;
 
 	Kakadu::Material outline_material;
-
-	Kakadu::Material mirror_quad_material;
 
 	Kakadu::Material sphere_material;
 
@@ -214,6 +210,4 @@ private:
 
 	const static constexpr Vector3 CUBES_ORIGIN = std::accumulate( CUBE_REFLECTED_POSITIONS.cbegin(), CUBE_REFLECTED_POSITIONS.cend(), Vector3::Zero() ) / CUBE_COUNT;
 	const static constexpr Vector3 CAMERA_ROTATION_ORIGIN = CUBES_ORIGIN;
-
-	bool render_rear_view_cam_to_imgui;
 };

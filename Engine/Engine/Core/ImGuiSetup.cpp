@@ -11,7 +11,7 @@
 
 namespace Kakadu::ImGuiSetup
 {
-	void Initialize( const bool enable_gamma_correction )
+	void Initialize()
 	{
         ImGui::CreateContext();
 
@@ -26,7 +26,7 @@ namespace Kakadu::ImGuiSetup
 
         AddFonts();
 
-        SetStyle( enable_gamma_correction );
+        SetStyle( /* gamma correction: */ true );
 	}
 
     void Shutdown()

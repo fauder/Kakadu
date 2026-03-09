@@ -4,8 +4,10 @@
 #include "ViewportControlsOverlay.h"
 #include "SceneCameraInspectorPanel.h"
 #include "Core/AssetDatabase.hpp"
+#include "Core/AssetDatabase_Tracked.hpp"
 #include "Core/ImGuiDrawer.hpp"
 #include "Core/ImGuiSetup.h"
+#include "Core/MorphSystem.h"
 #include "Core/ServiceLocator.h"
 #include "Graphics/Renderer.h"
 
@@ -14,6 +16,20 @@
 namespace Kakadu::Editor
 {
 	internal_variable FrameStatisticsOverlay FRAME_STATS_OVERLAY;
+
+	internal_function void EnableShaderHotReloading( Renderer* renderer )
+	{
+		ServiceLocator< MorphSystem >::Get().Add( Morph
+												  {
+													  .on_complete = [ renderer ]()
+													  {
+														  renderer->RecompileModifiedShaders();
+													  },
+													  .duration_in_seconds = 0.1f, // Seems enough.
+													  .is_looping = true,
+													  .use_real_time = true
+												  } );
+	}
 
 	void Context::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
@@ -72,6 +88,11 @@ namespace Kakadu::Editor
 		scene_camera.RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
 	}
 
+	void Context::Initialize()
+	{
+		EnableShaderHotReloading( renderer );
+	}
+
 	void Context::Update( const FrameTime& frame_time )
 	{
 		if( mouse_screen_space_position_overlay_is_active )
@@ -91,7 +112,7 @@ namespace Kakadu::Editor
 		FRAME_STATS_OVERLAY.Update( frame_time.time_delta_real );
 	}
 
-	void Context::RenderUI( Renderer& renderer )
+	void Context::RenderUI()
 	{
 		if( not show_imgui )
 			return;
@@ -103,12 +124,14 @@ namespace Kakadu::Editor
 
 		ImGuiDrawer::Update();
 
+		renderer_panel.Render( *renderer, renderer_introspection_surface );
+
 		{
-			const auto& framebuffer_color_attachment = renderer.EditorViewportFramebuffer().ColorAttachment();
+			const auto& framebuffer_color_attachment = renderer->OutputFramebuffer().color_attachment;
 			viewport_panel.Render( *this, framebuffer_color_attachment.Id().Get(), framebuffer_color_attachment.Size() );
 		}
 
-		RenderViewportControlsOverlay( *this, renderer );
+		RenderViewportControlsOverlay( *this, *renderer );
 
 		FRAME_STATS_OVERLAY.Render( *this );
 
@@ -117,9 +140,8 @@ namespace Kakadu::Editor
 
 		RenderSceneCameraInspectorPanel( scene_camera, viewport_resolution );
 
-		Kakadu::ImGuiDrawer::Draw( ServiceLocator< AssetDatabase< Texture > >::Get().Assets(), { 400.0f, 512.0f } );
-
-		renderer.RenderImGui();
+		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase< Texture > >::Get().Assets() );
+		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().Assets() );
 
 		auto log_group( ServiceLocator< GLLogger >::Get().TemporaryLogGroup( "ImGuiSetup::EndFrame()" ) );
 	}

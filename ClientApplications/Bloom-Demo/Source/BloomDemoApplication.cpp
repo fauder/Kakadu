@@ -43,8 +43,8 @@ BloomDemoApplication::BloomDemoApplication( const Kakadu::BitFlags< Kakadu::Crea
 	Kakadu::Application( flags,
 						 Kakadu::Renderer::Description
 						 {
-							 .main_framebuffer_color_format      = Kakadu::Texture::Format::RGBA_16F,
-							 .main_framebuffer_msaa_sample_count = 4
+							 .main_framebuffer_color_format = Kakadu::Texture::Format::RGBA_16F,
+							 .msaa_sample_count             = 4
 						 } ),
 	test_model_info
 	{
@@ -435,7 +435,7 @@ void BloomDemoApplication::Initialize()
 
 	renderer->SetClearColor( Kakadu::Color4::Black() );
 
-	cube_reflected_renderable.ToggleOnOff( false );
+	cube_reflected_renderable.is_enabled = false;
 
 /* Camera: */
 	//ResetCamera(); // TODO: Game camera rendering.

@@ -2,7 +2,7 @@
 
 namespace Kakadu::ImGuiSetup
 {
-    void Initialize( const bool enable_gamma_correction );
+    void Initialize();
     void Shutdown();
 
     void BeginFrame();

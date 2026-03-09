@@ -10,12 +10,14 @@
 #include "GraphicsDeviceInfo.h"
 #include "Renderable.h"
 #include "RenderPass.h"
+#include "ViewportShadingMode.h"
 #include "Core/BitFlags.hpp"
 #include "Core/DirtyBlob.h"
 #include "Lighting/DirectionalLight.h"
 #include "Lighting/PointLight.h"
 #include "Lighting/SpotLight.h"
 #include "UniformBufferManagement.hpp"
+#include "Introspection/RendererIntrospectionSurface.h"
 #include "Math/OrthographicProjectionParameters.h"
 #include "Math/Percentage.hpp"
 #include "Scene/Camera.h"
@@ -49,17 +51,13 @@ namespace Kakadu
 
 		struct Description
 		{
-			bool enable_gamma_correction                    = true;
-			Texture::Format main_framebuffer_color_format   = Texture::Format::RGBA_16F;
-			std::uint8_t main_framebuffer_msaa_sample_count = 4;
-			std::initializer_list< Framebuffer::Description > custom_framebuffer_descriptions;
+			Texture::Format main_framebuffer_color_format = Texture::Format::RGBA_16F;
+			std::uint8_t msaa_sample_count                = 4;
+			bool output_to_composite_framebuffer;
 		};
 
 	public:
-		static constexpr std::size_t FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT = 4;
-	
-	public:
-		Renderer( Description&& );
+		Renderer( Description&&, RendererIntrospectionSurface* introspection_interface );
 
 		DELETE_COPY_AND_MOVE_CONSTRUCTORS( Renderer );
 
@@ -74,7 +72,6 @@ namespace Kakadu
 		void RenderFrame();
 		void DrawMesh( const Mesh& mesh ) const;
 		void DrawPostProcessingEffectStep() const;
-		void RenderImGui();
 		void OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels );
 		void OnFramebufferResize( const Vector2I new_resolution_in_pixels );
 
@@ -83,15 +80,13 @@ namespace Kakadu
 		/* Sets the clear color for the main lighting pass. */
 		void SetClearColor( const Color4& new_clear_color );
 
-#ifdef _EDITOR
 		/*
-		 * Editor:
+		 * Viewport Shading Mode:
 		 */
-		EditorShadingMode GetEditorShadingMode() const { return editor_shading_mode; };
-		void SetEditorShadingMode( const EditorShadingMode new_editor_shading_mode );
 
-		float GetEditorWireframeThicknessInPixels() const { return editor_wireframe_thickness_in_pixels; }
-#endif // _EDITOR
+		ViewportShadingMode GetViewportShadingMode() const { return viewport_shading_mode; };
+		void SetViewportShadingMode( const ViewportShadingMode new_viewport_shading_mode );
+		float GetWireframeThicknessInPixels() const { return wireframe_thickness_in_pixels; }
 
 		/* 
 		 * Pass, Queue & Renderable:
@@ -113,11 +108,6 @@ namespace Kakadu
 
 		void AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to );
 		void RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from );
-
-#ifdef _EDITOR
-		void SetFinalOutputToEditorViewport();
-		void SetFinalOutputToDefaultFramebuffer();
-#endif // _EDITOR
 
 		void AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id );
 		// TODO: Switch to unsigned map of "Component" UUIDs when Component class is implemented.
@@ -155,7 +145,7 @@ namespace Kakadu
 		 * Shadow-mapping:
 		 */
 
-		const Texture* ShadowMapTexture() const { return &framebuffer_shadow_map_light_directional.DepthAttachment(); }
+		const Texture* ShadowMapTexture() const { return &( framebuffers[ BuiltinFramebufferIndex::ShadowMapping_DirectionalLight ].depth_attachment ); }
 
 		/*
 		 * Shaders:
@@ -195,24 +185,25 @@ namespace Kakadu
 		void RegisterShader( Shader& shader );
 		void UnregisterShader( Shader& shader );
 
+		void RecompileModifiedShaders();
+
 		/*
 		 * Framebuffer:
 		 */
 
-		// TODO: Make these private after some time if they are not used (as pass API makes explicit Framebuffer operations redundant).
-
 		void ResetToDefaultFramebuffer();
 		bool DefaultFramebufferIsBound() const;
 		Framebuffer* CurrentDestinationFramebuffer();
-		Framebuffer& MainFramebuffer();
-		Framebuffer& PostProcessingFramebuffer();
-#ifdef _EDITOR
-		Framebuffer& EditorViewportFramebuffer();
-		const Framebuffer& EditorViewportFramebuffer() const;
-#endif // _EDITOR
-		Framebuffer& FinalFramebuffer();
 
-		Framebuffer& CustomFramebuffer( const unsigned int framebuffer_index = 0 );
+		void OutputToDefaultFramebuffer();
+		void OutputToCompositeFramebuffer();
+		bool IsOutputtingToCompositeFramebuffer() const { return framebuffer_output_index == BuiltinFramebufferIndex::Composite; }
+
+		const std::vector< Framebuffer >& Framebuffers() const { return framebuffers; }
+			  Framebuffer& MainFramebuffer()			{ return framebuffers[ BuiltinFramebufferIndex::Main ]; }
+		const Framebuffer& MainFramebuffer() const		{ return framebuffers[ BuiltinFramebufferIndex::Main ]; }
+			  Framebuffer& OutputFramebuffer()			{ return framebuffers[ framebuffer_output_index ]; }
+		const Framebuffer& OutputFramebuffer() const	{ return framebuffers[ framebuffer_output_index ]; }
 
 		void Blit( Framebuffer& source, Framebuffer& destination, const Texture::Filtering filtering = Texture::Filtering::Nearest );
 
@@ -222,7 +213,9 @@ namespace Kakadu
 
 		/* Returns the MSAA info. for the main framebuffer MSAA. */
 		MSAA GetMSAAInfo() const;
-
+		/* Sets the sample count for the main framebuffer MSAA. */
+		MSAA SetMSAASampleCount( const std::uint8_t new_sample_count );\
+		
 		/*
 		 * Queries:
 		 */
@@ -230,6 +223,7 @@ namespace Kakadu
 		/* Logs a warning if the sample count in question is not available for the given format. */
 		static bool CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query );
 		static void DisplayAvailableGLExtensions( std::vector< std::string >& list_of_strings );
+		const std::vector< std::uint8_t >& MSAASupportedSampleCountsFor( const Texture::Format format ) { return msaa_supported_sample_counts_per_format[ format ]; }
 
 		/*
 		 * Tone-mapping:
@@ -237,6 +231,18 @@ namespace Kakadu
 
 		void SetTonemappingExposure( const float new_exposure_ev );
 		void SetTonemappingBloomIntensity( const Percentage new_bloom_intensity );
+		std::uint8_t GetBloomStepCount() const { return bloom_mip_chain_size; }
+		void SetBloomStepCount( const std::uint8_t new_step_count );
+
+		enum BloomAntiFlickerSetting : std::uint8_t
+		{
+			Off    = 0,
+			Coarse = 1,
+			Fine   = 2
+		};
+
+		BloomAntiFlickerSetting GetBloomAntiFlickerSetting() const;
+		void SetBloomAntiFlickerSetting( const BloomAntiFlickerSetting new_setting );
 
 	private:
 
@@ -264,12 +270,7 @@ namespace Kakadu
 
 		void CalculateShadowMappingInformation();
 
-#ifdef _EDITOR
-		void RecompileModifiedShaders();
-#endif // _EDITOR
-
 		void InitializeBuiltinMeshes();
-		void InitializeBuiltinShaders();
 		void InitializeBuiltinMaterials();
 		void InitializeBuiltinRenderables();
 		void InitializeBuiltinFullscreenEffects();
@@ -285,6 +286,26 @@ namespace Kakadu
 
 		void EnableFramebuffer_sRGBEncoding();
 		void DisableFramebuffer_sRGBEncoding();
+
+		enum BuiltinFramebufferIndex : std::uint8_t
+		{
+			Default                        = 0,
+			ShadowMapping_DirectionalLight = 1,
+			Main                           = 2,
+			PostProcessing                 = 3,
+			Composite                      = 4,
+
+			Count
+		};
+
+			  Framebuffer& DefaultFramebuffer()									{ return framebuffers[ BuiltinFramebufferIndex::Default ]; }
+		const Framebuffer& DefaultFramebuffer() const							{ return framebuffers[ BuiltinFramebufferIndex::Default ]; }
+			  Framebuffer& ShadowMappingFramebuffer_DirectionalLight()			{ return framebuffers[ BuiltinFramebufferIndex::ShadowMapping_DirectionalLight ]; }
+		const Framebuffer& ShadowMappingFramebuffer_DirectionalLight() const	{ return framebuffers[ BuiltinFramebufferIndex::ShadowMapping_DirectionalLight ]; }
+			  Framebuffer& PostProcessingFramebuffer()							{ return framebuffers[ BuiltinFramebufferIndex::PostProcessing ]; }
+		const Framebuffer& PostProcessingFramebuffer() const					{ return framebuffers[ BuiltinFramebufferIndex::PostProcessing ]; }
+			  Framebuffer& CompositeFramebuffer()								{ return framebuffers[ BuiltinFramebufferIndex::Composite ]; }
+		const Framebuffer& CompositeFramebuffer() const							{ return framebuffers[ BuiltinFramebufferIndex::Composite ]; }
 
 		/*
 		 * Stencil Test:
@@ -315,12 +336,7 @@ namespace Kakadu
 								 const BlendingFactor source_alpha_factor, const BlendingFactor destination_alpha_factor );
 		void SetBlendingFunction( const BlendingFunction function );
 
-	#ifdef _EDITOR
-		/*
-		 * Editor:
-		 */
-		void RenderOtherEditorShadingModes();
-	#endif // _EDITOR
+		void RenderOtherViewportShadingModes();
 
 		/*
 		 * Pass, Queue & Renderable:
@@ -343,10 +359,13 @@ namespace Kakadu
 		 * MSAA:
 		 */
 
-		 /* Sets the sample count for the main framebuffer MSAA. */
-		MSAA SetMSAASampleCount( const std::uint8_t new_sample_count );
-
 		void DetermineMSAASampleCountsPerFormat();
+
+		/*
+		 * Introspection:
+		*/
+
+		void InitializeIntrospectionSurface();
 
 	public:
 		
@@ -377,6 +396,11 @@ namespace Kakadu
 			RENDER_QUEUE_ID_SKYBOX,
 			RENDER_QUEUE_ID_BEFORE_POSTPROCESSING
 		};
+
+		/* Wireframe Rendering: */
+
+		float wireframe_thickness_in_pixels;
+		Color4 wireframe_color;
 
 	private:
 
@@ -410,24 +434,14 @@ namespace Kakadu
 		 * Framebuffer:
 		 */
 
-		std::uint8_t framebuffer_main_msaa_sample_count;
-		Texture::Format framebuffer_main_color_format;
-
-		/* 6 bytes of padding. */
-
-		std::array< Framebuffer, FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_array;
-		std::array< std::optional< Framebuffer::Description >, FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT > framebuffer_custom_description_array;
-
-		Framebuffer framebuffer_default;
 		Framebuffer* framebuffer_current_source;	  // Corresponds to READ  target of a GL blit operation.
 		Framebuffer* framebuffer_current_destination; // Corresponds to WRITE target of a GL blit operation.
 
 		Framebuffer::Description framebuffer_main_description;
 
-		Framebuffer framebuffer_shadow_map_light_directional;
-		Framebuffer framebuffer_main;
-		Framebuffer framebuffer_postprocessing;
-		Framebuffer framebuffer_editor_viewport;
+		std::vector< Framebuffer > framebuffers;
+
+		BuiltinFramebufferIndex framebuffer_output_index;
 
 		/*
 		 * Lighting:
@@ -457,7 +471,6 @@ namespace Kakadu
 		 * Skybox:
 		 */
 
-		Shader* skybox_shader;
 		Renderable skybox_renderable;
 		Material skybox_material;
 		Texture* skybox_texture;
@@ -469,12 +482,10 @@ namespace Kakadu
 		Mesh full_screen_quad_mesh;
 
 		FullscreenEffect msaa_resolve;
-		Shader* msaa_resolve_shader;
 
 		std::map< Texture::Format, std::vector< std::uint8_t > > msaa_supported_sample_counts_per_format;
 
 		FullscreenEffect tone_mapping;
-		Shader* tone_mapping_shader;
 
 		/*
 		 * Post-Processing:
@@ -486,13 +497,10 @@ namespace Kakadu
 		 * Builtin Post-processing Effects:
 		 */
 
-		std::uint8_t bloom_mip_chain_size = 6; // Denotes the step count for either downsampling or upsampling. Total step count is 2x that.
-		/* 7 byte(s) of padding. */
+		std::uint8_t bloom_mip_chain_size = 6; // Denotes the step count for either downsampling or upsampling. Total step count is 2 x this value.
 
 		FullscreenEffect bloom_downsampling;
 		FullscreenEffect bloom_upsampling;
-		Shader* bloom_shader_downsample;
-		Shader* bloom_shader_upsample;
 
 		/*
 		 * Shadow Mapping:
@@ -520,19 +528,17 @@ namespace Kakadu
 		 */
 
 		bool framebuffer_sRGB_encoding_is_enabled;
-		bool gamma_correction_is_enabled;
 
 		/*
-		 * Editor:
+		 * Introspection:
 		 */
 
-#ifdef _EDITOR
-		float editor_wireframe_thickness_in_pixels;
-		Color4 editor_wireframe_color;
-		EditorShadingMode editor_shading_mode;
+		RendererIntrospectionSurface* introspection_surface;
 
-		/* 7 byte(s) of padding. */
+		/*
+		 * Viewport Shading Mode:
+		 */
 
-#endif // _EDITOR
+		ViewportShadingMode viewport_shading_mode;
 	};
 }

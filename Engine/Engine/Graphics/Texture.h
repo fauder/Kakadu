@@ -68,8 +68,8 @@ namespace Kakadu
 				case Format::RGBA_16F:		return Format::RGBA_16F;
 				case Format::RGBA_32F:		return Format::RGBA_32F;
 				case Format::R11G11B10F:	return Format::R11G11B10F;
-				case Format::SRGB:			return GAMMA_CORRECTION_IS_ENABLED ? Format::SRGB  : Format::RGB;
-				case Format::SRGBA:			return GAMMA_CORRECTION_IS_ENABLED ? Format::SRGBA : Format::RGBA;
+				case Format::SRGB:			return Format::SRGB;
+				case Format::SRGBA:			return Format::SRGBA;
 				case Format::DEPTH_STENCIL:	return Format::DEPTH_STENCIL;
 				case Format::DEPTH:			return Format::DEPTH;
 				case Format::STENCIL:		return Format::STENCIL;
@@ -211,8 +211,6 @@ namespace Kakadu
 		void Activate( const int slot ) const;
 		void GenerateMipmaps() const;
 
-		static void ToggleGammaCorrection( const bool enable );
-
 		static int InternalFormat( const Texture::Format format );
 
 		constexpr static GLenum PixelDataFormat( const Texture::Format format )
@@ -294,7 +292,5 @@ namespace Kakadu
 		ImportSettings import_settings;
 
 		/* 4 bytes of padding. */
-
-		static bool GAMMA_CORRECTION_IS_ENABLED;
 	};
 };

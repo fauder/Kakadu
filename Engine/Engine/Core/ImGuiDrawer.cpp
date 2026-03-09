@@ -1207,18 +1207,18 @@ namespace Kakadu::ImGuiDrawer
 
 	void Draw( const Framebuffer& framebuffer, ImGuiWindowFlags window_flags )
 	{
-		const auto name_cstr = framebuffer.Name().c_str();
+		const auto name_cstr = framebuffer.name.c_str();
 		ImGui::PushID( name_cstr );
 
 		if( ImGui::BeginTable( "FramebufferTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
 		{
 			ImGui::TableNextRow();
 
-			int id = framebuffer.Id().Get();
+			int id = framebuffer.id.Get();
 			ImGui::TableNextColumn(); ImGui::TextDisabled( "ID" );
 			ImGui::TableNextColumn(); ImGui::InputInt( "##ID", &id, 0, 0, ImGuiInputTextFlags_ReadOnly );
 
-			Vector2I size = framebuffer.Size();
+			Vector2I size = framebuffer.size;
 
 			ImGui::TableNextColumn(); ImGui::TextDisabled( "Size" );
 			ImGui::TableNextColumn(); ImGui::InputInt2( "##Size", reinterpret_cast< int* >( &size ), ImGuiInputTextFlags_ReadOnly );
@@ -1237,28 +1237,28 @@ namespace Kakadu::ImGuiDrawer
 			{
 				ImGui::TableNextColumn(); ImGui::TextDisabled( "Color Format" );
 				ImGui::TableNextColumn();
-				DrawTextureFormatWithDecorations( framebuffer.ColorAttachment() );
+				DrawTextureFormatWithDecorations( framebuffer.color_attachment );
 			}
 
 			if( framebuffer.HasCombinedDepthStencilAttachment() )
 			{
 				ImGui::TableNextColumn(); ImGui::TextDisabled( "Combined Depth/Stencil Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( Texture::FormatName( framebuffer.DepthStencilAttachment().PixelFormat() ) );
+				ImGui::TextUnformatted( Texture::FormatName( framebuffer.depth_stencil_attachment.PixelFormat() ) );
 			}
 
 			if( framebuffer.HasSeparateDepthAttachment() )
 			{
 				ImGui::TableNextColumn(); ImGui::TextDisabled( "Depth Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( Texture::FormatName( framebuffer.DepthAttachment().PixelFormat() ) );
+				ImGui::TextUnformatted( Texture::FormatName( framebuffer.depth_attachment.PixelFormat() ) );
 			}
 
 			if( framebuffer.HasSeparateStencilAttachment() )
 			{
 				ImGui::TableNextColumn(); ImGui::TextDisabled( "Stencil Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( Texture::FormatName( framebuffer.StencilAttachment().PixelFormat() ) );
+				ImGui::TextUnformatted( Texture::FormatName( framebuffer.stencil_attachment.PixelFormat() ) );
 			}
 
 			ImGui::EndTable();

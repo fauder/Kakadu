@@ -32,8 +32,8 @@ namespace Kakadu
 		 * Queries:
 		 */
 
-		bool IsReceivingShadows()	const { return node_renderable_array.front().IsReceivingShadows(); }
-		bool IsCastingShadows()		const { return node_renderable_array.front().IsCastingShadows(); }
+		bool IsReceivingShadows()	const { return node_renderable_array.front().is_receiving_shadows; }
+		bool IsCastingShadows()		const { return node_renderable_array.front().is_casting_shadows; }
 
 		void SetMaterialData( Kakadu::Shader* const shader, const Vector4 texture_scale_and_offset = Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 

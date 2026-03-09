@@ -22,9 +22,8 @@ namespace Kakadu
 {
 	enum class CreationFlags
 	{
-		None                           = 0,
-		OnStart_DisableImGui           = 1,
-		OnStart_DisableGammaCorrection = 2,
+		None                 = 0,
+		OnStart_DisableImGui = 1
 	};
 
 	class Application
@@ -95,10 +94,9 @@ namespace Kakadu
 
 		bool is_running;
 
-		bool gamma_correction_is_enabled;
 		bool vsync_is_enabled;
 
-		/* 5 byte(s) of padding. */
+		/* 6 byte(s) of padding. */
 	};
 
 	/* Needs to be implemented by the CLIENT Application. */

@@ -95,20 +95,4 @@ namespace Kakadu
 		Clockwise        = GL_CW,
 		CounterClockwise = GL_CCW
 	};
-
-#ifdef _EDITOR
-	enum class EditorShadingMode : std::uint8_t
-	{
-		Shaded,
-		Wireframe,
-		ShadedWireframe,
-
-		TextureCoordinates,
-		Geometry_Tangents,
-		Geometry_Bitangents,
-		Geometry_Normals,
-		DebugVectors,
-		Shading_Normals
-	};
-#endif // _EDITOR
 }

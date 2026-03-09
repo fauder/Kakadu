@@ -131,7 +131,7 @@ namespace Kakadu
 
 	void ModelInstance::ToggleShadowReceivingStatus( const bool receive_shadows )
 	{
-		if( receive_shadows == node_renderable_array.front().IsReceivingShadows() )
+		if( receive_shadows == node_renderable_array.front().is_receiving_shadows )
 			return;
 
 		ASSERT_EDITOR_ONLY( shader && "Shader of the model instance is nullptr." );
@@ -195,12 +195,12 @@ namespace Kakadu
 			node_material_array[ i ].Set( "BlinnPhongMaterialData", blinn_phong_material_data_array[ i ] );
 
 		for( auto& renderable : node_renderable_array )
-			renderable.ToggleShadowReceiving( receive_shadows );
+			renderable.is_receiving_shadows = receive_shadows;
 	}
 
 	void ModelInstance::ToggleShadowCastingStatus( const bool cast_shadows )
 	{
 		for( auto& renderable : node_renderable_array )
-			renderable.ToggleShadowCasting( cast_shadows );
+			renderable.is_receiving_shadows = cast_shadows;
 	}
 }

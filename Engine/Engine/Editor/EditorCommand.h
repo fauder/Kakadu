@@ -12,7 +12,7 @@ namespace Kakadu::Editor
 		{
 			Renderer_ToggleViewportRenderTarget,
 			Renderer_HandlePendingViewportResize,
-			Renderer_ChangeEditorShadingMode
+			Renderer_ChangeViewportShadingMode
 		};
 
 		Type type;

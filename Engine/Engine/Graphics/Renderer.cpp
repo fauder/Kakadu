@@ -38,49 +38,43 @@ if( not render_queue_map.contains( queue_id ) )\
 
 namespace Kakadu
 {
-	Renderer::Renderer( Description&& description )
+	Renderer::Renderer( Description&& description, RendererIntrospectionSurface* introspection_surface )
 		:
+		wireframe_thickness_in_pixels( 2.0f ),
+		wireframe_color( 0.29f, 0.75f, 0.67f, 1.0f ),
 		logger( ServiceLocator< GLLogger >::Get() ),
 		graphics_device_info( Graphics::QueryDeviceInfo() ),
-		framebuffer_default( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR ),
-		framebuffer_current_source( &framebuffer_default ),
-		framebuffer_current_destination( &framebuffer_default ),
-		framebuffer_main_msaa_sample_count( description.main_framebuffer_msaa_sample_count ),
-		framebuffer_main_color_format( description.main_framebuffer_color_format ),
 		framebuffer_main_description(
 			Framebuffer::Description
 			{
 				.name = "Main",
 
-				.color_format    = framebuffer_main_color_format,
+				.color_format    = description.main_framebuffer_color_format,
 				.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
-				.msaa            = MSAA( framebuffer_main_msaa_sample_count )
+				.msaa            = MSAA( description.msaa_sample_count )
 			}
 		),
+		framebuffer_output_index( description.output_to_composite_framebuffer ? BuiltinFramebufferIndex::Composite : BuiltinFramebufferIndex::Default ),
 		lights_point_active_count( 0 ),
 		lights_spot_active_count( 0 ),
 		shadow_mapping_projection_parameters{ .left = -50.0f, .right = +50.0f, .bottom = -50.0f, .top = +50.0f, .near = 0.1f, .far = 100.0f },
 		shaders_need_uniform_buffer_lighting( false ),
 		shaders_need_uniform_buffer_other( false ),
 		framebuffer_sRGB_encoding_is_enabled( false ),
-		gamma_correction_is_enabled( description.enable_gamma_correction )
-#ifdef _EDITOR
-		,
-		editor_shading_mode( EditorShadingMode::Shaded ),
-		editor_wireframe_thickness_in_pixels( 2.0f ),
-		editor_wireframe_color( 0.29f, 0.75f, 0.67f, 1.0f )
-#endif // _EDITOR
+		introspection_surface( introspection_surface ),
+		viewport_shading_mode( ViewportShadingMode::Shaded )
 	{
+		framebuffers.emplace_back( Framebuffer( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR ) );
+
+		for( int i = 1; i < BuiltinFramebufferIndex::Count; i++ )
+			framebuffers.emplace_back();
+
+		framebuffer_current_source      = &DefaultFramebuffer();
+		framebuffer_current_destination = &DefaultFramebuffer();
+
 		logger.IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
 
 		ServiceLocator< Graphics::DeviceInfo >::Register( &graphics_device_info );
-
-		if( description.custom_framebuffer_descriptions.size() <= FRAMEBUFFER_CUSTOM_AVAILABLE_COUNT )
-			std::copy( description.custom_framebuffer_descriptions.begin(), description.custom_framebuffer_descriptions.end(), framebuffer_custom_description_array.begin() );
-		else
-			CONSOLE_ERROR( "Renderer: Number of custom framebuffers requested exceeds the max. available limit." );
-
-		Texture::ToggleGammaCorrection( gamma_correction_is_enabled );
 
 		BuiltinShaders::Initialize( *this );
 		BuiltinTextures::Initialize();
@@ -93,29 +87,16 @@ namespace Kakadu
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Lighting", "_INTRINSIC_SHADOW_SAMPLE_COUNT_X_Y",		Vector2I( 3, 3 ) );
 		}
 
-		framebuffer_main.SetClearColor( Color4::Gray( 0.064f ) ); // Same color as Unity's scene view, in linear color space.
-
 		InitializeBuiltinQueues();
 		InitializeBuiltinPasses();
 
 		InitializeBuiltinMeshes();
-		InitializeBuiltinShaders();
 
 		InitializeBuiltinMaterials();
 		InitializeBuiltinRenderables();
 
-#ifdef _EDITOR
-		ServiceLocator< MorphSystem >::Get().Add( Morph
-												  {
-													  .on_complete = [ this ]()
-													  {
-														  RecompileModifiedShaders();
-													  },
-													  .duration_in_seconds = 0.1f, // Seems enough.
-													  .is_looping          = true,
-												      .use_real_time       = true
-												  } );
-#endif // _EDITOR
+		if( introspection_surface )
+			InitializeIntrospectionSurface();
 	}                                             
 
 	Renderer::~Renderer()
@@ -150,15 +131,13 @@ namespace Kakadu
 
 	void Renderer::RenderFrame()
 	{
-#ifdef _EDITOR
 		// "Shaded" part of shaded wireframe needs to run first, which is in here.
-		if( editor_shading_mode != EditorShadingMode::Shaded && editor_shading_mode != EditorShadingMode::ShadedWireframe )
+		if( viewport_shading_mode != ViewportShadingMode::Shaded && viewport_shading_mode != ViewportShadingMode::ShadedWireframe )
 		{
-			RenderOtherEditorShadingModes();
+			RenderOtherViewportShadingModes();
 
 			return;
 		}
-#endif // _EDITOR
 
 		for( auto& [ pass_id, pass ] : render_pass_map )
 		{
@@ -262,20 +241,18 @@ namespace Kakadu
 			}
 		}
 
-#ifdef _EDITOR
-		if( editor_shading_mode == EditorShadingMode::ShadedWireframe )
+		if( viewport_shading_mode == ViewportShadingMode::ShadedWireframe )
 		{
 			// Regular rendering path rendered the "shaded" part, now it's time to render the "wireframe" part.
-			RenderOtherEditorShadingModes();
+			RenderOtherViewportShadingModes();
 		}
-#endif // _EDITOR
 
 		// TODO: Find a prefix emoji for post-fx.
 
-		if( msaa_resolve.is_enabled && framebuffer_main_msaa_sample_count > 1 )
+		if( msaa_resolve.is_enabled && framebuffer_main_description.msaa.IsEnabled() )
 			RenderFullscreenEffect( msaa_resolve );
 		else
-			Blit( framebuffer_main, framebuffer_postprocessing );
+			Blit( MainFramebuffer(), PostProcessingFramebuffer() );
 
 		const auto log_group( logger.TemporaryLogGroup( ( "[Post-Processing] " ) ) );
 
@@ -302,400 +279,6 @@ namespace Kakadu
 		DrawMesh( full_screen_quad_mesh );
 	}
 
-	void Renderer::RenderImGui()
-	{
-		const auto& style = ImGui::GetStyle();
-
-		if( ImGui::Begin( ICON_FA_BOLT_LIGHTNING " Renderer", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
-		{
-			if( ImGui::BeginTabBar( "Renderer-Tab-Bar" ) )
-			{
-				if( ImGui::BeginTabItem( ICON_FA_DIAGRAM_PROJECT " Render Pipeline" ) )
-				{
-					ImGui::SeparatorText( ICON_FA_FLAG_CHECKERED " Passes & " ICON_FA_BARS " Queues" );
-
-					if( ImGui::BeginTable( "Render Pipeline", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
-					{
-						ImGui::TableSetupColumn( "Name" );
-						ImGui::TableSetupColumn( ICON_FA_OBJECT_GROUP " Target Framebuffer" );
-
-						ImGui::TableNextRow( ImGuiTableRowFlags_Headers ); // Indicates that the header row will be modified.
-						ImGuiUtility::Table_Header_ManuallySubmit_AppendHelpMarker( 0,
-																					"A pass will not render if:\n"
-																					"\t" ICON_FA_ARROW_RIGHT " All its queues are empty/disabled, \n"
-																					"\t" ICON_FA_ARROW_RIGHT " AND/OR All renderables inside those queues are all disabled." );
-						ImGuiUtility::Table_Header_ManuallySubmit( 1 );
-						ImGui::TableNextRow();
-
-						for( auto& [ pass_id, pass ] : render_pass_map )
-						{
-							ImGui::TableNextColumn();
-							ImGui::PushID( ( int )pass_id );
-
-							const bool pass_has_content_to_render = PassHasContentToRender( pass );
-
-							if( not pass_has_content_to_render )
-								ImGuiUtility::BeginDisabledButInteractable();
-
-							ImGuiUtility::EyeCheckbox( "", &pass.is_enabled );
-
-							ImGui::PopID();
-							ImGui::SameLine();
-							if( ImGui::TreeNodeEx( pass.name.c_str(), 0, ICON_FA_FLAG_CHECKERED " #%d %s", ( int )pass_id, pass.name.c_str() ) )
-							{
-								// TODO: Display RenderState info as a collapseable header.
-								for( auto& queue_id : pass.queue_id_set )
-								{
-									auto& queue = render_queue_map[ queue_id ];
-
-									if( queue.renderable_list.empty() )
-									{
-										ImGui::TextDisabled( ICON_FA_BARS " Empty #%d %s", ( int )queue_id, queue.name.c_str() );
-										continue;
-									}
-
-									const bool queue_has_content_to_render = QueueHasContentToRender( queue );
-
-									if( not queue_has_content_to_render )
-										ImGuiUtility::BeginDisabledButInteractable();
-
-									ImGui::PushID( ( int )queue_id );
-									ImGuiUtility::EyeCheckbox( "", &queue.is_enabled );
-									ImGui::PopID();
-									ImGui::SameLine();
-									if( ImGui::TreeNodeEx( queue.name.c_str(), 0, ICON_FA_BARS " #%d %s", ( int )queue_id, queue.name.c_str() ) )
-									{
-										ImGui::BeginDisabled( not queue.is_enabled );
-
-										for( const auto& [ shader_name, shader ] : queue.shaders_in_flight )
-										{
-											for( const auto& [ material_name, material ] : queue.materials_in_flight )
-											{
-												if( material->shader->Id() == shader->Id() )
-												{
-													for( auto& renderable : queue.renderable_list )
-													{
-														if( renderable->material->Name() == material_name )
-														{
-															ImGui::PushID( renderable );
-															ImGuiUtility::EyeCheckbox( "", &renderable->is_enabled );
-															ImGui::PopID();
-															ImGui::BeginDisabled( not renderable->is_enabled );
-															ImGui::SameLine(); ImGui::TextUnformatted( renderable->material->name.c_str() );
-															if( renderable->mesh->HasInstancing() )
-															{
-																int instance_Count = renderable->mesh->InstanceCount();
-																ImGui::SameLine(); ImGui::TextColored( ImVec4( 0.84f, 0.59f, 0.45f, 1.0f ), "(Instance Count: %d)", instance_Count );
-															}
-															ImGui::EndDisabled();
-														}
-													}
-												}
-											}
-										}
-
-										ImGui::EndDisabled();
-
-										ImGui::TreePop();
-									}
-
-									if( not queue_has_content_to_render )
-										ImGuiUtility::EndDisabledButInteractable();
-								}
-
-								ImGui::TreePop();
-							}
-
-							ImGui::TableNextColumn();
-							ImGui::TextUnformatted( pass.target_framebuffer->Name().c_str() );
-
-							if( not pass_has_content_to_render )
-								ImGuiUtility::EndDisabledButInteractable();
-						}
-
-						ImGui::EndTable();
-					}
-					
-					/* ------------------------------- */
-
-					// TODO: Replace with actual FS effect icon.
-
-					ImGui::SeparatorText( ICON_FA_QUESTION " Fullscreen Effects" );
-
-					if( ImGui::BeginTable( "Render Pipeline", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_PreciseWidths ) )
-					{
-						ImGui::TableSetupColumn( "Name" );
-						ImGui::TableSetupColumn( ICON_FA_OBJECT_GROUP " Target Framebuffer" );
-
-						ImGui::TableHeadersRow();
-						ImGui::TableNextRow();
-
-						auto DrawEffect = [ &style ]( const char* effect_name, FullscreenEffect& effect, bool is_always_enabled = false )
-						{
-							ImGui::TableNextColumn();
-
-							ImGui::PushID( effect_name );
-
-							if( not is_always_enabled )
-								ImGuiUtility::EyeCheckbox( "", &effect.is_enabled );
-							else
-							{
-								// Reserve the exact same horizontal space as an eye checkbox:
-								ImGui::Dummy( ImVec2( ImGui::GetFrameHeight() + style.ItemInnerSpacing.x,
-													  ImGui::GetFrameHeight() ) );
-							}
-
-							if( not effect.is_enabled )
-								ImGuiUtility::BeginDisabledButInteractable();
-
-							ImGui::PopID();
-							ImGui::SameLine();
-
-							if( ImGui::TreeNodeEx( effect_name, 0, ICON_FA_QUESTION " %s", effect_name ) )
-							{
-								ImGui::TableNextColumn();
-
-								for( std::uint8_t i = 0; i < effect.steps.size(); i++ )
-								{
-									ImGui::TableNextColumn();
-									ImGui::Text( "Step %d", i );
-
-									ImGui::TableNextColumn();
-									const auto& step = effect.steps[ i ];
-									ImGui::TextUnformatted( step.framebuffer_target->Name().c_str() );
-								}
-
-								ImGui::TreePop();
-							}
-							else
-								ImGui::TableNextColumn();
-
-							if( not effect.is_enabled )
-								ImGuiUtility::EndDisabledButInteractable();
-						};
-
-						if( framebuffer_main_msaa_sample_count > 1 )
-							DrawEffect( msaa_resolve.name.c_str(), msaa_resolve );
-
-						for( auto& [ effect_name, effect ] : post_processing_effect_map )
-							DrawEffect( effect_name.c_str(), *effect );
-
-						DrawEffect( tone_mapping.name.c_str(), tone_mapping, true );
-
-						ImGui::EndTable();
-					}
-
-					ImGui::EndTabItem();
-				}
-
-				if( ImGui::BeginTabItem( ICON_FA_OBJECT_GROUP " Framebuffers" ) )
-				{
-					auto DrawFramebufferImGui_Decorations = []( const Framebuffer& framebuffer )
-					{
-						if( framebuffer.IsMultiSampled() )
-						{
-							ImGui::SameLine();
-							ImGuiUtility::DrawRoundedRectText( "MSAA", ImGuiCustomColors::COLOR_MSAA );
-						}
-
-						if( framebuffer.IsHDR() )
-						{
-							ImGui::SameLine();
-							ImGuiUtility::DrawRoundedRectText( "HDR", ImGuiCustomColors::COLOR_HDR );
-						}
-
-						if( framebuffer.Is_sRGB() )
-						{
-							ImGui::SameLine();
-							ImGuiUtility::DrawRainbowRectText( "sRGB" );
-						}
-					};
-
-					auto DrawFramebufferImGui = [ & ]( const Framebuffer& framebuffer )
-					{
-						if( framebuffer.IsValid() )
-						{
-							if( ImGui::TreeNodeEx( framebuffer.name.c_str() ) )
-							{
-								DrawFramebufferImGui_Decorations( framebuffer );
-
-								ImGuiDrawer::Draw( framebuffer );
-								ImGui::TreePop();
-							}
-							else
-								DrawFramebufferImGui_Decorations( framebuffer );
-						}
-					};
-
-					auto DrawCustomFramebufferImGui = [ & ]( const Framebuffer& custom_framebuffer )
-					{
-						const auto name = custom_framebuffer.name.c_str();
-						if( custom_framebuffer.IsValid() )
-						{
-							if( ImGui::TreeNodeEx( name, ImGuiTreeNodeFlags_None, "[Custom] %s", name ) )
-							{
-								DrawFramebufferImGui_Decorations( custom_framebuffer );
-
-								ImGuiDrawer::Draw( custom_framebuffer );
-								ImGui::TreePop();
-							}
-							else
-								DrawFramebufferImGui_Decorations( custom_framebuffer );
-						}
-					};
-
-					DrawFramebufferImGui( framebuffer_shadow_map_light_directional );
-					DrawFramebufferImGui( framebuffer_main );
-					DrawFramebufferImGui( framebuffer_postprocessing );
-					DrawFramebufferImGui( framebuffer_editor_viewport );
-
-					for( auto& custom_framebuffer : framebuffer_custom_array )
-						DrawCustomFramebufferImGui( custom_framebuffer );
-
-					ImGui::EndTabItem();
-				}
-
-				if( ImGui::BeginTabItem( "Shadow Mapping" ) )
-				{
-					ImGui::PushItemWidth( ImGui::CalcTextSize( "999.9" ).x + style.FramePadding.x * 2 );
-
-				/* Row 1: */
-					const float button_width( ImGui::CalcTextSize( "XXXXXX" ).x + style.ItemInnerSpacing.x );
-					ImGui::Dummy( ImVec2{ 2.0f * button_width, 0 } );
-					ImGui::SameLine();
-					ImGui::InputFloat( " Top", &shadow_mapping_projection_parameters.top, 0.0f, 0.0f, "%.1f" );
-				/* Row 2: */
-					ImGui::Dummy( ImVec2{ 3.0f * button_width, 0 } );
-					ImGui::SameLine();
-					ImGui::InputFloat( " Far", &shadow_mapping_projection_parameters.far, 0.0f, 0.0f, "%.1f" );
-				/* Row 3: */
-					ImGui::InputFloat( " Left", &shadow_mapping_projection_parameters.left, 0.0f, 0.0f, "%.1f" );
-					ImGui::SameLine();
-					ImGui::Dummy( ImVec2{ 2.0f * button_width, 0 } );
-					ImGui::SameLine();
-					ImGui::InputFloat( " Right", &shadow_mapping_projection_parameters.right, 0.0f, 0.0f, "%.1f" );
-				/* Row 4: */
-					ImGui::Dummy( ImVec2{ button_width, 0 } );
-					ImGui::SameLine();
-					ImGui::InputFloat( " Near", &shadow_mapping_projection_parameters.near, 0.0f, 0.0f, "%.1f" );
-				/* Row 5: */
-					ImGui::Dummy( ImVec2{ 2.0f * button_width, 0 } );
-					ImGui::SameLine();
-					ImGui::InputFloat( " Bottom", &shadow_mapping_projection_parameters.bottom, 0.0f, 0.0f, "%.1f" );
-
-					ImGui::PopItemWidth();
-
-					ImGui::EndTabItem();
-				}
-
-				if( ImGui::BeginTabItem( "Other" ) )
-				{
-					ImGuiUtility::ImmutableCheckbox( "Gamma Correction", gamma_correction_is_enabled );
-
-					/* MSAA Setting: */
-					{
-						const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.ColorAttachment().PixelFormat() ];
-						const int   option_count = ( int )msaa_supported_sample_counts.size();
-
-						int msaa_sample_log_2 = Math::Log2( framebuffer_main_msaa_sample_count ); // Can be directly used as index.
-
-						const auto sample_count_string = msaa_sample_log_2 == 0
-							? "Off"
-							: "MSAA " + std::to_string( msaa_supported_sample_counts[ msaa_sample_log_2 ] ) + 'x';
-						if( ImGui::SliderInt( "MSAA", &msaa_sample_log_2, 0, ( int )option_count - 1, sample_count_string.c_str() ) )
-						{
-							SetMSAASampleCount( Math::Pow2( msaa_sample_log_2 ) );
-						}
-					}
-
-					/* Wireframe: */
-					ImGui::NewLine();
-					ImGui::SeparatorText( "Wireframe Settings" );
-					{
-						ImGui::SliderFloat( "Wireframe Thickness", &editor_wireframe_thickness_in_pixels, 0.0f, 100.0f, "%.1f pixels", ImGuiSliderFlags_Logarithmic );
-						ImGuiDrawer::Draw( editor_wireframe_color, "Wireframe Color" );
-					}
-
-					/* Bloom: */
-					ImGui::NewLine();
-					ImGui::SeparatorText( "Bloom" );
-					{
-						/* Mip count: */
-
-						if( ImGui::InputInt( "Step Count", ( int* )&bloom_mip_chain_size, 1, 0 ) )
-						{
-							const auto framebuffer_size = framebuffer_postprocessing.Size();
-							bloom_mip_chain_size = Math::Clamp( bloom_mip_chain_size, ( std::uint8_t )2, ( std::uint8_t )Math::Log2( Math::Min( framebuffer_size.X(), framebuffer_size.Y() ) ) );
-							InitializeBuiltinPostprocessingEffects();
-
-							tone_mapping.material.SetTexture( "uniform_tex_bloom", &bloom_downsampling.framebuffers.front().ColorAttachment() );
-						}
-
-						/* Anti-flicker: */
-						const auto& msaa_supported_sample_counts = msaa_supported_sample_counts_per_format[ framebuffer_main.ColorAttachment().PixelFormat() ];
-
-						local_persist int anti_flicker_option = 0;
-
-						anti_flicker_option =
-							int( bloom_shader_downsample->name == "Post-Process Bloom Downsample (Anti Flicker Coarse)" ) +
-							int( bloom_shader_downsample->name == "Post-Process Bloom Downsample (Anti Flicker Fine)" ) * 2;
-
-						const char* option_names[ 3 ] = { "Off", "Coarse", "Fine" };
-						if( ImGui::SliderInt( "Anti-flicker (Firefly Mitigation)", &anti_flicker_option, 0, 2, option_names[ anti_flicker_option ] ) )
-						{
-							switch( anti_flicker_option )
-							{
-								default:
-								case 0: bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample" ); break;
-								case 1: bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Coarse)" ); break;
-								case 2: bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Fine)" ); break;
-							}
-
-							bloom_downsampling.material.SetShader( bloom_shader_downsample );
-						}
-					}
-
-					/* Misc.: */
-					ImGui::NewLine();
-					ImGui::SeparatorText( "Misc." );
-					{
-						local_persist bool is_running = false;
-						ImGui::BeginDisabled( is_running );
-						if( ImGui::Button( "Flash Main Framebuffer Clear Color" ) )
-							framebuffer_main.Debug_FlashClearColor( is_running = true );
-
-						ImGuiDrawer::Draw( framebuffer_main.clear_color, "Main Framebuffer Clear Color" );
-						ImGui::EndDisabled();
-					}
-
-					ImGui::EndTabItem();
-				}
-
-				ImGui::EndTabBar();
-			}
-		}
-
-		ImGui::End();
-
-		/* Shaders: */
-		for( auto& shader : shaders_registered )
-			ImGuiDrawer::Draw( *shader );
-
-		/* Textures: */
-		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().Assets() );
-
-		/* Materials: */
-		ImGuiDrawer::Draw( skybox_material,				*this );
-		ImGuiDrawer::Draw( msaa_resolve.material,		*this );
-		ImGuiDrawer::Draw( bloom_downsampling.material, *this );
-		ImGuiDrawer::Draw( bloom_upsampling.material,	*this );
-		ImGuiDrawer::Draw( tone_mapping.material,		*this );
-
-		/* Uniforms (Renderer-scope): */
-		ImGuiDrawer::Draw( uniform_buffer_management_intrinsic, "Shader Intrinsics" );
-		ImGuiDrawer::Draw( uniform_buffer_management_global,	"Shader Globals" );
-	}
-
 	void Renderer::OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels )
 	{
 		glViewport( 0, 0, new_width_in_pixels, new_height_in_pixels );
@@ -705,93 +288,71 @@ namespace Kakadu
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Other", "_INTRINSIC_VIEWPORT_SIZE", Vector2( ( float )new_width_in_pixels, ( float )new_height_in_pixels ) );
 		}
 
-		framebuffer_default = Framebuffer( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR );
+		DefaultFramebuffer() = Framebuffer( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR );
 
 		/* Shadow maps: */
-		framebuffer_shadow_map_light_directional = Framebuffer( Framebuffer::Description
-																{
-																	.name = "Shadow Map [Dir. Light]",
+		ShadowMappingFramebuffer_DirectionalLight() = Framebuffer( Framebuffer::Description
+																   {
+																	   .name = "Shadow Map [Dir. Light]",
 
-																	.width_in_pixels  = new_width_in_pixels,
-																	.height_in_pixels = new_height_in_pixels,
+																	   .width_in_pixels  = new_width_in_pixels,
+																	   .height_in_pixels = new_height_in_pixels,
 
-																	.minification_filter  = Texture::Filtering::Nearest,
-																	.magnification_filter = Texture::Filtering::Nearest,
+																	   .minification_filter  = Texture::Filtering::Nearest,
+																	   .magnification_filter = Texture::Filtering::Nearest,
 
-																	/* Default wrapping = clamp to border, with border = Color4{0,0,0,0}. */
+																	   /* Default wrapping = clamp to border, with border = Color4{ 0,0,0,0 }. */
 
-																	/* Default color format = RGBA, adequate. */
+																	   /* Default color format = RGBA. */
 
-																	.attachment_bits = Framebuffer::AttachmentType::Depth
-																} );
+																	   .attachment_bits = Framebuffer::AttachmentType::Depth
+																   } );
 
 
 		/* Main: */
 		framebuffer_main_description.width_in_pixels  = new_width_in_pixels;
 		framebuffer_main_description.height_in_pixels = new_height_in_pixels;
 
-		framebuffer_main = Framebuffer( framebuffer_main_description );
+		MainFramebuffer() = Framebuffer( framebuffer_main_description );
 
 		/* Same parameters as the main FBO. */
-		framebuffer_postprocessing = Framebuffer( Framebuffer::Description
-												  {
-													  .name = "Post-processing",
-
-													  .width_in_pixels  = new_width_in_pixels,
-													  .height_in_pixels = new_height_in_pixels,
-
-													  .color_format    = framebuffer_main_color_format,
-													  .attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
-												  } );
-
-	
-		/* Editor: */
-		framebuffer_editor_viewport = Framebuffer( Framebuffer::Description
+		PostProcessingFramebuffer() = Framebuffer( Framebuffer::Description
 												   {
-													   .name = "Editor",
+													   .name = "Post-processing",
 
 													   .width_in_pixels  = new_width_in_pixels,
 													   .height_in_pixels = new_height_in_pixels,
 
-													   .magnification_filter = Texture::Filtering::Nearest,
-#ifdef _EDITOR
-													   .color_format = ( editor_shading_mode == EditorShadingMode::Shaded || editor_shading_mode == EditorShadingMode::ShadedWireframe )
-														  ? Texture::Format::SRGBA
-														  : Texture::Format::RGBA,
-#else
-													   .color_format = Texture::Format::SRGBA, /* This is the final step, so sRGB encoding should be on. */
-#endif // _EDITOR
-													   .attachment_bits = Framebuffer::AttachmentType::Color
+													   .color_format    = framebuffer_main_description.color_format,
+													   .attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
 												   } );
 
-		/* Custom Framebuffers: */
-		for( auto index = 0; index < framebuffer_custom_array.size(); index++ )
-		{
-			if( const auto description = framebuffer_custom_description_array[ index ];
-				description )
-			{
-				auto& custom_framebuffer = framebuffer_custom_array[ index ];
-				if( description->width_in_pixels == 0 || description->height_in_pixels == 0 )
-				{
-					
-					Framebuffer::Description copy = *description;
+	
+		/* Composite: */
+		CompositeFramebuffer() = Framebuffer( Framebuffer::Description
+											  {
+												  .name = "Composite",
 
-					copy.width_in_pixels  = new_width_in_pixels;
-					copy.height_in_pixels = new_height_in_pixels;
+												  .width_in_pixels  = new_width_in_pixels,
+												  .height_in_pixels = new_height_in_pixels,
 
-					custom_framebuffer = Kakadu::Framebuffer( copy );
-				}
-				else
-					custom_framebuffer = Kakadu::Framebuffer( *description );
-			}
-		}
+												  .magnification_filter = Texture::Filtering::Nearest,
+
+												  .color_format =
+												      IsOutputtingToCompositeFramebuffer() ||
+											          ( viewport_shading_mode == ViewportShadingMode::Shaded || viewport_shading_mode == ViewportShadingMode::ShadedWireframe )
+											              ? Texture::Format::SRGBA /* This is the final step, so sRGB encoding should be on. */
+											              : Texture::Format::RGBA,
+
+												  .attachment_bits = Framebuffer::AttachmentType::Color
+											  } );
 
 		InitializeBuiltinFullscreenEffects();
 		InitializeBuiltinPostprocessingEffects();
 
 		for( const auto& [ queue_id, queue ]  : render_queue_map )
 			for( const auto& renderable : queue.renderable_list )
-				if( renderable->IsReceivingShadows() )
+				if( renderable->is_receiving_shadows )
 					renderable->material->SetTexture( "uniform_tex_shadow", ShadowMapTexture() );
 	}
 
@@ -802,20 +363,18 @@ namespace Kakadu
 
 	void Renderer::SetClearColor( const Color3& new_clear_color )
 	{
-		framebuffer_main.SetClearColor( new_clear_color );
+		MainFramebuffer().SetClearColor(new_clear_color);
 	}
 
 	void Renderer::SetClearColor( const Color4& new_clear_color )
 	{
-		framebuffer_main.SetClearColor( new_clear_color );
+		MainFramebuffer().SetClearColor(new_clear_color);
 	}
 
-#ifdef _EDITOR
-	void Renderer::SetEditorShadingMode( const EditorShadingMode new_editor_shading_mode )
+	void Renderer::SetViewportShadingMode( const ViewportShadingMode new_viewport_shading_mode )
 	{
-		editor_shading_mode = new_editor_shading_mode;
+		viewport_shading_mode = new_viewport_shading_mode;
 	}
-#endif // _EDITOR
 	
 	RenderState& Renderer::GetRenderState( const RenderPass::ID pass_id_to_fetch )
 	{
@@ -944,18 +503,6 @@ namespace Kakadu
 			CONSOLE_ERROR( "Attempting to add a non-existing queue from a pass!" );
 	}
 
-#ifdef _EDITOR
-	void Renderer::SetFinalOutputToEditorViewport()
-	{
-		tone_mapping.steps.front().framebuffer_target = &framebuffer_editor_viewport;
-	}
-
-	void Renderer::SetFinalOutputToDefaultFramebuffer()
-	{
-		tone_mapping.steps.front().framebuffer_target = &framebuffer_default;
-	}
-#endif // _EDITOR
-
 	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
 	{
 		auto& queue = render_queue_map[ queue_id ];
@@ -1003,7 +550,7 @@ namespace Kakadu
 	{
 		for( auto& [ queue_id, queue ] : render_queue_map )
 			for( auto& renderable : queue.renderable_list )
-				renderable->ToggleOnOff( renderable == renderable_to_isolate );
+				renderable->is_enabled = renderable == renderable_to_isolate;
 	}
 
 	void Renderer::OnShaderReassign( Shader* previous_shader, const std::string& name_of_material_whose_shader_changed )
@@ -1208,16 +755,49 @@ namespace Kakadu
 		shaders_registered.erase( &shader );
 		shaders_registered_reference_count_map.erase( &shader );
 	}
+	
+	void Renderer::RecompileModifiedShaders()
+	{
+		std::vector< Shader* > shaders_to_recompile;
+
+		/* Can not traverse registered shaders AND remove/add shaders to be recompiled at the same time. */
+
+		for( const auto& shader : shaders_registered )
+			if( shader->SourceFilesAreModified() )
+				shaders_to_recompile.push_back( shader );
+
+		for( auto& shader : shaders_to_recompile )
+		{
+			Shader new_shader( shader->name.c_str() );
+			if( shader->RecompileFromThis( new_shader ) )
+			{
+				UnregisterShader( *shader );
+
+				*shader = std::move( new_shader );
+
+				RegisterShader( *shader );
+
+				for( auto& [ queue_ID, queue ] : render_queue_map )
+					for( auto& [ material_name, material ] : queue.materials_in_flight )
+						if( material->shader == shader )
+							material->OnShaderHotReload();
+
+				logger.Info( "Recompiled modified shader: \"" + shader->name + "\"" );
+			}
+			else
+				logger.Error( "Failed to recompile modified shader: \"" + shader->name + "\"" );
+		}
+	}
 
 	void Renderer::ResetToDefaultFramebuffer()
 	{
-		framebuffer_current_destination = &framebuffer_default;
+		framebuffer_current_destination = &DefaultFramebuffer();
 		framebuffer_current_destination->ActivateForWrite();
 	}
 
 	bool Renderer::DefaultFramebufferIsBound() const
 	{
-		return framebuffer_current_destination == &framebuffer_default;
+		return framebuffer_current_destination == &DefaultFramebuffer();
 	}
 
 	Framebuffer* Renderer::CurrentDestinationFramebuffer()
@@ -1225,36 +805,15 @@ namespace Kakadu
 		return framebuffer_current_destination;
 	}
 
-	Framebuffer& Renderer::MainFramebuffer()
+	void Renderer::OutputToDefaultFramebuffer()
 	{
-		return framebuffer_main;
+		framebuffer_output_index = BuiltinFramebufferIndex::Default;
+		tone_mapping.steps.front().framebuffer_target = &DefaultFramebuffer();
 	}
 
-	Framebuffer& Renderer::PostProcessingFramebuffer()
+	void Renderer::OutputToCompositeFramebuffer()
 	{
-		return framebuffer_postprocessing;
-	}
-
-#ifdef _EDITOR
-	Framebuffer& Renderer::EditorViewportFramebuffer()
-	{
-		return framebuffer_editor_viewport;
-	}
-
-	const Framebuffer& Renderer::EditorViewportFramebuffer() const
-	{
-		return framebuffer_editor_viewport;
-	}
-#endif // _EDITOR
-
-	Framebuffer& Renderer::FinalFramebuffer()
-	{
-		return *tone_mapping.steps.front().framebuffer_target;
-	}
-
-	Framebuffer& Renderer::CustomFramebuffer( const unsigned int framebuffer_index )
-	{
-		return framebuffer_custom_array[ framebuffer_index ];
+		framebuffer_output_index = BuiltinFramebufferIndex::Composite;
 	}
 
 	void Renderer::Blit( Framebuffer& source, Framebuffer& destination, const Texture::Filtering filtering )
@@ -1266,14 +825,36 @@ namespace Kakadu
 
 		framebuffer_current_source->ActivateForRead();
 		framebuffer_current_destination->ActivateForWrite();
-		glBlitFramebuffer( 0, 0, source.Width(), source.Height(),
-						   0, 0, destination.Width(), destination.Height(),
+		glBlitFramebuffer( 0, 0, source.size.X(), source.size.Y(),
+						   0, 0, destination.size.X(), destination.size.Y(),
 						   GL_COLOR_BUFFER_BIT, ( int )filtering );
 	}
 
 	MSAA Renderer::GetMSAAInfo() const
 	{
-		return framebuffer_main.msaa;
+		return MainFramebuffer().msaa;
+	}
+
+	/* Sets the sample count for main framebuffer MSAA. */
+	MSAA Renderer::SetMSAASampleCount( const std::uint8_t new_sample_count )
+	{
+		if( new_sample_count == framebuffer_main_description.msaa.sample_count )
+			return MSAA( framebuffer_main_description.msaa.sample_count );
+
+		framebuffer_main_description.msaa = MSAA( new_sample_count );
+
+		MainFramebuffer() = Framebuffer( framebuffer_main_description );
+
+		if( new_sample_count > 1 )
+		{
+			char buffer[ 48 ];
+			snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )new_sample_count );
+
+			msaa_resolve.material.SetShader( BuiltinShaders::Get( buffer ) );
+			msaa_resolve.material.SetTexture( "uniform_tex", &MainFramebuffer().color_attachment );
+		}
+
+		return framebuffer_main_description.msaa;
 	}
 
 	bool Renderer::CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query )
@@ -1317,6 +898,34 @@ namespace Kakadu
 	void Renderer::SetTonemappingBloomIntensity( const Percentage new_bloom_intensity )
 	{
 		tone_mapping.material.Set( "uniform_bloom_intensity", new_bloom_intensity.Value() );
+	}
+
+	void Renderer::SetBloomStepCount( const std::uint8_t new_step_count )
+	{
+		bloom_mip_chain_size = new_step_count;
+		InitializeBuiltinPostprocessingEffects();
+
+		tone_mapping.material.SetTexture( "uniform_tex_bloom", &bloom_downsampling.framebuffers.front().color_attachment );
+	}
+
+	Renderer::BloomAntiFlickerSetting Renderer::GetBloomAntiFlickerSetting() const
+	{
+		const std::string bloom_downsample_shader_name = bloom_downsampling.material.GetShader()->name;
+
+		return ( BloomAntiFlickerSetting )
+			( int( bloom_downsample_shader_name == "Post-Process Bloom Downsample (Anti Flicker Coarse)" ) +
+			  int( bloom_downsample_shader_name == "Post-Process Bloom Downsample (Anti Flicker Fine)"   ) * 2 );
+	}
+
+	void Renderer::SetBloomAntiFlickerSetting( const BloomAntiFlickerSetting new_setting )
+	{
+		switch( new_setting )
+		{
+			default:
+			case 0: bloom_downsampling.material.SetShader( BuiltinShaders::Get( "Post-Process Bloom Downsample" ) ); break;
+			case 1: bloom_downsampling.material.SetShader( BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Coarse)" ) ); break;
+			case 2: bloom_downsampling.material.SetShader( BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Fine)" ) ); break;
+		}
 	}
 
 /*
@@ -1388,7 +997,7 @@ namespace Kakadu
 				 RenderPass
 				 {
 					 .name               = "Shadow Mapping",
-					 .target_framebuffer = &framebuffer_shadow_map_light_directional,
+					 .target_framebuffer = &ShadowMappingFramebuffer_DirectionalLight(),
 					 .queue_id_set       = { RENDER_QUEUE_ID_GEOMETRY },
 					 .view_matrix		 = Matrix4x4{},
 					 .projection_matrix  = Matrix4x4{},
@@ -1404,7 +1013,7 @@ namespace Kakadu
 				 RenderPass
 				 {
 					 .name               = "Lighting",
-					 .target_framebuffer = &framebuffer_main,
+					 .target_framebuffer = &MainFramebuffer(),
 					 .queue_id_set       = { RENDER_QUEUE_ID_GEOMETRY, RENDER_QUEUE_ID_TRANSPARENT, RENDER_QUEUE_ID_SKYBOX },
 					 .clear_framebuffer  = true,
 				 } );
@@ -1626,43 +1235,6 @@ namespace Kakadu
 		}
 	}
 
-#ifdef _EDITOR
-	void Renderer::RecompileModifiedShaders()
-	{
-		local_persist std::vector< Shader* > shaders_to_recompile;
-
-		/* Can not traverse registered shaders AND remove/add shaders to be recompiled at the same time. */
-
-		shaders_to_recompile.clear();
-
-		for( const auto& shader : shaders_registered )
-			if( shader->SourceFilesAreModified() )
-				shaders_to_recompile.push_back( shader );
-
-		for( auto& shader : shaders_to_recompile )
-		{
-			Shader new_shader( shader->name.c_str() );
-			if( shader->RecompileFromThis( new_shader ) )
-			{
-				UnregisterShader( *shader );
-
-				*shader = std::move( new_shader );
-
-				RegisterShader( *shader );
-
-				for( auto& [ queue_ID, queue ] : render_queue_map )
-					for( auto& [ material_name, material ] : queue.materials_in_flight )
-						if( material->shader == shader )
-							material->OnShaderHotReload();
-
-				logger.Info( "Recompiled modified shader: \"" + shader->name + "\"" );
-			}
-			else
-				logger.Error( "Failed to recompile modified shader: \"" + shader->name + "\"" );
-		}
-	}
-#endif // _EDITOR
-
 	void Renderer::InitializeBuiltinMeshes()
 	{
 		full_screen_quad_mesh = Mesh( Primitive::NonIndexed::Quad_FullScreen::Positions,
@@ -1671,33 +1243,21 @@ namespace Kakadu
 									  Primitive::NonIndexed::Quad_FullScreen::UVs,
 									  { /* No indices. */ } );
 
-		full_screen_cube_mesh = Kakadu::Mesh( Kakadu::Primitive::NonIndexed::Cube_FullScreen::Positions,
-											  "Cube (Fullscreen)",
-											  { /* No normals.	*/ },
-											  { /* No uvs.		*/ },
-											  { /* No indices.	*/ } );
-	}
-
-	void Renderer::InitializeBuiltinShaders()
-	{
-		skybox_shader = BuiltinShaders::Get( "Skybox" );
-
-		char buffer[ 48 ];
-		snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
-		msaa_resolve_shader = BuiltinShaders::Get( buffer );
-
-		bloom_shader_downsample = BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Fine)" );
-		bloom_shader_upsample   = BuiltinShaders::Get( "Post-Process Bloom Upsample" );
-
-		tone_mapping_shader = BuiltinShaders::Get( "Tonemapping (Bloom)" );
+		full_screen_cube_mesh = Mesh( Primitive::NonIndexed::Cube_FullScreen::Positions,
+									  "Cube (Fullscreen)",
+									  { /* No normals.	*/ },
+									  { /* No uvs.		*/ },
+									  { /* No indices.	*/ } );
 	}
 
 	void Renderer::InitializeBuiltinMaterials()
 	{
-		skybox_material = Kakadu::Material( "Skybox", skybox_shader );
+		char buffer[ 48 ];
+		snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_description.msaa.sample_count );
+		msaa_resolve.material = Material( "[Renderer] MSAA Resolve", BuiltinShaders::Get( buffer ) );
 
-		msaa_resolve.material = Material( "[Renderer] MSAA Resolve", msaa_resolve_shader );
-		tone_mapping.material = Material( "[Renderer] Tonemapping", tone_mapping_shader );
+		skybox_material       = Material( "Skybox", BuiltinShaders::Get( "Skybox" ) );
+		tone_mapping.material = Material( "[Renderer] Tonemapping", BuiltinShaders::Get( "Tonemapping (Bloom)" ) );
 
 		using namespace Math::Literals;
 
@@ -1715,16 +1275,16 @@ namespace Kakadu
 		msaa_resolve.name = "MSAA Resolve";
 		msaa_resolve.steps = { 1, FullscreenEffect::Step
 		{
-			.framebuffer_target = &framebuffer_postprocessing,
-			.texture_input      = &framebuffer_main.ColorAttachment()
+			.framebuffer_target = &PostProcessingFramebuffer(),
+			.texture_input      = &MainFramebuffer().color_attachment
 		} };
 		msaa_resolve.execution_routine = {};
 
 		tone_mapping.name = "Tonemapping";
 		tone_mapping.steps = { 1, FullscreenEffect::Step
 		{
-			.framebuffer_target = &framebuffer_editor_viewport,
-			.texture_input      = &framebuffer_postprocessing.ColorAttachment()
+			.framebuffer_target = &OutputFramebuffer(),
+			.texture_input      = &PostProcessingFramebuffer().color_attachment
 		} };
 		tone_mapping.execution_routine = [ & ]( Renderer& renderer )
 		{
@@ -1735,7 +1295,7 @@ namespace Kakadu
 			SetRenderState( tone_mapping.render_state, step.framebuffer_target );
 
 			tone_mapping.material.SetTexture( "uniform_tex_color", step.texture_input );
-			tone_mapping.material.SetTexture( "uniform_tex_bloom", &bloom_downsampling.framebuffers.front().ColorAttachment() );
+			tone_mapping.material.SetTexture( "uniform_tex_bloom", &bloom_downsampling.framebuffers.front().color_attachment );
 			tone_mapping.material.UploadUniforms();
 
 			DrawPostProcessingEffectStep();
@@ -1744,22 +1304,12 @@ namespace Kakadu
 
 	void Renderer::InitializeBuiltinPostprocessingEffects()
 	{
-		{
-			const auto framebuffer_size = framebuffer_postprocessing.Size();
-			bloom_mip_chain_size = Math::Clamp( bloom_mip_chain_size, ( std::uint8_t )2, ( std::uint8_t )Math::Log2( Math::Min( framebuffer_size.X(), framebuffer_size.Y() ) ) );
-		}
+		bloom_mip_chain_size = Math::Clamp( bloom_mip_chain_size,
+											( std::uint8_t )2,
+											( std::uint8_t )Math::Log2( Math::Min( PostProcessingFramebuffer().size.X(), PostProcessingFramebuffer().size.Y() ) ) );
 
-		bloom_downsampling = FullscreenEffect
-		{
-			.name     = "Bloom | Downsampling",
-			.material = Material( "[Renderer] Bloom | Downsampling", bloom_shader_downsample ),
-		};
-
-		bloom_upsampling = FullscreenEffect
-		{
-			.name     = "Bloom | Upsampling",
-			.material = Material( "[Renderer] Bloom | Upsampling", bloom_shader_upsample ),
-		};
+		bloom_upsampling.name     = "Bloom | Upsampling",
+		bloom_upsampling.material = Material( "[Renderer] Bloom | Upsampling", BuiltinShaders::Get( "Post-Process Bloom Upsample" ) ),
 
 		/* Upsampling steps will progressively combine resolution R textures with the upscaled R/2 resolution textures via additive blending. */
 		bloom_upsampling.render_state.blending_enable                   = true;
@@ -1767,6 +1317,9 @@ namespace Kakadu
 		bloom_upsampling.render_state.blending_destination_color_factor = BlendingFactor::One;
 		bloom_upsampling.render_state.blending_source_alpha_factor      = BlendingFactor::One;
 		bloom_upsampling.render_state.blending_destination_alpha_factor = BlendingFactor::One;
+
+		bloom_downsampling.name     = "Bloom | Downsampling",
+		bloom_downsampling.material = Material( "[Renderer] Bloom | Downsampling", BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Fine)" ) ),
 
 		bloom_downsampling.steps.clear();
 		bloom_downsampling.steps.reserve( bloom_mip_chain_size );
@@ -1778,7 +1331,7 @@ namespace Kakadu
 		bloom_downsampling.framebuffers.clear();
 		bloom_downsampling.framebuffers.reserve( bloom_mip_chain_size + 1 );
 
-		Vector2I output_texture_size = framebuffer_postprocessing.Size();
+		Vector2I output_texture_size = PostProcessingFramebuffer().size;
 
 		bloom_downsampling.framebuffers.emplace_back( Framebuffer::Description
 													  {
@@ -1789,12 +1342,12 @@ namespace Kakadu
 														  .width_in_pixels  = output_texture_size.X(),
 														  .height_in_pixels = output_texture_size.Y(),
 
-														  .color_format = framebuffer_postprocessing.ColorAttachment().PixelFormat(),
+														  .color_format = PostProcessingFramebuffer().color_attachment.PixelFormat(),
 
 														  .attachment_bits = Framebuffer::AttachmentType::Color
 													  } );
 
-		const Texture* input_texture = &framebuffer_postprocessing.ColorAttachment();
+		const Texture* input_texture = &PostProcessingFramebuffer().color_attachment;
 
 		const int digit_count = ( bloom_mip_chain_size >= 10 ) ? 2 : 1;
 
@@ -1813,7 +1366,7 @@ namespace Kakadu
 															  .width_in_pixels  = output_texture_size.X(),
 															  .height_in_pixels = output_texture_size.Y(),
 
-															  .color_format = framebuffer_postprocessing.ColorAttachment().PixelFormat(),
+															  .color_format = PostProcessingFramebuffer().color_attachment.PixelFormat(),
 
 															  .attachment_bits = Framebuffer::AttachmentType::Color
 														  } );
@@ -1824,7 +1377,7 @@ namespace Kakadu
 				.texture_input      = input_texture
 			};
 
-			input_texture = &step.framebuffer_target->ColorAttachment();
+			input_texture = &step.framebuffer_target->color_attachment;
 
 			bloom_downsampling.steps.push_back( std::move( step ) );
 		}
@@ -1850,14 +1403,14 @@ namespace Kakadu
 				.texture_input      = input_texture,
 			};
 
-			input_texture = &step.framebuffer_target->ColorAttachment();
+			input_texture = &step.framebuffer_target->color_attachment;
 
 			bloom_upsampling.steps.push_back( std::move( step ) );
 		}
 
 		bloom_downsampling.execution_routine = [ & ]( Renderer& renderer )
 		{
-			Blit( framebuffer_postprocessing, bloom_downsampling.framebuffers.front() );
+			Blit( PostProcessingFramebuffer(), bloom_downsampling.framebuffers.front() );
 
 			bloom_downsampling.material.Bind();
 
@@ -1872,7 +1425,7 @@ namespace Kakadu
 				bloom_downsampling.material.SetTexture( "uniform_tex_source", downsample_step.texture_input );
 				bloom_downsampling.material.Set( "uniform_source_resolution", downsample_step.texture_input->Size() );
 
-				if( bloom_shader_downsample->name.find( "flicker" ) != std::string::npos )
+				if( bloom_downsampling.material.shader->name.find( "flicker" ) != std::string::npos )
 					bloom_downsampling.material.Set( "uniform_mip_level", ( unsigned int )step_index );
 
 				bloom_downsampling.material.UploadUniforms();
@@ -1912,13 +1465,13 @@ namespace Kakadu
 	{
 		ASSERT_DEBUG_ONLY( framebuffer );
 
-		const Vector2I old_framebuffer_size = framebuffer_current_destination->Size();
+		const Vector2I old_framebuffer_size = framebuffer_current_destination->size;
 		
 		framebuffer_current_destination = framebuffer;
 		framebuffer_current_destination->ActivateForWrite();
 
-		if( framebuffer->Size() != old_framebuffer_size )
-			glViewport( 0, 0, framebuffer->Width(), framebuffer->Height() );
+		if( framebuffer->size != old_framebuffer_size )
+			glViewport( 0, 0, framebuffer->size.X(), framebuffer->size.Y() );
 	}
 
 	void Renderer::EnableFramebuffer_sRGBEncoding()
@@ -1999,10 +1552,9 @@ namespace Kakadu
 		glBlendEquation( ( GLenum )function );
 	}
 
-#ifdef _EDITOR
-	void Renderer::RenderOtherEditorShadingModes()
+	void Renderer::RenderOtherViewportShadingModes()
 	{
-		ASSERT_EDITOR_ONLY( editor_shading_mode != EditorShadingMode::Shaded );
+		ASSERT_EDITOR_ONLY( viewport_shading_mode != ViewportShadingMode::Shaded );
 
 		Shader* shader_not_instanced = nullptr;
 		Shader* shader_instanced     = nullptr;
@@ -2035,34 +1587,34 @@ namespace Kakadu
 			.blending_destination_alpha_factor = BlendingFactor::OneMinusSourceAlpha
 		};
 
-		switch( editor_shading_mode )
+		switch( viewport_shading_mode )
 		{
-			case EditorShadingMode::Wireframe:
+			case ViewportShadingMode::Wireframe:
 				shader_not_instanced = BuiltinShaders::Get( "Wireframe" );
 				shader_instanced     = BuiltinShaders::Get( "Wireframe (Instanced)" );
-				SetRenderState( render_state_wireframe, &framebuffer_main, true );
+				SetRenderState( render_state_wireframe, &MainFramebuffer(), true );
 				break;
-			case EditorShadingMode::ShadedWireframe:
+			case ViewportShadingMode::ShadedWireframe:
 				shader_not_instanced = BuiltinShaders::Get( "Wireframe Overlay" );
 				shader_instanced     = BuiltinShaders::Get( "Wireframe Overlay (Instanced)" );
-				SetRenderState( render_state_shaded_wireframe, &framebuffer_main, false );
+				SetRenderState( render_state_shaded_wireframe, &MainFramebuffer(), false );
 				break;
-			case EditorShadingMode::TextureCoordinates:
+			case ViewportShadingMode::TextureCoordinates:
 				shader_not_instanced = BuiltinShaders::Get( "Debug UVs As Colors" );
 				shader_instanced     = BuiltinShaders::Get( "Debug UVs As Colors (Instanced)" );
-				SetRenderState( render_state, &framebuffer_main, true );
+				SetRenderState( render_state, &MainFramebuffer(), true );
 				break;
-			case EditorShadingMode::Geometry_Tangents:
-			case EditorShadingMode::Geometry_Bitangents:
-			case EditorShadingMode::Geometry_Normals:
+			case ViewportShadingMode::Geometry_Tangents:
+			case ViewportShadingMode::Geometry_Bitangents:
+			case ViewportShadingMode::Geometry_Normals:
 				shader_not_instanced = BuiltinShaders::Get( "Debug TBN As Colors" );
 				shader_instanced     = BuiltinShaders::Get( "Debug TBN As Colors (Instanced)" );
-				SetRenderState( render_state, &framebuffer_main, true );
+				SetRenderState( render_state, &MainFramebuffer(), true );
 				break;
-			case EditorShadingMode::DebugVectors:
+			case ViewportShadingMode::DebugVectors:
 				shader_not_instanced = BuiltinShaders::Get( "Debug TBN As Vectors" );
 				shader_instanced     = BuiltinShaders::Get( "Debug TBN As Vectors (Instanced)" );
-				SetRenderState( render_state, &framebuffer_main, true );
+				SetRenderState( render_state, &MainFramebuffer(), true );
 				break;
 
 			default:
@@ -2079,19 +1631,19 @@ namespace Kakadu
 			auto shader = shader_index == 0 ? shader_not_instanced : shader_instanced;
 			shader->Bind();
 
-			switch( editor_shading_mode )
+			switch( viewport_shading_mode )
 			{
-				case EditorShadingMode::Wireframe:
-				case EditorShadingMode::ShadedWireframe:
-					shader->SetUniform( "uniform_line_thickness", editor_wireframe_thickness_in_pixels );
-					shader->SetUniform( "uniform_color", editor_wireframe_color );
+				case ViewportShadingMode::Wireframe:
+				case ViewportShadingMode::ShadedWireframe:
+					shader->SetUniform( "uniform_line_thickness", wireframe_thickness_in_pixels );
+					shader->SetUniform( "uniform_color", wireframe_color );
 					break;
-				case EditorShadingMode::Geometry_Tangents:
-				case EditorShadingMode::Geometry_Bitangents:
-				case EditorShadingMode::Geometry_Normals:
-					shader->SetUniform( "uniform_show_tangents_bitangents_normals", ( int )editor_shading_mode - ( int )EditorShadingMode::Geometry_Tangents );
+				case ViewportShadingMode::Geometry_Tangents:
+				case ViewportShadingMode::Geometry_Bitangents:
+				case ViewportShadingMode::Geometry_Normals:
+					shader->SetUniform( "uniform_show_tangents_bitangents_normals", ( int )viewport_shading_mode - ( int )ViewportShadingMode::Geometry_Tangents );
 					break;
-				case EditorShadingMode::DebugVectors:
+				case ViewportShadingMode::DebugVectors:
 					shader->SetUniform( "uniform_line_scale_override", 0.2f );
 					shader->SetUniform( "uniform_line_offset_from_surface_override", 0.2f );
 					break;
@@ -2102,7 +1654,7 @@ namespace Kakadu
 			for( auto& [ pass_id, pass ] : render_pass_map )
 			{
 				if( pass_id != RENDER_PASS_ID_SHADOW_MAPPING &&
-					pass.target_framebuffer == &framebuffer_main &&
+					pass.target_framebuffer == &MainFramebuffer() &&
 					PassHasContentToRender( pass ) )
 				{
 					const auto log_group( logger.TemporaryLogGroup( ( ( shader_index == 0
@@ -2142,13 +1694,12 @@ namespace Kakadu
 			}
 		}
 
-		if( msaa_resolve.is_enabled && framebuffer_main_msaa_sample_count > 1 )
+		if( msaa_resolve.is_enabled && framebuffer_main_description.msaa.IsEnabled() )
 			RenderFullscreenEffect( msaa_resolve );
 
-		if( editor_shading_mode != EditorShadingMode::ShadedWireframe )
-			Blit( *framebuffer_current_destination, FinalFramebuffer() );
+		if( viewport_shading_mode != ViewportShadingMode::ShadedWireframe )
+			Blit( *framebuffer_current_destination, OutputFramebuffer() );
 	}
-#endif // _EDITOR
 
 	void Renderer::SetRenderState( const RenderState& render_state_to_set )
 	{
@@ -2265,41 +1816,6 @@ namespace Kakadu
 	{
 		glFrontFace( ( GLenum )winding_order_of_front_faces );
 	}
-
-	/* Sets the sample count for main framebuffer MSAA. */
-	MSAA Renderer::SetMSAASampleCount( const std::uint8_t new_sample_count )
-	{
-		if( new_sample_count == framebuffer_main_msaa_sample_count )
-			return MSAA( framebuffer_main_msaa_sample_count );
-
-		framebuffer_main_msaa_sample_count = new_sample_count;
-
-		MSAA new_msaa = MSAA( framebuffer_main_msaa_sample_count );
-
-		framebuffer_main = Framebuffer( Framebuffer::Description
-										{
-											.name = "Main",
-
-											.width_in_pixels  = framebuffer_main.Width(),
-											.height_in_pixels = framebuffer_main.Height(),
-
-											.color_format    = framebuffer_main_color_format,
-											.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
-											.msaa            = new_msaa
-										} );
-
-		if( new_sample_count > 1 )
-		{
-			char buffer[ 48 ];
-			snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_msaa_sample_count );
-			msaa_resolve_shader = BuiltinShaders::Get( buffer );
-
-			msaa_resolve.material.SetShader( msaa_resolve_shader );
-			msaa_resolve.material.SetTexture( "uniform_tex", &framebuffer_main.ColorAttachment() );
-		}
-
-		return new_msaa;
-	}
 	
 	void Renderer::DetermineMSAASampleCountsPerFormat()
 	{
@@ -2332,5 +1848,23 @@ namespace Kakadu
 
 			std::sort( msaa_supported_sample_counts_per_format[ format ].begin(), msaa_supported_sample_counts_per_format[ format ].end() );
 		}
+	}
+
+	void Renderer::InitializeIntrospectionSurface()
+	{
+		introspection_surface->framebuffers = &framebuffers;
+
+		introspection_surface->render_pass_map  = &render_pass_map;
+		introspection_surface->render_queue_map = &render_queue_map;
+		introspection_surface->msaa_resolve               = &msaa_resolve;
+		introspection_surface->post_processing_effect_map = &post_processing_effect_map;
+		introspection_surface->tone_mapping               = &tone_mapping;
+
+		introspection_surface->shadow_mapping_projection_parameters = &shadow_mapping_projection_parameters;
+
+		introspection_surface->skybox_material = &skybox_material;
+
+		introspection_surface->uniform_buffer_management_global    = &uniform_buffer_management_global;
+		introspection_surface->uniform_buffer_management_intrinsic = &uniform_buffer_management_intrinsic;
 	}
 }

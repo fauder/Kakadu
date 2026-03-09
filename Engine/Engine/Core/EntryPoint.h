@@ -13,8 +13,6 @@ int main( int argc, char** argv )
 	{
 		if( strcmp( argv[ 1 ], "DISABLE_IMGUI" ) == 0 )
 			flags.Set( Kakadu::CreationFlags::OnStart_DisableImGui );
-		else if( strcmp( argv[ 1 ], "DISABLE_GAMMA_CORRECTION" ) == 0 )
-			flags.Set( Kakadu::CreationFlags::OnStart_DisableGammaCorrection );
 	}
 
 	std::cout << "====== KAKADU ENGINE INITIALIZATION LOGS ======\n\n";

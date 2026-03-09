@@ -43,17 +43,8 @@ SandboxApplication::SandboxApplication( const Kakadu::BitFlags< Kakadu::Creation
 	Kakadu::Application( flags,
 						 Kakadu::Renderer::Description
 						 {
-							 .main_framebuffer_color_format      = Kakadu::Texture::Format::RGBA_16F,
-							 .main_framebuffer_msaa_sample_count = 4,
-							 .custom_framebuffer_descriptions    =
-							 {
-								 Kakadu::Framebuffer::Description
-								 {
-									 .name            = "Rear-view Mirror FB",
-									 .color_format    = Kakadu::Texture::Format::RGBA,
-									 .attachment_bits = Kakadu::Framebuffer::AttachmentType::Color_DepthStencilCombined
-								 }
-							 }
+							 .main_framebuffer_color_format = Kakadu::Texture::Format::RGBA_16F,
+							 .msaa_sample_count             = 4
 						 } ),
 	test_model_info
 	{
@@ -75,8 +66,7 @@ SandboxApplication::SandboxApplication( const Kakadu::BitFlags< Kakadu::Creation
 	},
 	light_point_transform_array( LIGHT_POINT_COUNT ),
 	cube_transform_array( CUBE_COUNT ),
-	cube_reflected_transform_array( CUBE_REFLECTED_COUNT ),
-	render_rear_view_cam_to_imgui( true )
+	cube_reflected_transform_array( CUBE_REFLECTED_COUNT )
 {
 	Initialize();
 }
@@ -314,12 +304,6 @@ void SandboxApplication::Initialize()
 		{ -0.425f, 0.35f, -0.01f }  // A little z offset backwards to make sure this is rendered in front & shows.
 	} );
 
-	quad_mesh_mirror = Kakadu::Mesh( quad_mesh_positions_ndc,
-									 "Quad (Rear-view mirror)",
-									 { /* No normals. */ },
-									 Kakadu::Primitive::NonIndexed::Quad_FullScreen::UVs,
-									 { /* No indices. */ } );
-
 	sphere_mesh = Kakadu::Mesh( Kakadu::Primitive::Indexed::UVSphereTemplate::Positions< 40 >(),
 								"Sphere",
 								Kakadu::Primitive::Indexed::UVSphereTemplate::Normals< 40 >(),
@@ -357,19 +341,6 @@ void SandboxApplication::Initialize()
 	ResetMaterialData();
 
 /* Renderer: */
-	/* Add a new Pass for rear-view camera rendering: */
-	renderer->AddPass( RENDER_PASS_ID_LIGHTING_REAR_VIEW,
-					  Kakadu::RenderPass
-					  {
-						  .name                             = "Lighting - Rear-view",
-						  .target_framebuffer               = &renderer->CustomFramebuffer( 0 ),
-						  .queue_id_set                     = {
-																Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY,
-																Kakadu::Renderer::RENDER_QUEUE_ID_TRANSPARENT,
-																Kakadu::Renderer::RENDER_QUEUE_ID_SKYBOX },
-					      .render_state_override_is_allowed = true
-					  } );
-	
 	light_sources_renderable = Kakadu::Renderable( &sphere_mesh_instanced_with_color, &light_source_material, 
 												   nullptr /* => No Transform here, as we will provide the Transforms as instance data. */ );
 	renderer->AddRenderable( &light_sources_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
@@ -415,11 +386,6 @@ void SandboxApplication::Initialize()
 		window_renderable_array[ i ] = Kakadu::Renderable( &quad_mesh_uvs_only, &window_material, &window_transform_array[ i ] );
 		renderer->AddRenderable( &window_renderable_array[ i ], Kakadu::Renderer::RENDER_QUEUE_ID_TRANSPARENT );
 	}
-
-	mirror_quad_renderable = Kakadu::Renderable( &quad_mesh_mirror, &mirror_quad_material );
-	renderer->AddRenderable( &mirror_quad_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_BEFORE_POSTPROCESSING );
-
-	mirror_quad_renderable.ToggleOnOff( not render_rear_view_cam_to_imgui );
 
 	/* Disable some RenderPasses & Renderables on start-up to decrease clutter. */
 	renderer->ToggleQueue( Kakadu::Renderer::RENDER_QUEUE_ID_TRANSPARENT, false );
@@ -537,20 +503,6 @@ void SandboxApplication::RenderFrame()
 
 	// Scene-view Camera moved into Application.
 	
-	// TODO: Implement these rear-veiw passes when game camera rendering is implemented.
-
-	///* Lighting - Rear-view pass: Invert camera direction, render everything to the off-screen framebuffer 0: */
-	//{
-	//	camera_controller.Invert();
-	//	renderer->UpdatePerPass( RENDER_PASS_ID_LIGHTING_REAR_VIEW, camera );
-	//}
-
-	///* Lighting: Invert camera direction again (to revert to default view), render everything to the off-screen framebuffer 1: */
-	//{
-	//	camera_controller.Invert(); // Revert back to original orientation.
-	//	renderer->UpdatePerPass( Kakadu::Renderer::RENDER_PASS_ID_LIGHTING, camera );
-	//}
-
 	//// TODO: Outline pass.
 
 	///* Post-processing pass: Blit off-screen framebuffers to quads on the default or the editor framebuffer to actually display them: */
@@ -575,16 +527,6 @@ void SandboxApplication::RenderToolsUI()
 		const auto initial_window_size = Platform::GetFramebufferSizeInPixels() / 4;
 		ImGui::SetNextWindowSize( Kakadu::Math::CopyToImVec2( initial_window_size ), ImGuiCond_Appearing );
 	}
-	if( ImGui::Begin( "Rear-view Camera", nullptr, ImGuiWindowFlags_NoScrollbar ) )
-	{
-		if( ImGui::Checkbox( "Render to this window instead of default Framebuffer", &render_rear_view_cam_to_imgui ) )
-			mirror_quad_renderable.ToggleOnOff( not render_rear_view_cam_to_imgui );
-
-		if( render_rear_view_cam_to_imgui )
-			ImGui::Image( ( ImTextureID )renderer->CustomFramebuffer( 0 ).ColorAttachment().Id().Get(), ImGui::GetContentRegionAvail(), { 0, 1 }, { 1, 0 } );
-	}
-
-	ImGui::End();
 
 	if( ImGui::Begin( ICON_FA_CUBES " Models", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
@@ -689,7 +631,6 @@ void SandboxApplication::RenderToolsUI()
 	for( auto& test_material : meteorite_model_info.model_instance.Materials() )
 		Kakadu::ImGuiDrawer::Draw( const_cast< Kakadu::Material& >( test_material ), *renderer );
 	Kakadu::ImGuiDrawer::Draw( outline_material, *renderer );
-	Kakadu::ImGuiDrawer::Draw( mirror_quad_material, *renderer );
 
 	if( ImGui::Begin( "Instance Data" ) )
 	{
@@ -852,9 +793,6 @@ void SandboxApplication::OnKeyboardEvent( const Platform::KeyCode key_code, cons
 
 void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
 {
-	// TODO: Move these into Renderer: Maybe Materials can have a sort of requirements info. (or dependencies) and the Renderer can automatically update Material info such as the ones below.
-
-	mirror_quad_material.SetTexture( "uniform_tex", &renderer->CustomFramebuffer( 0 ).ColorAttachment() );
 }
 
 void SandboxApplication::ResetLightingData()
@@ -979,8 +917,6 @@ void SandboxApplication::ResetMaterialData()
 	window_material.Set( "uniform_texture_scale_and_offset", Vector4( 1.0f, 1.0f, 0.0f, 0.0f ) );
 
 	outline_material = Kakadu::Material( "Outline", shader_outline );
-
-	mirror_quad_material = Kakadu::Material( "Rear-view Mirror", shader_texture_blit );
 
 	ground_quad_surface_data = wall_surface_data = cube_surface_data =
 	{

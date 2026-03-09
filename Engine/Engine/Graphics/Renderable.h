@@ -31,27 +31,15 @@ namespace Kakadu
 		void SetMesh( const Mesh* mesh );
 		void SetMaterial( Material* material );
 
-	/* Queries: */
-		bool IsEnabled()			const { return is_enabled; }
-		bool IsReceivingShadows()	const { return is_receiving_shadows; }
-		bool IsCastingShadows()		const { return is_casting_shadows; }
-
-	/* Toggling: */
-		void Enable();
-		void Disable();
-		void ToggleOnOff();
-		void ToggleOnOff( const bool enable );
-		void ToggleShadowReceiving( const bool enable );
-		void ToggleShadowCasting( const bool enable );
+	public:
+		bool is_enabled;
+		bool is_receiving_shadows;
+		bool is_casting_shadows;
+		//bool padding[ 5 ];
 
 	private:
 		Transform* transform;
 		const Mesh* mesh;
 		Material* material;
-
-		bool is_enabled;
-		bool is_receiving_shadows;
-		bool is_casting_shadows;
-		//bool padding[ 5 ];
 	};
 }

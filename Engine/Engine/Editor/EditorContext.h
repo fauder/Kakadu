@@ -2,10 +2,12 @@
 
 // Engine Includes.
 #include "EditorCommand.h"
+#include "RendererPanel.h"
 #include "SceneCamera.h"
 #include "ViewportPanel.h"
 #include "Core/Platform.h"
 #include "Core/FrameTime.h"
+#include "Introspection/RendererIntrospectionSurface.h"
 #include "Math/Vector.hpp"
 
 // std Includes.
@@ -27,17 +29,21 @@ namespace Kakadu::Editor
 
 		void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels );
 
+		void Initialize();
 		void Update( const FrameTime& frame_time );
-
-		void RenderUI( Renderer& renderer );
+		void RenderUI();
 
 		FrameTime& frame_time;
+		Renderer* renderer;
 
 		SceneCamera scene_camera;
 
 		Vector2I viewport_resolution;
 
 		ViewportPanel viewport_panel;
+
+		RendererPanel renderer_panel;
+		RendererIntrospectionSurface renderer_introspection_surface;
 
 		std::queue< Command > commands_queue;
 

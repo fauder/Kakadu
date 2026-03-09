@@ -12,14 +12,8 @@
 
 namespace Kakadu
 {
-	/* Forward Declarations: */
-	class Renderer;
-
-	class Framebuffer
+	struct Framebuffer
 	{
-		friend class Renderer;
-
-	public:
 		using ID = ID< Framebuffer >;
 
 		enum class ActivationMode
@@ -61,10 +55,14 @@ namespace Kakadu
 			// 5 bytes of padding.
 		};
 
-	public:
 		Framebuffer();
 		Framebuffer( const Description& description );
 		Framebuffer( Description&& description );
+
+		struct DefaultFramebuferConstructorTag {};
+		static constexpr DefaultFramebuferConstructorTag DEFAULT_FRAMEBUFFER_CONSTRUCTOR;
+
+		Framebuffer( DefaultFramebuferConstructorTag );
 
 		DELETE_COPY_CONSTRUCTORS( Framebuffer );
 
@@ -76,48 +74,9 @@ namespace Kakadu
 	/* Usage: */
 		void Resize( const int new_width_in_pixels, const int new_height_in_pixels );
 
-	/* Queries: */
-		bool IsValid() const { return id.IsValid(); } // Technically, this fails for the default framebuffer which has id 0, but it's not needed there anyway.
-
-		const ID Id() const { return id; }
-		
-		const Vector2I&	Size()	 const { return size; }
-		int				Width()	 const { return size.X(); }
-		int				Height() const { return size.Y(); }
-
-		int	 SampleCount()	  const { return msaa.sample_count; }
-		bool IsMultiSampled() const { return msaa.IsEnabled(); }
-
-		/* Default framebuffer always uses sRGB Encoding. */
-		bool Is_sRGB() const { return id.Get() == 0 || ( HasColorAttachment() && color_attachment.Is_sRGB() ); }
-		bool IsHDR()   const { return HasColorAttachment() && color_attachment.IsHDR(); }
-
-		const std::string&	Name() const { return name; }
-
-	/* Attachment Queries: */
-
-		bool HasColorAttachment()				 const { return color_attachment.IsValid(); }
-		bool HasSeparateDepthAttachment()		 const { return depth_attachment.IsValid() && not stencil_attachment.IsValid(); }
-		bool HasSeparateStencilAttachment()		 const { return stencil_attachment.IsValid() && not depth_attachment.IsValid(); }
-		bool HasCombinedDepthStencilAttachment() const { return depth_stencil_attachment.IsValid(); }
-
-		const Texture& ColorAttachment()		 const { return color_attachment; }
-		const Texture& DepthStencilAttachment()	 const { return depth_stencil_attachment; }
-		const Texture& DepthAttachment()		 const { return depth_attachment; }
-		const Texture& StencilAttachment()		 const { return stencil_attachment; }
-
-	private:
-		struct DefaultFramebuferConstructorTag {};
-		static constexpr DefaultFramebuferConstructorTag DEFAULT_FRAMEBUFFER_CONSTRUCTOR;
-
-		Framebuffer( DefaultFramebuferConstructorTag );
-
-	/* Usage: */
 		void ActivateForReadWrite() const;
 		void ActivateForRead() const;
 		void ActivateForWrite() const;
-
-		void SetName( const std::string& new_name );
 
 		void Create();
 		void CreateAttachments();
@@ -126,6 +85,23 @@ namespace Kakadu
 												  const GLenum attachment_type_enum,
 												  const Texture::Format format,
 												  const Description& description );
+
+	/* Queries: */
+		bool IsValid() const { return id.IsValid(); } // Technically, this fails for the default framebuffer which has id 0, but it's not needed there anyway.
+
+		int	 SampleCount()	  const { return msaa.sample_count; }
+		bool IsMultiSampled() const { return msaa.IsEnabled(); }
+
+		/* Default framebuffer always uses sRGB Encoding. */
+		bool Is_sRGB() const { return id.Get() == 0 || ( HasColorAttachment() && color_attachment.Is_sRGB() ); }
+		bool IsHDR()   const { return HasColorAttachment() && color_attachment.IsHDR(); }
+
+	/* Attachment Queries: */
+
+		bool HasColorAttachment()				 const { return color_attachment.IsValid(); }
+		bool HasSeparateDepthAttachment()		 const { return depth_attachment.IsValid() && not stencil_attachment.IsValid(); }
+		bool HasSeparateStencilAttachment()		 const { return stencil_attachment.IsValid() && not depth_attachment.IsValid(); }
+		bool HasCombinedDepthStencilAttachment() const { return depth_stencil_attachment.IsValid(); }
 
 	/* Clearing: */
 
@@ -139,19 +115,16 @@ namespace Kakadu
 
 		void Destroy();
 
-#ifdef _EDITOR
-		void Debug_FlashClearColor( bool& is_running,
-									const Color4& start = Color4::Cyan(), const Color4& end = Color4::Yellow(),
-									const float duration_in_seconds = 0.5f, const std::uint8_t ping_pong_count = 5 );
-#endif // _EDITOR
-
-	/* Clearing: */
-
 		void SetClearColor() const;
 		void SetClearDepthValue() const;
 		void SetClearStencilValue() const;
 
-	private:
+	/* Utility: */
+
+		void Debug_FlashClearColor( bool& is_running,
+									const Color4& start = Color4::Cyan(), const Color4& end = Color4::Yellow(),
+									const float duration_in_seconds = 0.5f, const std::uint8_t ping_pong_count = 5 );
+
 		ID id;
 
 		Vector2I size;

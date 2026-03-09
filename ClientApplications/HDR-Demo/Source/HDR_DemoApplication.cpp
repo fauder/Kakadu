@@ -37,8 +37,8 @@ HDR_DemoApplication::HDR_DemoApplication( const Kakadu::BitFlags< Kakadu::Creati
 	Kakadu::Application( flags,
 						 Kakadu::Renderer::Description
 						 {
-							 .main_framebuffer_color_format      = Kakadu::Texture::Format::RGBA_16F,
-							 .main_framebuffer_msaa_sample_count = 4
+							 .main_framebuffer_color_format = Kakadu::Texture::Format::RGBA_16F,
+							 .msaa_sample_count             = 4
 						 } ),
 	light_point_transform_array( LIGHT_POINT_COUNT )
 {

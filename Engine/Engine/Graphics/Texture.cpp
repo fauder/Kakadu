@@ -7,9 +7,6 @@
 
 namespace Kakadu
 {
-/* Static member variable definitions: */
-	bool Texture::GAMMA_CORRECTION_IS_ENABLED = true;
-
 	Texture::Texture()
 		:
 		id( {} ),
@@ -200,11 +197,6 @@ namespace Kakadu
 		glGenerateMipmap( ( GLenum )type );
 	}
 
-	void Texture::ToggleGammaCorrection( const bool enable )
-	{
-		GAMMA_CORRECTION_IS_ENABLED = enable;
-	}
-
 	int Texture::InternalFormat( const Texture::Format format )
 	{
 		switch( format )
@@ -218,8 +210,8 @@ namespace Kakadu
 			case Format::RGBA_32F:		return GL_RGBA32F;
 			case Format::R11G11B10F:	return GL_R11F_G11F_B10F;
 
-			case Format::SRGB:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB			+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGB;
-			case Format::SRGBA:			return ( int )GAMMA_CORRECTION_IS_ENABLED * GL_SRGB_ALPHA	+ ( 1 - ( int )GAMMA_CORRECTION_IS_ENABLED ) * GL_RGBA;
+			case Format::SRGB:			return GL_SRGB;
+			case Format::SRGBA:			return GL_SRGB_ALPHA;
 
 			case Format::DEPTH_STENCIL:	return GL_DEPTH24_STENCIL8;
 			case Format::DEPTH:			return GL_DEPTH_COMPONENT;
