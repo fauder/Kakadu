@@ -521,6 +521,9 @@
     <ClCompile Include="Engine\Graphics\ViewportShadingMode.h">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Math\Quaternion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Engine.natvis" />

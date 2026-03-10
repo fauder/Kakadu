@@ -652,6 +652,10 @@ namespace Kakadu::Math
 		// Must provide parameters in the correct order heading, pitch, yaw, i.e., y, x, z.
 		return EulerToQuaternion< ComponentType >( euler_angles[ 1 ], euler_angles[ 0 ], euler_angles[ 2 ] );
 	}
+
+	// Suppress implicit instantiation everywhere else:
+	extern template struct Quaternion< float >;
+	extern template struct Quaternion< double >;
 }
 
 namespace Kakadu
