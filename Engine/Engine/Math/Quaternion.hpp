@@ -207,13 +207,13 @@ namespace Kakadu::Math
 
 		/* Do not use this as it is slow.
 		 * Use Transform(), as it is faster. */
-		constexpr Vector3 Transform_Naive( const Vector3& vector_to_rotate ) const
+		constexpr Vector< ComponentType, 3 > Transform_Naive( const Vector< ComponentType, 3 >& vector_to_rotate ) const
 		{
 			return ( *this * Quaternion( vector_to_rotate ) * Inverse() ).xyz;
 		}
 
 		/* Use this as it is faster than Transform_Naive(). */
-		constexpr Vector3 Transform( const Vector3& vector_to_rotate ) const
+		constexpr Vector< ComponentType, 3 > Transform( const Vector< ComponentType, 3 >& vector_to_rotate ) const
 		{
 			ASSERT_DEBUG_ONLY( IsNormalized() && R"(QuaternionBase::Transform(): The quaternion "*this" is not normalized!)" ); // The derivation assumes unit quaternions.
 
