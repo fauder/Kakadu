@@ -3,6 +3,43 @@
 #include "Math/Math.hpp"
 #include "Math/Matrix.h"
 
+template struct Kakadu::Math::Matrix< float, 2, 2 >;
+template struct Kakadu::Math::Matrix< float, 2, 3 >;
+template struct Kakadu::Math::Matrix< float, 2, 4 >;
+template struct Kakadu::Math::Matrix< float, 3, 2 >;
+template struct Kakadu::Math::Matrix< float, 3, 3 >;
+template struct Kakadu::Math::Matrix< float, 3, 4 >;
+template struct Kakadu::Math::Matrix< float, 4, 2 >;
+template struct Kakadu::Math::Matrix< float, 4, 3 >;
+template struct Kakadu::Math::Matrix< float, 4, 4 >;
+template struct Kakadu::Math::Matrix< double, 2, 2 >;
+template struct Kakadu::Math::Matrix< double, 2, 3 >;
+template struct Kakadu::Math::Matrix< double, 2, 4 >;
+template struct Kakadu::Math::Matrix< double, 3, 2 >;
+template struct Kakadu::Math::Matrix< double, 3, 3 >;
+template struct Kakadu::Math::Matrix< double, 3, 4 >;
+template struct Kakadu::Math::Matrix< double, 4, 2 >;
+template struct Kakadu::Math::Matrix< double, 4, 3 >;
+template struct Kakadu::Math::Matrix< double, 4, 4 >;
+template struct Kakadu::Math::Matrix< int, 2, 2 >;
+template struct Kakadu::Math::Matrix< int, 2, 3 >;
+template struct Kakadu::Math::Matrix< int, 2, 4 >;
+template struct Kakadu::Math::Matrix< int, 3, 2 >;
+template struct Kakadu::Math::Matrix< int, 3, 3 >;
+template struct Kakadu::Math::Matrix< int, 3, 4 >;
+template struct Kakadu::Math::Matrix< int, 4, 2 >;
+template struct Kakadu::Math::Matrix< int, 4, 3 >;
+template struct Kakadu::Math::Matrix< int, 4, 4 >;
+template struct Kakadu::Math::Matrix< unsigned int, 2, 2 >;
+template struct Kakadu::Math::Matrix< unsigned int, 2, 3 >;
+template struct Kakadu::Math::Matrix< unsigned int, 2, 4 >;
+template struct Kakadu::Math::Matrix< unsigned int, 3, 2 >;
+template struct Kakadu::Math::Matrix< unsigned int, 3, 3 >;
+template struct Kakadu::Math::Matrix< unsigned int, 3, 4 >;
+template struct Kakadu::Math::Matrix< unsigned int, 4, 2 >;
+template struct Kakadu::Math::Matrix< unsigned int, 4, 3 >;
+template struct Kakadu::Math::Matrix< unsigned int, 4, 4 >;
+
 namespace Kakadu::Matrix
 {
 	/* In row-major form. Coordinates are in a left-handed coordinate system (both before & after multiplication). */

@@ -370,6 +370,44 @@ namespace Kakadu::Math
 
 		return vector_transformed;
 	}
+
+	// Suppress implicit instantiation everywhere else:
+	extern template struct Kakadu::Math::Matrix< float, 2, 2 >;
+	extern template struct Kakadu::Math::Matrix< float, 2, 3 >;
+	extern template struct Kakadu::Math::Matrix< float, 2, 4 >;
+	extern template struct Kakadu::Math::Matrix< float, 3, 2 >;
+	extern template struct Kakadu::Math::Matrix< float, 3, 3 >;
+	extern template struct Kakadu::Math::Matrix< float, 3, 4 >;
+	extern template struct Kakadu::Math::Matrix< float, 4, 2 >;
+	extern template struct Kakadu::Math::Matrix< float, 4, 3 >;
+	extern template struct Kakadu::Math::Matrix< float, 4, 4 >;
+	extern template struct Kakadu::Math::Matrix< double, 2, 2 >;
+	extern template struct Kakadu::Math::Matrix< double, 2, 3 >;
+	extern template struct Kakadu::Math::Matrix< double, 2, 4 >;
+	extern template struct Kakadu::Math::Matrix< double, 3, 2 >;
+	extern template struct Kakadu::Math::Matrix< double, 3, 3 >;
+	extern template struct Kakadu::Math::Matrix< double, 3, 4 >;
+	extern template struct Kakadu::Math::Matrix< double, 4, 2 >;
+	extern template struct Kakadu::Math::Matrix< double, 4, 3 >;
+	extern template struct Kakadu::Math::Matrix< double, 4, 4 >;
+	extern template struct Kakadu::Math::Matrix< int, 2, 2 >;
+	extern template struct Kakadu::Math::Matrix< int, 2, 3 >;
+	extern template struct Kakadu::Math::Matrix< int, 2, 4 >;
+	extern template struct Kakadu::Math::Matrix< int, 3, 2 >;
+	extern template struct Kakadu::Math::Matrix< int, 3, 3 >;
+	extern template struct Kakadu::Math::Matrix< int, 3, 4 >;
+	extern template struct Kakadu::Math::Matrix< int, 4, 2 >;
+	extern template struct Kakadu::Math::Matrix< int, 4, 3 >;
+	extern template struct Kakadu::Math::Matrix< int, 4, 4 >;
+	extern template struct Kakadu::Math::Matrix< unsigned int, 2, 2 >;
+	extern template struct Kakadu::Math::Matrix< unsigned int, 2, 3 >;
+	extern template struct Kakadu::Math::Matrix< unsigned int, 2, 4 >;
+	extern template struct Kakadu::Math::Matrix< unsigned int, 3, 2 >;
+	extern template struct Kakadu::Math::Matrix< unsigned int, 3, 3 >;
+	extern template struct Kakadu::Math::Matrix< unsigned int, 3, 4 >;
+	extern template struct Kakadu::Math::Matrix< unsigned int, 4, 2 >;
+	extern template struct Kakadu::Math::Matrix< unsigned int, 4, 3 >;
+	extern template struct Kakadu::Math::Matrix< unsigned int, 4, 4 >;
 }
 
 namespace Kakadu
