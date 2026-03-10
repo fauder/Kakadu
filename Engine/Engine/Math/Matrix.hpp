@@ -283,15 +283,20 @@ namespace Kakadu::Math
 			return result;
 		}
 
-		constexpr Matrix& operator*= ( const Matrix& other )
+		constexpr Matrix& operator*= ( const Matrix& other ) requires( RowSize == ColumnSize )
 		{
 			return *this = Matrix( *this ) * other;
 		}
 
 		/* Arithmetic Operations: Unary operators. */
-		constexpr Matrix operator- () const
+		constexpr Matrix operator- () const requires( std::is_signed_v< Type > )
 		{
-			return *this * Type( -1 );
+			Matrix result( NO_INITIALIZATION );
+			for( auto i = 0; i < RowSize; i++ )
+				for( auto j = 0; j < ColumnSize; j++ )
+					result.data[ i ][ j ] = -data[ i ][ j ];
+
+			return result;
 		}
 
 		Matrix& Transpose()
@@ -319,7 +324,7 @@ namespace Kakadu::Math
 			return result;
 		}
 
-		constexpr Type Determinant() const requires( RowSize == ColumnSize )
+		constexpr Type Determinant() const requires( RowSize == ColumnSize && ( RowSize == 2 || RowSize == 3 ) )
 		{
 			if constexpr( RowSize == 2 && ColumnSize == 2 )
 				return data[ 0 ][ 0 ] * data[ 1 ][ 1 ] - data[ 1 ][ 0 ] * data[ 0 ][ 1 ];
