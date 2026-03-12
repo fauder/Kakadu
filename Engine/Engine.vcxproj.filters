@@ -363,6 +363,15 @@
     <ClInclude Include="Engine\Introspection\RendererIntrospectionSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\ViewportShadingMode.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\GLLabelPrefixes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\Primitive\Primitive_Cube_FullScreen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\Application.cpp">
@@ -443,9 +452,6 @@
     <ClCompile Include="Engine\Graphics\Framebuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\Primitive\Primitive_Cube_FullScreen.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Graphics\VertexLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -471,9 +477,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Math\Intersect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Graphics\GLLabelPrefixes.h">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Math\Vector.cpp">
@@ -516,9 +519,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Editor\RendererPanel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Graphics\ViewportShadingMode.h">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Math\Quaternion.cpp">
