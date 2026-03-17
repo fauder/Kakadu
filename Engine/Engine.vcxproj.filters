@@ -372,6 +372,9 @@
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Cube_FullScreen.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Core\Types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\Application.cpp">

@@ -159,6 +159,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Core\Types.h" />
     <ClInclude Include="Engine\Editor\FrameStatisticsOverlay.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Engine\Asset\Resource\Resource.h" />
