@@ -38,8 +38,8 @@ namespace Kakadu
 		{
 			std::string name;
 
-			int width_in_pixels;
-			int height_in_pixels;
+			i32 width_in_pixels;
+			i32 height_in_pixels;
 
 			Texture::Filtering minification_filter  = Texture::Filtering::Linear;
 			Texture::Filtering magnification_filter = Texture::Filtering::Linear;
@@ -71,7 +71,7 @@ namespace Kakadu
 		~Framebuffer();
 
 	/* Usage: */
-		void Resize( const int new_width_in_pixels, const int new_height_in_pixels );
+		void Resize( const i32 new_width_in_pixels, const i32 new_height_in_pixels );
 
 		void ActivateForReadWrite() const;
 		void ActivateForRead() const;
@@ -88,7 +88,7 @@ namespace Kakadu
 	/* Queries: */
 		bool IsValid() const { return ( bool )id; } // Technically, this fails for the default framebuffer which has id 0, but it's not needed there anyway.
 
-		int	 SampleCount()	  const { return msaa.sample_count; }
+		i32	 SampleCount()	  const { return msaa.sample_count; }
 		bool IsMultiSampled() const { return msaa.IsEnabled(); }
 
 		/* Default framebuffer always uses sRGB Encoding. */
@@ -107,7 +107,7 @@ namespace Kakadu
 		void SetClearColor( const Color3& new_clear_color );
 		void SetClearColor( const Color4& new_clear_color );
 		void SetClearDepthValue( const float new_clear_depth_value );
-		void SetClearStencilValue( const int new_clear_stencil_value );
+		void SetClearStencilValue( const i32 new_clear_stencil_value );
 
 		void SetClearTargets( const BitFlags< ClearTarget > targets );
 		void Clear() const;
@@ -134,7 +134,7 @@ namespace Kakadu
 		BitFlags< ClearTarget > clear_targets;
 		Color4 clear_color;
 		float clear_depth_value;
-		int clear_stencil_value;
+		i32 clear_stencil_value;
 
 		// 4 bytes of padding.
 

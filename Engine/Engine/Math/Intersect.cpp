@@ -26,7 +26,7 @@ namespace Kakadu::Math
             rect.origin_y + rect.height - p1.Y()
         };
 
-        for( int i = 0; i < 4; i++ )
+        for( i32 i = 0; i < 4; i++ )
         {
             float pk = p_values[ i ];
             float qk = q_values[ i ];

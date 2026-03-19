@@ -72,7 +72,7 @@ namespace Kakadu
 		void RenderFrame();
 		void DrawMesh( const Mesh& mesh ) const;
 		void DrawPostProcessingEffectStep() const;
-		void OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels );
+		void OnFramebufferResize( const i32 new_width_in_pixels, const i32 new_height_in_pixels );
 		void OnFramebufferResize( const Vector2I new_resolution_in_pixels );
 
 		/* Sets the clear color for the main lighting pass. */
@@ -315,7 +315,7 @@ namespace Kakadu
 		void DisableStencilTest();
 		void SetStencilWriteMask( const u32 mask );
 		void SetStencilTestResponses( const StencilTestResponse stencil_fail, const StencilTestResponse stencil_pass_depth_fail, const StencilTestResponse both_pass );
-		void SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const u32 mask );
+		void SetStencilComparisonFunction( const ComparisonFunction comparison_function, const i32 reference_value, const u32 mask );
 
 		/*
 		 * Depth Test:
@@ -448,8 +448,8 @@ namespace Kakadu
 		DirectionalLight*			light_directional;
 		std::vector< PointLight* >	lights_point;
 		std::vector< SpotLight*	 >	lights_spot;
-		int lights_point_active_count;
-		int lights_spot_active_count;
+		i32 lights_point_active_count;
+		i32 lights_spot_active_count;
 
 		Matrix4x4 light_directional_view_projection_transform_matrix;
 

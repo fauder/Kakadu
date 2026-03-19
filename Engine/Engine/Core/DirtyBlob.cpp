@@ -1,5 +1,6 @@
 // Engine Includes.
 #include "DirtyBlob.h"
+#include "Types.h"
 
 // std Includes.
 #include <algorithm>
@@ -30,7 +31,7 @@ namespace Kakadu
 	{
 		std::sort( dirty_sections.begin(), dirty_sections.end() );
 
-		for( int index = 0; index < dirty_sections.size() - 1; index++ )
+		for( i32 index = 0; index < dirty_sections.size() - 1; index++ )
 		{
 			auto& section = dirty_sections[ index ];
 			auto& next_section = dirty_sections[ index + 1 ];

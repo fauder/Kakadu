@@ -49,7 +49,7 @@ namespace Kakadu
 
 		/* Apply scene-graph transformations: */
 
-		int mesh_index = 0;
+		i32 mesh_index = 0;
 		std::function< void( const std::size_t, const Matrix4x4& ) > ProcessNode = [ & ]( const std::size_t node_index, const Matrix4x4& parent_transform )
 		{
 			const auto& node = nodes[ node_index ];
@@ -73,7 +73,7 @@ namespace Kakadu
 
 	void ModelInstance::SetMaterialData( Kakadu::Shader* const shader, const Vector4 texture_scale_and_offset )
 	{
-		int material_index = 0;
+		i32 material_index = 0;
 
 		ASSERT_EDITOR_ONLY( shader && "Shader passed to ModelInstance::SetMaterialData is nullptr." );
 
@@ -137,7 +137,7 @@ namespace Kakadu
 		ASSERT_EDITOR_ONLY( shader && "Shader of the model instance is nullptr." );
 		ASSERT_EDITOR_ONLY( shader_shadow_receiving && "Shader (shadow receiving) of the model instance is nullptr." );
 
-		int material_index = 0;
+		i32 material_index = 0;
 
 		ASSERT_EDITOR_ONLY( shader && "Shader passed to ModelInstance::SetMaterialData is nullptr." );
 

@@ -67,7 +67,7 @@ namespace Kakadu
 	{
 		framebuffers.emplace_back( Framebuffer( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR ) );
 
-		for( int i = 1; i < BuiltinFramebufferIndex::Count; i++ )
+		for( i32 i = 1; i < BuiltinFramebufferIndex::Count; i++ )
 			framebuffers.emplace_back();
 
 		framebuffer_current_source      = &DefaultFramebuffer();
@@ -280,7 +280,7 @@ namespace Kakadu
 		DrawMesh( full_screen_quad_mesh );
 	}
 
-	void Renderer::OnFramebufferResize( const int new_width_in_pixels, const int new_height_in_pixels )
+	void Renderer::OnFramebufferResize( const i32 new_width_in_pixels, const i32 new_height_in_pixels )
 	{
 		glViewport( 0, 0, new_width_in_pixels, new_height_in_pixels );
 
@@ -828,7 +828,7 @@ namespace Kakadu
 		framebuffer_current_destination->ActivateForWrite();
 		glBlitFramebuffer( 0, 0, source.size.X(), source.size.Y(),
 						   0, 0, destination.size.X(), destination.size.Y(),
-						   GL_COLOR_BUFFER_BIT, ( int )filtering );
+						   GL_COLOR_BUFFER_BIT, ( i32 )filtering );
 	}
 
 	MSAA Renderer::GetMSAAInfo() const
@@ -849,7 +849,7 @@ namespace Kakadu
 		if( new_sample_count > 1 )
 		{
 			char buffer[ 48 ];
-			snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )new_sample_count );
+			snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( i32 )new_sample_count );
 
 			msaa_resolve.material.SetShader( BuiltinShaders::Get( buffer ) );
 			msaa_resolve.material.SetTexture( "uniform_tex", &MainFramebuffer().color_attachment );
@@ -865,14 +865,14 @@ namespace Kakadu
 		if( const auto iterator = SAMPLE_COUNTS_BY_FORMAT_MAP.find( format ); iterator != SAMPLE_COUNTS_BY_FORMAT_MAP.cend() )
 			return iterator->second.contains( sample_count_to_query );
 
-		int number_of_sample_counts = 0;
+		i32 number_of_sample_counts = 0;
 		glGetInternalformativ( GL_RENDERBUFFER, Texture::InternalFormat( format ), GL_NUM_SAMPLE_COUNTS, 1, &number_of_sample_counts );
 
-		std::vector< int > sample_counts( number_of_sample_counts );
+		std::vector< i32 > sample_counts( number_of_sample_counts );
 		glGetInternalformativ( GL_RENDERBUFFER, Texture::InternalFormat( format ), GL_SAMPLES, number_of_sample_counts, sample_counts.data() );
 		auto& set_of_sample_counts_queried = SAMPLE_COUNTS_BY_FORMAT_MAP[ format ];
 		std::transform( sample_counts.begin(), sample_counts.end(), std::inserter( set_of_sample_counts_queried, set_of_sample_counts_queried.begin() ),
-						[]( int sample_count ) { return sample_count; } );
+						[]( i32 sample_count ) { return sample_count; } );
 
 		return set_of_sample_counts_queried.contains( sample_count_to_query );
 	}
@@ -914,8 +914,8 @@ namespace Kakadu
 		const std::string bloom_downsample_shader_name = bloom_downsampling.material.GetShader()->name;
 
 		return ( BloomAntiFlickerSetting )
-			( int( bloom_downsample_shader_name == "Post-Process Bloom Downsample (Anti Flicker Coarse)" ) +
-			  int( bloom_downsample_shader_name == "Post-Process Bloom Downsample (Anti Flicker Fine)"   ) * 2 );
+			( i32( bloom_downsample_shader_name == "Post-Process Bloom Downsample (Anti Flicker Coarse)" ) +
+			  i32( bloom_downsample_shader_name == "Post-Process Bloom Downsample (Anti Flicker Fine)"   ) * 2 );
 	}
 
 	void Renderer::SetBloomAntiFlickerSetting( const BloomAntiFlickerSetting new_setting )
@@ -1239,7 +1239,7 @@ namespace Kakadu
 	void Renderer::InitializeBuiltinMaterials()
 	{
 		char buffer[ 48 ];
-		snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( int )framebuffer_main_description.msaa.sample_count );
+		snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( i32 )framebuffer_main_description.msaa.sample_count );
 		msaa_resolve.material = Material( "[Renderer] MSAA Resolve", BuiltinShaders::Get( buffer ) );
 
 		skybox_material       = Material( "Skybox", BuiltinShaders::Get( "Skybox" ) );
@@ -1335,9 +1335,9 @@ namespace Kakadu
 
 		const Texture* input_texture = &PostProcessingFramebuffer().color_attachment;
 
-		const int digit_count = ( bloom_mip_chain_size >= 10 ) ? 2 : 1;
+		const i32 digit_count = ( bloom_mip_chain_size >= 10 ) ? 2 : 1;
 
-		for( int i = 0; i < bloom_mip_chain_size; i++ )
+		for( i32 i = 0; i < bloom_mip_chain_size; i++ )
 		{
 			constexpr std::uint8_t buffer_size = 64;
 			char buffer[ buffer_size ];
@@ -1375,9 +1375,9 @@ namespace Kakadu
 			* We can use it and update it as we go.
 			* For the output, we do need to look it up explicitly from the downsample steps.
 			*/
-		for( int i = 0; i < bloom_mip_chain_size; i++ )
+		for( i32 i = 0; i < bloom_mip_chain_size; i++ )
 		{
-			const int reverse_i = ( bloom_mip_chain_size - 1 ) - i;
+			const i32 reverse_i = ( bloom_mip_chain_size - 1 ) - i;
 
 			constexpr std::uint8_t buffer_size = 64;
 			char buffer[ buffer_size ];
@@ -1492,7 +1492,7 @@ namespace Kakadu
 		glStencilOp( ( GLenum )stencil_fail, ( GLenum )stencil_pass_depth_fail, ( GLenum )both_pass );
 	}
 
-	void Renderer::SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const u32 mask )
+	void Renderer::SetStencilComparisonFunction( const ComparisonFunction comparison_function, const i32 reference_value, const u32 mask )
 	{
 		glStencilFunc( ( GLenum )comparison_function, reference_value, mask );
 	}
@@ -1627,7 +1627,7 @@ namespace Kakadu
 				case ViewportShadingMode::Geometry_Tangents:
 				case ViewportShadingMode::Geometry_Bitangents:
 				case ViewportShadingMode::Geometry_Normals:
-					shader->SetUniform( "uniform_show_tangents_bitangents_normals", ( int )viewport_shading_mode - ( int )ViewportShadingMode::Geometry_Tangents );
+					shader->SetUniform( "uniform_show_tangents_bitangents_normals", ( i32 )viewport_shading_mode - ( i32 )ViewportShadingMode::Geometry_Tangents );
 					break;
 				case ViewportShadingMode::DebugVectors:
 					shader->SetUniform( "uniform_line_scale_override", 0.2f );
@@ -1828,7 +1828,7 @@ namespace Kakadu
 			// Get the actual supported sample counts
 			glGetInternalformativ( GL_RENDERBUFFER, internal_format, GL_SAMPLES, num_samples, samples );
 
-			for( int i = 0; i < num_samples; ++i ) // Support up to 8x as beyond that is murky.
+			for( i32 i = 0; i < num_samples; ++i ) // Support up to 8x as beyond that is murky.
 				if( samples[ i ] <= 8 )
 					msaa_supported_sample_counts_per_format[ format ].push_back( samples[ i ] );
 

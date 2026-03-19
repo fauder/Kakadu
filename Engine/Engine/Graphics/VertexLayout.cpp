@@ -35,7 +35,7 @@ namespace Kakadu
 
 		const u32 stride = Stride_NonInstanced();
 
-		constexpr int is_normalized = GL_FALSE;
+		constexpr i32 is_normalized = GL_FALSE;
 		u32 offset = 0;
 
 		for( auto iterator = attributes.cbegin(); iterator != instanced_attributes_begin; iterator++ )
@@ -77,7 +77,7 @@ namespace Kakadu
 
 		const u32 stride = Stride_Instanced();
 
-		constexpr int is_normalized = GL_FALSE;
+		constexpr i32 is_normalized = GL_FALSE;
 		u32 offset = 0;
 
 		for( auto iterator = instanced_attributes_begin; iterator != attributes.cend(); iterator++ )
@@ -163,7 +163,7 @@ namespace Kakadu
 	 */
 
 	/* Currently unused. */
-	void VertexLayout::Push( const GLenum type, const int count, const bool is_instanced )
+	void VertexLayout::Push( const GLenum type, const i32 count, const bool is_instanced )
 	{
 		if( attributes.empty() )
 			attributes.push_back( { count, type, is_instanced, 0 } );

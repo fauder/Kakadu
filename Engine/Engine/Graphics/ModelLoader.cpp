@@ -36,11 +36,11 @@ struct fastgltf::ElementTraits< Kakadu::Vector3U > : fastgltf::ElementTraitsBase
 template <>
 struct fastgltf::ElementTraits< Kakadu::Vector4U > : fastgltf::ElementTraitsBase< Kakadu::Vector4U, AccessorType::Vec4, Kakadu::u32 > {};
 template <>
-struct fastgltf::ElementTraits< Kakadu::Vector2I > : fastgltf::ElementTraitsBase< Kakadu::Vector2I, AccessorType::Vec2, int > {};
+struct fastgltf::ElementTraits< Kakadu::Vector2I > : fastgltf::ElementTraitsBase< Kakadu::Vector2I, AccessorType::Vec2, Kakadu::i32 > {};
 template <>
-struct fastgltf::ElementTraits< Kakadu::Vector3I > : fastgltf::ElementTraitsBase< Kakadu::Vector3I, AccessorType::Vec3, int > {};
+struct fastgltf::ElementTraits< Kakadu::Vector3I > : fastgltf::ElementTraitsBase< Kakadu::Vector3I, AccessorType::Vec3, Kakadu::i32 > {};
 template <>
-struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase< Kakadu::Vector4I, AccessorType::Vec4, int > {};
+struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase< Kakadu::Vector4I, AccessorType::Vec4, Kakadu::i32 > {};
 
 namespace Kakadu
 {
@@ -350,7 +350,7 @@ namespace Kakadu
                         {
 							texture_to_load = texture_database.CreateAssetFromFileBytes( std::string( gltf_image.name ),
                                                                                          vector.bytes.data(),
-                                                                                         static_cast< int >( vector.bytes.size() ),
+                                                                                         static_cast< i32 >( vector.bytes.size() ),
                                                                                          import_settings );
                         },
                         [ & ]( const fastgltf::sources::BufferView& view )
@@ -370,7 +370,7 @@ namespace Kakadu
                                                 texture_to_load =
                                                     texture_database.CreateAssetFromFileBytes( std::string( gltf_image.name ),
                                                                                                vector.bytes.data() + buffer_view.byteOffset,
-                                                                                               static_cast< int >( buffer_view.byteLength ),
+                                                                                               static_cast< i32 >( buffer_view.byteLength ),
                                                                                                import_settings );
                                             }
                                         }, buffer.data );
@@ -546,9 +546,9 @@ namespace Kakadu
          */
 
         const auto sub_mesh_count = std::accumulate( gltf_asset.meshes.cbegin(), gltf_asset.meshes.cend(), 0,
-													 []( const int sum_so_far, const auto& gltf_mesh )
+													 []( const i32 sum_so_far, const auto& gltf_mesh )
 		                                             {
-			                                             return sum_so_far + ( int )gltf_mesh.primitives.size();
+			                                             return sum_so_far + ( i32 )gltf_mesh.primitives.size();
 		                                             } );
 
         model.meshes.reserve( sub_mesh_count );
@@ -566,7 +566,7 @@ namespace Kakadu
 
             node.children.reserve( gltf_node.children.size() );
             for( auto& child_index : gltf_node.children )
-                node.children.push_back( ( int )child_index );
+                node.children.push_back( ( i32 )child_index );
 
             if( node.mesh_group )
             {
@@ -574,7 +574,7 @@ namespace Kakadu
 								  *node.mesh_group, model.meshes, model.textures ) )
                     return std::nullopt;
 
-                model.mesh_instance_count += ( int )node.mesh_group->sub_meshes.size();
+                model.mesh_instance_count += ( i32 )node.mesh_group->sub_meshes.size();
             }
         }
 

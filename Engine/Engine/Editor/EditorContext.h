@@ -26,7 +26,7 @@ namespace Kakadu::Editor
 		void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
 		void OnMouseScrollEvent( const float x_offset, const float y_offset );
 
-		void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels );
+		void OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels );
 
 		void Initialize();
 		void Update( const FrameTime& frame_time );

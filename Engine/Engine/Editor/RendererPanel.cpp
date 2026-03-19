@@ -42,7 +42,7 @@ namespace Kakadu::Editor
 						for( auto& [ pass_id, pass ] : *introspection_surface.render_pass_map )
 						{
 							ImGui::TableNextColumn();
-							ImGui::PushID( ( int )pass_id );
+							ImGui::PushID( ( i32 )pass_id );
 
 							const bool pass_has_content_to_render = renderer.PassHasContentToRender( pass );
 
@@ -53,7 +53,7 @@ namespace Kakadu::Editor
 
 							ImGui::PopID();
 							ImGui::SameLine();
-							if( ImGui::TreeNodeEx( pass.name.c_str(), 0, ICON_FA_FLAG_CHECKERED " #%d %s", ( int )pass_id, pass.name.c_str() ) )
+							if( ImGui::TreeNodeEx( pass.name.c_str(), 0, ICON_FA_FLAG_CHECKERED " #%d %s", ( i32 )pass_id, pass.name.c_str() ) )
 							{
 								// TODO: Display RenderState info as a collapsible header.
 								for( auto& queue_id : pass.queue_id_set )
@@ -62,7 +62,7 @@ namespace Kakadu::Editor
 
 									if( queue.renderable_list.empty() )
 									{
-										ImGui::TextDisabled( ICON_FA_BARS " Empty #%d %s", ( int )queue_id, queue.name.c_str() );
+										ImGui::TextDisabled( ICON_FA_BARS " Empty #%d %s", ( i32 )queue_id, queue.name.c_str() );
 										continue;
 									}
 
@@ -71,11 +71,11 @@ namespace Kakadu::Editor
 									if( not queue_has_content_to_render )
 										ImGuiUtility::BeginDisabledButInteractable();
 
-									ImGui::PushID( ( int )queue_id );
+									ImGui::PushID( ( i32 )queue_id );
 									ImGuiUtility::EyeCheckbox( "", &queue.is_enabled );
 									ImGui::PopID();
 									ImGui::SameLine();
-									if( ImGui::TreeNodeEx( queue.name.c_str(), 0, ICON_FA_BARS " #%d %s", ( int )queue_id, queue.name.c_str() ) )
+									if( ImGui::TreeNodeEx( queue.name.c_str(), 0, ICON_FA_BARS " #%d %s", ( i32 )queue_id, queue.name.c_str() ) )
 									{
 										ImGui::BeginDisabled( not queue.is_enabled );
 
@@ -98,7 +98,7 @@ namespace Kakadu::Editor
 															if( auto mesh = renderable->GetMesh();
 																mesh->HasInstancing() )
 															{
-																int instance_Count = mesh->InstanceCount();
+																i32 instance_Count = mesh->InstanceCount();
 																ImGui::SameLine(); ImGui::TextColored( ImVec4( 0.84f, 0.59f, 0.45f, 1.0f ),
 																									   "(Instance Count: %d)", instance_Count );
 															}
@@ -305,14 +305,14 @@ namespace Kakadu::Editor
 					/* MSAA Setting: */
 					{
 						const auto& msaa_supported_sample_counts = renderer.MSAASupportedSampleCountsFor( main_framebuffer.color_attachment.PixelFormat() );
-						const int   option_count = ( int )msaa_supported_sample_counts.size();
+						const i32   option_count = ( i32 )msaa_supported_sample_counts.size();
 
-						int msaa_sample_log_2 = Math::Log2( main_framebuffer.SampleCount() ); // Can be directly used as index.
+						i32 msaa_sample_log_2 = Math::Log2( main_framebuffer.SampleCount() ); // Can be directly used as index.
 
 						const auto sample_count_string = msaa_sample_log_2 == 0
 							? "Off"
 							: "MSAA " + std::to_string( msaa_supported_sample_counts[ msaa_sample_log_2 ] ) + 'x';
-						if( ImGui::SliderInt( "MSAA", &msaa_sample_log_2, 0, ( int )option_count - 1, sample_count_string.c_str() ) )
+						if( ImGui::SliderInt( "MSAA", &msaa_sample_log_2, 0, ( i32 )option_count - 1, sample_count_string.c_str() ) )
 						{
 							renderer.SetMSAASampleCount( Math::Pow2( msaa_sample_log_2 ) );
 						}
@@ -331,12 +331,12 @@ namespace Kakadu::Editor
 					ImGui::SeparatorText( "Bloom" );
 					{
 						/* Step count: */
-						int bloom_step_count = ( int )renderer.GetBloomStepCount();
+						i32 bloom_step_count = ( i32 )renderer.GetBloomStepCount();
 						if( ImGui::InputInt( "Step Count", &bloom_step_count, 1, 0 ) )
 							renderer.SetBloomStepCount( bloom_step_count );
 
 						/* Anti-flicker: */
-						int anti_flicker_option = renderer.GetBloomAntiFlickerSetting();
+						i32 anti_flicker_option = renderer.GetBloomAntiFlickerSetting();
 						const char* option_names[ 3 ] = { "Off", "Coarse", "Fine" };
 						if( ImGui::SliderInt( "Anti-flicker (Firefly Mitigation)", &anti_flicker_option, 0, 2, option_names[ anti_flicker_option ] ) )
 							renderer.SetBloomAntiFlickerSetting( ( Renderer::BloomAntiFlickerSetting )anti_flicker_option );

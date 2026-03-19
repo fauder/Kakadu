@@ -17,7 +17,7 @@ namespace Kakadu
 	class Model
 	{
 	public:
-		using SizeType = int;
+		using SizeType = i32;
 
 		struct ImportSettings
 		{
@@ -58,7 +58,7 @@ namespace Kakadu
 			Node( Node&& );
 			Node& operator =( Node&& );
 
-			std::vector< int > children;
+			std::vector< i32 > children;
 
 			std::string name;
 			Matrix4x4 transform_local;
@@ -83,10 +83,10 @@ namespace Kakadu
 	/* Queries: */
 		const std::string& Name() const { return name; }
 
-		int NodeCount()			const { return ( int )nodes.size(); }
-		int MeshCount()			const { return ( int )meshes.size(); }
-		int MeshInstanceCount()	const { return mesh_instance_count; }
-		int MeshGroupCount()	const { return ( int )mesh_groups.size(); }
+		i32 NodeCount()			const { return ( i32 )nodes.size(); }
+		i32 MeshCount()			const { return ( i32 )meshes.size(); }
+		i32 MeshInstanceCount()	const { return mesh_instance_count; }
+		i32 MeshGroupCount()	const { return ( i32 )mesh_groups.size(); }
 		
 		const std::vector< std::size_t >& TopLevelNodeIndices() const { return node_indices_top_level; }
 
@@ -104,7 +104,7 @@ namespace Kakadu
 
 		std::vector< std::size_t > node_indices_top_level;
 
-		int mesh_instance_count;
-		//int padding;
+		i32 mesh_instance_count;
+		/* 4 bytes of padding. */;
 	};
 }

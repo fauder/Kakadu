@@ -16,7 +16,7 @@ namespace Kakadu::Editor
 		float last_N_frame_times_sum = 0.0f;
 
 		std::uint16_t rolling_avg_fps = 0;
-		int rolling_avg_index = 0;
+		i32 rolling_avg_index = 0;
 
 		float rolling_avg_frame_time = 0.0f;
 

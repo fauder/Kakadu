@@ -151,7 +151,7 @@ namespace Kakadu
 		Texture( const std::string_view name,
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
-				 const int width, const int height,
+				 const i32 width, const i32 height,
 				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
@@ -161,7 +161,7 @@ namespace Kakadu
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
 				 const std::uint8_t sample_count,
-				 const int width, const int height );
+				 const i32 width, const i32 height );
 
 		/* Cubemap allocate-only constructor (no data).
 		 * No wrapping options for cubemaps as all three axes will default to clamp-to-edge, which is the only sensible option. */
@@ -169,7 +169,7 @@ namespace Kakadu
 				 const std::string_view name,
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
-				 const int width, const int height,
+				 const i32 width, const i32 height,
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
 
@@ -186,15 +186,15 @@ namespace Kakadu
 
 		RHI::TextureID		Id()						const { return id; }
 		const Vector2I&		Size()						const { return size; }
-		int					Width()						const { return size.X(); }
-		int					Height()					const { return size.Y(); }
+		i32					Width()						const { return size.X(); }
+		i32					Height()					const { return size.Y(); }
 		TextureType			Type()						const { return type; }
 		const std::string&	Name()						const { return name; }
 		Wrapping			Wrapping_U()				const { return import_settings.wrap_u; }
 		Wrapping			Wrapping_V()				const { return import_settings.wrap_v; }
 		Filtering			MinificationFiltering()		const { return import_settings.min_filter; }
 		Filtering			MagnificationFiltering()	const { return import_settings.mag_filter; }
-		int					SampleCount()				const { return import_settings.msaa.sample_count; }
+		i32					SampleCount()				const { return import_settings.msaa.sample_count; }
 		bool				IsMultiSampled()			const { return import_settings.msaa.IsEnabled(); }
 		bool				Is_sRGB()					const { return import_settings.format == Format::SRGB || import_settings.format == Format::SRGBA; }
 		bool				IsHDR()						const { return
@@ -205,10 +205,10 @@ namespace Kakadu
 
 	/* Usage: */
 		void SetName( const std::string& new_name );
-		void Activate( const int slot ) const;
+		void Activate( const i32 slot ) const;
 		void GenerateMipmaps() const;
 
-		static int InternalFormat( const Texture::Format format );
+		static i32 InternalFormat( const Texture::Format format );
 
 		constexpr static GLenum PixelDataFormat( const Texture::Format format )
 		{
@@ -258,7 +258,7 @@ namespace Kakadu
 		Texture( const std::string_view name,
 				 const std::byte* data,
 				 const Format format,
-				 const int width, const int height,
+				 const i32 width, const i32 height,
 				 const bool generate_mipmaps = true,
 				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
@@ -270,7 +270,7 @@ namespace Kakadu
 				 const std::string_view name,
 				 const std::array< const std::byte*, 6 >& cubemap_data_array,
 				 const Format format,
-				 const int width, const int height,
+				 const i32 width, const i32 height,
 				 const Color4 border_color = Color4::Black(),
 				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
 

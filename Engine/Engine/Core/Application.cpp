@@ -202,7 +202,7 @@ namespace Kakadu
 			} );
 
 		Platform::SetFramebufferResizeCallback(
-			[ = ]( const int width_new_pixels, const int height_new_pixels )
+			[ = ]( const i32 width_new_pixels, const i32 height_new_pixels )
 			{
 				this->HandleFramebufferResizeEvent( width_new_pixels, height_new_pixels );
 			} );
@@ -278,7 +278,7 @@ namespace Kakadu
 		OnMouseScrollEvent( x_offset, y_offset );
 	}
 
-	void Application::HandleFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
+	void Application::HandleFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels )
 	{
 		/* Do nothing on minimize: */
 		if( width_new_pixels <= 0 || height_new_pixels <= 0 ||
@@ -324,7 +324,7 @@ namespace Kakadu
 				}
 				case Editor::Command::Type::Renderer_ChangeViewportShadingMode:
 				{
-					int option;
+					i32 option;
 					std::memcpy( &option, command.payload.data(), sizeof( option ) );
 
 					renderer->SetViewportShadingMode( ( ViewportShadingMode )option );

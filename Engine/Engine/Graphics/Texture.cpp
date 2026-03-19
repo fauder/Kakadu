@@ -22,7 +22,7 @@ namespace Kakadu
 	Texture::Texture( const std::string_view name,
 					  //const std::byte* data, This is omitted from this public constructor.
 					  const Format format,
-					  const int width, const int height,
+					  const i32 width, const i32 height,
 					  const Wrapping wrap_u, const Wrapping wrap_v,
 					  const Color4 border_color,
 					  const Filtering min_filter, Filtering mag_filter )
@@ -69,7 +69,7 @@ namespace Kakadu
 					  //const std::byte* data, This is omitted from this public constructor.
 					  const Format format,
 					  const std::uint8_t sample_count,
-					  const int width, const int height )
+					  const i32 width, const i32 height )
 		:
 		id( {} ),
 		size( width, height ),
@@ -105,7 +105,7 @@ namespace Kakadu
 					  const std::string_view name,
 					  //const std::byte* data, This is omitted from this public constructor.
 					  const Format format,
-					  const int width, const int height,
+					  const i32 width, const i32 height,
 					  Color4 border_color,
 					  const Filtering min_filter, const Filtering mag_filter )
 		:
@@ -184,7 +184,7 @@ namespace Kakadu
 		name = new_name;
 	}
 
-	void Texture::Activate( const int slot ) const
+	void Texture::Activate( const i32 slot ) const
 	{
 		glActiveTexture( GL_TEXTURE0 + slot );
 		Bind();
@@ -198,7 +198,7 @@ namespace Kakadu
 		glGenerateMipmap( ( GLenum )type );
 	}
 
-	int Texture::InternalFormat( const Texture::Format format )
+	i32 Texture::InternalFormat( const Texture::Format format )
 	{
 		switch( format )
 		{
@@ -232,7 +232,7 @@ namespace Kakadu
 	 * If data argument is nullptr, this is essentially the same as the public allocate-only constructor. */
 	Texture::Texture( const std::string_view name,
 					  const std::byte* data,
-					  const Format format, const int width, const int height,
+					  const Format format, const i32 width, const i32 height,
 					  const bool generate_mipmaps,
 					  const Wrapping wrap_u, const Wrapping wrap_v,
 					  const Color4 border_color,
@@ -283,7 +283,7 @@ namespace Kakadu
 					  const std::string_view name,
 					  const std::array< const std::byte*, 6 >& cubemap_data_array,
 					  const Format format, 
-					  const int width, const int height,
+					  const i32 width, const i32 height,
 					  const Color4 border_color,
 					  const Filtering min_filter, const Filtering mag_filter )
 		:

@@ -53,7 +53,7 @@ namespace Kakadu
 
 	private:
 		RHI::VertexArrayID id;
-		//int padding;
+		/* 4 bytes of padding. */
 
 		std::string name;
 

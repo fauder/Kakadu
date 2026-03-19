@@ -123,14 +123,14 @@ namespace Kakadu
 
 	void GLLogger::GetLabel( const GLenum object_type, const GLuint object_id, char* label ) const
 	{
-		int label_length;
+		i32 label_length;
 		glGetObjectLabel( object_type, object_id, GL_MAX_LABEL_LENGTH, &label_length, label );
 	}
 
 	std::string GLLogger::GetLabel( const GLenum object_type, const GLuint object_id ) const
 	{
 		char OBJECT_LABEL_STORAGE[ GL_MAX_LABEL_LENGTH ];
-		int label_length;
+		i32 label_length;
 		glGetObjectLabel( object_type, object_id, GL_MAX_LABEL_LENGTH, &label_length, OBJECT_LABEL_STORAGE );
 		return OBJECT_LABEL_STORAGE;
 	}

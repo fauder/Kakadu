@@ -64,7 +64,7 @@ namespace Kakadu
 
 		/* Query attachments: */
 		{
-			int attachment;
+			i32 attachment;
 
 			glGetFramebufferAttachmentParameteriv( GL_FRAMEBUFFER, GL_DEPTH, GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &attachment );
 			if( attachment )
@@ -79,7 +79,7 @@ namespace Kakadu
 		{
 			if( glIsEnabled( GL_MULTISAMPLE ) )
 			{
-				int queried_sample_count;
+				i32 queried_sample_count;
 				glGetIntegerv( GL_SAMPLES, &queried_sample_count );
 
 				if( queried_sample_count > 1 )
@@ -155,7 +155,7 @@ namespace Kakadu
 		Destroy();
 	}
 
-	void Framebuffer::Resize( const int new_width_in_pixels, const int new_height_in_pixels )
+	void Framebuffer::Resize( const i32 new_width_in_pixels, const i32 new_height_in_pixels )
 	{
 		ActivateForWrite();
 
@@ -292,7 +292,7 @@ namespace Kakadu
 			Kakadu::ServiceLocator< AssetDatabase_Tracked< Kakadu::Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
 		}
 
-		constexpr int gl_spec_required_level = 0;
+		constexpr i32 gl_spec_required_level = 0;
 		glFramebufferTexture2D( ( GLenum )ActivationMode::Write,
 								attachment_type_enum,
 								msaa.IsEnabled()
@@ -320,7 +320,7 @@ namespace Kakadu
 		SetClearDepthValue();
 	}
 
-	void Framebuffer::SetClearStencilValue( const int new_clear_stencil_value )
+	void Framebuffer::SetClearStencilValue( const i32 new_clear_stencil_value )
 	{
 		clear_stencil_value = new_clear_stencil_value;
 		SetClearStencilValue();
@@ -382,7 +382,7 @@ namespace Kakadu
 													  {
 														  const float single_lerp_duration = 1.0f / ( float )ping_pong_count;
 
-														  const std::uint8_t ping_pong_index = int( t / single_lerp_duration );
+														  const std::uint8_t ping_pong_index = std::uint8_t( t / single_lerp_duration );
 
 														  if( ping_pong_index % 2 == 0 )
 															  clear_color = Math::Lerp( start, end, t * ping_pong_count - ping_pong_index );

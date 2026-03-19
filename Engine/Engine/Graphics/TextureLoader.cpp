@@ -13,7 +13,7 @@
 
 namespace Kakadu
 {
-	constexpr int DESIRED_CHANNELS = 4;
+	constexpr i32 DESIRED_CHANNELS = 4;
 
 	std::optional< Texture > Texture::Loader::FromFile( const::std::string_view name, const std::string& file_path, const ImportSettings& import_settings )
 	{
@@ -24,8 +24,8 @@ namespace Kakadu
 
 		std::optional< Texture > maybe_texture;
 
-		int width, height;
-		int number_of_channels = -1;
+		i32 width, height;
+		i32 number_of_channels = -1;
 		auto image_data = stbi_load( file_path.c_str(), &width, &height, &number_of_channels, DESIRED_CHANNELS );
 		if( image_data )
 		{
@@ -61,8 +61,8 @@ namespace Kakadu
 
 		std::array< stbi_uc*, 6 > image_data_array;
 
-		int width, height;
-		int number_of_channels = -1;
+		i32 width, height;
+		i32 number_of_channels = -1;
 
 		bool error_encountered = false;
 
@@ -106,7 +106,7 @@ namespace Kakadu
 	/* 'data' argument here contains the parsed file contents that are still encoded and need to be decoded before actual use. */
 	std::optional< Texture > Texture::Loader::FromFileBytes( const::std::string_view name,
 															 const std::byte* data,
-															 const int length,
+															 const i32 length,
 															 const ImportSettings& import_settings )
 	{
 		//auto& instance = Instance();
@@ -116,8 +116,8 @@ namespace Kakadu
 		// OpenGL expects uv coordinate v = 0 to be on the most bottom whereas stb loads image data with v = 0 to be top.
 		stbi_set_flip_vertically_on_load( import_settings.flip_vertically );
 
-		int width, height;
-		int number_of_channels = -1;
+		i32 width, height;
+		i32 number_of_channels = -1;
 		auto image_data = stbi_load_from_memory( ( stbi_uc* )data, length, &width, &height, &number_of_channels, DESIRED_CHANNELS );
 		if( image_data )
 		{

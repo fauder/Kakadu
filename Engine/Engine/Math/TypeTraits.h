@@ -1,7 +1,8 @@
 #pragma once
 
 // Engine Includes.
-#include "Math/Constants.h"
+#include "Constants.h"
+#include "Core/Types.h"
 
 // std includes.
 #include <cmath>
@@ -13,13 +14,13 @@ namespace Kakadu
 	template< typename T > struct TypeTraits
 	{};
 
-	template<> struct TypeTraits< int >
+	template<> struct TypeTraits< i32 >
 	{
 		TypeTraits() = delete;
 
-		static constexpr int Min()					{ return ( std::numeric_limits< int >::min )(); }
-		static constexpr int Max()					{ return ( std::numeric_limits< int >::max )(); }
-		static constexpr int Infinity()				{ return std::numeric_limits< int >::infinity(); }
+		static constexpr i32 Min()					{ return ( std::numeric_limits< i32 >::min )(); }
+		static constexpr i32 Max()					{ return ( std::numeric_limits< i32 >::max )(); }
+		static constexpr i32 Infinity()				{ return std::numeric_limits< i32 >::infinity(); }
 	};
 
 	template<> struct TypeTraits< u32 >

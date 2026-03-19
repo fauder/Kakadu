@@ -53,7 +53,7 @@ namespace Kakadu
 		Mesh( const Mesh& other,
 			  const std::initializer_list< VertexInstanceAttribute > instanced_attributes,
 			  const std::vector< float >& instance_data,
-			  const int instance_count,
+			  const i32 instance_count,
 			  const RHI::Usage usage = RHI::Usage::StaticDraw );
 
 		~Mesh();
@@ -84,13 +84,13 @@ namespace Kakadu
 
 		PrimitiveType Primitive() const { return primitive_type; }
 
-		int VertexCount() const { return vertex_buffer.count; }
-		int IndexCount()  const { return index_buffer.has_value() ? index_buffer->count : 0; }
+		i32 VertexCount() const { return vertex_buffer.count; }
+		i32 IndexCount()  const { return index_buffer.has_value() ? index_buffer->count : 0; }
 
 		bool HasIndices() const { return IndexCount(); }
 
 		bool HasInstancing() const { return ( bool )instance_buffer; }
-		int InstanceCount()  const { return instance_count; }
+		i32 InstanceCount()  const { return instance_count; }
 
 		bool IsCompatibleWith( const VertexLayout& other_vertex_layout ) const { return vertex_layout.IsCompatibleWith( other_vertex_layout ); }
 
@@ -134,7 +134,7 @@ namespace Kakadu
 
 		PrimitiveType primitive_type;
 
-		int instance_count;
+		i32 instance_count;
 
 		Buffer vertex_buffer;
 		VertexLayout vertex_layout;

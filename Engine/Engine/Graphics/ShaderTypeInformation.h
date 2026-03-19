@@ -12,7 +12,7 @@
 
 namespace Kakadu::GL::Type
 {
-	header_function	int SizeOf( const GLenum type )
+	header_function	i32 SizeOf( const GLenum type )
 	{
 		switch( type )
 		{
@@ -27,7 +27,7 @@ namespace Kakadu::GL::Type
 			case GL_DOUBLE_VEC3			: return sizeof( Vector3D );
 			case GL_DOUBLE_VEC4			: return sizeof( Vector4D );
 
-			case GL_INT					: return sizeof( int );
+			case GL_INT					: return sizeof( i32 );
 			case GL_INT_VEC2			: return sizeof( Vector2I );
 			case GL_INT_VEC3			: return sizeof( Vector3I );
 			case GL_INT_VEC4			: return sizeof( Vector4I );
@@ -103,13 +103,13 @@ namespace Kakadu::GL::Type
 			case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
 			case GL_UNSIGNED_INT_SAMPLER_BUFFER:
 			case GL_UNSIGNED_INT_SAMPLER_2D_RECT:
-				return sizeof( int );
+				return sizeof( i32 );
 		}
 
 		throw std::runtime_error( "ERROR::SHADER_TYPE::SizeOf() called with an unknown GL type!" );
 	}
 
-	header_function int CountOf( const GLenum type )
+	header_function i32 CountOf( const GLenum type )
 	{
 		switch( type )
 		{
@@ -167,7 +167,7 @@ namespace Kakadu::GL::Type
 		throw std::runtime_error( "ERROR::SHADER_TYPE::CountOf() called with an unknown GL type!" );
 	}
 
-	header_function	std::pair< int, int > RowAndColumnCountOf( const GLenum type )
+	header_function	std::pair< i32, i32 > RowAndColumnCountOf( const GLenum type )
 	{
 		switch( type )
 		{
@@ -523,12 +523,12 @@ namespace Kakadu::GL::Type
 		throw std::runtime_error( "ERROR::SHADER_TYPE::ComponentTypeOf() called with an unknown GL type!" );
 	}
 
-	header_function void* AddressOf( const GLenum type, void* address, const int element_index )
+	header_function void* AddressOf( const GLenum type, void* address, const i32 element_index )
 	{
 		return ( void* )( ( uintptr_t )address + element_index * SizeOf( type ) );
 	}
 
-	header_function const void* AddressOf( const GLenum type, const void* address, const int element_index )
+	header_function const void* AddressOf( const GLenum type, const void* address, const i32 element_index )
 	{
 		return ( const void* )( ( uintptr_t )address + element_index * SizeOf( type ) );
 	}

@@ -124,7 +124,7 @@ namespace Kakadu
 	u32 UniformBlockBindingPointManager::QueryMaximumUniformBufferBindingCount()
 	{
 		u32 query_result;
-		glGetIntegerv( GL_MAX_UNIFORM_BUFFER_BINDINGS, ( int* )&query_result );
+		glGetIntegerv( GL_MAX_UNIFORM_BUFFER_BINDINGS, ( i32* )&query_result );
 		return query_result;
 	}
 }

@@ -194,7 +194,7 @@ namespace Kakadu
 			const auto& correct_hash_lookup = group ? unique_entry_hashes_per_unique_line : unique_entry_hashes_per_line;
 			while( clipper.Step() )
 			{
-				for( int line_index = clipper.DisplayStart; line_index < clipper.DisplayEnd; line_index++ )
+				for( i32 line_index = clipper.DisplayStart; line_index < clipper.DisplayEnd; line_index++ )
 				{
 					const std::size_t unique_entry_hash = correct_hash_lookup[ line_index ];
 					const UniqueEntryInfo& unique_entry = unique_entry_map[ unique_entry_hash ];
@@ -204,7 +204,7 @@ namespace Kakadu
 						if( unique_entry.LineCount() == 1 )
 							return 0;
 
-						int reverse_index = line_index - 1;
+						i32 reverse_index = line_index - 1;
 						for( ; reverse_index >= 0; reverse_index-- )
 							if( correct_hash_lookup[ reverse_index ] != unique_entry_hash )
 								break;
@@ -214,14 +214,14 @@ namespace Kakadu
 
 					const std::uint16_t local_line_index = LocalIndex();
 
-					const char* unique_entry_start = buffer_begin + ( int )unique_entry.unique_text_start;
-					const char* unique_entry_end = buffer_begin + ( int )unique_entry.unique_text_end;
+					const char* unique_entry_start = buffer_begin + ( i32 )unique_entry.unique_text_start;
+					const char* unique_entry_end = buffer_begin + ( i32 )unique_entry.unique_text_end;
 
-					const char* line_start = unique_entry_start + ( int )( local_line_index ? unique_entry.line_start_offsets[ local_line_index - 1 ] : 0 );
-					const char* line_end = ( local_line_index + 1 ) < ( int )unique_entry.LineCount()
-						? unique_entry_start + ( int )unique_entry.line_start_offsets[ local_line_index ]
+					const char* line_start = unique_entry_start + ( i32 )( local_line_index ? unique_entry.line_start_offsets[ local_line_index - 1 ] : 0 );
+					const char* line_end = ( local_line_index + 1 ) < ( i32 )unique_entry.LineCount()
+						? unique_entry_start + ( i32 )unique_entry.line_start_offsets[ local_line_index ]
 						: unique_entry_end;
-					ImGui::PushStyleColor( ImGuiCol_Text, colors_by_type.at( ( int )unique_entry.type ) );
+					ImGui::PushStyleColor( ImGuiCol_Text, colors_by_type.at( ( i32 )unique_entry.type ) );
 
 					if( group )
 					{

@@ -123,7 +123,7 @@ namespace Kakadu::Editor
 		return 2.0f * Kakadu::Math::Atan2( Kakadu::Math::Tan( horizontal_field_of_view / 2.0f ), aspect_ratio );
 	}
 
-	void SceneCamera::RecalculateProjectionParameters( const int width_new_pixels, const int height_new_pixels )
+	void SceneCamera::RecalculateProjectionParameters( const i32 width_new_pixels, const i32 height_new_pixels )
 	{
 		camera.SetAspectRatio( float( width_new_pixels ) / height_new_pixels );
 		camera.SetVerticalFieldOfView( CalculateVerticalFieldOfView( Kakadu::Constants< Radians >::Pi_Over_Two(), camera.GetAspectRatio() ) );

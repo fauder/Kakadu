@@ -27,10 +27,10 @@ namespace Kakadu
 
 		struct Information
 		{
-			int location_or_block_index; // Changes meaning depending on context; location if this is a stand-alone uniform, or the index of the block if this resides in a uniform buffer block.
-			int size;
-			int offset;
-			int count_array; // Element count (>= 1) for arrays, 1 for non-arrays.
+			i32 location_or_block_index; // Changes meaning depending on context; location if this is a stand-alone uniform, or the index of the block if this resides in a uniform buffer block.
+			i32 size;
+			i32 offset;
+			i32 count_array; // Element count (>= 1) for arrays, 1 for non-arrays.
 
 			GLenum type;
 			bool is_buffer_member;
@@ -61,8 +61,8 @@ namespace Kakadu
 
 		struct BufferMemberInformation_Struct
 		{
-			int offset;
-			int size;
+			i32 offset;
+			i32 size;
 
 			std::string editor_name;
 
@@ -71,10 +71,10 @@ namespace Kakadu
 
 		struct BufferMemberInformation_Array
 		{
-			int offset;
-			int stride;
-			int element_count;
-			// int padding;
+			i32 offset;
+			i32 stride;
+			i32 element_count;
+			/* 4 bytes of padding. */
 
 			std::string editor_name;
 
@@ -84,9 +84,9 @@ namespace Kakadu
 		struct BufferInformation
 		{
 		public:
-			int binding_point;
-			int size;
-			int offset;
+			i32 binding_point;
+			i32 size;
+			i32 offset;
 
 			BufferCategory category;
 
@@ -115,13 +115,13 @@ namespace Kakadu
 		struct ActiveUniformBookKeepingInformation
 		{
 			std::string name_holder;
-			int count;
-			int name_max_length;
+			i32 count;
+			i32 name_max_length;
 			std::size_t default_block_size;
 			std::size_t regular_total_size, global_total_size, intrinsic_total_size;
 			std::size_t total_size;
-			int intrinsic_block_count, global_block_count, regular_block_count;
-			//int padding;
+			i32 intrinsic_block_count, global_block_count, regular_block_count;
+			/* 4 bytes of padding. */
 
 			std::size_t TotalSize_ForMaterialBlob() const { return default_block_size + regular_total_size; }
 			std::size_t TotalSize_Blocks() const { return regular_total_size + global_total_size + intrinsic_total_size; }
@@ -146,7 +146,7 @@ namespace Kakadu
 				return binding_point_map[ block_name ] = start_offset + in_use++;
 			}
 
-			int InUseCount() const { return in_use; }
+			i32 InUseCount() const { return in_use; }
 
 			bool IsAssigned( const std::string& block_name ) const
 			{

@@ -1,5 +1,8 @@
 #pragma once
 
+// Engine Includes.
+#include "Types.h"
+
 // std Includes.
 #include <array>
 
@@ -18,22 +21,22 @@ namespace Kakadu::ImGuiUtility
 	enum class HorizontalPosition	{ LEFT, CENTER, RIGHT };
 	enum class VerticalPosition		{ TOP, CENTER, BOTTOM };
 
-	void Table_Header_ManuallySubmit( const int column_index );
-	template< int array_size >
-	void Table_Header_ManuallySubmit( const std::array< int, array_size >& column_indices )
+	void Table_Header_ManuallySubmit( const i32 column_index );
+	template< i32 array_size >
+	void Table_Header_ManuallySubmit( const std::array< i32, array_size >& column_indices )
 	{
 		for( std::size_t i = 0; i < array_size; i++ )
 			Table_Header_ManuallySubmit( column_indices[ i ] );
 	}
-	void Table_Header_ManuallySubmit_AppendHelpMarker( const int column_index, const char* help_string );
+	void Table_Header_ManuallySubmit_AppendHelpMarker( const i32 column_index, const char* help_string );
 
 	/* Helper to display a little (?) mark which shows a tooltip when hovered. */
-	void HelpMarker( const char* desc, const int wrap = 35.0f );
+	void HelpMarker( const char* desc, const i32 wrap = 35.0f );
 	/* Helper to display a custom text which shows a tooltip when hovered. */
-	void HelpMarker( const char* text, const char* desc, const int wrap = 35.0f );
+	void HelpMarker( const char* text, const char* desc, const i32 wrap = 35.0f );
 
 	void CenterText( const char* text );
-	void CenterItem( const int item_width );
+	void CenterItem( const i32 item_width );
 	void CenterCheckbox();
 
 	void ImmutableCheckbox( const char* text, const bool is_enabled );
@@ -57,7 +60,7 @@ namespace Kakadu::ImGuiUtility
 	void EndOverlay();
 
 	/* Only works with same width items. */
-	void SetNextItemRightAligned( const int item_no_starting_from_right, const float item_width );
+	void SetNextItemRightAligned( const i32 item_no_starting_from_right, const float item_width );
 	
 	void SetNextWindowPos( const HorizontalPosition horizontal_positioning, const VerticalPosition vertical_positioning,
 						   const ImGuiCond condition = ImGuiCond_Always );
@@ -79,7 +82,7 @@ namespace Kakadu::ImGuiUtility
 
 	void DrawShadedSphere( ImDrawList* draw_list, const ImU32 shade_color, const ImU32 specular_color, const float radius, const bool advance_cursor = true );
 	bool DrawShadedSphereComboButton( const char* name,
-									  int* current_index,
+									  i32* current_index,
 									  const std::initializer_list< const char* > option_strings,
 									  const ImU32 shade_color    = ImColor{ 0.2f, 0.2f, 0.2f, 1.0f },
 									  const ImU32 specular_color = ImColor{ 0.75f, 0.75f, 0.75f, 1.0f } );

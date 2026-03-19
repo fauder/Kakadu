@@ -46,8 +46,8 @@ namespace Kakadu::Platform
 	internal_variable GLFWwindow* SPLASH_WINDOW = nullptr;
 	internal_variable GLFWwindow* MAIN_WINDOW   = nullptr;
 
-	internal_variable bool KEYS_THAT_ARE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
-	internal_variable bool KEYS_THAT_WERE_PRESSED[ ( int )KeyCode::KEY_LAST + 1 ] = { 0 };
+	internal_variable bool KEYS_THAT_ARE_PRESSED[ ( i32 )KeyCode::KEY_LAST + 1 ] = { 0 };
+	internal_variable bool KEYS_THAT_WERE_PRESSED[ ( i32 )KeyCode::KEY_LAST + 1 ] = { 0 };
 	internal_variable float MOUSE_CURSOR_X_POS = 0.0f, MOUSE_CURSOR_Y_POS = 0.0f;
 	internal_variable float MOUSE_CURSOR_X_DELTA = 0.0f, MOUSE_CURSOR_Y_DELTA = 0.0f;
 	internal_variable float MOUSE_SCROLL_X_OFFSET = 0.0f, MOUSE_SCROLL_Y_OFFSET = 0.0f;
@@ -61,13 +61,13 @@ namespace Kakadu::Platform
 	internal_variable std::function< void( const KeyCode key_code, const KeyAction action, const KeyMods mods )				> KEYBOARD_CALLBACK;
 	internal_variable std::function< void( const MouseButton button, const MouseButtonAction action, const KeyMods mods )	> MOUSE_BUTTON_CALLBACK;
 	internal_variable std::function< void( const float x_offset, const float y_offset )										> MOUSE_SCROLL_CALLBACK;
-	internal_variable std::function< void( const int width_new_pixels, const int height_new_pixels )						> FRAMEBUFFER_RESIZE_CALLBACK;
+	internal_variable std::function< void( const i32 width_new_pixels, const i32 height_new_pixels )						> FRAMEBUFFER_RESIZE_CALLBACK;
 
 #ifdef _EDITOR
 	internal_variable std::function< void( GLenum source, GLenum type, u32 id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
 #endif // _EDITOR
 
-	internal_function void OnResizeWindow( GLFWwindow* window, const int width_new_pixels, const int height_new_pixels )
+	internal_function void OnResizeWindow( GLFWwindow* window, const i32 width_new_pixels, const i32 height_new_pixels )
 	{
 		if( glfwGetMouseButton( MAIN_WINDOW, GLFW_MOUSE_BUTTON_LEFT ) != GLFW_RELEASE )
 			return;
@@ -79,7 +79,7 @@ namespace Kakadu::Platform
 			FRAMEBUFFER_RESIZE_CALLBACK( width_new_pixels, height_new_pixels );
 	}
 
-	internal_function void OnKeyboardEvent( GLFWwindow* window, const int key_code, const int scan_code, const int action, const int mods )
+	internal_function void OnKeyboardEvent( GLFWwindow* window, const i32 key_code, const i32 scan_code, const i32 action, const i32 mods )
 	{
 		if( ImGui::GetIO().WantCaptureKeyboard )
 			return;
@@ -119,7 +119,7 @@ namespace Kakadu::Platform
 			MOUSE_SCROLL_CALLBACK( MOUSE_SCROLL_X_OFFSET, MOUSE_SCROLL_Y_OFFSET );
 	}
 
-	internal_function void OnMouseButtonEvent( GLFWwindow* window, const int button, const int action, const int mods )
+	internal_function void OnMouseButtonEvent( GLFWwindow* window, const i32 button, const i32 action, const i32 mods )
 	{
 		if( ImGui::GetIO().WantCaptureMouse )
 			return;
@@ -145,7 +145,7 @@ namespace Kakadu::Platform
 #ifdef _EDITOR
 	internal_function void CreateGLDebugContext()
 	{
-		int gl_debug_context_flags = 0;
+		i32 gl_debug_context_flags = 0;
 		glGetIntegerv( GL_CONTEXT_FLAGS, &gl_debug_context_flags );
 
 		if( gl_debug_context_flags & GL_CONTEXT_FLAG_DEBUG_BIT )
@@ -178,13 +178,13 @@ namespace Kakadu::Platform
 		glfwSetScrollCallback( MAIN_WINDOW, OnMouseScrolled );
 	}
 
-	internal_function void RegisterWindowFocusCallback( GLFWwindow* window, int focused )
+	internal_function void RegisterWindowFocusCallback( GLFWwindow* window, i32 focused )
 	{
 		auto* state = static_cast< WindowState* >( glfwGetWindowUserPointer( window ) );
 		state->is_focused = ( focused == GLFW_TRUE );
 	}
 
-	internal_function void RegisterWindowIconifyCallback( GLFWwindow* window, int iconified )
+	internal_function void RegisterWindowIconifyCallback( GLFWwindow* window, i32 iconified )
 	{
 		auto* state = static_cast< WindowState* >( glfwGetWindowUserPointer( window ) );
 		state->is_iconified = ( iconified == GLFW_TRUE );
@@ -192,7 +192,7 @@ namespace Kakadu::Platform
 
 	struct WindowPositionAndSize
 	{
-		int x_pos, y_pos, width, height;
+		i32 x_pos, y_pos, width, height;
 	};
 
 	internal_function bool ReadLastKnownWindowSizeFromFile( WindowPositionAndSize& main_window_info, WindowPositionAndSize& console_window_info )
@@ -203,7 +203,7 @@ namespace Kakadu::Platform
 		{
 			std::string token_string;
 
-			auto ParseToken = [ & ]( int& token_to_set, const char* token_name )
+			auto ParseToken = [ & ]( i32& token_to_set, const char* token_name )
 			{
 				if( config_file >> token_string && token_string == token_name )
 				{
@@ -231,7 +231,7 @@ namespace Kakadu::Platform
 		return false;
 	}
 
-	internal_function void CenterWindow( GLFWwindow* window, const int width_pixels, const int height_pixels )
+	internal_function void CenterWindow( GLFWwindow* window, const i32 width_pixels, const i32 height_pixels )
 	{
 		const GLFWvidmode* mode = glfwGetVideoMode( glfwGetPrimaryMonitor() );
 
@@ -273,7 +273,7 @@ namespace Kakadu::Platform
 			throw std::runtime_error( "ERROR::PLATFORM::GLFW::FAILED TO CREATE SPLASH GLFW WINDOW!"  );
 
 		glfwMakeContextCurrent( SPLASH_WINDOW );
-		glfwSwapInterval( ( int )enable_vsync ); // Adaptive v-sync (interval >1) is not supported.
+		glfwSwapInterval( ( i32 )enable_vsync ); // Adaptive v-sync (interval >1) is not supported.
 
 		// GLAD needs the created window's context made current BEFORE it is initialized.
 		InitializeGLAD();
@@ -281,7 +281,7 @@ namespace Kakadu::Platform
 #ifdef _EDITOR
 		Kakadu::Editor::SplashScreen splash_screen( ENGINE_TEXTURE_PATH_ABSOLUTE( "splash_screen.png" ) );
 
-		int splash_width, splash_height;
+		i32 splash_width, splash_height;
 		if( not GetMainMonitorResolution( splash_width, splash_height ) )
 		{
 			splash_width  = 800;
@@ -292,7 +292,7 @@ namespace Kakadu::Platform
 			float splash_aspect_ratio = splash_screen.AspectRatio();
 
 			splash_width /= 3;
-			splash_height = ( int )( splash_width / splash_aspect_ratio );
+			splash_height = ( i32 )( splash_width / splash_aspect_ratio );
 		}
 
 		glfwSetWindowSize( SPLASH_WINDOW, splash_width, splash_height );
@@ -374,7 +374,7 @@ namespace Kakadu::Platform
 	 * Window/Framebuffer:
 	 */
 
-	void ResizeWindow( const int width_new_pixels, const int height_new_pixels )
+	void ResizeWindow( const i32 width_new_pixels, const i32 height_new_pixels )
 	{
 		OnResizeWindow( MAIN_WINDOW, width_new_pixels, height_new_pixels );
 	}
@@ -404,7 +404,7 @@ namespace Kakadu::Platform
 		glfwShowWindow( MAIN_WINDOW );
 	}
 
-	void SetFramebufferResizeCallback( std::function< void( const int width_new_pixels, const int height_new_pixels ) > callback )
+	void SetFramebufferResizeCallback( std::function< void( const i32 width_new_pixels, const i32 height_new_pixels ) > callback )
 	{
 		FRAMEBUFFER_RESIZE_CALLBACK = callback;
 
@@ -425,29 +425,29 @@ namespace Kakadu::Platform
 	
 	Kakadu::Vector2I GetFramebufferSizeInPixels()
 	{
-		int width, height;
+		i32 width, height;
 		glfwGetFramebufferSize( MAIN_WINDOW, &width, &height );
 		return Kakadu::Vector2I( width, height );
 	}
 
-	int GetFramebufferWidthInPixels()
+	i32 GetFramebufferWidthInPixels()
 	{
 		return GetFramebufferSizeInPixels().X();
 	}
 
-	int GetFramebufferHeightInPixels()
+	i32 GetFramebufferHeightInPixels()
 	{
 		return GetFramebufferSizeInPixels().Y();
 	}
 
 	float GetAspectRatio()
 	{
-		int width, height;
+		i32 width, height;
 		glfwGetFramebufferSize( MAIN_WINDOW, &width, &height );
 		return float( width ) / height;
 	}
 
-	bool GetMainMonitorResolution( int& width, int& height )
+	bool GetMainMonitorResolution( i32& width, i32& height )
 	{
 		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 		if( !monitor )
@@ -487,7 +487,7 @@ namespace Kakadu::Platform
 		return -1;
 	}
 
-	void CenterWindow( const int width_pixels, const int height_pixels )
+	void CenterWindow( const i32 width_pixels, const i32 height_pixels )
 	{
 		CenterWindow( MAIN_WINDOW, width_pixels, height_pixels );
 	}
@@ -584,7 +584,7 @@ namespace Kakadu::Platform
 
 		std::copy_n( KEYS_THAT_ARE_PRESSED, sizeof( KEYS_THAT_ARE_PRESSED ), KEYS_THAT_WERE_PRESSED );
 
-		for( auto i = 0; i < ( int )KeyCode::KEY_LAST + 1; i++ )
+		for( auto i = 0; i < ( i32 )KeyCode::KEY_LAST + 1; i++ )
 			KEYS_THAT_ARE_PRESSED[ i ] = glfwGetKey( MAIN_WINDOW, i ) == GLFW_PRESS;
 
 		glfwPollEvents();
@@ -619,7 +619,7 @@ namespace Kakadu::Platform
 		if( ImGui::GetIO().WantCaptureKeyboard )
 			return false;
 
-		return KEYS_THAT_ARE_PRESSED[ ( int )key_code ];
+		return KEYS_THAT_ARE_PRESSED[ ( i32 )key_code ];
 	}
 
 	bool IsKeyPressedThisFrame( const KeyCode key_code )
@@ -627,7 +627,7 @@ namespace Kakadu::Platform
 		if( ImGui::GetIO().WantCaptureKeyboard )
 			return false;
 
-		return KEYS_THAT_ARE_PRESSED[ ( int )key_code ] && not KEYS_THAT_WERE_PRESSED[ ( int )key_code ];
+		return KEYS_THAT_ARE_PRESSED[ ( i32 )key_code ] && not KEYS_THAT_WERE_PRESSED[ ( i32 )key_code ];
 	}
 
 	bool IsKeyReleased( const KeyCode key_code )
@@ -635,7 +635,7 @@ namespace Kakadu::Platform
 		if( ImGui::GetIO().WantCaptureKeyboard )
 			return false;
 
-		return !KEYS_THAT_ARE_PRESSED[ ( int )key_code ];
+		return !KEYS_THAT_ARE_PRESSED[ ( i32 )key_code ];
 	}
 
 	bool IsKeyReleasedThisFrame( const KeyCode key_code )
@@ -643,7 +643,7 @@ namespace Kakadu::Platform
 		if( ImGui::GetIO().WantCaptureKeyboard )
 			return false;
 
-		return KEYS_THAT_WERE_PRESSED[ ( int )key_code ] && not KEYS_THAT_ARE_PRESSED[ ( int )key_code ];
+		return KEYS_THAT_WERE_PRESSED[ ( i32 )key_code ] && not KEYS_THAT_ARE_PRESSED[ ( i32 )key_code ];
 	}
 
 	bool IsKeyModifierHeldDown( const KeyMods key_mod )
@@ -653,12 +653,12 @@ namespace Kakadu::Platform
 
 		switch( key_mod )
 		{
-			case KeyMods::SHIFT:		return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_LEFT_SHIFT	) ) || glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_RIGHT_SHIFT	) );
-			case KeyMods::CONTROL:		return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_LEFT_CONTROL	) ) || glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_RIGHT_CONTROL	) );
-			case KeyMods::ALT:			return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_LEFT_ALT		) ) || glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_RIGHT_ALT		) );
-			case KeyMods::SUPER:		return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_LEFT_SUPER	) ) || glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_RIGHT_SUPER	) );
-			case KeyMods::CAPS_LOCK:	return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_CAPS_LOCK		) );
-			case KeyMods::NUM_LOCK:		return glfwGetKey( MAIN_WINDOW, int( KeyCode::KEY_NUM_LOCK		) );
+			case KeyMods::SHIFT:		return glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_LEFT_SHIFT	) ) || glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_RIGHT_SHIFT	) );
+			case KeyMods::CONTROL:		return glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_LEFT_CONTROL	) ) || glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_RIGHT_CONTROL	) );
+			case KeyMods::ALT:			return glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_LEFT_ALT		) ) || glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_RIGHT_ALT		) );
+			case KeyMods::SUPER:		return glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_LEFT_SUPER	) ) || glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_RIGHT_SUPER	) );
+			case KeyMods::CAPS_LOCK:	return glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_CAPS_LOCK		) );
+			case KeyMods::NUM_LOCK:		return glfwGetKey( MAIN_WINDOW, i32( KeyCode::KEY_NUM_LOCK		) );
 
 			default:
 				UNREACHABLE();
@@ -690,22 +690,22 @@ namespace Kakadu::Platform
 
 	bool IsMouseButtonPressed( const MouseButton mouse_button )
 	{
-		return glfwGetMouseButton( MAIN_WINDOW, ( int )mouse_button ) == GLFW_PRESS;
+		return glfwGetMouseButton( MAIN_WINDOW, ( i32 )mouse_button ) == GLFW_PRESS;
 	}
 
 	bool IsMouseButtonPressed_ThisFrame( const MouseButton mouse_button )
 	{
-		return MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME[ ( int )mouse_button ] && IsMouseButtonPressed( mouse_button );
+		return MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME[ ( i32 )mouse_button ] && IsMouseButtonPressed( mouse_button );
 	}
 	
 	bool IsMouseButtonReleased( const MouseButton mouse_button )
 	{
-		return glfwGetMouseButton( MAIN_WINDOW, ( int )mouse_button ) == GLFW_RELEASE;
+		return glfwGetMouseButton( MAIN_WINDOW, ( i32 )mouse_button ) == GLFW_RELEASE;
 	}
 
 	bool IsMouseButtonReleased_ThisFrame( const MouseButton mouse_button )
 	{
-		return MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME[ ( int )mouse_button ] && IsMouseButtonReleased( mouse_button );
+		return MOUSE_BUTTON_STATUS_CHANGES_THIS_FRAME[ ( i32 )mouse_button ] && IsMouseButtonReleased( mouse_button );
 	}
 
 	void ResetMouseDeltas()
@@ -888,7 +888,7 @@ namespace Kakadu::Platform
 			std::ofstream output_file( "window.cfg" );
 
 			{
-				int x_pos, y_pos;
+				i32 x_pos, y_pos;
 				glfwGetWindowPos( MAIN_WINDOW, &x_pos, &y_pos );
 				const auto framebuffer_size = GetFramebufferSizeInPixels();
 				output_file << "main_x_pos = " << x_pos << "\n";
@@ -905,10 +905,10 @@ namespace Kakadu::Platform
 				RECT rect{};
 				GetWindowRect( hwnd, &rect );
 
-				int x_pos  = rect.left;
-				int y_pos  = rect.top;
-				int width  = rect.right - rect.left;
-				int height = rect.bottom - rect.top;
+				i32 x_pos  = rect.left;
+				i32 y_pos  = rect.top;
+				i32 width  = rect.right - rect.left;
+				i32 height = rect.bottom - rect.top;
 
 				output_file << "console_x_pos = " << x_pos << "\n";
 				output_file << "console_y_pos = " << y_pos << "\n";

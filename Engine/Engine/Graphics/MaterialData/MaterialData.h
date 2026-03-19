@@ -10,7 +10,7 @@ namespace Kakadu::MaterialData
 	struct BlinnPhongMaterialData : public Std140StructTag
 	{
 		Color3 color_diffuse;
-		int has_texture_diffuse;
+		i32 has_texture_diffuse;
 
 		Color3 color_emission;
 		float shininess;

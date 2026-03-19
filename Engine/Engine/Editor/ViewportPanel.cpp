@@ -38,12 +38,12 @@ namespace Kakadu::Editor
 			ImGui::SetNextWindowSize( Math::CopyToImVec2( framebuffer_size ), ImGuiCond_FirstUseEver );
 		}
 
-		imgui_window_name = std::format( "Viewport {:d}x{:d}###Viewport", ( int )framebuffer_size.x, ( int )framebuffer_size.y );
+		imgui_window_name = std::format( "Viewport {:d}x{:d}###Viewport", ( i32 )framebuffer_size.x, ( i32 )framebuffer_size.y );
 
 		if( ImGui::Begin( imgui_window_name.c_str() ) )
 		{
 			framebuffer_size = ImGui::GetContentRegionAvail();
-			const Vector2I viewport_available_size( ( int )framebuffer_size.x, ( int )framebuffer_size.y );
+			const Vector2I viewport_available_size( ( i32 )framebuffer_size.x, ( i32 )framebuffer_size.y );
 
 			const auto& imgui_io = ImGui::GetIO();
 			if( viewport_available_size != viewport_framebuffer_size &&

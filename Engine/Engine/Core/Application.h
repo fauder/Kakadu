@@ -48,7 +48,7 @@ namespace Kakadu
 		virtual void OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		virtual void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
 		virtual void OnMouseScrollEvent( const float x_offset, const float y_offset );
-		virtual void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels ) = 0; // Application calls the internal one => this one is pure virtual.
+		virtual void OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels ) = 0; // Application calls the internal one => this one is pure virtual.
 		
 		void Quit() { is_running = false; }
 
@@ -66,7 +66,7 @@ namespace Kakadu
 		void HandleKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		void HandleMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
 		void HandleMouseScrollEvent( const float x_offset, const float y_offset  );
-		void HandleFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels );
+		void HandleFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels );
 
 #ifdef _EDITOR
 		void ProcessEditorCommands();
@@ -86,7 +86,7 @@ namespace Kakadu
 
 		std::unique_ptr< Renderer > renderer;
 
-		std::optional< int > msaa_sample_count;
+		std::optional< i32 > msaa_sample_count;
 
 		MorphSystem morph_system;
 

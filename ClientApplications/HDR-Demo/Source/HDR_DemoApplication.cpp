@@ -277,7 +277,7 @@ void HDR_DemoApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_c
 	Application::OnKeyboardEvent( key_code, key_action, key_mods );
 }
 
-void HDR_DemoApplication::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
+void HDR_DemoApplication::OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels )
 {
 }
 

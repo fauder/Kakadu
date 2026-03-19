@@ -7,6 +7,7 @@
 
 // Engine Includes.
 #include "Utility.hpp"
+#include "Types.h"
 
 // std Includes.
 #include <fstream>
@@ -80,8 +81,8 @@ namespace Kakadu
 			{
 				std::vector< std::string_view > splitted;
 
-				int start = 0;
-				for( int char_index = 0; char_index < source.size(); char_index++ )
+				i32 start = 0;
+				for( i32 char_index = 0; char_index < source.size(); char_index++ )
 				{
 					if( source[ char_index ] == delimiter )
 					{
@@ -280,9 +281,9 @@ namespace Kakadu
 				if( string.empty() )
 					return std::wstring();
 
-				int size_needed = MultiByteToWideChar( CP_UTF8, 0, &string[ 0 ], ( int )string.size(), NULL, 0 );
+				i32 size_needed = MultiByteToWideChar( CP_UTF8, 0, &string[ 0 ], ( i32 )string.size(), NULL, 0 );
 				std::wstring result( size_needed, 0 );
-				MultiByteToWideChar( CP_UTF8, 0, &string[ 0 ], ( int )string.size(), &result[ 0 ], size_needed );
+				MultiByteToWideChar( CP_UTF8, 0, &string[ 0 ], ( i32 )string.size(), &result[ 0 ], size_needed );
 				return result;
 			}
 
@@ -291,9 +292,9 @@ namespace Kakadu
 				if( wstring.empty() )
 					return std::string();
 
-				const int size_needed = WideCharToMultiByte( CP_UTF8, 0, &wstring[ 0 ], ( int )wstring.size(), NULL, 0, NULL, NULL );
+				const i32 size_needed = WideCharToMultiByte( CP_UTF8, 0, &wstring[ 0 ], ( i32 )wstring.size(), NULL, 0, NULL, NULL );
 				std::string result( size_needed, 0 );
-				WideCharToMultiByte( CP_UTF8, 0, &wstring[ 0 ], ( int )wstring.size(), &result[ 0 ], size_needed, NULL, NULL );
+				WideCharToMultiByte( CP_UTF8, 0, &wstring[ 0 ], ( i32 )wstring.size(), &result[ 0 ], size_needed, NULL, NULL );
 				return result;
 			}
 #endif // _WIN32

@@ -382,7 +382,7 @@ namespace Kakadu
 			case GL_FLOAT_VEC3				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector3*		>( value_pointer ) ); return;
 			case GL_FLOAT_VEC4				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector4*		>( value_pointer ) ); return;
 			//case GL_DOUBLE					: SetUniform( uniform_info.location_or_block_index, *static_cast< const double*			>(  count_array ); return;
-			case GL_INT						: SetUniform( uniform_info.location_or_block_index, *static_cast< const int*			>( value_pointer ) ); return;
+			case GL_INT						: SetUniform( uniform_info.location_or_block_index, *static_cast< const i32*			>( value_pointer ) ); return;
 			case GL_INT_VEC2				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector2I*		>( value_pointer ) ); return;
 			case GL_INT_VEC3				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector3I*		>( value_pointer ) ); return;
 			case GL_INT_VEC4				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector4I*		>( value_pointer ) ); return;
@@ -405,11 +405,11 @@ namespace Kakadu
 			case GL_FLOAT_MAT4x2			: SetUniform( uniform_info.location_or_block_index, *static_cast< const Matrix4x2*		>( value_pointer ) ); return;
 			case GL_FLOAT_MAT4x3			: SetUniform( uniform_info.location_or_block_index, *static_cast< const Matrix4x3*		>( value_pointer ) ); return;
 			/* Samplers: */
-			case GL_SAMPLER_1D				: SetUniform( uniform_info.location_or_block_index, *static_cast< const int*			>( value_pointer ) ); return;
-			case GL_SAMPLER_2D				: SetUniform( uniform_info.location_or_block_index, *static_cast< const int*			>( value_pointer ) ); return;
-			case GL_SAMPLER_2D_MULTISAMPLE	: SetUniform( uniform_info.location_or_block_index, *static_cast< const int*			>( value_pointer ) ); return;
-			case GL_SAMPLER_3D				: SetUniform( uniform_info.location_or_block_index, *static_cast< const int*			>( value_pointer ) ); return;
-			case GL_SAMPLER_CUBE			: SetUniform( uniform_info.location_or_block_index, *static_cast< const int*			>( value_pointer ) ); return;
+			case GL_SAMPLER_1D				: SetUniform( uniform_info.location_or_block_index, *static_cast< const i32*			>( value_pointer ) ); return;
+			case GL_SAMPLER_2D				: SetUniform( uniform_info.location_or_block_index, *static_cast< const i32*			>( value_pointer ) ); return;
+			case GL_SAMPLER_2D_MULTISAMPLE	: SetUniform( uniform_info.location_or_block_index, *static_cast< const i32*			>( value_pointer ) ); return;
+			case GL_SAMPLER_3D				: SetUniform( uniform_info.location_or_block_index, *static_cast< const i32*			>( value_pointer ) ); return;
+			case GL_SAMPLER_CUBE			: SetUniform( uniform_info.location_or_block_index, *static_cast< const i32*			>( value_pointer ) ); return;
 		}
 
 		throw std::runtime_error( "ERROR::SHADER::SetUniform( uniform_info, value_pointer ) called for an unknown GL type!" );
@@ -425,7 +425,7 @@ namespace Kakadu
 			case GL_FLOAT_VEC3				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector3*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_FLOAT_VEC4				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector4*		>( value_pointer ), uniform_info.count_array ); return;
 			//case GL_DOUBLE					: SetUniformArray( uniform_info.location_or_block_index, static_cast< const double*			>( value_pointer ), uniform_info.count_array ); return;
-			case GL_INT						: SetUniformArray( uniform_info.location_or_block_index, static_cast< const int*			>( value_pointer ), uniform_info.count_array ); return;
+			case GL_INT						: SetUniformArray( uniform_info.location_or_block_index, static_cast< const i32*			>( value_pointer ), uniform_info.count_array ); return;
 			case GL_INT_VEC2				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector2I*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_INT_VEC3				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector3I*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_INT_VEC4				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector4I*		>( value_pointer ), uniform_info.count_array ); return;
@@ -448,11 +448,11 @@ namespace Kakadu
 			case GL_FLOAT_MAT4x2			: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Matrix4x2*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_FLOAT_MAT4x3			: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Matrix4x3*		>( value_pointer ), uniform_info.count_array ); return;
 			/* Samplers: */
-			case GL_SAMPLER_1D				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const int*			>( value_pointer ), uniform_info.count_array ); return;
-			case GL_SAMPLER_2D				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const int*			>( value_pointer ), uniform_info.count_array ); return;
-			case GL_SAMPLER_2D_MULTISAMPLE	: SetUniformArray( uniform_info.location_or_block_index, static_cast< const int*			>( value_pointer ), uniform_info.count_array ); return;
-			case GL_SAMPLER_3D				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const int*			>( value_pointer ), uniform_info.count_array ); return;
-			case GL_SAMPLER_CUBE			: SetUniformArray( uniform_info.location_or_block_index, static_cast< const int*			>( value_pointer ), uniform_info.count_array ); return;
+			case GL_SAMPLER_1D				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const i32*			>( value_pointer ), uniform_info.count_array ); return;
+			case GL_SAMPLER_2D				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const i32*			>( value_pointer ), uniform_info.count_array ); return;
+			case GL_SAMPLER_2D_MULTISAMPLE	: SetUniformArray( uniform_info.location_or_block_index, static_cast< const i32*			>( value_pointer ), uniform_info.count_array ); return;
+			case GL_SAMPLER_3D				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const i32*			>( value_pointer ), uniform_info.count_array ); return;
+			case GL_SAMPLER_CUBE			: SetUniformArray( uniform_info.location_or_block_index, static_cast< const i32*			>( value_pointer ), uniform_info.count_array ); return;
 		}
 
 		throw std::runtime_error( "ERROR::SHADER::SetUniformArray( uniform_info, value_pointer ) called for an unknown GL type!" );
@@ -651,7 +651,7 @@ namespace Kakadu
 		glShaderSource( shader_id, /* how many strings: */ 1, &source, NULL );
 		glCompileShader( shader_id );
 
-		int success = false;
+		i32 success = false;
 		glGetShaderiv( shader_id, GL_COMPILE_STATUS, &success );
 		if( !success )
 		{
@@ -679,7 +679,7 @@ namespace Kakadu
 
 		glLinkProgram( program_id.id );
 
-		int success;
+		i32 success;
 		glGetProgramiv( program_id.id, GL_LINK_STATUS, &success );
 		if( !success )
 		{
@@ -708,7 +708,7 @@ namespace Kakadu
 //				const std::size_t comment_end_pos = source_string.find( comment_end_token, current_pos + comment_begin_token.size() );
 //
 //				stripped_shader_source += source_string.substr( last_begin_pos, comment_start_pos - last_begin_pos );
-//				last_begin_pos = comment_end_pos + comment_end_token.size() - ( int )do_not_erase_new_line;
+//				last_begin_pos = comment_end_pos + comment_end_token.size() - ( i32 )do_not_erase_new_line;
 //
 //				current_pos = source_string.find( comment_begin_token, last_begin_pos );
 //			}
@@ -826,7 +826,7 @@ namespace Kakadu
 					break;
 				case UniformAnnotation::Type::Array:
 				{
-					const std::uint8_t available_dimension_count = Math::Min( 3, ( int )splitted_annotation_line.size() - 1 );
+					const std::uint8_t available_dimension_count = Math::Min( 3, ( i32 )splitted_annotation_line.size() - 1 );
 					for( auto i = 0; i < available_dimension_count; i++ )
 					{
 						const auto parsed_number = Utility::String::ConvertToNumber< std::uint16_t >( splitted_annotation_line[ i + 1 ] );
@@ -988,7 +988,7 @@ namespace Kakadu
 
 	void Shader::QueryVertexAttributes()
 	{
-		int active_attribute_count;
+		i32 active_attribute_count;
 		glGetProgramiv( program_id.id, GL_ACTIVE_ATTRIBUTES, &active_attribute_count );
 
 		char attribute_name[ 255 ];
@@ -997,7 +997,7 @@ namespace Kakadu
 		attributes.reserve( active_attribute_count );
 		for( auto attribute_index = 0; attribute_index < active_attribute_count; attribute_index++ )
 		{
-			int attribute_name_length, attribute_size;
+			i32 attribute_name_length, attribute_size;
 			GLenum attribute_vector_type;
 			glGetActiveAttrib( program_id.id, attribute_index, 255, &attribute_name_length, &attribute_size, &attribute_vector_type, attribute_name );
 			const u32 attribute_location = glGetAttribLocation( program_id.id, attribute_name );
@@ -1021,16 +1021,16 @@ namespace Kakadu
 	}
 
 	/* Expects empty input vectors. */
-	bool Shader::GetActiveUniformBlockIndicesAndCorrespondingUniformIndices( const int active_uniform_count,
+	bool Shader::GetActiveUniformBlockIndicesAndCorrespondingUniformIndices( const i32 active_uniform_count,
 																			 std::vector< u32 >& block_indices, std::vector< u32 >& corresponding_uniform_indices ) const
 	{
 		corresponding_uniform_indices.resize( active_uniform_count );
 		block_indices.resize( active_uniform_count );
 		std::iota( corresponding_uniform_indices.begin(), corresponding_uniform_indices.end(), 0 );
 
-		glGetActiveUniformsiv( program_id.id, active_uniform_count, corresponding_uniform_indices.data(), GL_UNIFORM_BLOCK_INDEX, reinterpret_cast< int* >( block_indices.data() ) );
+		glGetActiveUniformsiv( program_id.id, active_uniform_count, corresponding_uniform_indices.data(), GL_UNIFORM_BLOCK_INDEX, reinterpret_cast< i32* >( block_indices.data() ) );
 
-		int block_count = 0;
+		i32 block_count = 0;
 		for( auto uniform_index = 0; uniform_index < active_uniform_count; uniform_index++ )
 		{
 			if( const auto block_index = block_indices[ uniform_index ];
@@ -1056,19 +1056,19 @@ namespace Kakadu
 
 	void Shader::QueryUniformData()
 	{
-		int offset = 0;
+		i32 offset = 0;
 		for( auto uniform_index = 0; uniform_index < uniform_book_keeping_info.count; uniform_index++ )
 		{
 			/*
-			 * glGetActiveUniform has a parameter named "size", but its actually the size of the array. So for singular types like int, float, vec2, vec3 etc. the value returned is 1.
+			 * glGetActiveUniform has a parameter named "size", but its actually the size of the array. So for singular types like i32, float, vec2, vec3 etc. the value returned is 1.
 			 */
-			int array_element_count = 0, length_dontCare = 0;
+			i32 array_element_count = 0, length_dontCare = 0;
 			GLenum type;
 			glGetActiveUniform( program_id.id, uniform_index, uniform_book_keeping_info.name_max_length,
 								&length_dontCare, &array_element_count, &type, 
 								uniform_book_keeping_info.name_holder.data() );
 
-			const int size = GL::Type::SizeOf( type );
+			const i32 size = GL::Type::SizeOf( type );
 
 			const auto location = glGetUniformLocation( program_id.id, uniform_book_keeping_info.name_holder.c_str() );
 
@@ -1096,16 +1096,16 @@ namespace Kakadu
 		if( not GetActiveUniformBlockIndicesAndCorrespondingUniformIndices( uniform_book_keeping_info.count, block_indices, corresponding_uniform_indices ) )
 			return;
 
-		std::vector< int > corresponding_offsets( corresponding_uniform_indices.size() );
-		glGetActiveUniformsiv( program_id.id, ( int )corresponding_uniform_indices.size(), corresponding_uniform_indices.data(), GL_UNIFORM_OFFSET, corresponding_offsets.data() );
+		std::vector< i32 > corresponding_offsets( corresponding_uniform_indices.size() );
+		glGetActiveUniformsiv( program_id.id, ( i32 )corresponding_uniform_indices.size(), corresponding_uniform_indices.data(), GL_UNIFORM_OFFSET, corresponding_offsets.data() );
 
-		for( int index = 0; index < corresponding_uniform_indices.size(); index++ )
+		for( i32 index = 0; index < corresponding_uniform_indices.size(); index++ )
 		{
 			const auto uniform_index = corresponding_uniform_indices[ index ];
 			const auto block_index   = block_indices[ index ];
 			const auto offset        = corresponding_offsets[ index ];
 
-			int length = 0;
+			i32 length = 0;
 			glGetActiveUniformName( program_id.id, uniform_index, uniform_book_keeping_info.name_max_length, &length, uniform_book_keeping_info.name_holder.data() );
 
 			const auto& uniform_name = uniform_book_keeping_info.name_holder.c_str();
@@ -1113,30 +1113,30 @@ namespace Kakadu
 			/* 'size', 'type' and 'is_buffer_member' was already initialized during query of default block uniforms. Update the remaining information for block member uniforms: */
 			auto& uniform_info = uniform_info_map[ uniform_name ];
 
-			uniform_info.location_or_block_index = ( int )block_index;
+			uniform_info.location_or_block_index = ( i32 )block_index;
 			uniform_info.offset                  = offset;
 		}
 	}
 
 	void Shader::QueryUniformBufferData( std::unordered_map< std::string, Uniform::BufferInformation >& uniform_buffer_info_map, const Uniform::BufferCategory category_of_interest )
 	{
-		int active_uniform_block_count = 0;
+		i32 active_uniform_block_count = 0;
 		glGetProgramiv( program_id.id, GL_ACTIVE_UNIFORM_BLOCKS, &active_uniform_block_count );
 
 		if( active_uniform_block_count == 0 )
 			return;
 
-		int uniform_block_name_max_length = 0;
+		i32 uniform_block_name_max_length = 0;
 		glGetProgramiv( program_id.id, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &uniform_block_name_max_length );
 		std::string name( uniform_block_name_max_length, '?' );
 
-		int offset = 0;
-		for( int uniform_block_index = 0; uniform_block_index < active_uniform_block_count; uniform_block_index++ )
+		i32 offset = 0;
+		for( i32 uniform_block_index = 0; uniform_block_index < active_uniform_block_count; uniform_block_index++ )
 		{
-			int length = 0;
+			i32 length = 0;
 			glGetActiveUniformBlockName( program_id.id, uniform_block_index, uniform_block_name_max_length, &length, name.data() );
 			
-			int size;
+			i32 size;
 			glGetActiveUniformBlockiv( program_id.id, uniform_block_index, GL_UNIFORM_BLOCK_DATA_SIZE,	&size );
 
 			const auto category = Uniform::DetermineBufferCategory( name );
@@ -1181,7 +1181,7 @@ namespace Kakadu
 				return left->second->offset < right->second->offset;
 			} );
 
-			for( int i = 0; i < uniform_buffer_info_sorted_by_offset.size(); i++ ) // -> Outer for loop.
+			for( i32 i = 0; i < uniform_buffer_info_sorted_by_offset.size(); i++ ) // -> Outer for loop.
 			{
 				const auto& buffer_info_pair = uniform_buffer_info_sorted_by_offset[ i ];
 				const auto& uniform_name     = buffer_info_pair->first;
@@ -1195,13 +1195,13 @@ namespace Kakadu
 				if( const auto bracket_pos = uniform_name_without_buffer_name.find( '[' );
 					bracket_pos != std::string_view::npos )
 				{
-					int stride = uniform_info->size, member_count = 1;
+					i32 stride = uniform_info->size, member_count = 1;
 
 					members_map.push_back( uniform_info );
 
 					/* Find the other members of the array's CURRENT element: */
 					bool done_processing_array_element = false;
-					int j = i + 1;
+					i32 j = i + 1;
 					for( ; j < uniform_buffer_info_sorted_by_offset.size() && not done_processing_array_element; j++ )
 					{
 						const auto& other_buffer_info_pair = uniform_buffer_info_sorted_by_offset[ j ];
@@ -1247,7 +1247,7 @@ namespace Kakadu
 							done_processing_array_element = true;
 					}
 
-					const int element_count = ( j - i - ( done_processing_array_element ? 1 : 0 ) ) / member_count; // -1 because j had been incremented once more before the for loop ended.
+					const i32 element_count = ( j - i - ( done_processing_array_element ? 1 : 0 ) ) / member_count; // -1 because j had been incremented once more before the for loop ended.
 					
 					const auto aggregate_name( uniform_name_without_buffer_name.substr( 0, bracket_pos ) );
 					uniform_buffer_info.members_array_map.emplace( aggregate_name,
@@ -1267,14 +1267,14 @@ namespace Kakadu
 				else if( const auto dot_pos = uniform_name_without_buffer_name.find( '.' );
 						 dot_pos != std::string_view::npos )
 				{
-					int member_count = 1;
-					int size = uniform_info->size;
+					i32 member_count = 1;
+					i32 size = uniform_info->size;
 
 					members_map.push_back( uniform_info );
 
 					// Don't need to check whether the loop ended naturally or not in this case; If the loop ends naturally, then incrementing i is not important any more.
 
-					for( int j = i + 1; j < uniform_buffer_info_sorted_by_offset.size(); j++ ) // -> Inner for loop.
+					for( i32 j = i + 1; j < uniform_buffer_info_sorted_by_offset.size(); j++ ) // -> Inner for loop.
 					{
 						const auto& other_buffer_info_pair = uniform_buffer_info_sorted_by_offset[ j ];
 						const auto& other_uniform_name     = other_buffer_info_pair->first;
@@ -1344,9 +1344,9 @@ namespace Kakadu
 
 	void Shader::EnumerateUniformBufferCategories()
 	{
-		uniform_book_keeping_info.regular_block_count   = ( int )uniform_buffer_info_map_regular.size();
-		uniform_book_keeping_info.global_block_count    = ( int )uniform_buffer_info_map_global.size();
-		uniform_book_keeping_info.intrinsic_block_count = ( int )uniform_buffer_info_map_intrinsic.size();
+		uniform_book_keeping_info.regular_block_count   = ( i32 )uniform_buffer_info_map_regular.size();
+		uniform_book_keeping_info.global_block_count    = ( i32 )uniform_buffer_info_map_global.size();
+		uniform_book_keeping_info.intrinsic_block_count = ( i32 )uniform_buffer_info_map_intrinsic.size();
 	}
 
 	const Uniform::Information*  Shader::GetUniformInformation( const std::string& uniform_name )
@@ -1378,12 +1378,12 @@ namespace Kakadu
 		ServiceLocator< GLLogger >::Get().Error( error_string );
 	}
 
-	void Shader::LogErrors_Compilation( const int shader_id,
+	void Shader::LogErrors_Compilation( const i32 shader_id,
 										const ShaderType shader_type,
 										std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const
 	{
 		char info_log[ 512 ];
-		int info_log_length;
+		i32 info_log_length;
 		glGetShaderInfoLog( shader_id, 512, &info_log_length, info_log );
 
 		const std::string complete_error_string( std::string( "Shader Error (compilation): " ) + ShaderTypeString( shader_type ) + " shader \"" + name + "\"" +
@@ -1412,7 +1412,7 @@ namespace Kakadu
 
 	/* Replaces file IDs with actual file paths. */
 	std::string Shader::FormatErrorLog( const char* log,
-										const int log_length,
+										const i32 log_length,
 										std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const
 	{
 		const auto& graphics_device_vendor = ServiceLocator< Graphics::DeviceInfo >::Get().vendor;
@@ -1467,7 +1467,7 @@ namespace Kakadu
 
 						const std::size_t third_colon = line.find( ':', second_colon + 1 );
 
-						const int line_number = std::atoi( std::string( line.substr( second_colon + 1,
+						const i32 line_number = std::atoi( std::string( line.substr( second_colon + 1,
 																					 third_colon - second_colon - 1 ) ).c_str() );
 
 						info_log_str += '\t' + map_of_IDs_per_source_file[ file_id ].string() + " -> line " + std::to_string( line_number ) + ": " +
@@ -1495,7 +1495,7 @@ namespace Kakadu
 					const std::size_t paren_pos = line.find( '(' );
 					if( paren_pos != std::string_view::npos )
 					{
-						const int line_number = std::atoi(
+						const i32 line_number = std::atoi(
 							std::string( line.substr( first_colon + 1,
 													  paren_pos - first_colon - 1 ) ).c_str() );
 

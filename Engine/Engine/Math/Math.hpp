@@ -123,7 +123,7 @@ namespace Kakadu::Math
 	}
 
 	template< Concepts::Arithmetic_NotBool Value >
-	constexpr int Sign( const Value value ) { return ( Value( 0 ) < value ) - ( value < Value( 0 ) ); }
+	constexpr i32 Sign( const Value value ) { return ( Value( 0 ) < value ) - ( value < Value( 0 ) ); }
 
 	template< typename Value, std::floating_point PercentType >
 	constexpr Value Lerp( const Value value_a, const Value value_b, const PercentType t ) { return ( PercentType( 1 ) - t ) * value_a + t * value_b; }
@@ -156,7 +156,7 @@ namespace Kakadu::Math
 		return ( vector_a - vector_b ).MagnitudeSquared();
 	}
 
-	constexpr int RoundToMultiple_PowerOf2( const int value, const int multiple )
+	constexpr i32 RoundToMultiple_PowerOf2( const i32 value, const i32 multiple )
 	{
 		ASSERT_DEBUG_ONLY( multiple && ( ( multiple & ( multiple - 1 ) ) == 0 ) );
 		return ( value + multiple - 1 ) & -multiple;

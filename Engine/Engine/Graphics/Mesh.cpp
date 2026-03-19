@@ -77,7 +77,7 @@ namespace Kakadu
 	Mesh::Mesh( const Mesh& other,
 				const std::initializer_list< VertexInstanceAttribute > instanced_attributes,
 				const std::vector< float >& instance_data,
-				const int instance_count,
+				const i32 instance_count,
 				const RHI::Usage instance_buffer_usage )
 		:
 		name( other.name ),
@@ -133,7 +133,7 @@ namespace Kakadu
 															 const std::span< const Vector2 >& uvs,
 															 const std::span< const Vector3 >& tangents )
 	{
-		auto CountOf = []( auto&& attribute_container ) { return attribute_container.empty() ? 0 : int( sizeof( attribute_container.front() ) / sizeof( float ) ); };
+		auto CountOf = []( auto&& attribute_container ) { return attribute_container.empty() ? 0 : i32( sizeof( attribute_container.front() ) / sizeof( float ) ); };
 
 		constexpr bool is_instanced = false;
 

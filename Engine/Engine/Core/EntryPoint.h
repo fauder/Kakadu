@@ -2,10 +2,11 @@
 
 // Engine Includes.
 #include "Application.h"
+#include "Types.h"
 
 extern Kakadu::Application* Kakadu::CreateApplication( Kakadu::BitFlags< Kakadu::CreationFlags > );
 
-int main( int argc, char** argv )
+Kakadu::i32 main( Kakadu::i32 argc, char** argv )
 {
 	Kakadu::BitFlags< Kakadu::CreationFlags > flags;
 

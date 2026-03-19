@@ -43,7 +43,7 @@ public:
 	virtual void OnMouseButtonEvent( const Kakadu::Platform::MouseButton button, const Kakadu::Platform::MouseButtonAction button_action, const Kakadu::Platform::KeyMods key_mods ) override;
 	virtual void OnMouseScrollEvent( const float x_offset, const float y_offset ) override;
 	virtual void OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods ) override;
-	virtual void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels ) override;
+	virtual void OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels ) override;
 	
 private:
 	void ResetLightingData();
@@ -60,8 +60,8 @@ private:
 	Kakadu::Renderable light_sources_renderable;
 	Kakadu::Renderable stars_renderable;
 
-	const static constexpr int CUBE_COUNT           = 200'000;
-	const static constexpr int CUBE_REFLECTED_COUNT = 10;
+	const static constexpr i32 CUBE_COUNT           = 200'000;
+	const static constexpr i32 CUBE_REFLECTED_COUNT = 10;
 	Kakadu::Renderable cube_renderable;
 	Kakadu::Renderable cube_renderable_outline;
 
@@ -79,7 +79,7 @@ private:
 	Kakadu::Renderable wall_right_renderable;
 	Kakadu::Renderable wall_back_renderable;
 
-	const static constexpr int WINDOW_COUNT = 5;
+	const static constexpr i32 WINDOW_COUNT = 5;
 	std::array< Kakadu::Renderable, WINDOW_COUNT > window_renderable_array;
 
 /* Textures: */
@@ -177,8 +177,8 @@ private:
 	std::array< Kakadu::Transform, WINDOW_COUNT > window_transform_array;
 
 /* Lighting: */
-	const static constexpr int STAR_COUNT = 1000;
-	const static constexpr int LIGHT_POINT_COUNT = 15;
+	const static constexpr i32 STAR_COUNT = 1000;
+	const static constexpr i32 LIGHT_POINT_COUNT = 15;
 
 	Kakadu::MaterialData::BlinnPhongMaterialData cube_surface_data;
 	Kakadu::MaterialData::BlinnPhongMaterialData ground_quad_surface_data;

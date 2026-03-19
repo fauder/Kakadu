@@ -28,13 +28,13 @@ public:
 	virtual void OnMouseButtonEvent( const Kakadu::Platform::MouseButton button, const Kakadu::Platform::MouseButtonAction button_action, const Kakadu::Platform::KeyMods key_mods ) override;
 	virtual void OnMouseScrollEvent( const float x_offset, const float y_offset ) override;
 	virtual void OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods ) override;
-	virtual void OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels ) override;
+	virtual void OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels ) override;
 
 private:
 	void ResetInstanceData();
 	void ResetLightingData();
 	void ResetMaterialData();
-	void RecalculateProjectionParameters( const int width_new_pixels, const int height_new_pixels );
+	void RecalculateProjectionParameters( const i32 width_new_pixels, const i32 height_new_pixels );
 
 private:
 /* Renderer: */
@@ -86,7 +86,7 @@ private:
 	std::vector< LightInstanceData > light_source_instance_data_array;
 
 /* Lighting: */
-	const static constexpr int LIGHT_POINT_COUNT = 4;
+	const static constexpr i32 LIGHT_POINT_COUNT = 4;
 
 	Kakadu::MaterialData::BlinnPhongMaterialData tunnel_surface_data;
 

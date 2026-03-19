@@ -136,35 +136,35 @@ namespace Kakadu
 /* Uniform Upload; Non-array types: */
 
 		template< typename UniformType >
-		void SetUniform( const int location, const UniformType& value );
+		void SetUniform( const i32 location, const UniformType& value );
 
 		template<>
-		void SetUniform< float >( const int location, const float& value )
+		void SetUniform< float >( const i32 location, const float& value )
 		{
 			glUniform1f( location, value );
 		}
 
 		template<>
-		void SetUniform< int >( const int location, const int& value )
+		void SetUniform< i32 >( const i32 location, const i32& value )
 		{
 			glUniform1i( location, value );
 		}
 
 		template<>
-		void SetUniform< u32 >( const int location, const u32& value )
+		void SetUniform< u32 >( const i32 location, const u32& value )
 		{
 			glUniform1ui( location, value );
 		}
 
 		template<>
-		void SetUniform< bool >( const int location, const bool& value )
+		void SetUniform< bool >( const i32 location, const bool& value )
 		{
 			glUniform1i( location, value );
 		}
 
 		/* Vectors. */
 		template< typename Component, std::size_t Size > requires( Size >= 2 && Size <= 4 )
-		void SetUniform( const int location, const Math::Vector< Component, Size >& value )
+		void SetUniform( const i32 location, const Math::Vector< Component, Size >& value )
 		{
 		
 			if constexpr( std::is_same_v< Component, float > )
@@ -183,7 +183,7 @@ namespace Kakadu
 				}
 			}
 
-			if constexpr( std::is_same_v< Component, int > )
+			if constexpr( std::is_same_v< Component, i32 > )
 			{
 				if constexpr( Size == 2 )
 				{
@@ -217,20 +217,20 @@ namespace Kakadu
 		}
 
 		template<>
-		void SetUniform< Color3 >( const int location, const Kakadu::Color3& value )
+		void SetUniform< Color3 >( const i32 location, const Kakadu::Color3& value )
 		{
 			SetUniform( location, reinterpret_cast< const Vector3& >( value ) );
 		}
 
 		template<>
-		void SetUniform< Color4 >( const int location, const Kakadu::Color4& value )
+		void SetUniform< Color4 >( const i32 location, const Kakadu::Color4& value )
 		{
 			SetUniform( location, reinterpret_cast< const Vector4& >( value ) );
 		}
 
 		template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
 		requires Concepts::NonZero< RowSize > && Concepts::NonZero< ColumnSize >
-		void SetUniform( const int location, const Math:: Matrix< Type, RowSize, ColumnSize >& value )
+		void SetUniform( const i32 location, const Math:: Matrix< Type, RowSize, ColumnSize >& value )
 		{
 			if constexpr( RowSize == ColumnSize )
 			{
@@ -279,39 +279,39 @@ namespace Kakadu
 /* Uniform Upload; Array types: */
 
 		template< typename UniformType >
-		void SetUniformArray( const int location, const UniformType* address, const int element_count );
+		void SetUniformArray( const i32 location, const UniformType* address, const i32 element_count );
 
 		template<>
-		void SetUniformArray< float >( const int location, const float* address, const int element_count )
+		void SetUniformArray< float >( const i32 location, const float* address, const i32 element_count )
 		{
 			ASSERT_DEBUG_ONLY( element_count > 1 );
 			glUniform1fv( location, element_count, address );
 		}
 
 		template<>
-		void SetUniformArray< int >( const int location, const int* address, const int element_count )
+		void SetUniformArray< i32 >( const i32 location, const i32* address, const i32 element_count )
 		{
 			ASSERT_DEBUG_ONLY( element_count > 1 );
 			glUniform1iv( location, element_count, address );
 		}
 
 		template<>
-		void SetUniformArray< u32 >( const int location, const u32* address, const int element_count )
+		void SetUniformArray< u32 >( const i32 location, const u32* address, const i32 element_count )
 		{
 			ASSERT_DEBUG_ONLY( element_count > 1 );
 			glUniform1uiv( location, element_count, address );
 		}
 
 		template<>
-		void SetUniformArray< bool >( const int location, const bool* address, const int element_count )
+		void SetUniformArray< bool >( const i32 location, const bool* address, const i32 element_count )
 		{
 			ASSERT_DEBUG_ONLY( element_count > 1 );
-			glUniform1iv( location, element_count, reinterpret_cast< const int* >( address ) );
+			glUniform1iv( location, element_count, reinterpret_cast< const i32* >( address ) );
 		}
 
 		/* Vectors. */
 		template< typename Component, std::size_t Size > requires( Size >= 2 && Size <= 4 )
-		void SetUniformArray( const int location, const Math::Vector< Component, Size >* address, const int element_count )
+		void SetUniformArray( const i32 location, const Math::Vector< Component, Size >* address, const i32 element_count )
 		{
 			ASSERT_DEBUG_ONLY( element_count > 1 );
 			
@@ -331,19 +331,19 @@ namespace Kakadu
 				}
 			}
 
-			if constexpr( std::is_same_v< Component, int > )
+			if constexpr( std::is_same_v< Component, i32 > )
 			{
 				if constexpr( Size == 2 )
 				{
-					glUniform2iv( location, element_count, reinterpret_cast< const int* >( address ) );
+					glUniform2iv( location, element_count, reinterpret_cast< const i32* >( address ) );
 				}
 				if constexpr( Size == 3 )
 				{
-					glUniform3iv( location, element_count, reinterpret_cast< const int* >( address ) );
+					glUniform3iv( location, element_count, reinterpret_cast< const i32* >( address ) );
 				}
 				if constexpr( Size == 4 )
 				{
-					glUniform4iv( location, element_count, reinterpret_cast< const int* >( address ) );
+					glUniform4iv( location, element_count, reinterpret_cast< const i32* >( address ) );
 				}
 			}
 
@@ -365,20 +365,20 @@ namespace Kakadu
 		}
 
 		template<>
-		void SetUniformArray< Color3 >( const int location, const Kakadu::Color3* address, const int element_count )
+		void SetUniformArray< Color3 >( const i32 location, const Kakadu::Color3* address, const i32 element_count )
 		{
 			SetUniformArray( location, address, element_count );
 		}
 
 		template<>
-		void SetUniformArray< Color4 >( const int location, const Kakadu::Color4* address, const int element_count )
+		void SetUniformArray< Color4 >( const i32 location, const Kakadu::Color4* address, const i32 element_count )
 		{
 			SetUniformArray( location, address, element_count );
 		}
 
 		template< Concepts::Arithmetic Type, std::size_t RowSize, std::size_t ColumnSize >
 		requires Concepts::NonZero< RowSize > && Concepts::NonZero< ColumnSize >
-		void SetUniformArray( const int location, const Math:: Matrix< Type, RowSize, ColumnSize >* address, const int element_count )
+		void SetUniformArray( const i32 location, const Math:: Matrix< Type, RowSize, ColumnSize >* address, const i32 element_count )
 		{
 			ASSERT_DEBUG_ONLY( element_count > 1 );
 
@@ -454,7 +454,7 @@ namespace Kakadu
 
 		template< typename UniformType >
 		/* Prohibit Uniform Buffers: */ requires( not std::is_base_of_v< Std140StructTag, UniformType > )
-			void SetUniformArray( const char* uniform_name, const UniformType* value, const int element_count )
+			void SetUniformArray( const char* uniform_name, const UniformType* value, const i32 element_count )
 		{
 			const auto& uniform_info = GetUniformInformation( uniform_name );
 
@@ -510,7 +510,7 @@ private:
 		void GetUniformBookKeepingInfo();
 		
 		/* Expects empty input vectors. */
-		bool GetActiveUniformBlockIndicesAndCorrespondingUniformIndices( const int active_uniform_count,
+		bool GetActiveUniformBlockIndicesAndCorrespondingUniformIndices( const i32 active_uniform_count,
 																		 std::vector< u32 >& block_indices, std::vector< u32 >& corresponding_uniform_indices ) const;
 		void QueryUniformData();
 		void QueryUniformData_BlockIndexAndOffsetForBufferMembers();
@@ -525,14 +525,14 @@ private:
 /* Error Checking/Reporting: */
 
 		void LogErrors( const std::string& error_string ) const;
-		void LogErrors_Compilation( const int shader_id,
+		void LogErrors_Compilation( const i32 shader_id,
 									const ShaderType shader_type,
 									std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const;
 		void LogErrors_Linking() const;
 		std::string FormatErrorLog( const char* log ) const;
 		/* Replaces file IDs with actual file paths. */
 		std::string FormatErrorLog( const char* log,
-									const int log_length,
+									const i32 log_length,
 									std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const;
 
 /* Editor: */
@@ -542,7 +542,7 @@ private:
 
 	private:
 		RHI::ShaderProgramID program_id;
-		//int padding;
+		/* 4 bytes of padding. */
 		std::string name;
 
 		std::string vertex_source_path;

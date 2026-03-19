@@ -41,6 +41,6 @@ namespace Kakadu
 	struct Vector3I_AndScalar
 	{
 		Vector3I vector;
-		int scalar;
+		i32 scalar;
 	};
 }

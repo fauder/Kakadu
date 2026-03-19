@@ -20,9 +20,9 @@ namespace Kakadu::Editor
 		// OpenGL expects uv coordinate v = 0 to be on the most bottom whereas stb loads image data with v = 0 to be top.
 		stbi_set_flip_vertically_on_load( true );
 
-		constexpr int DESIRED_CHANNELS = 4;
+		constexpr i32 DESIRED_CHANNELS = 4;
 
-		int number_of_channels = 0;
+		i32 number_of_channels = 0;
 
 		stbi_uc* pixels = stbi_load( image_file_path.c_str(),
 									 &source_width,
@@ -142,8 +142,8 @@ void main()
 
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-		int fb_width = 0;
-		int fb_height = 0;
+		i32 fb_width = 0;
+		i32 fb_height = 0;
 		glfwGetFramebufferSize( glfwGetCurrentContext(), &fb_width, &fb_height );
 		glViewport( 0, 0, fb_width, fb_height );
 

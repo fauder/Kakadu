@@ -82,7 +82,7 @@ namespace Kakadu::Math
 		{
 
 			// Utilize fold expressions with a lambda to "loop over" the parameter pack.
-			int row_index = 0;
+			i32 row_index = 0;
 			( /* Lambda: */ [ & ]
 			{
 				SetRow( row_vectors, row_index++ );
@@ -165,8 +165,8 @@ namespace Kakadu::Math
 		constexpr Matrix& Set( Values... values ) requires( sizeof...( Values ) <= RowSize * ColumnSize )
 		{
 			// Utilize fold expressions with a lambda to "loop over" the parameter pack.
-			int column_index = 0;
-			int row_index = 0;
+			i32 column_index = 0;
+			i32 row_index = 0;
 			( /* Lambda: */ [&]
 				{
 					data[ row_index ][ column_index ] = values;
@@ -390,15 +390,15 @@ namespace Kakadu::Math
 	extern template struct Kakadu::Math::Matrix< double, 4, 2 >;
 	extern template struct Kakadu::Math::Matrix< double, 4, 3 >;
 	extern template struct Kakadu::Math::Matrix< double, 4, 4 >;
-	extern template struct Kakadu::Math::Matrix< int, 2, 2 >;
-	extern template struct Kakadu::Math::Matrix< int, 2, 3 >;
-	extern template struct Kakadu::Math::Matrix< int, 2, 4 >;
-	extern template struct Kakadu::Math::Matrix< int, 3, 2 >;
-	extern template struct Kakadu::Math::Matrix< int, 3, 3 >;
-	extern template struct Kakadu::Math::Matrix< int, 3, 4 >;
-	extern template struct Kakadu::Math::Matrix< int, 4, 2 >;
-	extern template struct Kakadu::Math::Matrix< int, 4, 3 >;
-	extern template struct Kakadu::Math::Matrix< int, 4, 4 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::i32, 2, 2 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::i32, 2, 3 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::i32, 2, 4 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::i32, 3, 2 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::i32, 3, 3 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::i32, 3, 4 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::i32, 4, 2 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::i32, 4, 3 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::i32, 4, 4 >;
 	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 2, 2 >;
 	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 2, 3 >;
 	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 2, 4 >;
@@ -418,9 +418,9 @@ namespace Kakadu
 	using Matrix2x2D = Math::Matrix< double,	2, 2 >;
 	using Matrix3x3D = Math::Matrix< double,	3, 3 >;
 	using Matrix4x4D = Math::Matrix< double,	4, 4 >;
-	using Matrix2x2I = Math::Matrix< int,		2, 2 >;
-	using Matrix3x3I = Math::Matrix< int,		3, 3 >;
-	using Matrix4x4I = Math::Matrix< int,		4, 4 >;
+	using Matrix2x2I = Math::Matrix< i32,		2, 2 >;
+	using Matrix3x3I = Math::Matrix< i32,		3, 3 >;
+	using Matrix4x4I = Math::Matrix< i32,		4, 4 >;
 
 	using Matrix2x3   = Math::Matrix< float,	2, 3 >;
 	using Matrix2x4   = Math::Matrix< float,	2, 4 >;
@@ -434,10 +434,10 @@ namespace Kakadu
 	using Matrix3x4D  = Math::Matrix< double,	3, 4 >;
 	using Matrix4x2D  = Math::Matrix< double,	4, 2 >;
 	using Matrix4x3D  = Math::Matrix< double,	4, 3 >;
-	using Matrix2x3I  = Math::Matrix< int,		2, 3 >;
-	using Matrix2x4I  = Math::Matrix< int,		2, 4 >;
-	using Matrix3x2I  = Math::Matrix< int,		3, 2 >;
-	using Matrix3x4I  = Math::Matrix< int,		3, 4 >;
-	using Matrix4x2I  = Math::Matrix< int,		4, 2 >;
-	using Matrix4x3I  = Math::Matrix< int,		4, 3 >;
+	using Matrix2x3I  = Math::Matrix< i32,		2, 3 >;
+	using Matrix2x4I  = Math::Matrix< i32,		2, 4 >;
+	using Matrix3x2I  = Math::Matrix< i32,		3, 2 >;
+	using Matrix3x4I  = Math::Matrix< i32,		3, 4 >;
+	using Matrix4x2I  = Math::Matrix< i32,		4, 2 >;
+	using Matrix4x3I  = Math::Matrix< i32,		4, 3 >;
 }

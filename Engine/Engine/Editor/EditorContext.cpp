@@ -85,7 +85,7 @@ namespace Kakadu::Editor
 			viewport_panel.OffsetMagnifierZoomFactor( y_offset > 0 );
 	}
 
-	void Context::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
+	void Context::OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels )
 	{
 		scene_camera.RecalculateProjectionParameters( width_new_pixels, height_new_pixels );
 	}

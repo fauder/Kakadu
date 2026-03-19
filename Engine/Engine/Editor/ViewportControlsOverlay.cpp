@@ -8,7 +8,7 @@ namespace Kakadu::Editor
 {
 	internal_function void RenderShadingModeCombobox( Context& editor_context, const ViewportShadingMode editor_shading_mode )
 	{
-		int option = ( int )editor_shading_mode;
+		i32 option = ( i32 )editor_shading_mode;
 		if( ImGuiUtility::DrawShadedSphereComboButton( "ShadingMode", &option,
 													   {
 														   "Shaded",

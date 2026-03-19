@@ -51,7 +51,7 @@ namespace Kakadu::ImGuiDrawer
 			case GL_FLOAT_VEC3				: return Draw( *reinterpret_cast< Vector3*		>( value_pointer ), name );
 			case GL_FLOAT_VEC4				: return Draw( *reinterpret_cast< Vector4*		>( value_pointer ), name );
 			case GL_DOUBLE					: return Draw( *reinterpret_cast< double*		>( value_pointer ), name );
-			case GL_INT						: return Draw( *reinterpret_cast< int*			>( value_pointer ), name );
+			case GL_INT						: return Draw( *reinterpret_cast< i32*			>( value_pointer ), name );
 			case GL_INT_VEC2				: return Draw( *reinterpret_cast< Vector2I*		>( value_pointer ), name );
 			case GL_INT_VEC3				: return Draw( *reinterpret_cast< Vector3I*		>( value_pointer ), name );
 			case GL_INT_VEC4				: return Draw( *reinterpret_cast< Vector4I*		>( value_pointer ), name );
@@ -96,7 +96,7 @@ namespace Kakadu::ImGuiDrawer
 			case GL_FLOAT_VEC3				: return Draw( *reinterpret_cast< const Vector3*		>( value_pointer ), name );
 			case GL_FLOAT_VEC4				: return Draw( *reinterpret_cast< const Vector4*		>( value_pointer ), name );
 			case GL_DOUBLE					: return Draw( *reinterpret_cast< const double*			>( value_pointer ), name );
-			case GL_INT						: return Draw( *reinterpret_cast< const int*			>( value_pointer ), name );
+			case GL_INT						: return Draw( *reinterpret_cast< const i32*			>( value_pointer ), name );
 			case GL_INT_VEC2				: return Draw( *reinterpret_cast< const Vector2I*		>( value_pointer ), name );
 			case GL_INT_VEC3				: return Draw( *reinterpret_cast< const Vector3I*		>( value_pointer ), name );
 			case GL_INT_VEC4				: return Draw( *reinterpret_cast< const Vector4I*		>( value_pointer ), name );
@@ -131,20 +131,20 @@ namespace Kakadu::ImGuiDrawer
 		throw std::runtime_error( "ERROR::IMGUIDRAWER::DRAW( type, const void* value_pointer ) called for an undefined GL type!" );
 	}
 
-	bool Draw( int& scalar, const char* name )
+	bool Draw( i32& scalar, const char* name )
 	{
 		return ImGui::DragInt( name, &scalar );
 	}
 
-	bool Draw( int& scalar, const int min, const int max, const char* name )
+	bool Draw( i32& scalar, const i32 min, const i32 max, const char* name )
 	{
 		return ImGui::SliderInt( name, &scalar, min, max );
 	}
 
-	void Draw( const int& scalar, const char* name )
+	void Draw( const i32& scalar, const char* name )
 	{
 		ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
-		ImGui::InputInt( name, const_cast< int* >( &scalar ), 0, 0, ImGuiInputTextFlags_ReadOnly );
+		ImGui::InputInt( name, const_cast< i32* >( &scalar ), 0, 0, ImGuiInputTextFlags_ReadOnly );
 		ImGui::PopStyleColor();
 	}
 
@@ -466,7 +466,7 @@ namespace Kakadu::ImGuiDrawer
 				}
 
 				char info_line_buffer[ 255 ];
-				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( int )image_width, ( int )image_height, Texture::FormatName( selected_texture->PixelFormat() ) );
+				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( i32 )image_width, ( i32 )image_height, Texture::FormatName( selected_texture->PixelFormat() ) );
 				ImGui::Indent( ( preview_area_size.x - ImGui::CalcTextSize( info_line_buffer ).x ) / 2.0f );
 				ImGui::TextUnformatted( info_line_buffer );
 				ImGui::SameLine();
@@ -557,7 +557,7 @@ namespace Kakadu::ImGuiDrawer
 				}
 
 				char info_line_buffer[ 255 ];
-				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( int )image_width, ( int )image_height, Texture::FormatName( selected_texture->PixelFormat() ) );
+				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( i32 )image_width, ( i32 )image_height, Texture::FormatName( selected_texture->PixelFormat() ) );
 				ImGui::Indent( ( preview_area_size.x - ImGui::CalcTextSize( info_line_buffer ).x ) / 2.0f );
 				ImGui::TextUnformatted( info_line_buffer );
 				ImGui::SameLine();
@@ -705,9 +705,9 @@ namespace Kakadu::ImGuiDrawer
 								ImGui::PushItemWidth( array_dimensions[ 1 ] * ImGui::CalcTextSize( " []" ).x +
 													  ( array_dimensions[ 1 ] - 1 ) * style.ItemInnerSpacing.x );
 
-								for( int i = 0; i < array_dimensions[ 0 ]; i++ )
+								for( i32 i = 0; i < array_dimensions[ 0 ]; i++ )
 								{
-									for( int j = 0; j < array_dimensions[ 1 ]; j++ )
+									for( i32 j = 0; j < array_dimensions[ 1 ]; j++ )
 									{
 										void* element_address = GL::Type::AddressOf( type, address, +i * array_dimensions[ 1 ] + j );
 										ImGui::PushID( element_address );
@@ -1214,21 +1214,21 @@ namespace Kakadu::ImGuiDrawer
 		{
 			ImGui::TableNextRow();
 
-			int id = framebuffer.id.id;
+			i32 id = framebuffer.id.id;
 			ImGui::TableNextColumn(); ImGui::TextDisabled( "ID" );
 			ImGui::TableNextColumn(); ImGui::InputInt( "##ID", &id, 0, 0, ImGuiInputTextFlags_ReadOnly );
 
 			Vector2I size = framebuffer.size;
 
 			ImGui::TableNextColumn(); ImGui::TextDisabled( "Size" );
-			ImGui::TableNextColumn(); ImGui::InputInt2( "##Size", reinterpret_cast< int* >( &size ), ImGuiInputTextFlags_ReadOnly );
+			ImGui::TableNextColumn(); ImGui::InputInt2( "##Size", reinterpret_cast< i32* >( &size ), ImGuiInputTextFlags_ReadOnly );
 
 			if( framebuffer.IsMultiSampled() )
 			{
 				ImGuiCustomColors::PushStyleColor( ImGuiCol_Text, ImGuiCustomColors::CustomColorType::MSAA );
 				ImGui::TableNextColumn(); ImGui::TextDisabled( "MSAA Sample Count" );
 				ImGui::TableNextColumn();
-				int sample_count = framebuffer.SampleCount();
+				i32 sample_count = framebuffer.SampleCount();
 				ImGui::InputInt( "##Sample Count", &sample_count, 0, 100, ImGuiInputTextFlags_ReadOnly );
 				ImGui::PopStyleColor();
 			}

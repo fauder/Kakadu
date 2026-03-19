@@ -14,7 +14,7 @@ namespace Kakadu
 {
 	struct VertexAttribute
 	{
-		int count;
+		i32 count;
 		GLenum type;
 		bool is_instanced;
 		u32 location;
@@ -32,7 +32,7 @@ namespace Kakadu
 
 	struct VertexInstanceAttribute
 	{
-		int count;
+		i32 count;
 		GLenum type;
 		u32 location;
 
@@ -80,7 +80,7 @@ namespace Kakadu
 
 	private:
 		/* Currently unused. */
-		void Push( const GLenum type, const int count, const bool is_instanced = false );
+		void Push( const GLenum type, const i32 count, const bool is_instanced = false );
 
 
 	private:

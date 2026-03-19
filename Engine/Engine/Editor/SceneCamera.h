@@ -31,7 +31,7 @@ namespace Kakadu::Editor
 		void SwitchView( const View view );
 
 		Radians CalculateVerticalFieldOfView( const Radians horizontal_field_of_view, const float aspect_ratio ) const;
-		void RecalculateProjectionParameters( const int width_new_pixels, const int height_new_pixels );
+		void RecalculateProjectionParameters( const i32 width_new_pixels, const i32 height_new_pixels );
 		void RecalculateProjectionParameters( const Vector2I new_size_pixels ); // Convenience overload.
 
 		bool animation_is_enabled;

@@ -190,7 +190,7 @@ namespace Kakadu::Math
 		template< typename... Values > requires( !std::is_pointer_v< Values > && ... )
 		constexpr Vector& Set( Values ... values )
 		{
-			int i = 0;
+			i32 i = 0;
 			( /* Lambda: */ [ & ] { data[ i++ ] = values; }( ), ... ); // Utilize fold expressions with a lambda to "loop over" the parameter pack.
 
 			return *this;
@@ -561,9 +561,9 @@ namespace Kakadu::Math
 	extern template struct Kakadu::Math::Vector< double, 2 >;
 	extern template struct Kakadu::Math::Vector< double, 3 >;
 	extern template struct Kakadu::Math::Vector< double, 4 >;
-	extern template struct Kakadu::Math::Vector< int, 2 >;
-	extern template struct Kakadu::Math::Vector< int, 3 >;
-	extern template struct Kakadu::Math::Vector< int, 4 >;
+	extern template struct Kakadu::Math::Vector< i32, 2 >;
+	extern template struct Kakadu::Math::Vector< i32, 3 >;
+	extern template struct Kakadu::Math::Vector< i32, 4 >;
 	extern template struct Kakadu::Math::Vector< u32, 2 >;
 	extern template struct Kakadu::Math::Vector< u32, 3 >;
 	extern template struct Kakadu::Math::Vector< u32, 4 >;
@@ -577,9 +577,9 @@ namespace Kakadu
 	using Vector2D = Math::Vector< double,	2 >;
 	using Vector3D = Math::Vector< double,	3 >;
 	using Vector4D = Math::Vector< double,	4 >;
-	using Vector2I = Math::Vector< int,		2 >;
-	using Vector3I = Math::Vector< int,		3 >;
-	using Vector4I = Math::Vector< int,		4 >;
+	using Vector2I = Math::Vector< i32,		2 >;
+	using Vector3I = Math::Vector< i32,		3 >;
+	using Vector4I = Math::Vector< i32,		4 >;
 	using Vector2U = Math::Vector< u32,		2 >;
 	using Vector3U = Math::Vector< u32,		3 >;
 	using Vector4U = Math::Vector< u32,		4 >;

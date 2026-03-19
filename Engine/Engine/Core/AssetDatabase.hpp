@@ -3,6 +3,7 @@
 // Engine Includes.
 #include "Concepts.h"
 #include "Macros.h"
+#include "Types.h"
 
 // std Includes.
 #include <cstddef>
@@ -83,7 +84,7 @@ namespace Kakadu
 		 * Overwrite/rename is prohibited; returns nullptr on failure. */
 		AssetType* CreateAssetFromFileBytes( const std::string& name,
 											 const std::byte* data,
-											 const int length,
+											 const i32 length,
 											 const typename AssetType::ImportSettings& import_settings = AssetType::DEFAULT_IMPORT_SETTINGS )
 		{
 			auto Load = [ & ]( const std::string& asset_name ) -> AssetType*
@@ -105,7 +106,7 @@ namespace Kakadu
 			};
 
 			if( name.empty() )
-				return Load( "<unnamed>_" + std::to_string( ( int )unique_name_counter++ ) );
+				return Load( "<unnamed>_" + std::to_string( ( i32 )unique_name_counter++ ) );
 			else
 				return Load( name );
 		}
@@ -135,7 +136,7 @@ namespace Kakadu
 			};
 
 			if( name.empty() )
-				return Load( "<unnamed>_" + std::to_string( ( int )unique_name_counter++ ) );
+				return Load( "<unnamed>_" + std::to_string( ( i32 )unique_name_counter++ ) );
 			else
 				return Load( name );
 		}

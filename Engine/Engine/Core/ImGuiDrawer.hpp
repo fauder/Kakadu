@@ -31,7 +31,7 @@ namespace Kakadu::ImGuiDrawer
 	template< typename Type >
 	constexpr ImGuiDataType_ GetImGuiDataType()
 	{
-		if constexpr( std::is_same_v< Type, int > )
+		if constexpr( std::is_same_v< Type, i32 > )
 			return ImGuiDataType_S32;
 		if constexpr( std::is_same_v< Type, u32 > )
 			return ImGuiDataType_U32;
@@ -44,7 +44,7 @@ namespace Kakadu::ImGuiDrawer
 	template< typename Type >
 	constexpr const char* GetFormat()
 	{
-		if constexpr( std::is_same_v< Type, int > )
+		if constexpr( std::is_same_v< Type, i32 > )
 			return "%d";
 		if constexpr( std::is_same_v< Type, u32 > )
 			return "%u";
@@ -57,12 +57,12 @@ namespace Kakadu::ImGuiDrawer
 	bool Draw( const GLenum type,	    void* value_pointer, const char* name = "##hidden" );
 	void Draw( const GLenum type, const void* value_pointer, const char* name = "##hidden" );
 
-	bool Draw( int& scalar,				const char* name = "##scalar_int" 	 );
-	bool Draw( int& scalar,				const int min, const int max, const char* name = "##scalar_int" );
-	void Draw( const int& scalar,		const char* name = "##scalar_int"    );
-	bool Draw( u32& scalar,				const char* name = "##scalar_uint"	 );
-	bool Draw( u32& scalar,				const u32 min, const u32 max, const char* name = "##scalar_uint" );
-	void Draw( const u32& scalar,		const char* name = "##scalar_uint"	 );
+	bool Draw( i32& scalar,				const char* name = "##scalar_i32" 	 );
+	bool Draw( i32& scalar,				const i32 min, const i32 max, const char* name = "##scalar_i32" );
+	void Draw( const i32& scalar,		const char* name = "##scalar_i32"    );
+	bool Draw( u32& scalar,				const char* name = "##scalar_ui32"	 );
+	bool Draw( u32& scalar,				const u32 min, const u32 max, const char* name = "##scalar_ui32" );
+	void Draw( const u32& scalar,		const char* name = "##scalar_ui32"	 );
 	bool Draw( float& scalar,			const char* name = "##scalar_float",  const char* format = GetFormat< float  >() );
 	void Draw( const float& scalar,		const char* name = "##scalar_float",  const char* format = GetFormat< float  >() );
 	bool Draw( double& scalar,			const char* name = "##scalar_double", const char* format = GetFormat< double >() );
@@ -111,7 +111,7 @@ namespace Kakadu::ImGuiDrawer
 		{
 			ImGui::TableNextColumn();
 
-			ImGui::PushID( static_cast< int >( i ) );
+			ImGui::PushID( static_cast< i32 >( i ) );
 			ImGui::SetNextItemWidth( -FLT_MIN );
 			ImGui::InputScalar(
 				name,
@@ -145,7 +145,7 @@ namespace Kakadu::ImGuiDrawer
 
 			ImGui::TableNextColumn();
 
-			ImGui::PushID( static_cast< int >( i ) );
+			ImGui::PushID( static_cast< i32 >( i ) );
 			ImGui::SetNextItemWidth( -FLT_MIN );
 			ImGui::InputScalar(
 				name,
@@ -179,7 +179,7 @@ namespace Kakadu::ImGuiDrawer
 		{
 			ImGui::TableNextColumn();
 
-			ImGui::PushID( static_cast< int >( i ) );
+			ImGui::PushID( static_cast< i32 >( i ) );
 			ImGui::SetNextItemWidth( -FLT_MIN );
 			is_modified |= ImGui::DragScalar(
 				name,

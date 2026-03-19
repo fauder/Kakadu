@@ -177,25 +177,25 @@ namespace Kakadu::Platform
 	void DestroySplashScreenAndSwitchToMainWindow();
 
 	/* Window/Framebuffer. */
-	void ResizeWindow( const int width_pixels, const int height_pixels );
+	void ResizeWindow( const i32 width_pixels, const i32 height_pixels );
 	void MinimizeWindow();
 	void MaximizeWindow();
 	void RestoreWindow();
 	void HideWindow();
 	void ShowWindow();
-	void SetFramebufferResizeCallback( std::function< void( const int width_new_pixels, const int height_new_pixels ) > callback = {} );
+	void SetFramebufferResizeCallback( std::function< void( const i32 width_new_pixels, const i32 height_new_pixels ) > callback = {} );
 	bool IsWindowFocused();
 	bool IsWindowIconified();
 
 	Kakadu::Vector2I GetFramebufferSizeInPixels();
-	int GetFramebufferWidthInPixels();
-	int GetFramebufferHeightInPixels();
+	i32 GetFramebufferWidthInPixels();
+	i32 GetFramebufferHeightInPixels();
 	float GetAspectRatio();
 
-	bool GetMainMonitorResolution( int& width, int& height );
+	bool GetMainMonitorResolution( i32& width, i32& height );
 	std::uint16_t GetMainMonitorRefreshRate();
 
-	void CenterWindow( const int width_pixels, const int height_pixels );
+	void CenterWindow( const i32 width_pixels, const i32 height_pixels );
 
 	bool SetWindowIcon();
 
@@ -206,7 +206,7 @@ namespace Kakadu::Platform
 
 #ifdef _EDITOR
 	/* GL Debug Output. */
-	void SetGLDebugOutputCallback( std::function< void( u32 source, u32 type, u32 id, u32 severity, int length, 
+	void SetGLDebugOutputCallback( std::function< void( u32 source, u32 type, u32 id, u32 severity, i32 length, 
 														const char* message, const void* parameters ) > callback = {} );
 #endif // _EDITOR
 

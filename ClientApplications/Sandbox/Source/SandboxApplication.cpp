@@ -194,20 +194,20 @@ void SandboxApplication::Initialize()
 		
 		constexpr Radians inclination_limit = 15.0_deg;
 
-		for( int i = 0; i < CUBE_COUNT; i++ )
+		for( i32 i = 0; i < CUBE_COUNT; i++ )
 		{
 			random_angles[ i ].xz_angle          = Kakadu::Math::Random::Generate( 0.0_rad, Kakadu::Constants< Radians >::Two_Pi() );
 			random_angles[ i ].inclination_angle = Kakadu::Math::Random::Generate( 0.0_rad, inclination_limit );
 		}
 
-		constexpr int thread_work_size = 1000;
+		constexpr i32 thread_work_size = 1000;
 
 		// Ensure CUBE_COUNT is divisible by thread_work_size or adjust accordingly.
-		constexpr int thread_group_count = ( CUBE_COUNT + thread_work_size - 1 ) / thread_work_size;
+		constexpr i32 thread_group_count = ( CUBE_COUNT + thread_work_size - 1 ) / thread_work_size;
 
-		constexpr std::array< int, thread_group_count > thread_group_indices = [ thread_group_count ]()
+		constexpr std::array< i32, thread_group_count > thread_group_indices = [ thread_group_count ]()
 		{
-			std::array< int, thread_group_count > indices;
+			std::array< i32, thread_group_count > indices;
 			std::iota( indices.begin(), indices.end(), 0 );
 			return indices;
 		}();
@@ -215,8 +215,8 @@ void SandboxApplication::Initialize()
 		std::for_each( std::execution::par, thread_group_indices.cbegin(), thread_group_indices.cend(), [ & ]( auto&& thread_group_index )
 		{
 			// Calculate the range of indices for this group:
-			const int start_index = thread_group_index * thread_work_size;
-			const int end_index   = Kakadu::Math::Min( start_index + thread_work_size, CUBE_COUNT );
+			const i32 start_index = thread_group_index * thread_work_size;
+			const i32 end_index   = Kakadu::Math::Min( start_index + thread_work_size, CUBE_COUNT );
 
 			for( auto cube_index = start_index; cube_index < end_index; cube_index++ )
 			{
@@ -548,7 +548,7 @@ void SandboxApplication::RenderToolsUI()
 			{
 				static char buffer[ 260 ];
 				strncpy_s( buffer, model_info.file_path.c_str(), model_info.file_path.size() );
-				ImGui::TextDisabled( "Loaded Model Path", buffer, ( int )model_info.file_path.size(), ImGuiInputTextFlags_ReadOnly );
+				ImGui::TextDisabled( "Loaded Model Path", buffer, ( i32 )model_info.file_path.size(), ImGuiInputTextFlags_ReadOnly );
 				if( ImGui::Checkbox( "Receives Shadows", &model_info.is_receiving_shadows ) )
 				{
 					for( auto& renderable : model_info.model_instance.Renderables() )
@@ -655,7 +655,7 @@ void SandboxApplication::RenderToolsUI()
 				ImGui::PushID( index );
 
 				ImGui::TableNextColumn();
-				int no = index + 1;
+				i32 no = index + 1;
 				ImGui::PushItemWidth( first_column_width );
 				ImGui::InputInt( "", &no, 0, 0, ImGuiInputTextFlags_ReadOnly );
 				ImGui::PopItemWidth();
@@ -792,7 +792,7 @@ void SandboxApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_co
 	Application::OnKeyboardEvent( key_code, key_action, key_mods );
 }
 
-void SandboxApplication::OnFramebufferResizeEvent( const int width_new_pixels, const int height_new_pixels )
+void SandboxApplication::OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels )
 {
 }
 

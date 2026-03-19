@@ -22,6 +22,6 @@ namespace Kakadu::Editor
 
 	private:
 		u32 tex_id;
-		int source_width, source_height;
+		i32 source_width, source_height;
 	};
 }

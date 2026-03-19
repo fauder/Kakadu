@@ -11,7 +11,7 @@
 
 namespace Kakadu::ImGuiUtility
 {
-	void Table_Header_ManuallySubmit( const int column_index )
+	void Table_Header_ManuallySubmit( const i32 column_index )
 	{
 		ImGui::TableSetColumnIndex( column_index );
 		const char* column_name = ImGui::TableGetColumnName( column_index ); // Retrieve name passed to TableSetupColumn().
@@ -22,7 +22,7 @@ namespace Kakadu::ImGuiUtility
 		ImGui::PopID();
 	}
 
-	void Table_Header_ManuallySubmit_AppendHelpMarker( const int column_index, const char* help_string )
+	void Table_Header_ManuallySubmit_AppendHelpMarker( const i32 column_index, const char* help_string )
 	{
 		/* Due to a Table API limitation, the help marker can NOT be placed AFTER the header name. Therefore it has to be placed before. */
 
@@ -37,7 +37,7 @@ namespace Kakadu::ImGuiUtility
 		ImGui::PopID();
 	}
 
-	void HelpMarker( const char* desc, const int wrap )
+	void HelpMarker( const char* desc, const i32 wrap )
 	{
 		ImGui::TextDisabled( "(?)" );
 		if( ImGui::IsItemHovered() )
@@ -52,7 +52,7 @@ namespace Kakadu::ImGuiUtility
 		}
 	}
 
-    void HelpMarker( const char* text, const char* desc, const int wrap )
+    void HelpMarker( const char* text, const char* desc, const i32 wrap )
     {
         ImGui::TextDisabled( text );
         if( ImGui::IsItemHovered() )
@@ -74,7 +74,7 @@ namespace Kakadu::ImGuiUtility
         ImGui::SetCursorPosX( ImGui::GetCursorPosX() + ( available_width - text_width ) * 0.5f );
     }
 
-    void CenterItem( const int item_width )
+    void CenterItem( const i32 item_width )
     {
         const float available_width = ImGui::GetContentRegionAvail().x;
         ImGui::SetCursorPosX( ImGui::GetCursorPosX() + ( available_width - item_width ) * 0.5f );
@@ -167,7 +167,7 @@ namespace Kakadu::ImGuiUtility
                 is_modified = true;
             }
 
-            ImGui::PopStyleColor( 3 + ( int )text_needs_to_be_black ); // Button, ButtonHovered, ButtonActive.
+            ImGui::PopStyleColor( 3 + ( i32 )text_needs_to_be_black ); // Button, ButtonHovered, ButtonActive.
 
             ImGui::PopID();
         };
@@ -389,8 +389,8 @@ namespace Kakadu::ImGuiUtility
                             : vertical_positioning == VerticalPosition::CENTER
                                 ? window->Size.y / 2.0f
                                 : window->Size.y - pad );
-		window_pos_pivot.x = ( int )horizontal_positioning * 0.5f;
-		window_pos_pivot.y = ( int )vertical_positioning * 0.5f;
+		window_pos_pivot.x = ( i32 )horizontal_positioning * 0.5f;
+		window_pos_pivot.y = ( i32 )vertical_positioning * 0.5f;
 		ImGui::SetNextWindowPos( window_pos, ImGuiCond_Always, window_pos_pivot );
 
 		ImGui::SetNextWindowBgAlpha( alpha );
@@ -437,7 +437,7 @@ namespace Kakadu::ImGuiUtility
     }
 
     /* Only works with same width items. */
-    void SetNextItemRightAligned( const int item_no_starting_from_right, const float item_width )
+    void SetNextItemRightAligned( const i32 item_no_starting_from_right, const float item_width )
     {
         ImGui::SetCursorPosX( ImGui::GetWindowWidth() - item_no_starting_from_right * ( ImGui::GetStyle().ItemSpacing.x + item_width ) );
     }
@@ -556,7 +556,7 @@ namespace Kakadu::ImGuiUtility
         ImRect frameRect = ImRect( itemMin + halfFrame, itemMax - ImVec2( halfFrame.x, 0.0f ) );
         labelRect.Min.x -= itemSpacing.x;
         labelRect.Max.x += itemSpacing.x;
-        for( int i = 0; i < 4; ++i )
+        for( i32 i = 0; i < 4; ++i )
         {
             switch( i )
             {
@@ -696,7 +696,7 @@ namespace Kakadu::ImGuiUtility
     }
 
     bool DrawShadedSphereComboButton( const char* name,
-                                      int* current_index,
+                                      i32* current_index,
                                       const std::initializer_list< const char* > option_strings,
                                       const ImU32 shade_color, const ImU32 specular_color )
     {
@@ -719,7 +719,7 @@ namespace Kakadu::ImGuiUtility
 
         if( ImGui::BeginPopupContextItem( name ) )
         {
-            int index = 0;
+            i32 index = 0;
             for( const auto option_string : option_strings )
             {
                 if( option_string[ 0 ] == '_' )
