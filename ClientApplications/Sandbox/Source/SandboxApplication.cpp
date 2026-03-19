@@ -79,7 +79,7 @@ SandboxApplication::~SandboxApplication()
 
 void SandboxApplication::Initialize()
 {
-	Platform::ChangeTitle( "Kakadu - Sandbox" );
+	Kakadu::Platform::ChangeTitle( "Kakadu - Sandbox" );
 	
 	//Kakadu::Math::Random::SeedRandom();
 
@@ -525,7 +525,7 @@ void SandboxApplication::RenderToolsUI()
 	const auto& style = ImGui::GetStyle();
 
 	{
-		const auto initial_window_size = Platform::GetFramebufferSizeInPixels() / 4;
+		const auto initial_window_size = Kakadu::Platform::GetFramebufferSizeInPixels() / 4;
 		ImGui::SetNextWindowSize( Kakadu::Math::CopyToImVec2( initial_window_size ), ImGuiCond_Appearing );
 	}
 
@@ -565,7 +565,7 @@ void SandboxApplication::RenderToolsUI()
 
 				if( ImGui::Button( ICON_FA_FOLDER_OPEN " Reload" ) )
 				{
-					if( auto maybe_file_name = Platform::BrowseFileName( { "glTF (*.gltf;*.glb)",		"*.gltf;*.glb",
+					if( auto maybe_file_name = Kakadu::Platform::BrowseFileName( { "glTF (*.gltf;*.glb)",		"*.gltf;*.glb",
 																			"Standard glTF (*.gltf)",	"*.gltf",
 																			"Binary glTF (*.glb)",		"*.glb" },
 																		 "Choose a Model to Load" );
@@ -587,7 +587,7 @@ void SandboxApplication::RenderToolsUI()
 				const auto button_size( ImGui::CalcTextSize( ICON_FA_CUBES " Models   " ) + style.ItemInnerSpacing );
 				if( ImGui::Button( ICON_FA_FOLDER_OPEN " Load", button_size ) )
 				{
-					if( auto maybe_file_name = Platform::BrowseFileName( { "glTF (*.gltf;*.glb)",		"*.gltf;*.glb",
+					if( auto maybe_file_name = Kakadu::Platform::BrowseFileName( { "glTF (*.gltf;*.glb)",		"*.gltf;*.glb",
 																			"Standard glTF (*.gltf)",	"*.gltf",
 																			"Binary glTF (*.glb)",		"*.glb" },
 																		 "Choose a Model to Load" );
@@ -761,7 +761,7 @@ void SandboxApplication::RenderToolsUI()
 	ImGui::End();
 }
 
-void SandboxApplication::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
+void SandboxApplication::OnMouseButtonEvent( const Kakadu::Platform::MouseButton button, const Kakadu::Platform::MouseButtonAction button_action, const Kakadu::Platform::KeyMods key_mods )
 {
 	Application::OnMouseButtonEvent( button, button_action, key_mods );
 }
@@ -771,18 +771,18 @@ void SandboxApplication::OnMouseScrollEvent( const float x_offset, const float y
 	Application::OnMouseScrollEvent( x_offset, y_offset );
 }
 
-void SandboxApplication::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
+void SandboxApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods )
 {
 	switch( key_code )
 	{
-		/*case Platform::KeyCode::KEY_ESCAPE:
+		/*case Kakadu::Platform::KeyCode::KEY_ESCAPE:
 			break;*/
-		case Platform::KeyCode::KEY_U:
-			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
+		case Kakadu::Platform::KeyCode::KEY_U:
+			if( key_action == Kakadu::Platform::KeyAction::PRESS || key_action == Kakadu::Platform::KeyAction::REPEAT )
 				light_spot.data.cutoff_angle_inner = Kakadu::Math::Min( light_spot.data.cutoff_angle_inner + 0.33_deg, light_spot.data.cutoff_angle_outer );
 			break;
-		case Platform::KeyCode::KEY_Y:
-			if( key_action == Platform::KeyAction::PRESS || key_action == Platform::KeyAction::REPEAT )
+		case Kakadu::Platform::KeyCode::KEY_Y:
+			if( key_action == Kakadu::Platform::KeyAction::PRESS || key_action == Kakadu::Platform::KeyAction::REPEAT )
 				light_spot.data.cutoff_angle_inner = Kakadu::Math::Max( light_spot.data.cutoff_angle_inner - 0.33_deg, 0_deg );
 			break;
 		default:

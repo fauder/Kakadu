@@ -33,7 +33,7 @@
 #include <stdexcept>
 #include <thread>
 
-namespace Platform
+namespace Kakadu::Platform
 {
 	struct WindowState
 	{

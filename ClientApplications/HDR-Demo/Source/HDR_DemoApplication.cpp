@@ -53,7 +53,7 @@ HDR_DemoApplication::~HDR_DemoApplication()
 
 void HDR_DemoApplication::Initialize()
 {
-	Platform::ChangeTitle( "Kakadu - HDR-Demo" );
+	Kakadu::Platform::ChangeTitle( "Kakadu - HDR-Demo" );
 
 	//Kakadu::Math::Random::SeedRandom();
 
@@ -256,7 +256,7 @@ void HDR_DemoApplication::RenderToolsUI()
 	ImGui::End();
 }
 
-void HDR_DemoApplication::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
+void HDR_DemoApplication::OnMouseButtonEvent( const Kakadu::Platform::MouseButton button, const Kakadu::Platform::MouseButtonAction button_action, const Kakadu::Platform::KeyMods key_mods )
 {
 	Application::OnMouseButtonEvent( button, button_action, key_mods );
 }
@@ -266,7 +266,7 @@ void HDR_DemoApplication::OnMouseScrollEvent( const float x_offset, const float 
 	Application::OnMouseScrollEvent( x_offset, y_offset );
 }
 
-void HDR_DemoApplication::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
+void HDR_DemoApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods )
 {
 	/*switch( key_code )
 	{

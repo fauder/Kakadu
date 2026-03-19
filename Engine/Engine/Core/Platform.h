@@ -10,7 +10,7 @@
 #include <utility>
 
 /* Contains & abstracts away platform-specific services. */
-namespace Platform
+namespace Kakadu::Platform
 {
 	enum class KeyCode
 	{
