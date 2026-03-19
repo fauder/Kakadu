@@ -15,6 +15,7 @@
 #include "Engine/Graphics/BuiltinTextures.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
+#include "Engine/Graphics/RHI/Usage.h"
 #include "Engine/Math/Math.hpp"
 #include "Engine/Math/VectorConversion.hpp"
 
@@ -123,7 +124,7 @@ void HDR_DemoApplication::Initialize()
 											 },
 											 reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
 											 LIGHT_POINT_COUNT,
-											 GL_STATIC_DRAW );
+											 Kakadu::RHI::Usage::StaticDraw );
 
 	light_source_sphere_mesh.UpdateInstanceData( light_source_instance_data_array.data() );
 

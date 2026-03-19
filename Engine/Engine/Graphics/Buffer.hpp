@@ -8,6 +8,7 @@
 #include "Core/Assertion.h"
 #include "Core/Optimization.h"
 #include "Core/ServiceLocator.h"
+#include "RHI/Usage.h"
 
 // std Includes.
 #include <map>
@@ -62,7 +63,7 @@ namespace Kakadu
 		}
 
 		/* Only allocate memory.*/
-		Buffer( const unsigned int size, const std::string& name = {}, const GLenum usage = GL_STATIC_DRAW )
+		Buffer( const unsigned int size, const std::string& name = {}, const RHI::Usage usage = RHI::Usage::StaticDraw )
 			:
 			id( ID( 0 ) ),
 			name( name ),
@@ -80,7 +81,7 @@ namespace Kakadu
 		}
 
 		template< typename BufferElementType >
-		Buffer( const std::span< BufferElementType > data_span, const std::string& name = {}, const GLenum usage = GL_STATIC_DRAW )
+		Buffer( const std::span< BufferElementType > data_span, const std::string& name = {}, const RHI::Usage usage = RHI::Usage::StaticDraw )
 			:
 			id( ID( 0 ) ),
 			name( name ),
@@ -102,7 +103,7 @@ namespace Kakadu
 		 * For example consider a vertex buffer that is passed as std::span< float >, with the following vertex attributes: 3x floats position, 3x floats normal, 2x floats uv.
 		 * data_span.size() would give the actual vertex count times 8 (3 + 3 + 2) in this case. */
 		template< typename BufferElementType >
-		Buffer( const unsigned int count, const std::span< BufferElementType > data_span, const std::string& name = {}, const GLenum usage = GL_STATIC_DRAW )
+		Buffer( const unsigned int count, const std::span< BufferElementType > data_span, const std::string& name = {}, const RHI::Usage usage = RHI::Usage::StaticDraw )
 			:
 			id( ID( 0 ) ),
 			name( name ),
@@ -202,13 +203,13 @@ namespace Kakadu
 		unsigned int	Count()	const { return count;	}
 
 	private:
-		void Create( const void* data, const GLenum usage = GL_STATIC_DRAW )
+		void Create( const void* data, const RHI::Usage usage = RHI::Usage::StaticDraw )
 		{
 			glGenBuffers( 1, id.Address() );
 			REF_COUNT_MAP[ id ]++;
 
 			Bind();
-			glBufferData( TargetType, size, data, usage );
+			glBufferData( TargetType, size, data, RHI::UsageToGLEnum( usage ) );
 		}
 
 		void CloneBuffer()

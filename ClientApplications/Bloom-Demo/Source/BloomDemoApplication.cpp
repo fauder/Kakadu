@@ -18,6 +18,7 @@
 #include "Engine/Graphics/Primitive/Primitive_Quad.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad_FullScreen.h"
 #include "Engine/Graphics/Primitive/Primitive_Triangle.h"
+#include "Engine/Graphics/RHI/Usage.h"
 #include "Engine/Math/Math.hpp"
 #include "Engine/Math/Matrix.h"
 #include "Engine/Math/Random.hpp"
@@ -304,7 +305,7 @@ void BloomDemoApplication::Initialize()
 										},
 										reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 										CUBE_COUNT,
-										GL_STATIC_DRAW );
+										Kakadu::RHI::Usage::StaticDraw );
 
 	cube_reflected_mesh_instanced = Kakadu::Mesh( cube_mesh,
 												  {
@@ -312,7 +313,7 @@ void BloomDemoApplication::Initialize()
 												  },
 												  reinterpret_cast< std::vector< float >& >( cube_reflected_instance_data_array ),
 												  CUBE_REFLECTED_COUNT,
-												  GL_STATIC_DRAW );
+												  Kakadu::RHI::Usage::StaticDraw );
 
 
 	constexpr std::array< Vector3, 6 > quad_mesh_positions_ndc
@@ -352,7 +353,7 @@ void BloomDemoApplication::Initialize()
 													 },
 													 reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
 													 LIGHT_POINT_COUNT,
-													 GL_DYNAMIC_DRAW );
+													 Kakadu::RHI::Usage::DynamicDraw );
 
 	triangle_mesh_positions_only = Kakadu::Mesh( Kakadu::Primitive::NonIndexed::Triangle::Positions,
 												 "Triangle (Pos. Only)" );
@@ -364,7 +365,7 @@ void BloomDemoApplication::Initialize()
 													   },
 													   reinterpret_cast< std::vector< float >& >( star_instance_data_array ),
 													   STAR_COUNT,
-													   GL_DYNAMIC_DRAW );
+													   Kakadu::RHI::Usage::DynamicDraw );
 
 /* Lighting: */
 	ResetLightingData();
@@ -1064,7 +1065,7 @@ void BloomDemoApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorit
 											},
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,
-											GL_STATIC_DRAW );
+											Kakadu::RHI::Usage::StaticDraw );
 		meteorite_renderable->SetMesh( &cube_mesh_instanced );
 		renderer->RemoveRenderable( &cube_renderable );
 	}
@@ -1078,7 +1079,7 @@ void BloomDemoApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorit
 											},
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,
-											GL_STATIC_DRAW );
+											Kakadu::RHI::Usage::StaticDraw );
 		renderer->AddRenderable( &cube_renderable, Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY );
 	}
 }

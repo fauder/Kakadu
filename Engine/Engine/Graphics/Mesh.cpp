@@ -17,7 +17,7 @@ namespace Kakadu
 				const std::span< const std::uint32_t	> indices, 
 				const std::span< const Vector3			> tangents, 
 				const PrimitiveType						  primitive_type, 
-				const GLenum							  usage )
+				const RHI::Usage						  usage )
 		:
 		name( name ),
 		indices( indices.begin(), indices.end() ),
@@ -49,7 +49,7 @@ namespace Kakadu
 				std::vector< std::uint32_t >&&	indices,
 				std::vector< Vector3 >&&		tangents,
 				const PrimitiveType				primitive_type,
-				const GLenum					usage )
+				const RHI::Usage				usage )
 		:
 		name( name ),
 		indices( indices ),
@@ -73,7 +73,7 @@ namespace Kakadu
 				const std::initializer_list< VertexInstanceAttribute > instanced_attributes,
 				const std::vector< float >& instance_data,
 				const int instance_count,
-				const GLenum instance_buffer_usage )
+				const RHI::Usage usage )
 		:
 		name( other.name ),
 		indices( other.indices ),
@@ -90,7 +90,7 @@ namespace Kakadu
 		for( auto instanced_attribute_iterator = instanced_attributes.begin(); instanced_attribute_iterator != instanced_attributes.end(); instanced_attribute_iterator++ )
 			vertex_layout.Push( *instanced_attribute_iterator );
 
-		instance_buffer = std::optional< InstanceBuffer >( std::in_place, instance_count, std::span( instance_data ), name, instance_buffer_usage );
+		instance_buffer = std::optional< InstanceBuffer >( std::in_place, instance_count, std::span( instance_data ), name, usage );
 
 		vertex_array = VertexArray( vertex_buffer, vertex_layout, index_buffer, *instance_buffer, name );
 	}

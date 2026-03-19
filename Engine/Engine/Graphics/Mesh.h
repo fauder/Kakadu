@@ -4,6 +4,7 @@
 #include "Color.hpp"
 #include "MeshUtility.hpp"
 #include "VertexArray.h"
+#include "RHI/Usage.h"
 
 // std Includes.
 #include <array>
@@ -38,7 +39,7 @@ namespace Kakadu
 			  const std::span< const std::uint32_t	> indices		 = {},
 			  const std::span< const Vector3		> tangents		 = {},
 			  const PrimitiveType					  primitive_type = PrimitiveType::Triangles,
-			  const GLenum							  usage			 = GL_STATIC_DRAW );
+			  const RHI::Usage						  usage = RHI::Usage::StaticDraw );
 
 		Mesh( std::vector< Vector3			>&& positions,
 			  const std::string&				name		   = {},
@@ -47,13 +48,13 @@ namespace Kakadu
 			  std::vector< std::uint32_t	>&& indices		   = {},
 			  std::vector< Vector3			>&& tangents	   = {},
 			  const PrimitiveType				primitive_type = PrimitiveType::Triangles,
-			  const GLenum						usage		   = GL_STATIC_DRAW );
+			  const RHI::Usage					usage          = RHI::Usage::StaticDraw );
 
 		Mesh( const Mesh& other,
 			  const std::initializer_list< VertexInstanceAttribute > instanced_attributes,
 			  const std::vector< float >& instance_data,
 			  const int instance_count,
-			  const GLenum usage = GL_STATIC_DRAW );
+			  const RHI::Usage usage = RHI::Usage::StaticDraw );
 
 		~Mesh();
 

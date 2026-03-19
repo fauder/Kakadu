@@ -197,6 +197,7 @@
     <ClInclude Include="Engine\Graphics\Enums.h" />
     <ClInclude Include="Engine\Graphics\Framebuffer.h" />
     <ClInclude Include="Engine\Graphics\ID.hpp" />
+    <ClInclude Include="Engine\Graphics\RHI\Usage.h" />
     <ClInclude Include="Engine\Graphics\BuiltinShaders.h" />
     <ClInclude Include="Engine\Graphics\ModelInstance.h" />
     <ClInclude Include="Engine\Graphics\MSAA.h" />
@@ -299,6 +300,7 @@
     <ClCompile Include="Engine\Graphics\BuiltinShaders.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinTextures.cpp" />
     <ClInclude Include="Engine\Graphics\GLLabelPrefixes.h" />
+    <ClCompile Include="Engine\Graphics\RHI\Usage.cpp" />
     <ClCompile Include="Engine\Graphics\ModelInstance.cpp" />
     <ClCompile Include="Engine\Graphics\Renderable.cpp" />
     <ClCompile Include="Engine\Graphics\Framebuffer.cpp" />

@@ -3,6 +3,7 @@
 // Engine Includes.
 #include "Mesh.h"
 #include "Texture.h"
+#include "RHI/Usage.h"
 
 // std Includes
 #include <optional>
@@ -20,7 +21,7 @@ namespace Kakadu
 
 		struct ImportSettings
 		{
-			GLenum usage = GL_STATIC_DRAW;
+			RHI::Usage usage = RHI::Usage::StaticDraw;
 		};
 
 		static constexpr ImportSettings DEFAULT_IMPORT_SETTINGS = {};
