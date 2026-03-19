@@ -23,7 +23,7 @@ namespace Kakadu
 			Read    = GL_READ_FRAMEBUFFER
 		};
 
-		enum class AttachmentType : std::uint8_t
+		enum class AttachmentType : u8
 		{
 			Color                = 1,
 			Depth                = 2,
@@ -122,7 +122,7 @@ namespace Kakadu
 
 		void Debug_FlashClearColor( bool& is_running,
 									const Color4& start = Color4::Cyan(), const Color4& end = Color4::Yellow(),
-									const float duration_in_seconds = 0.5f, const std::uint8_t ping_pong_count = 5 );
+									const float duration_in_seconds = 0.5f, const u8 ping_pong_count = 5 );
 
 		RHI::FramebufferID id;
 

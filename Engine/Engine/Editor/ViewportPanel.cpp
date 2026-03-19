@@ -19,7 +19,7 @@ namespace Kakadu::Editor
 		return Vector2( mouse.x - position_absolute.x, framebuffer_size.y - ( mouse.y - position_absolute.y ) );
 	}
 
-	void ViewportPanel::SetMagnifierZoomFactor( const std::uint8_t new_zoom_factor )
+	void ViewportPanel::SetMagnifierZoomFactor( const u8 new_zoom_factor )
 	{
 		magnifier_zoom_factor = Math::Clamp( new_zoom_factor, SMALLEST_MAGNIFIER_ZOOM_FACTOR, LARGEST_MAGNIFIER_ZOOM_FACTOR );
 	}

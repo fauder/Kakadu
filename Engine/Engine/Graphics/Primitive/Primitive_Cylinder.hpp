@@ -15,12 +15,12 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 	 * 1) Top cap vertices.
 	 * 3) Side vertices.
 	 * 3) Bottom cap vertices. */
-	template< std::uint8_t LongitudeCount = 20, float Diameter = 1.0f, float Height = 2.0f > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20, float Diameter = 1.0f, float Height = 2.0f > requires( LongitudeCount >= 3 )
 	auto Positions()
 	{
-		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
-		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
-		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+		constexpr u8 cap_vertex_count  = LongitudeCount;
+		constexpr u8 side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr u8 vertex_count      = cap_vertex_count * 2 + side_vertex_count;
 		std::array< Vector3, vertex_count > positions;
 
 		constexpr float radius        = Diameter / 2.0f;
@@ -49,12 +49,12 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 		 * NOTE: Last longitude will be duplicated to wrap UVs around the cylinder by having both u=0 & u=1 on same vertex positions (1 for the top & 1 for the bottom).
 		 */
 
-		std::uint8_t index = cap_vertex_count;
+		u8 index = cap_vertex_count;
 
 		{
-			const std::uint8_t side_vertices_start_index = index;
+			const u8 side_vertices_start_index = index;
 
-			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+			for( u8 i = 0; i < LongitudeCount; i++ )
 			{
 				const auto angle = delta_angle * i;
 				/* v0 */ positions[ index++ ] = Vector3( radius * Math::Cos( angle ), y_min, radius * Math::Sin( angle ) );
@@ -79,14 +79,14 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 	};
 
 	/* Check Positions() for vertex ordering. */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	auto Indices()
 	{
-		using IndexType = std::uint16_t;
+		using IndexType = u16;
 
-		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
-		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
-		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+		constexpr u8 cap_vertex_count  = LongitudeCount;
+		constexpr u8 side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr u8 vertex_count      = cap_vertex_count * 2 + side_vertex_count;
 
 		/* N pairs of longitudes for N longitudes => 2 triangles per longitude-pair => 2N triangles for N longitues. */
 		constexpr IndexType side_triangle_count = 2 * LongitudeCount;
@@ -103,9 +103,9 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 
 		/* Side vertices: */
 
-		std::uint8_t array_index = cap_index_count;
+		u8 array_index = cap_index_count;
 
-		for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+		for( u8 i = 0; i < LongitudeCount; i++ )
 		{
 			indices[ array_index++ ] = cap_vertex_count + i * 2 + 0;
 			indices[ array_index++ ] = cap_vertex_count + i * 2 + 1;
@@ -124,12 +124,12 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 	}
 
 	/* Check Positions() for vertex ordering. */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	auto UVs()
 	{
-		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
-		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
-		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+		constexpr u8 cap_vertex_count  = LongitudeCount;
+		constexpr u8 side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr u8 vertex_count      = cap_vertex_count * 2 + side_vertex_count;
 
 		std::array< Vector2, vertex_count > uvs;
 
@@ -140,12 +140,12 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 
 		/* Side vertices: */
 
-		std::uint8_t index = cap_vertex_count;
+		u8 index = cap_vertex_count;
 
 		{
 			constexpr float delta_u = 1.0f / LongitudeCount;
 
-			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+			for( u8 i = 0; i < LongitudeCount; i++ )
 			{
 				/* v0 */ uvs[ index++ ] = Vector2( i * delta_u, 0.0f );
 				/* v1 */ uvs[ index++ ] = Vector2( i * delta_u, 1.0f );
@@ -169,12 +169,12 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 	}
 
 	/* Check Positions() for vertex ordering. */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	constexpr auto Normals()
 	{
-		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
-		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
-		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+		constexpr u8 cap_vertex_count  = LongitudeCount;
+		constexpr u8 side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr u8 vertex_count      = cap_vertex_count * 2 + side_vertex_count;
 
 		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / LongitudeCount;
 
@@ -185,12 +185,12 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 
 		/* Side vertices: */
 
-		std::uint8_t index = cap_vertex_count;
+		u8 index = cap_vertex_count;
 
 		{
-			const std::uint8_t side_vertices_start_index = index;
+			const u8 side_vertices_start_index = index;
 
-			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+			for( u8 i = 0; i < LongitudeCount; i++ )
 			{
 				const auto angle = delta_angle * i;
 				/* v0 */ normals[ index++ ] = Vector3( Math::Cos( angle ), 0.0f, Math::Sin( angle ) );
@@ -209,12 +209,12 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 	}
 
 	/* Check Positions() for vertex ordering. */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	constexpr auto Tangents()
 	{
-		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
-		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
-		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+		constexpr u8 cap_vertex_count  = LongitudeCount;
+		constexpr u8 side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr u8 vertex_count      = cap_vertex_count * 2 + side_vertex_count;
 
 		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / LongitudeCount;
 
@@ -225,12 +225,12 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 
 		/* Side vertices: */
 
-		std::uint8_t index = cap_vertex_count;
+		u8 index = cap_vertex_count;
 
 		{
-			const std::uint8_t side_vertices_start_index = index;
+			const u8 side_vertices_start_index = index;
 
-			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+			for( u8 i = 0; i < LongitudeCount; i++ )
 			{
 				const auto angle = delta_angle * i;
 				/* v0 */ tangents[ index++ ] = Vector3( -Math::Sin( angle ), 0.0f, Math::Cos( angle ) );
@@ -249,12 +249,12 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 	}
 
 	/* Check Positions() for vertex ordering. */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	constexpr auto Bitangents()
 	{
-		constexpr std::uint8_t cap_vertex_count  = LongitudeCount;
-		constexpr std::uint8_t side_vertex_count = 2 * ( LongitudeCount + 1 );
-		constexpr std::uint8_t vertex_count      = cap_vertex_count * 2 + side_vertex_count;
+		constexpr u8 cap_vertex_count  = LongitudeCount;
+		constexpr u8 side_vertex_count = 2 * ( LongitudeCount + 1 );
+		constexpr u8 vertex_count      = cap_vertex_count * 2 + side_vertex_count;
 
 		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / LongitudeCount;
 

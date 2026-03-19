@@ -837,7 +837,7 @@ namespace Kakadu
 	}
 
 	/* Sets the sample count for main framebuffer MSAA. */
-	MSAA Renderer::SetMSAASampleCount( const std::uint8_t new_sample_count )
+	MSAA Renderer::SetMSAASampleCount( const u8 new_sample_count )
 	{
 		if( new_sample_count == framebuffer_main_description.msaa.sample_count )
 			return MSAA( framebuffer_main_description.msaa.sample_count );
@@ -858,9 +858,9 @@ namespace Kakadu
 		return framebuffer_main_description.msaa;
 	}
 
-	bool Renderer::CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query )
+	bool Renderer::CheckMSAASupport( const Texture::Format format, const u8 sample_count_to_query )
 	{
-		local_persist std::unordered_map< Texture::Format, std::unordered_set< std::uint8_t > > SAMPLE_COUNTS_BY_FORMAT_MAP;
+		local_persist std::unordered_map< Texture::Format, std::unordered_set< u8 > > SAMPLE_COUNTS_BY_FORMAT_MAP;
 
 		if( const auto iterator = SAMPLE_COUNTS_BY_FORMAT_MAP.find( format ); iterator != SAMPLE_COUNTS_BY_FORMAT_MAP.cend() )
 			return iterator->second.contains( sample_count_to_query );
@@ -901,7 +901,7 @@ namespace Kakadu
 		tone_mapping.material.Set( "uniform_bloom_intensity", new_bloom_intensity.Value() );
 	}
 
-	void Renderer::SetBloomStepCount( const std::uint8_t new_step_count )
+	void Renderer::SetBloomStepCount( const u8 new_step_count )
 	{
 		bloom_mip_chain_size = new_step_count;
 		InitializeBuiltinPostprocessingEffects();
@@ -1291,8 +1291,8 @@ namespace Kakadu
 	void Renderer::InitializeBuiltinPostprocessingEffects()
 	{
 		bloom_mip_chain_size = Math::Clamp( bloom_mip_chain_size,
-											( std::uint8_t )2,
-											( std::uint8_t )Math::Log2( Math::Min( PostProcessingFramebuffer().size.X(), PostProcessingFramebuffer().size.Y() ) ) );
+											( u8 )2,
+											( u8 )Math::Log2( Math::Min( PostProcessingFramebuffer().size.X(), PostProcessingFramebuffer().size.Y() ) ) );
 
 		bloom_upsampling.name     = "Bloom | Upsampling",
 		bloom_upsampling.material = Material( "[Renderer] Bloom | Upsampling", BuiltinShaders::Get( "Post-Process Bloom Upsample" ) ),
@@ -1339,7 +1339,7 @@ namespace Kakadu
 
 		for( i32 i = 0; i < bloom_mip_chain_size; i++ )
 		{
-			constexpr std::uint8_t buffer_size = 64;
+			constexpr u8 buffer_size = 64;
 			char buffer[ buffer_size ];
 			std::snprintf( buffer, buffer_size, "[Renderer] Bloom [%0*d] 1/%d Res.", digit_count, i + 1, Math::Pow2( i + 1 ) );
 
@@ -1379,7 +1379,7 @@ namespace Kakadu
 		{
 			const i32 reverse_i = ( bloom_mip_chain_size - 1 ) - i;
 
-			constexpr std::uint8_t buffer_size = 64;
+			constexpr u8 buffer_size = 64;
 			char buffer[ buffer_size ];
 			std::snprintf( buffer, buffer_size, "[Renderer] Bloom Upsample %d", i );
 
@@ -1402,7 +1402,7 @@ namespace Kakadu
 
 			renderer.SetRenderState( bloom_downsampling.render_state );
 
-			for( std::uint8_t step_index = 0; step_index < bloom_downsampling.steps.size(); step_index++ )
+			for( u8 step_index = 0; step_index < bloom_downsampling.steps.size(); step_index++ )
 			{
 				const auto& downsample_step = bloom_downsampling.steps[ step_index ];
 

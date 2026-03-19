@@ -13,27 +13,27 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 	 * 1) North pole.
 	 * 3) Rings (in descending order, from north to south). Inside a ring: Going clockwise, to adhere to left-handed system.
 	 * 3) South pole. */
-	template< std::uint8_t LongitudeCount = 20, float Diameter = 1.0f > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20, float Diameter = 1.0f > requires( LongitudeCount >= 3 )
 	auto Positions()
 	{
-		constexpr std::uint8_t latitude_count      = LongitudeCount;
-		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr u8 latitude_count      = LongitudeCount;
+		constexpr u8 non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr u8 ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
-		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
+		constexpr u16 vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 		std::array< Vector3, vertex_count > positions;
 
 		constexpr float radius          = Diameter / 2.0f;
 		constexpr Radians delta_heading = Constants< Radians >::Two_Pi() / LongitudeCount;
 		constexpr Radians delta_pitch   = Constants< Radians >::Pi()     / ( LongitudeCount - 1 );
 
-		std::uint16_t index = 0;
+		u16 index = 0;
 
 		constexpr Vector3 north_pole = Vector3( 0.0f, +radius, 0.0f );
 		constexpr Vector3 south_pole = Vector3( 0.0f, -radius, 0.0f );
 
 		/* North pole: */
-		for( std::uint8_t pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
+		for( u8 pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
 			positions[ index++ ] = north_pole;
 
 		using namespace Math::Literals;
@@ -47,11 +47,11 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 		 * and the explicit and longer LOC nature of the code is a negative here. */
 
 		/* Non-pole rings: */
-		for( std::uint8_t ring_index = 0; ring_index < non_pole_ring_count; ring_index++ )
+		for( u8 ring_index = 0; ring_index < non_pole_ring_count; ring_index++ )
 		{
 			spherical_coordinates.Pitch() += delta_pitch;
 
-			for( std::uint8_t longitude_index = 0; longitude_index < LongitudeCount; longitude_index++ )
+			for( u8 longitude_index = 0; longitude_index < LongitudeCount; longitude_index++ )
 			{
 				spherical_coordinates.Heading() = delta_heading * longitude_index;
 				positions[ index++ ] = Math::ToVector3( spherical_coordinates );
@@ -63,23 +63,23 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 		}
 
 		/* South pole: */
-		for( std::uint8_t pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
+		for( u8 pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
 			positions[ index++ ] = south_pole;
 
 		return positions;
 	};
 
 	/* Check Positions() for vertex ordering. */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	auto Indices()
 	{
-		using IndexType = std::uint16_t;
+		using IndexType = u16;
 
-		constexpr std::uint8_t latitude_count      = LongitudeCount;
-		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr u8 latitude_count      = LongitudeCount;
+		constexpr u8 non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr u8 ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
-		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
+		constexpr u16 vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 
 		/* There are (N-1) bands for N longitudes (including the poles as longitudes).
 		 * The top and bottom bands are triangular and counted separately.
@@ -109,7 +109,7 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 		for( IndexType side_band_index = 0; side_band_index < side_band_count; side_band_index++ )
 		{
 			const u32 first_vertex = stride + ( u32 )side_band_index * stride;
-			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
+			for( u8 i = 0; i < LongitudeCount; i++ )
 			{
 				indices[ array_index++ ] = first_vertex + i;
 				indices[ array_index++ ] = first_vertex + i + stride;
@@ -136,34 +136,34 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 	}
 
 	/* Check Positions() for vertex ordering. */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	constexpr auto UVs()
 	{
-		constexpr std::uint8_t latitude_count      = LongitudeCount;
-		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr u8 latitude_count      = LongitudeCount;
+		constexpr u8 non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr u8 ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
-		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
+		constexpr u16 vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 		std::array< Vector2, vertex_count > uvs;
 
 		constexpr float delta_u = 1.0f / LongitudeCount;
 		constexpr float delta_v = 1.0f / ( LongitudeCount - 1 );
 
-		std::uint16_t index = 0;
+		u16 index = 0;
 
 		/* North pole: */
-		for( std::uint8_t pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
+		for( u8 pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
 			uvs[ index++ ] = Vector2( delta_u * ( 0.5f + ( float )pole_vertices_index ), 1.0f );
 
 		/* NOTE: See the note in Positions(). */
 
 		/* Non-pole rings: 
 		 * NOTE: u coordinates are inverted because we are going clockwise. Going from 0 to 1 would invert the texture horizontally. */
-		for( std::uint8_t ring_index = 0; ring_index < non_pole_ring_count; ring_index++ )
+		for( u8 ring_index = 0; ring_index < non_pole_ring_count; ring_index++ )
 		{
 			const float v = 1.0f - ( ( 1 + ring_index ) * delta_v );
 
-			for( std::uint8_t longitude_index = 0; longitude_index < LongitudeCount; longitude_index++ )
+			for( u8 longitude_index = 0; longitude_index < LongitudeCount; longitude_index++ )
 				uvs[ index++ ] = Vector2( 1.0f - longitude_index * delta_u, v );
 
 			/* Duplicate the starting vertex (u=1) of the ring to allow u=0. */
@@ -171,7 +171,7 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 		}
 
 		/* South pole: */
-		for( std::uint8_t pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
+		for( u8 pole_vertices_index = 0; pole_vertices_index < ring_vertex_count; pole_vertices_index++ )
 			uvs[ index++ ] = Vector2( delta_u * ( 0.5f + ( float )pole_vertices_index ), 0.0f );
 
 		return uvs;
@@ -179,19 +179,19 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 
 	/* Check Positions() for vertex ordering.
 	 * Normals are smoothed out over the sphere surface. */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	auto Normals()
 	{
-		constexpr std::uint8_t latitude_count      = LongitudeCount;
-		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr u8 latitude_count      = LongitudeCount;
+		constexpr u8 non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr u8 ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
-		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
+		constexpr u16 vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 		std::array< Vector3, vertex_count > normals;
 
 		const auto positions( Positions< LongitudeCount >() );
 
-		for( std::uint16_t i = 0; i < vertex_count; i++ )
+		for( u16 i = 0; i < vertex_count; i++ )
 			normals[ i ] = positions[ i ].Normalized();
 
 		return normals;
@@ -199,14 +199,14 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 
 	/* Check Positions() for vertex ordering.
 	 * Tangents are smoothed out over the sphere surface (because normals are smoothed out over the sphere surface). */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	auto Tangents()
 	{
-		constexpr std::uint8_t latitude_count      = LongitudeCount;
-		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr u8 latitude_count      = LongitudeCount;
+		constexpr u8 non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr u8 ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
-		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
+		constexpr u16 vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 		std::array< Vector3, vertex_count > tangents;
 
 		const auto normals( Normals< LongitudeCount >() );
@@ -221,7 +221,7 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 		 * as each vertex corresponding to the same meridian/longitude has the same tangent.
 		 */
 
-		std::uint16_t index = 0;
+		u16 index = 0;
 
 		/* Actually calculate the tangents once for the north pole ring: */
 		for( ; index < ring_vertex_count; index++ )
@@ -242,14 +242,14 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 
 	/* Check Positions() for vertex ordering.
 	 * Bitangents are smoothed out over the sphere surface (because normals & tangents are smoothed out over the sphere surface). */
-	template< std::uint8_t LongitudeCount = 20 > requires( LongitudeCount >= 3 )
+	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	auto Bitangents()
 	{
-		constexpr std::uint8_t latitude_count      = LongitudeCount;
-		constexpr std::uint8_t non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
-		constexpr std::uint8_t ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
+		constexpr u8 latitude_count      = LongitudeCount;
+		constexpr u8 non_pole_ring_count = LongitudeCount - 2; // -2 to exclude the poles, which count as latitudes in a uv-sphere.
+		constexpr u8 ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
-		constexpr std::uint16_t vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
+		constexpr u16 vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
 		std::array< Vector3, vertex_count > bitangents;
 
 		const auto normals( Normals< LongitudeCount >() );
@@ -259,7 +259,7 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 		 * as each vertex corresponding to the same ring/latitude has the same bitangent.
 		 */
 
-		std::uint16_t index = 0;
+		u16 index = 0;
 
 		/* Actually calculate the bitangents once for the north pole ring: */
 		for( ; index < ring_vertex_count; index++ )

@@ -142,7 +142,7 @@ namespace Kakadu::ImGuiUtility
 
         const float button_width = ImGui::CalcItemWidth() / 5.0f;
 
-        auto DrawColorPreviewSwatch = [ & ]( const std::uint8_t index, const bool is_clickable = true )
+        auto DrawColorPreviewSwatch = [ & ]( const u8 index, const bool is_clickable = true )
         {
             ImGui::PushID( index );
 

@@ -12,7 +12,7 @@ namespace Kakadu
 	class Transform
 	{
 	public:
-		enum class Mask : std::uint8_t
+		enum class Mask : u8
 		{
 			Scale       = 1,
 			Translation = 2,

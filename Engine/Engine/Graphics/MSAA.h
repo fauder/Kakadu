@@ -9,6 +9,6 @@ namespace Kakadu
 	{
 		bool IsEnabled() const { return sample_count > 1; }
 
-		std::uint8_t sample_count = 1;
+		u8 sample_count = 1;
 	};
 }

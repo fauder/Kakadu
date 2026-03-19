@@ -372,7 +372,7 @@ namespace Kakadu
 
 	void Framebuffer::Debug_FlashClearColor( bool& is_running,
 											 const Color4& start, const Color4& end,
-											 const float duration_in_seconds, const std::uint8_t ping_pong_count )
+											 const float duration_in_seconds, const u8 ping_pong_count )
 	{
 		const auto current_clear_color = clear_color;
 
@@ -382,7 +382,7 @@ namespace Kakadu
 													  {
 														  const float single_lerp_duration = 1.0f / ( float )ping_pong_count;
 
-														  const std::uint8_t ping_pong_index = std::uint8_t( t / single_lerp_duration );
+														  const u8 ping_pong_index = u8( t / single_lerp_duration );
 
 														  if( ping_pong_index % 2 == 0 )
 															  clear_color = Math::Lerp( start, end, t * ping_pong_count - ping_pong_index );

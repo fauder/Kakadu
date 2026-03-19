@@ -28,16 +28,16 @@ namespace Kakadu
 		struct UniqueEntryInfo
 		{
 			/* This has 1 less element count than the line count, because the first line has offset = 0, and therefore its offset is redundant. */
-			std::vector< std::uint16_t > line_start_offsets;
+			std::vector< u16 > line_start_offsets;
 
-			std::uint16_t unique_text_start; // This is filled when this unique entry is encountered for the first time and is added to the map.
-			std::uint16_t unique_text_end;   // This is filled when this unique entry is encountered for the first time and is added to the map.
+			u16 unique_text_start; // This is filled when this unique entry is encountered for the first time and is added to the map.
+			u16 unique_text_end;   // This is filled when this unique entry is encountered for the first time and is added to the map.
 
-			std::uint16_t repeat_count = 1; // This is just used as a badge/number to display when grouping is on. Starts from 1.
+			u16 repeat_count = 1; // This is just used as a badge/number to display when grouping is on. Starts from 1.
 
 			Type type;
 
-			std::uint16_t LineCount() const { return ( std::uint16_t )line_start_offsets.size() + 1; /* + 1 for the first line. */ };
+			u16 LineCount() const { return ( u16 )line_start_offsets.size() + 1; /* + 1 for the first line. */ };
 		};
 
 	public:
@@ -77,10 +77,10 @@ namespace Kakadu
 
 				UniqueEntryInfo unique_entry
 				{
-					.line_start_offsets = std::vector< std::uint16_t >( lines.size() - 1 ),
+					.line_start_offsets = std::vector< u16 >( lines.size() - 1 ),
 
-					.unique_text_start = ( std::uint16_t )unique_text_buffer.size(),
-					.unique_text_end = ( std::uint16_t )( unique_text_buffer.size() + text_view.size() ),
+					.unique_text_start = ( u16 )unique_text_buffer.size(),
+					.unique_text_end = ( u16 )( unique_text_buffer.size() + text_view.size() ),
 
 					.repeat_count = 1,
 
@@ -91,11 +91,11 @@ namespace Kakadu
 				{
 					/* First line in group (index 0) has offset 0, naturally.
 							   Second line's (index 1) offset is calculated out-of-loop as it would need to reference the first line, which is not part of the offsets array. */
-					unique_entry.line_start_offsets[ 0 ] = ( std::uint16_t )lines[ 0 ].size() + 1; // +1 is for the first line which is not represented in the line_start_offsets array.
+					unique_entry.line_start_offsets[ 0 ] = ( u16 )lines[ 0 ].size() + 1; // +1 is for the first line which is not represented in the line_start_offsets array.
 
 					for( auto line_index = 2, accumulated_offset = 0; line_index < lines.size(); line_index++ )
 					{
-						unique_entry.line_start_offsets[ line_index - 1 ] = unique_entry.line_start_offsets[ line_index - 2 ] + ( std::uint16_t )lines[ line_index - 1 ].size() + 1; // + 1 for new-line.
+						unique_entry.line_start_offsets[ line_index - 1 ] = unique_entry.line_start_offsets[ line_index - 2 ] + ( u16 )lines[ line_index - 1 ].size() + 1; // + 1 for new-line.
 					}
 				}
 
@@ -212,7 +212,7 @@ namespace Kakadu
 						return line_index == reverse_index + 1 ? 0 : line_index - reverse_index - 1;
 					};
 
-					const std::uint16_t local_line_index = LocalIndex();
+					const u16 local_line_index = LocalIndex();
 
 					const char* unique_entry_start = buffer_begin + ( i32 )unique_entry.unique_text_start;
 					const char* unique_entry_end = buffer_begin + ( i32 )unique_entry.unique_text_end;
@@ -261,8 +261,8 @@ namespace Kakadu
 
 		std::array< ImVec4, Size > colors_by_type;
 
-		std::uint16_t total_line_count;
-		std::uint16_t total_unique_line_count;
+		u16 total_line_count;
+		u16 total_unique_line_count;
 
 		bool auto_scroll;
 		bool group; // Group same logs under 1 line.

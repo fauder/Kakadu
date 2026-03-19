@@ -15,7 +15,7 @@ namespace Kakadu
 
 	struct RenderPass
 	{
-		enum class ID : std::uint8_t {};
+		enum class ID : u8 {};
 
 		std::string name = "<unnamed-pass>";
 

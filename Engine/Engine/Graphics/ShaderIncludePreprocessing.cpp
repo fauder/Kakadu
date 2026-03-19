@@ -1,5 +1,6 @@
 // Engine Includes.
 #include "ShaderIncludePreprocessing.h"
+#include "Core/Types.h"
 #include "Core/Utility.hpp"
 
 namespace Kakadu::ShaderIncludePreprocessing
@@ -7,18 +8,18 @@ namespace Kakadu::ShaderIncludePreprocessing
 	/* Implementation Function prototype: */
 	std::string Resolve( const std::filesystem::path& source_path,
 						 std::initializer_list< std::string > include_directories_with_trailing_slashes,
-						 std::unordered_map< std::filesystem::path, std::int16_t >& map_of_source_file_per_ID,
+						 std::unordered_map< std::filesystem::path, i16 >& map_of_source_file_per_ID,
 						 std::span< char > error_log );
 
 	/* Public API: */
 	std::string Resolve( const std::filesystem::path& source_path,
 						 std::initializer_list< std::string > include_directories_with_trailing_slashes,
-						 std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file,
+						 std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file,
 						 std::span< char > error_log )
 	{
 		/* Map provided by the caller is for caller's use (i.e., they need to refer to the source file corresponding to the key in shader compilation error logs.). 
 		 * The implementation on the other hand needs the inverse map: To assign and look-up indices based on shader source file path. */
-		std::unordered_map< std::filesystem::path, std::int16_t > map_of_source_file_per_ID;
+		std::unordered_map< std::filesystem::path, i16 > map_of_source_file_per_ID;
 		map_of_source_file_per_ID[ source_path ] = 0; // The main source file is always the ID 0.
 
 		const std::string resolved_source( Resolve( source_path, include_directories_with_trailing_slashes, map_of_source_file_per_ID, error_log ) );
@@ -33,7 +34,7 @@ namespace Kakadu::ShaderIncludePreprocessing
 	/* Implementation Function definition: */
 	std::string Resolve( const std::filesystem::path& source_path,
 						 std::initializer_list< std::string > include_directories_with_trailing_slashes,
-						 std::unordered_map< std::filesystem::path, std::int16_t >& map_of_source_file_per_ID,
+						 std::unordered_map< std::filesystem::path, i16 >& map_of_source_file_per_ID,
 						 std::span< char > error_log )
 	{
 		std::string source;
@@ -56,8 +57,8 @@ namespace Kakadu::ShaderIncludePreprocessing
 		if( curr_pos == std::string_view::npos )
 			return source; // No #includes in file.
 
-		std::uint16_t offset_for_extension_line = 0;
-		std::uint16_t line_count_cached = 0;
+		u16 offset_for_extension_line = 0;
+		u16 line_count_cached = 0;
 
 		/* Check for the #extension line and skip it, but only for actual sources, not headers: */
 		constexpr std::array< std::string_view, 7 > valid_source_extensions{ ".glsl", ".frag", ".vert", ".geom", ".comp", ".tese", ".tesc" };
@@ -125,7 +126,7 @@ namespace Kakadu::ShaderIncludePreprocessing
 
 			if( not map_of_source_file_per_ID.contains( include_file_path ) )
 			{
-				const  std::int16_t  current_include_file_path_ID = ( std::int16_t )map_of_source_file_per_ID.size();
+				const  i16  current_include_file_path_ID = ( i16 )map_of_source_file_per_ID.size();
 				map_of_source_file_per_ID.insert( { include_file_path, current_include_file_path_ID } );
 
 				/* The #include may have other #includes: */
@@ -137,7 +138,7 @@ namespace Kakadu::ShaderIncludePreprocessing
 				}
 
 				// Insert #line for correct error reporting during validation & compilation.
-				line_count_cached += 1 + ( std::uint16_t )std::count( source.begin() + last_line_number_cache_pos, source.begin() + end_of_line_pos, '\n' ); // +1 for the current #include line.
+				line_count_cached += 1 + ( u16 )std::count( source.begin() + last_line_number_cache_pos, source.begin() + end_of_line_pos, '\n' ); // +1 for the current #include line.
 				last_line_number_cache_pos = end_of_line_pos + 1;
 
 				processed += "#line 0 " + std::to_string( current_include_file_path_ID ) + "\n";

@@ -36,8 +36,8 @@ namespace Kakadu
 			bool is_buffer_member;
 
 			UniformAnnotation::Type annotation_type;
-			std::uint16_t annotation_format_string_id;
-			std::array< std::uint8_t, 16 > annotation_meta_data;
+			u16 annotation_format_string_id;
+			std::array< u8, 16 > annotation_meta_data;
 
 			std::string editor_name;
 		};

@@ -32,23 +32,23 @@ namespace Kakadu
 		DELETE_COPY_CONSTRUCTORS( Mesh );
 		DEFAULT_MOVE_CONSTRUCTORS( Mesh );
 
-		Mesh( const std::span< const Vector3		> positions,
-			  const std::string&					  name			 = {},
-			  const std::span< const Vector3		> normals		 = {},
-			  const std::span< const Vector2		> uvs			 = {},
-			  const std::span< const std::uint32_t	> indices		 = {},
-			  const std::span< const Vector3		> tangents		 = {},
-			  const PrimitiveType					  primitive_type = PrimitiveType::Triangles,
-			  const RHI::Usage						  usage = RHI::Usage::StaticDraw );
+		Mesh( const std::span< const Vector3	> positions,
+			  const std::string&				  name			 = {},
+			  const std::span< const Vector3	> normals		 = {},
+			  const std::span< const Vector2	> uvs			 = {},
+			  const std::span< const u32		> indices		 = {},
+			  const std::span< const Vector3	> tangents		 = {},
+			  const PrimitiveType				  primitive_type = PrimitiveType::Triangles,
+			  const RHI::Usage					  usage = RHI::Usage::StaticDraw );
 
-		Mesh( std::vector< Vector3			>&& positions,
-			  const std::string&				name		   = {},
-			  std::vector< Vector3			>&& normals		   = {},
-			  std::vector< Vector2			>&& uvs			   = {},
-			  std::vector< std::uint32_t	>&& indices		   = {},
-			  std::vector< Vector3			>&& tangents	   = {},
-			  const PrimitiveType				primitive_type = PrimitiveType::Triangles,
-			  const RHI::Usage					usage          = RHI::Usage::StaticDraw );
+		Mesh( std::vector< Vector3	>&& positions,
+			  const std::string&		name		   = {},
+			  std::vector< Vector3	>&& normals		   = {},
+			  std::vector< Vector2	>&& uvs			   = {},
+			  std::vector< u32		>&& indices		   = {},
+			  std::vector< Vector3	>&& tangents	   = {},
+			  const PrimitiveType		primitive_type = PrimitiveType::Triangles,
+			  const RHI::Usage			usage          = RHI::Usage::StaticDraw );
 
 		Mesh( const Mesh& other,
 			  const std::initializer_list< VertexInstanceAttribute > instanced_attributes,
@@ -98,9 +98,9 @@ namespace Kakadu
 	 * Index Data:
 	 */
 
-		const std::vector< std::uint32_t >&	Indices()		const { return indices; };
-		const std::uint32_t*				Indices_Raw()	const { return indices.data(); };
-		constexpr GLenum					IndexType()		const { return GL_UNSIGNED_INT; }
+		const std::vector< u32 >&	Indices()		const { return indices; };
+		const u32*					Indices_Raw()	const { return indices.data(); };
+		constexpr GLenum			IndexType()		const { return GL_UNSIGNED_INT; }
 
 	/*
 	 * Vertex Data:
@@ -125,7 +125,7 @@ namespace Kakadu
  	private:
 		std::string name;
 
-		std::vector< std::uint32_t > indices;
+		std::vector< u32 > indices;
 
 		std::vector< Vector3 > positions;
 		std::vector< Vector3 > normals;

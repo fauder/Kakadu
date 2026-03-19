@@ -20,7 +20,7 @@ namespace Kakadu
 	{
 		using ReferenceCount = u32;
 
-		enum class ID : std::uint16_t {};
+		enum class ID : u16 {};
 
 		std::string name = "<unnamed-queue>";
 

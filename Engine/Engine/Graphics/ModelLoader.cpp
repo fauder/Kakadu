@@ -249,9 +249,9 @@ namespace Kakadu
             const auto& index_accessor = gltf_asset.accessors[ submesh_iterator->indicesAccessor.value() ];
             if( !index_accessor.bufferViewIndex.has_value() )
                 return false;
-            const std::uint32_t index_count = static_cast< std::uint32_t >( index_accessor.count );
+            const u32 index_count = static_cast< u32 >( index_accessor.count );
 
-            std::vector< std::uint32_t > indices_u32;
+            std::vector< u32 > indices_u32;
 
             // Ignore 16 bit indices (or any other format other than 32 bit for that matter).
             indices_u32.resize( index_count );
@@ -266,8 +266,8 @@ namespace Kakadu
                 return needs_swap * swapped_index + ( 1 - needs_swap ) * index;
             };
 
-            fastgltf::iterateAccessorWithIndex< std::uint32_t >( gltf_asset, index_accessor,
-                                                                 [ & ]( std::uint32_t actual_index, std::size_t array_index )
+            fastgltf::iterateAccessorWithIndex< u32 >( gltf_asset, index_accessor,
+                                                                 [ & ]( u32 actual_index, std::size_t array_index )
             {
                 indices_u32[ EffectiveIndex( array_index ) ] = actual_index;
             } );

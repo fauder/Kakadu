@@ -35,7 +35,7 @@ namespace Kakadu::Editor
 
 			rolling_avg_index = rolling_avg_index % ROLLING_AVG_FPS_FRAME_COUNT;
 
-			rolling_avg_fps        = ( std::uint16_t )Math::Round( last_N_fps_values_sum / ROLLING_AVG_FPS_FRAME_COUNT );
+			rolling_avg_fps        = ( u16 )Math::Round( last_N_fps_values_sum / ROLLING_AVG_FPS_FRAME_COUNT );
 			rolling_avg_frame_time = last_N_frame_times_sum / ROLLING_AVG_FPS_FRAME_COUNT;
 		}
 	}

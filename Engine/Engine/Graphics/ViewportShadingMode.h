@@ -3,7 +3,7 @@
 
 namespace Kakadu
 {
-	enum class ViewportShadingMode : std::uint8_t
+	enum class ViewportShadingMode : u8
 	{
 		Shaded,
 		Wireframe,

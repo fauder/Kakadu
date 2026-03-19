@@ -170,7 +170,7 @@ namespace Kakadu::Editor
 							{
 								ImGui::TableNextColumn();
 
-								for( std::uint8_t i = 0; i < effect->steps.size(); i++ )
+								for( u8 i = 0; i < effect->steps.size(); i++ )
 								{
 									ImGui::TableNextColumn();
 									ImGui::Text( "Step %d", i );

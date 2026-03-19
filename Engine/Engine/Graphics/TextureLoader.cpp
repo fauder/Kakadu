@@ -66,9 +66,9 @@ namespace Kakadu
 
 		bool error_encountered = false;
 
-		constexpr std::array< std::uint8_t, 6 > indices = { 0, 1, 2, 3, 4, 5 };
+		constexpr std::array< u8, 6 > indices = { 0, 1, 2, 3, 4, 5 };
 
-		std::for_each( std::execution::par, indices.cbegin(), indices.cend(), [ & ]( std::uint8_t i )
+		std::for_each( std::execution::par, indices.cbegin(), indices.cend(), [ & ]( u8 i )
 		{
 			const auto& file_path( ( cubemap_file_paths.begin() + i ) );
 
@@ -95,7 +95,7 @@ namespace Kakadu
 														  import_settings.min_filter,
 														  import_settings.mag_filter );
 
-		std::for_each( std::execution::par, indices.cbegin(), indices.cend(), [ & ]( std::uint8_t i )
+		std::for_each( std::execution::par, indices.cbegin(), indices.cend(), [ & ]( u8 i )
 		{
 			stbi_image_free( image_data_array[ i ] );
 		} );

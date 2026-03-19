@@ -673,9 +673,9 @@ namespace Kakadu::ImGuiDrawer
 					ImGui::TableNextRow();
 
 					auto DrawUniformWithAnnotations = [ & ]( UniformAnnotation::Type annotation_type,
-															 std::uint16_t annotation_custom_format_string_id,
+															 u16 annotation_custom_format_string_id,
 															 GLenum type,
-															 const std::array< std::uint8_t, 16 >& annotation_meta_data,
+															 const std::array< u8, 16 >& annotation_meta_data,
 															 void* uniform_memory )
 					{
 						switch( annotation_type )
@@ -698,8 +698,8 @@ namespace Kakadu::ImGuiDrawer
 
 								void* address = uniform_memory;
 
-								std::uint16_t array_dimensions[ 3 ];
-								std::memcpy( array_dimensions, annotation_meta_data.data(), 3 * sizeof( std::uint16_t ) );
+								u16 array_dimensions[ 3 ];
+								std::memcpy( array_dimensions, annotation_meta_data.data(), 3 * sizeof( u16 ) );
 
 								const auto& style = ImGui::GetStyle();
 								ImGui::PushItemWidth( array_dimensions[ 1 ] * ImGui::CalcTextSize( " []" ).x +
@@ -734,7 +734,7 @@ namespace Kakadu::ImGuiDrawer
 
 								if( annotation_slider_flags.IsSet( UniformAnnotation::SliderFlags::DisplayAsPercentage ) )
 								{
-									const char* format = annotation_custom_format_string_id != ( std::uint16_t )-1
+									const char* format = annotation_custom_format_string_id != ( u16 )-1
 										? material.GetShader()->GetAnnotationFormatString( annotation_custom_format_string_id )
 										: "%.1f%%";
 
@@ -748,7 +748,7 @@ namespace Kakadu::ImGuiDrawer
 								}
 								else
 								{
-									const char* format = annotation_custom_format_string_id != ( std::uint16_t )-1
+									const char* format = annotation_custom_format_string_id != ( u16 )-1
 															? material.GetShader()->GetAnnotationFormatString( annotation_custom_format_string_id )
 															: GetFormat< float >();
 

@@ -36,7 +36,7 @@ namespace Kakadu
 		static constexpr CubeMapConstructorTag CUBEMAP_CONSTRUCTOR = {};
 		static constexpr Texture2DMultiSampleConstructorTag TEXTURE_2D_MULTISAMPLE_CONSTRUCTOR = {};
 
-		enum class Format : std::uint8_t
+		enum class Format : u8
 		{
 			NOT_ASSIGNED,
 
@@ -160,7 +160,7 @@ namespace Kakadu
 		Texture( const std::string_view multi_sample_texture_name,
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
-				 const std::uint8_t sample_count,
+				 const u8 sample_count,
 				 const i32 width, const i32 height );
 
 		/* Cubemap allocate-only constructor (no data).

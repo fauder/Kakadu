@@ -185,7 +185,7 @@ namespace Kakadu
 		{
 			auto& shader_source = *vertex_shader_source;
 
-			std::unordered_map< std::int16_t, std::filesystem::path > map_of_IDs_per_include_file;
+			std::unordered_map< i16, std::filesystem::path > map_of_IDs_per_include_file;
 
 			vertex_source_include_path_array = PreprocessShaderStage_GetIncludeFilePaths( shader_source );
 			PreProcessShaderStage_IncludeDirectives( vertex_shader_source_path, shader_source, ShaderType::Vertex, map_of_IDs_per_include_file );
@@ -211,7 +211,7 @@ namespace Kakadu
 			{
 				auto& shader_source = *geometry_shader_source;
 
-				std::unordered_map< std::int16_t, std::filesystem::path > map_of_IDs_per_include_file;
+				std::unordered_map< i16, std::filesystem::path > map_of_IDs_per_include_file;
 
 				geometry_source_include_path_array = PreprocessShaderStage_GetIncludeFilePaths( shader_source );
 				PreProcessShaderStage_IncludeDirectives( geometry_shader_source_path, shader_source, ShaderType::Geometry, map_of_IDs_per_include_file );
@@ -242,7 +242,7 @@ namespace Kakadu
 		{
 			auto& shader_source = *fragment_shader_source;
 
-			std::unordered_map< std::int16_t, std::filesystem::path > map_of_IDs_per_include_file;
+			std::unordered_map< i16, std::filesystem::path > map_of_IDs_per_include_file;
 
 			fragment_source_include_path_array = PreprocessShaderStage_GetIncludeFilePaths( shader_source );
 			PreProcessShaderStage_IncludeDirectives( fragment_shader_source_path, shader_source, ShaderType::Fragment, map_of_IDs_per_include_file );
@@ -366,7 +366,7 @@ namespace Kakadu
 	}
 
 #ifdef _EDITOR
-	const char* Shader::GetAnnotationFormatString( const std::uint16_t annotation_format_string_id )
+	const char* Shader::GetAnnotationFormatString( const u16 annotation_format_string_id )
 	{
 		return uniform_annotation_format_string_table[ annotation_format_string_id ].c_str();
 	}
@@ -622,7 +622,7 @@ namespace Kakadu
 	bool Shader::PreProcessShaderStage_IncludeDirectives( const std::filesystem::path& shader_source_path,
 														  std::string& shader_source_to_modify,
 														  const ShaderType shader_type,
-														  std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file )
+														  std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file )
 	{
 		char error_string[ 256 ] = { 0 };
 
@@ -645,7 +645,7 @@ namespace Kakadu
 	bool Shader::CompileShader( const char* source,
 								u32& shader_id,
 								const ShaderType shader_type,
-								std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file )
+								std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file )
 	{
 		shader_id = glCreateShader( ShaderTypeID( shader_type ) );
 		glShaderSource( shader_id, /* how many strings: */ 1, &source, NULL );
@@ -779,11 +779,11 @@ namespace Kakadu
 											      } );
 					it == uniform_annotation_format_string_table.cend() )
 				{
-					format_string_id = ( std::uint16_t )uniform_annotation_format_string_table.size();
+					format_string_id = ( u16 )uniform_annotation_format_string_table.size();
 					uniform_annotation_format_string_table.emplace_back( format_string );
 				}
 				else
-					format_string_id = ( std::uint16_t )std::distance( uniform_annotation_format_string_table.cbegin(), it );
+					format_string_id = ( u16 )std::distance( uniform_annotation_format_string_table.cbegin(), it );
 
 				return true;
 			}
@@ -826,11 +826,11 @@ namespace Kakadu
 					break;
 				case UniformAnnotation::Type::Array:
 				{
-					const std::uint8_t available_dimension_count = Math::Min( 3, ( i32 )splitted_annotation_line.size() - 1 );
+					const u8 available_dimension_count = Math::Min( 3, ( i32 )splitted_annotation_line.size() - 1 );
 					for( auto i = 0; i < available_dimension_count; i++ )
 					{
-						const auto parsed_number = Utility::String::ConvertToNumber< std::uint16_t >( splitted_annotation_line[ i + 1 ] );
-						std::memcpy( meta_data.data() + i * sizeof( std::uint16_t ), &parsed_number, sizeof( std::uint16_t ) );
+						const auto parsed_number = Utility::String::ConvertToNumber< u16 >( splitted_annotation_line[ i + 1 ] );
+						std::memcpy( meta_data.data() + i * sizeof( u16 ), &parsed_number, sizeof( u16 ) );
 					}
 				}
 					break;
@@ -1380,7 +1380,7 @@ namespace Kakadu
 
 	void Shader::LogErrors_Compilation( const i32 shader_id,
 										const ShaderType shader_type,
-										std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const
+										std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file ) const
 	{
 		char info_log[ 512 ];
 		i32 info_log_length;
@@ -1413,7 +1413,7 @@ namespace Kakadu
 	/* Replaces file IDs with actual file paths. */
 	std::string Shader::FormatErrorLog( const char* log,
 										const i32 log_length,
-										std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const
+										std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file ) const
 	{
 		const auto& graphics_device_vendor = ServiceLocator< Graphics::DeviceInfo >::Get().vendor;
 
@@ -1440,7 +1440,7 @@ namespace Kakadu
 				char file_ID_string[ 8 ];
 				strncpy_s( file_ID_string, line.data(), paren_pos );
 
-				const std::int16_t file_ID = std::atoi( file_ID_string );
+				const i16 file_ID = std::atoi( file_ID_string );
 
 				info_log_str += '\t' + map_of_IDs_per_source_file[ file_ID ].string() + " -> line " + std::string( line.substr( paren_pos ) ) + ".\n";
 
@@ -1461,7 +1461,7 @@ namespace Kakadu
 
 					if( second_colon != std::string_view::npos )
 					{
-						const std::int16_t file_id = static_cast< std::int16_t >(
+						const i16 file_id = static_cast< i16 >(
 							std::atoi( std::string( line.substr( first_colon + 1,
 																 second_colon - first_colon - 1 ) ).c_str() ) );
 
@@ -1487,8 +1487,8 @@ namespace Kakadu
 				const std::size_t first_colon = line.find( ':' );
 				if( first_colon != std::string_view::npos )
 				{
-					const std::int16_t file_id =
-						static_cast< std::int16_t >(
+					const i16 file_id =
+						static_cast< i16 >(
 							std::atoi(
 								std::string( line.substr( 0, first_colon ) ).c_str() ) );
 

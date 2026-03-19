@@ -106,7 +106,7 @@ namespace Kakadu
 		bool SourceFilesAreModified();
 
 #ifdef _EDITOR
-		const char* GetAnnotationFormatString( const std::uint16_t annotation_format_string_id );
+		const char* GetAnnotationFormatString( const u16 annotation_format_string_id );
 #endif // _EDITOR
 
 /* Uniform APIs: */
@@ -491,11 +491,11 @@ private:
 		bool PreProcessShaderStage_IncludeDirectives( const std::filesystem::path& shader_source_path,
 													  std::string& shader_source_to_modify,
 													  const ShaderType shader_type,
-													  std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file );
+													  std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file );
 		bool CompileShader( const char* source,
 							u32& shader_id,
 							const ShaderType shader_type,
-							std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file );
+							std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file );
 		bool LinkProgram( const u32 vertex_shader_id, const u32 fragment_shader_id );
 		bool LinkProgram( const u32 vertex_shader_id, const u32 geometry_shader_id, const u32 fragment_shader_id );
 
@@ -527,13 +527,13 @@ private:
 		void LogErrors( const std::string& error_string ) const;
 		void LogErrors_Compilation( const i32 shader_id,
 									const ShaderType shader_type,
-									std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const;
+									std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file ) const;
 		void LogErrors_Linking() const;
 		std::string FormatErrorLog( const char* log ) const;
 		/* Replaces file IDs with actual file paths. */
 		std::string FormatErrorLog( const char* log,
 									const i32 log_length,
-									std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file ) const;
+									std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file ) const;
 
 /* Editor: */
 

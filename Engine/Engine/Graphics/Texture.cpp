@@ -68,7 +68,7 @@ namespace Kakadu
 	Texture::Texture( const std::string_view multi_sample_texture_name,
 					  //const std::byte* data, This is omitted from this public constructor.
 					  const Format format,
-					  const std::uint8_t sample_count,
+					  const u8 sample_count,
 					  const i32 width, const i32 height )
 		:
 		id( {} ),
@@ -78,7 +78,7 @@ namespace Kakadu
 		import_settings
 		{
 			.format = DetermineActualFormat( format ),
-			.msaa = MSAA{ Renderer::CheckMSAASupport( format, sample_count ) ? sample_count : std::uint8_t( 1 ) }
+			.msaa = MSAA{ Renderer::CheckMSAASupport( format, sample_count ) ? sample_count : u8( 1 ) }
 		}
 	{
 		glGenTextures( 1, &id.id );

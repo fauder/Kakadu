@@ -59,7 +59,7 @@ namespace Kakadu::Primitive::Indexed::Quad
 		{  0.5f, -0.5f,  0.0f }
 	} );
 
-	constexpr std::array< std::uint32_t, 6 > Indices
+	constexpr std::array< u32, 6 > Indices
 	( {
 		0, 1, 2,
 		0, 2, 3

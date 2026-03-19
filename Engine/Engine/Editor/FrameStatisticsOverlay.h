@@ -15,12 +15,13 @@ namespace Kakadu::Editor
 		float last_N_fps_values_sum  = 0.0f;
 		float last_N_frame_times_sum = 0.0f;
 
-		std::uint16_t rolling_avg_fps = 0;
+		u16 rolling_avg_fps = 0;
+		/* 2 bytes of padding. */
 		i32 rolling_avg_index = 0;
 
 		float rolling_avg_frame_time = 0.0f;
 
-		static constexpr std::uint8_t ROLLING_AVG_FPS_FRAME_COUNT = 144;
+		static constexpr u8 ROLLING_AVG_FPS_FRAME_COUNT = 144;
 		std::array< float, ROLLING_AVG_FPS_FRAME_COUNT > last_N_fps_values;
 		std::array< float, ROLLING_AVG_FPS_FRAME_COUNT > last_N_frame_times;
 	};

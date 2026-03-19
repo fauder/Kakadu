@@ -37,7 +37,7 @@ namespace Kakadu
 	class Renderer
 	{
 	public:
-		enum class IntrinsicModifyTarget : std::uint8_t
+		enum class IntrinsicModifyTarget : u8
 		{
 			None = 0,
 
@@ -52,7 +52,7 @@ namespace Kakadu
 		struct Description
 		{
 			Texture::Format main_framebuffer_color_format = Texture::Format::RGBA_16F;
-			std::uint8_t msaa_sample_count                = 4;
+			u8 msaa_sample_count = 4;
 			bool output_to_composite_framebuffer;
 		};
 
@@ -214,16 +214,16 @@ namespace Kakadu
 		/* Returns the MSAA info. for the main framebuffer MSAA. */
 		MSAA GetMSAAInfo() const;
 		/* Sets the sample count for the main framebuffer MSAA. */
-		MSAA SetMSAASampleCount( const std::uint8_t new_sample_count );\
+		MSAA SetMSAASampleCount( const u8 new_sample_count );\
 		
 		/*
 		 * Queries:
 		 */
 
 		/* Logs a warning if the sample count in question is not available for the given format. */
-		static bool CheckMSAASupport( const Texture::Format format, const std::uint8_t sample_count_to_query );
+		static bool CheckMSAASupport( const Texture::Format format, const u8 sample_count_to_query );
 		static void DisplayAvailableGLExtensions( std::vector< std::string >& list_of_strings );
-		const std::vector< std::uint8_t >& MSAASupportedSampleCountsFor( const Texture::Format format ) { return msaa_supported_sample_counts_per_format[ format ]; }
+		const std::vector< u8 >& MSAASupportedSampleCountsFor( const Texture::Format format ) { return msaa_supported_sample_counts_per_format[ format ]; }
 
 		/*
 		 * Tone-mapping:
@@ -231,10 +231,10 @@ namespace Kakadu
 
 		void SetTonemappingExposure( const float new_exposure_ev );
 		void SetTonemappingBloomIntensity( const Percentage new_bloom_intensity );
-		std::uint8_t GetBloomStepCount() const { return bloom_mip_chain_size; }
-		void SetBloomStepCount( const std::uint8_t new_step_count );
+		u8 GetBloomStepCount() const { return bloom_mip_chain_size; }
+		void SetBloomStepCount( const u8 new_step_count );
 
-		enum BloomAntiFlickerSetting : std::uint8_t
+		enum BloomAntiFlickerSetting : u8
 		{
 			Off    = 0,
 			Coarse = 1,
@@ -287,7 +287,7 @@ namespace Kakadu
 		void EnableFramebuffer_sRGBEncoding();
 		void DisableFramebuffer_sRGBEncoding();
 
-		enum BuiltinFramebufferIndex : std::uint8_t
+		enum BuiltinFramebufferIndex : u8
 		{
 			Default                        = 0,
 			ShadowMapping_DirectionalLight = 1,
@@ -481,7 +481,7 @@ namespace Kakadu
 
 		FullscreenEffect msaa_resolve;
 
-		std::map< Texture::Format, std::vector< std::uint8_t > > msaa_supported_sample_counts_per_format;
+		std::map< Texture::Format, std::vector< u8 > > msaa_supported_sample_counts_per_format;
 
 		FullscreenEffect tone_mapping;
 
@@ -495,7 +495,7 @@ namespace Kakadu
 		 * Builtin Post-processing Effects:
 		 */
 
-		std::uint8_t bloom_mip_chain_size = 6; // Denotes the step count for either downsampling or upsampling. Total step count is 2 x this value.
+		u8 bloom_mip_chain_size = 6; // Denotes the step count for either downsampling or upsampling. Total step count is 2 x this value.
 
 		FullscreenEffect bloom_downsampling;
 		FullscreenEffect bloom_upsampling;

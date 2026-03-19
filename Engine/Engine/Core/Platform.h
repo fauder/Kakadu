@@ -193,7 +193,7 @@ namespace Kakadu::Platform
 	float GetAspectRatio();
 
 	bool GetMainMonitorResolution( i32& width, i32& height );
-	std::uint16_t GetMainMonitorRefreshRate();
+	u16 GetMainMonitorRefreshRate();
 
 	void CenterWindow( const i32 width_pixels, const i32 height_pixels );
 

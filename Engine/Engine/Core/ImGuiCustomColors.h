@@ -1,5 +1,8 @@
 #pragma once
 
+// Engine Includes.
+#include "Types.h"
+
 // Vendor Includes.
 #include <ImGui/imgui.h>
 
@@ -11,7 +14,7 @@ namespace Kakadu::ImGuiCustomColors
 	constexpr ImU32 COLOR_HDR  = IM_COL32( 245, 194, 10, 255 );
 	constexpr ImU32 COLOR_MSAA = IM_COL32( 92, 46, 145, 255 );
 
-	enum class CustomColorType : std::uint8_t
+	enum class CustomColorType : u8
 	{
 		HDR,
 		MSAA

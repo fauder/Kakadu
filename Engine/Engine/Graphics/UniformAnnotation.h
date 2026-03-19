@@ -8,7 +8,7 @@
 
 namespace Kakadu::UniformAnnotation
 {
-	enum class Type : std::uint8_t
+	enum class Type : u8
 	{
 		/* A uniform may be defined for a shader stage but not defined for another stage, in the same shader program.
 		 * Therefore, to be able to detect mismatches between stages correctly, we need a dedicated 'Unassigned' enumeration here.
@@ -24,7 +24,7 @@ namespace Kakadu::UniformAnnotation
 		Driven,
 	};
 
-	enum class SliderFlags : std::uint8_t
+	enum class SliderFlags : u8
 	{
 		None                = 0,
 		Logarithmic         = 1 << 0,
@@ -33,7 +33,7 @@ namespace Kakadu::UniformAnnotation
 		// The rest are reserved.
 	};
 
-	enum class ColorFlags : std::uint8_t
+	enum class ColorFlags : u8
 	{
 		None = 0,
 		HDR  = 1 << 0,

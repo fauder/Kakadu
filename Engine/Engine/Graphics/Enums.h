@@ -19,7 +19,7 @@ namespace Kakadu
 		All = DepthBuffer | StencilBuffer | ColorBuffer
 	};
 
-	enum class PolygonMode : std::uint8_t
+	enum class PolygonMode : u8
 	{
 		Point,
 		Line, 
@@ -76,7 +76,7 @@ namespace Kakadu
 		Maximum         = GL_MAX
 	};
 
-	enum class SortingMode : std::uint8_t
+	enum class SortingMode : u8
 	{
 		None,
 		FrontToBack,

@@ -38,7 +38,7 @@ private:
 
 private:
 /* Renderer: */
-	static constexpr Kakadu::RenderQueue::ID RENDER_QUEUE_ID_CUSTOM = Kakadu::RenderQueue::ID( ( uint16_t )Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY + 1u );
+	static constexpr Kakadu::RenderQueue::ID RENDER_QUEUE_ID_CUSTOM = Kakadu::RenderQueue::ID( ( u16 )Kakadu::Renderer::RENDER_QUEUE_ID_GEOMETRY + 1u );
 
 	Kakadu::Renderable tunnel_renderable;
 

@@ -10,7 +10,7 @@
 
 namespace Kakadu::Primitive::Indexed::CircleTemplate
 {
-	template< std::uint8_t VertexCount = 20, float Diameter = 1.0f > requires( VertexCount >= 3 )
+	template< u8 VertexCount = 20, float Diameter = 1.0f > requires( VertexCount >= 3 )
 	std::array< Vector3, VertexCount > Positions()
 	{
 		std::array< Vector3, VertexCount > positions;
@@ -18,13 +18,13 @@ namespace Kakadu::Primitive::Indexed::CircleTemplate
 		constexpr float radius = Diameter / 2.0f;
 		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / VertexCount;
 
-		for( std::uint8_t i = 0; i < VertexCount; i++ )
+		for( u8 i = 0; i < VertexCount; i++ )
 			positions[ i ] = Vector3( radius * Math::Cos( delta_angle * i ), radius * Math::Sin( delta_angle * i ), 0.0f );
 
 		return positions;
 	};
 
-	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
+	template< u8 VertexCount = 20 > requires( VertexCount >= 3 )
 	std::array< u32, 3 * ( VertexCount - 2 ) > Indices()
 	{
 		using IndexType = u32;
@@ -80,20 +80,20 @@ namespace Kakadu::Primitive::Indexed::CircleTemplate
 		return indices;
 	};
 
-	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
+	template< u8 VertexCount = 20 > requires( VertexCount >= 3 )
 	std::array< Vector2, VertexCount > UVs()
 	{
 		std::array< Vector2, VertexCount > uvs;
 
 		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / VertexCount;
 
-		for( std::uint8_t i = 0; i < VertexCount; i++ )
+		for( u8 i = 0; i < VertexCount; i++ )
 			uvs[ i ] = Vector2( -Math::Cos( delta_angle * i ), Math::Sin( delta_angle * i ) ) * 0.5f + 0.5f; // Remap unit circle to uv range: [-1,+1] => [0,+1].
 
 		return uvs;
 	};
 
-	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
+	template< u8 VertexCount = 20 > requires( VertexCount >= 3 )
 	constexpr std::array< Vector3, VertexCount > Normals()
 	{
 		std::array< Vector3, VertexCount > normals;
@@ -101,7 +101,7 @@ namespace Kakadu::Primitive::Indexed::CircleTemplate
 		return normals;
 	};
 
-	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
+	template< u8 VertexCount = 20 > requires( VertexCount >= 3 )
 	constexpr std::array< Vector3, VertexCount > Tangents()
 	{
 		std::array< Vector3, VertexCount > tangents;
@@ -109,7 +109,7 @@ namespace Kakadu::Primitive::Indexed::CircleTemplate
 		return tangents;
 	};
 
-	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
+	template< u8 VertexCount = 20 > requires( VertexCount >= 3 )
 	constexpr std::array< Vector3, VertexCount > Bitangents()
 	{
 		std::array< Vector3, VertexCount > bitangents;

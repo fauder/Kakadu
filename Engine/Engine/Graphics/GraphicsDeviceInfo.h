@@ -1,5 +1,8 @@
 #pragma once
 
+// Engine Includes.
+#include "Core/Types.h"
+
 // std Includes.
 #include <cstdint>
 #include <string>
@@ -9,7 +12,7 @@ namespace Kakadu::Graphics
 {
 	struct DeviceInfo
 	{
-		enum class Vendor : std::uint8_t
+		enum class Vendor : u8
 		{
 			Unknown,
 			Nvidia,

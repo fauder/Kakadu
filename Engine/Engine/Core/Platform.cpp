@@ -469,7 +469,7 @@ namespace Kakadu::Platform
 		return true;
 	}
 
-	std::uint16_t GetMainMonitorRefreshRate()
+	u16 GetMainMonitorRefreshRate()
 	{
 		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 		if( monitor )

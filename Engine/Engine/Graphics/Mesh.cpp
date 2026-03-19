@@ -13,14 +13,14 @@ namespace Kakadu
 		instance_count( 0 )
 	{}
 
-	Mesh::Mesh( const std::span< const Vector3			> positions, 
-				const std::string&						  name, 
-				const std::span< const Vector3			> normals,
-				const std::span< const Vector2			> uvs, 
-				const std::span< const std::uint32_t	> indices, 
-				const std::span< const Vector3			> tangents, 
-				const PrimitiveType						  primitive_type, 
-				const RHI::Usage						  usage )
+	Mesh::Mesh( const std::span< const Vector3	> positions, 
+				const std::string&				  name, 
+				const std::span< const Vector3	> normals,
+				const std::span< const Vector2	> uvs, 
+				const std::span< const u32		> indices, 
+				const std::span< const Vector3	> tangents, 
+				const PrimitiveType				  primitive_type, 
+				const RHI::Usage				  usage )
 		:
 		name( name ),
 		indices( indices.begin(), indices.end() ),
@@ -46,14 +46,14 @@ namespace Kakadu
 		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name );
 	}
 
-	Mesh::Mesh( std::vector< Vector3 >&&		positions,
-				const std::string&				name,
-				std::vector< Vector3 >&&		normals,
-				std::vector< Vector2 >&&		uvs,
-				std::vector< std::uint32_t >&&	indices,
-				std::vector< Vector3 >&&		tangents,
-				const PrimitiveType				primitive_type,
-				const RHI::Usage				usage )
+	Mesh::Mesh( std::vector< Vector3 >&&	positions,
+				const std::string&			name,
+				std::vector< Vector3 >&&	normals,
+				std::vector< Vector2 >&&	uvs,
+				std::vector< u32	 >&&	indices,
+				std::vector< Vector3 >&&	tangents,
+				const PrimitiveType			primitive_type,
+				const RHI::Usage			usage )
 		:
 		name( name ),
 		indices( indices ),

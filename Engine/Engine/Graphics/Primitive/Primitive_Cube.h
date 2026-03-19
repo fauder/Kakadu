@@ -314,7 +314,7 @@ namespace Kakadu::Primitive::Indexed::Cube
 		{  0.5f,  0.5f, -0.5f }  // TOP
 	} );
 
-	constexpr std::array< std::uint32_t, 36 > Indices
+	constexpr std::array< u32, 36 > Indices
 	( {
 		0, 1, 2,
 		0, 2, 3,
