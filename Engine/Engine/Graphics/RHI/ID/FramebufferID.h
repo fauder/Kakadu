@@ -1,0 +1,11 @@
+#pragma once
+
+// Engine Includes.
+#include "ID.codegen.h"
+
+namespace Kakadu::RHI
+{
+	DEFINE_RHI_ID( Framebuffer );
+}
+
+#undef DEFINE_RHI_ID

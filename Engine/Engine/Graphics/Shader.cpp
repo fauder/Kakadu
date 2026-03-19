@@ -9,6 +9,7 @@
 #include "Core/BitFlags.hpp"
 #include "Core/ServiceLocator.h"
 #include "Core/Utility.hpp"
+#include "GLLabelPrefixes.h"
 #include "GLLogger.h"
 #include "GraphicsDeviceInfo.h"
 #include "Shader.hpp"
@@ -281,7 +282,7 @@ namespace Kakadu
 		if( link_result )
 		{
 #ifdef _EDITOR
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_PROGRAM, program_id.Get(), GL_LABEL_PREFIX_SHADER_PROGRAM + name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_PROGRAM, program_id.id, GL_LABEL_PREFIX_SHADER_PROGRAM + name );
 #endif // _EDITOR
 
 			QueryVertexAttributes();
@@ -324,7 +325,7 @@ namespace Kakadu
 
 	void Shader::Bind() const
 	{
-		glUseProgram( program_id.Get() );
+		glUseProgram( program_id.id );
 	}
 
 	bool Shader::RecompileFromThis( Shader& new_shader )
@@ -467,7 +468,7 @@ namespace Kakadu
 	{
 		if( IsValid() )
 		{
-			glDeleteProgram( program_id.Get() );
+			glDeleteProgram( program_id.id );
 			program_id.Reset(); // OpenGL does not reset the id to zero.
 		}
 	}
@@ -669,17 +670,17 @@ namespace Kakadu
 
 	bool Shader::LinkProgram( const unsigned int vertex_shader_id, const unsigned int geometry_shader_id, const unsigned int fragment_shader_id )
 	{
-		program_id = ID( glCreateProgram() );
+		program_id.id = glCreateProgram();
 
-		glAttachShader( program_id.Get(), vertex_shader_id );
+		glAttachShader( program_id.id, vertex_shader_id );
 		if( geometry_shader_id > 0 )
-			glAttachShader( program_id.Get(), geometry_shader_id );
-		glAttachShader( program_id.Get(), fragment_shader_id );
+			glAttachShader( program_id.id, geometry_shader_id );
+		glAttachShader( program_id.id, fragment_shader_id );
 
-		glLinkProgram( program_id.Get() );
+		glLinkProgram( program_id.id );
 
 		int success;
-		glGetProgramiv( program_id.Get(), GL_LINK_STATUS, &success );
+		glGetProgramiv( program_id.id, GL_LINK_STATUS, &success );
 		if( !success )
 		{
 			LogErrors_Linking();
@@ -988,7 +989,7 @@ namespace Kakadu
 	void Shader::QueryVertexAttributes()
 	{
 		int active_attribute_count;
-		glGetProgramiv( program_id.Get(), GL_ACTIVE_ATTRIBUTES, &active_attribute_count );
+		glGetProgramiv( program_id.id, GL_ACTIVE_ATTRIBUTES, &active_attribute_count );
 
 		char attribute_name[ 255 ];
 
@@ -998,8 +999,8 @@ namespace Kakadu
 		{
 			int attribute_name_length, attribute_size;
 			GLenum attribute_vector_type;
-			glGetActiveAttrib( program_id.Get(), attribute_index, 255, &attribute_name_length, &attribute_size, &attribute_vector_type, attribute_name );
-			const unsigned int attribute_location = glGetAttribLocation( program_id.Get(), attribute_name );
+			glGetActiveAttrib( program_id.id, attribute_index, 255, &attribute_name_length, &attribute_size, &attribute_vector_type, attribute_name );
+			const unsigned int attribute_location = glGetAttribLocation( program_id.id, attribute_name );
 
 			GLint divisor_data;
 			glGetIntegeri_v( GL_VERTEX_BINDING_DIVISOR, attribute_location, &divisor_data );
@@ -1014,8 +1015,8 @@ namespace Kakadu
 
 	void Shader::GetUniformBookKeepingInfo()
 	{
-		glGetProgramiv( program_id.Get(), GL_ACTIVE_UNIFORMS, &uniform_book_keeping_info.count );
-		glGetProgramiv( program_id.Get(), GL_ACTIVE_UNIFORM_MAX_LENGTH, &uniform_book_keeping_info.name_max_length );
+		glGetProgramiv( program_id.id, GL_ACTIVE_UNIFORMS, &uniform_book_keeping_info.count );
+		glGetProgramiv( program_id.id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &uniform_book_keeping_info.name_max_length );
 		uniform_book_keeping_info.name_holder = std::string( uniform_book_keeping_info.name_max_length, '?' );
 	}
 
@@ -1027,7 +1028,7 @@ namespace Kakadu
 		block_indices.resize( active_uniform_count );
 		std::iota( corresponding_uniform_indices.begin(), corresponding_uniform_indices.end(), 0 );
 
-		glGetActiveUniformsiv( program_id.Get(), active_uniform_count, corresponding_uniform_indices.data(), GL_UNIFORM_BLOCK_INDEX, reinterpret_cast< int* >( block_indices.data() ) );
+		glGetActiveUniformsiv( program_id.id, active_uniform_count, corresponding_uniform_indices.data(), GL_UNIFORM_BLOCK_INDEX, reinterpret_cast< int* >( block_indices.data() ) );
 
 		int block_count = 0;
 		for( auto uniform_index = 0; uniform_index < active_uniform_count; uniform_index++ )
@@ -1063,13 +1064,13 @@ namespace Kakadu
 			 */
 			int array_element_count = 0, length_dontCare = 0;
 			GLenum type;
-			glGetActiveUniform( program_id.Get(), uniform_index, uniform_book_keeping_info.name_max_length,
+			glGetActiveUniform( program_id.id, uniform_index, uniform_book_keeping_info.name_max_length,
 								&length_dontCare, &array_element_count, &type, 
 								uniform_book_keeping_info.name_holder.data() );
 
 			const int size = GL::Type::SizeOf( type );
 
-			const auto location = glGetUniformLocation( program_id.Get(), uniform_book_keeping_info.name_holder.c_str() );
+			const auto location = glGetUniformLocation( program_id.id, uniform_book_keeping_info.name_holder.c_str() );
 
 			const bool is_buffer_member = location == -1;
 
@@ -1096,7 +1097,7 @@ namespace Kakadu
 			return;
 
 		std::vector< int > corresponding_offsets( corresponding_uniform_indices.size() );
-		glGetActiveUniformsiv( program_id.Get(), ( int )corresponding_uniform_indices.size(), corresponding_uniform_indices.data(), GL_UNIFORM_OFFSET, corresponding_offsets.data() );
+		glGetActiveUniformsiv( program_id.id, ( int )corresponding_uniform_indices.size(), corresponding_uniform_indices.data(), GL_UNIFORM_OFFSET, corresponding_offsets.data() );
 
 		for( int index = 0; index < corresponding_uniform_indices.size(); index++ )
 		{
@@ -1105,7 +1106,7 @@ namespace Kakadu
 			const auto offset        = corresponding_offsets[ index ];
 
 			int length = 0;
-			glGetActiveUniformName( program_id.Get(), uniform_index, uniform_book_keeping_info.name_max_length, &length, uniform_book_keeping_info.name_holder.data() );
+			glGetActiveUniformName( program_id.id, uniform_index, uniform_book_keeping_info.name_max_length, &length, uniform_book_keeping_info.name_holder.data() );
 
 			const auto& uniform_name = uniform_book_keeping_info.name_holder.c_str();
 
@@ -1120,23 +1121,23 @@ namespace Kakadu
 	void Shader::QueryUniformBufferData( std::unordered_map< std::string, Uniform::BufferInformation >& uniform_buffer_info_map, const Uniform::BufferCategory category_of_interest )
 	{
 		int active_uniform_block_count = 0;
-		glGetProgramiv( program_id.Get(), GL_ACTIVE_UNIFORM_BLOCKS, &active_uniform_block_count );
+		glGetProgramiv( program_id.id, GL_ACTIVE_UNIFORM_BLOCKS, &active_uniform_block_count );
 
 		if( active_uniform_block_count == 0 )
 			return;
 
 		int uniform_block_name_max_length = 0;
-		glGetProgramiv( program_id.Get(), GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &uniform_block_name_max_length );
+		glGetProgramiv( program_id.id, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &uniform_block_name_max_length );
 		std::string name( uniform_block_name_max_length, '?' );
 
 		int offset = 0;
 		for( int uniform_block_index = 0; uniform_block_index < active_uniform_block_count; uniform_block_index++ )
 		{
 			int length = 0;
-			glGetActiveUniformBlockName( program_id.Get(), uniform_block_index, uniform_block_name_max_length, &length, name.data() );
+			glGetActiveUniformBlockName( program_id.id, uniform_block_index, uniform_block_name_max_length, &length, name.data() );
 			
 			int size;
-			glGetActiveUniformBlockiv( program_id.Get(), uniform_block_index, GL_UNIFORM_BLOCK_DATA_SIZE,	&size );
+			glGetActiveUniformBlockiv( program_id.id, uniform_block_index, GL_UNIFORM_BLOCK_DATA_SIZE,	&size );
 
 			const auto category = Uniform::DetermineBufferCategory( name );
 
@@ -1393,7 +1394,7 @@ namespace Kakadu
 	void Shader::LogErrors_Linking() const
 	{
 		char info_log[ 512 ];
-		glGetProgramInfoLog( program_id.Get(), 512, NULL, info_log );
+		glGetProgramInfoLog( program_id.id, 512, NULL, info_log );
 
 		const std::string complete_error_string( "Shader Error (linking): Shader \"" + name + "\"" + FormatErrorLog( info_log ) );
 		LogErrors( complete_error_string );

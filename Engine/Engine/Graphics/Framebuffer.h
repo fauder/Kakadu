@@ -5,6 +5,7 @@
 #include "Enums.h"
 #include "MSAA.h"
 #include "Texture.h"
+#include "RHI/ID/FramebufferID.h"
 #include "Core/BitFlags.hpp"
 
 // std Includes.
@@ -14,8 +15,6 @@ namespace Kakadu
 {
 	struct Framebuffer
 	{
-		using ID = ID< Framebuffer >;
-
 		enum class ActivationMode
 		{
 			Invalid = 0,
@@ -87,13 +86,13 @@ namespace Kakadu
 												  const Description& description );
 
 	/* Queries: */
-		bool IsValid() const { return id.IsValid(); } // Technically, this fails for the default framebuffer which has id 0, but it's not needed there anyway.
+		bool IsValid() const { return ( bool )id; } // Technically, this fails for the default framebuffer which has id 0, but it's not needed there anyway.
 
 		int	 SampleCount()	  const { return msaa.sample_count; }
 		bool IsMultiSampled() const { return msaa.IsEnabled(); }
 
 		/* Default framebuffer always uses sRGB Encoding. */
-		bool Is_sRGB() const { return id.Get() == 0 || ( HasColorAttachment() && color_attachment.Is_sRGB() ); }
+		bool Is_sRGB() const { return not IsValid() || ( HasColorAttachment() && color_attachment.Is_sRGB() ); }
 		bool IsHDR()   const { return HasColorAttachment() && color_attachment.IsHDR(); }
 
 	/* Attachment Queries: */
@@ -125,7 +124,7 @@ namespace Kakadu
 									const Color4& start = Color4::Cyan(), const Color4& end = Color4::Yellow(),
 									const float duration_in_seconds = 0.5f, const std::uint8_t ping_pong_count = 5 );
 
-		ID id;
+		RHI::FramebufferID id;
 
 		Vector2I size;
 

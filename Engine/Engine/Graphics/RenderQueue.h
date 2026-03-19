@@ -4,6 +4,13 @@
 #include "Renderable.h"
 #include "RenderState.h"
 
+// std Includes.
+#include <map>
+#include <optional>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 namespace Kakadu
 {
 	/* Forward declarations: */

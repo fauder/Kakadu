@@ -1,7 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "Buffer.hpp"
+#include "Buffer.h"
 #include "Uniform.h"
 
 // std Includes.
@@ -22,7 +22,7 @@ namespace Kakadu
 		static Uniform::BindingPoint RegisterUniformBlock( const Shader& shader, const std::string& block_name, Uniform::BufferInformation& uniform_buffer_info );
 
 	/* Buffer-Block connecting API: */
-		static void ConnectBufferToBlock( const UniformBuffer& uniform_buffer, const std::string& block_name, const Uniform::BufferCategory category = Uniform::BufferCategory::Regular );
+		static void ConnectBufferToBlock( const Buffer& uniform_buffer, const std::string& block_name, const Uniform::BufferCategory category = Uniform::BufferCategory::Regular );
 
 	private:
 	/* Private default constructor. */
@@ -39,8 +39,8 @@ namespace Kakadu
 		static Uniform::BindingPoint RegisterUniformBlock( const Shader& shader, const std::string& block_name, Uniform::BindingPointBookKeeping& binding_point_book_keeping );
 
 	/* Buffer-Block connecting API: */
-		static void BindBufferToBindingPoint( const UniformBuffer&, const Uniform::BindingPoint );
-		static void BindBufferToBindingPoint_Partial( const UniformBuffer&, const Uniform::BindingPoint,
+		static void BindBufferToBindingPoint( const Buffer&, const Uniform::BindingPoint );
+		static void BindBufferToBindingPoint_Partial( const Buffer&, const Uniform::BindingPoint,
 													  const unsigned int offset, const unsigned int size );
 
 	/* Misc.: */

@@ -72,7 +72,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /we4062 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,7 +119,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /we4062 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -192,13 +192,18 @@
     <ClInclude Include="Engine\Editor\ViewportControlsOverlay.h" />
     <ClInclude Include="Engine\Editor\ViewportPanel.h" />
     <ClInclude Include="Engine\Editor\ViewportScene.h" />
+    <ClInclude Include="Engine\Graphics\Buffer.h" />
     <ClInclude Include="Engine\Graphics\FullscreenEffect.h" />
     <ClInclude Include="Engine\Graphics\BuiltinTextures.h" />
     <ClInclude Include="Engine\Graphics\Enums.h" />
     <ClInclude Include="Engine\Graphics\Framebuffer.h" />
-    <ClInclude Include="Engine\Graphics\ID.hpp" />
     <ClInclude Include="Engine\Graphics\RHI\Usage.h" />
+    <ClInclude Include="Engine\Graphics\RHI\ID\FramebufferID.h" />
+    <ClInclude Include="Engine\Graphics\RHI\ID\ID.codegen.h" />
     <ClInclude Include="Engine\Graphics\BuiltinShaders.h" />
+    <ClInclude Include="Engine\Graphics\RHI\ID\BufferID.h" />
+    <ClInclude Include="Engine\Graphics\RHI\ID\TextureID.h" />
+    <ClInclude Include="Engine\Graphics\RHI\ID\VertexArrayID.h" />
     <ClInclude Include="Engine\Graphics\ModelInstance.h" />
     <ClInclude Include="Engine\Graphics\MSAA.h" />
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Circle.h" />
@@ -224,7 +229,6 @@
     <ClInclude Include="Engine\Core\Optimization.h" />
     <ClInclude Include="Engine\Core\ServiceLocator.h" />
     <ClInclude Include="Engine\Core\DirtyBlob.h" />
-    <ClInclude Include="Engine\Graphics\Buffer.hpp" />
     <ClInclude Include="Engine\Graphics\Renderable.h" />
     <ClInclude Include="Engine\Graphics\GLLogType.h" />
     <ClInclude Include="Engine\Graphics\GLLogger.h" />
@@ -297,10 +301,12 @@
     <ClCompile Include="Engine\Editor\ViewportControlsOverlay.cpp" />
     <ClCompile Include="Engine\Editor\ViewportPanel.cpp" />
     <ClCompile Include="Engine\Editor\ViewportScene.cpp" />
+    <ClCompile Include="Engine\Graphics\Buffer.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinShaders.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinTextures.cpp" />
     <ClInclude Include="Engine\Graphics\GLLabelPrefixes.h" />
     <ClCompile Include="Engine\Graphics\RHI\Usage.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\ID\ShaderProgramID.h" />
     <ClCompile Include="Engine\Graphics\ModelInstance.cpp" />
     <ClCompile Include="Engine\Graphics\Renderable.cpp" />
     <ClCompile Include="Engine\Graphics\Framebuffer.cpp" />

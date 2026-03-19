@@ -26,7 +26,7 @@ namespace Kakadu
 		}
 	}
 
-	void UniformBlockBindingPointManager::ConnectBufferToBlock( const UniformBuffer& uniform_buffer, const std::string& block_name, const Uniform::BufferCategory category )
+	void UniformBlockBindingPointManager::ConnectBufferToBlock( const Buffer& uniform_buffer, const std::string& block_name, const Uniform::BufferCategory category )
 	{
 		auto& instance = Instance();
 
@@ -85,8 +85,8 @@ namespace Kakadu
 		{
 			const auto binding_point_found = *maybe_binding_point;
 
-			const unsigned int block_index = glGetUniformBlockIndex( shader.Id().Get(), block_name.c_str() );
-			glUniformBlockBinding( shader.Id().Get(), block_index, binding_point_found );
+			const unsigned int block_index = glGetUniformBlockIndex( shader.Id().id, block_name.c_str() );
+			glUniformBlockBinding( shader.Id().id, block_index, binding_point_found );
 
 			return binding_point_found;
 		}
@@ -96,8 +96,8 @@ namespace Kakadu
 			{
 				const auto binding_point_to_assign = binding_point_book_keeping.Assign( block_name );
 
-				const unsigned int block_index = glGetUniformBlockIndex( shader.Id().Get(), block_name.c_str() );
-				glUniformBlockBinding( shader.Id().Get(), block_index, binding_point_to_assign );
+				const unsigned int block_index = glGetUniformBlockIndex( shader.Id().id, block_name.c_str() );
+				glUniformBlockBinding( shader.Id().id, block_index, binding_point_to_assign );
 
 				return binding_point_to_assign;
 			}
@@ -110,15 +110,15 @@ namespace Kakadu
 		}
 	}
 
-	void UniformBlockBindingPointManager::BindBufferToBindingPoint( const UniformBuffer& uniform_buffer, const Uniform::BindingPoint binding_point )
+	void UniformBlockBindingPointManager::BindBufferToBindingPoint( const Buffer& uniform_buffer, const Uniform::BindingPoint binding_point )
 	{
-		glBindBufferBase( GL_UNIFORM_BUFFER, binding_point, uniform_buffer.Id().Get() );
+		glBindBufferBase( GL_UNIFORM_BUFFER, binding_point, uniform_buffer.id.id );
 	}
 
-	void UniformBlockBindingPointManager::BindBufferToBindingPoint_Partial( const UniformBuffer& uniform_buffer, const Uniform::BindingPoint binding_point,
+	void UniformBlockBindingPointManager::BindBufferToBindingPoint_Partial( const Buffer& uniform_buffer, const Uniform::BindingPoint binding_point,
 																			 const unsigned int offset, const unsigned int size )
 	{
-		glBindBufferRange( GL_UNIFORM_BUFFER, binding_point, uniform_buffer.Id().Get(), ( GLintptr )offset, ( GLsizeiptr )size );
+		glBindBufferRange( GL_UNIFORM_BUFFER, binding_point, uniform_buffer.id.id, ( GLintptr )offset, ( GLsizeiptr )size );
 	}
 
 	unsigned int UniformBlockBindingPointManager::QueryMaximumUniformBufferBindingCount()

@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "BuiltinShaders.h"
 #include "BuiltinTextures.h"
+#include "GLLabelPrefixes.h"
 #include "Core/AssetDatabase.hpp"
 #include "Core/AssetDatabase_Tracked.hpp"
 #include "Core/ImGuiCustomColors.h"

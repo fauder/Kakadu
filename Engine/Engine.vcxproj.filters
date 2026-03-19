@@ -144,9 +144,6 @@
     <ClInclude Include="Engine\Graphics\UniformBlockBindingPointManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\Buffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Core\ImGuiDrawer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -219,7 +216,7 @@
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Quad_FullScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\ID.hpp">
+    <ClInclude Include="Engine\Graphics\RHI\ID\ID.codegen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Core\Macros.h">
@@ -375,7 +372,22 @@
     <ClInclude Include="Engine\Core\Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\RHI\ID\BufferID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\RHI\ID\TextureID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\RHI\ID\FramebufferID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\Buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Engine\Graphics\RHI\Usage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\RHI\ID\VertexArrayID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -528,6 +540,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Math\Quaternion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\RHI\ID\ShaderProgramID.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\RHI\Usage.cpp">

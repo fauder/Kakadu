@@ -170,7 +170,7 @@ namespace Kakadu
 			const std::string full_name( IsMultiSampled()
 										   ? this->name + " (MSAA " + std::to_string( msaa.sample_count ) + "x)"
 										   : this->name );
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.id, GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
 		}
 #endif // _EDITOR
 
@@ -179,22 +179,22 @@ namespace Kakadu
 
 	void Framebuffer::ActivateForReadWrite() const
 	{
-		glBindFramebuffer( ( GLenum )ActivationMode::Both, id.Get() );
+		glBindFramebuffer( ( GLenum )ActivationMode::Both, id.id );
 	}
 
 	void Framebuffer::ActivateForRead() const
 	{
-		glBindFramebuffer( ( GLenum )ActivationMode::Read, id.Get() );
+		glBindFramebuffer( ( GLenum )ActivationMode::Read, id.id );
 	}
 
 	void Framebuffer::ActivateForWrite() const
 	{
-		glBindFramebuffer( ( GLenum )ActivationMode::Write, id.Get() );
+		glBindFramebuffer( ( GLenum )ActivationMode::Write, id.id );
 	}
 
 	void Framebuffer::Create()
 	{
-		glGenFramebuffers( 1, id.Address() );
+		glGenFramebuffers( 1, &id.id );
 		ActivateForWrite();
 
 #ifdef _EDITOR
@@ -203,7 +203,7 @@ namespace Kakadu
 			const std::string full_name( IsMultiSampled()
 											? this->name + " (MSAA " + std::to_string( msaa.sample_count ) + "x)"
 										    : this->name );
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.Get(), GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.id, GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
 		}
 #endif // _EDITOR
 
@@ -298,7 +298,7 @@ namespace Kakadu
 								msaa.IsEnabled()
 									? GL_TEXTURE_2D_MULTISAMPLE
 									: GL_TEXTURE_2D,
-								attachment_texture.Id().Get(),
+								attachment_texture.Id().id,
 								gl_spec_required_level );
 	}
 
@@ -350,7 +350,7 @@ namespace Kakadu
 					texture_database.RemoveAsset( stencil_attachment.Name() );
 			}
 
-			glDeleteFramebuffers( 1, id.Address() );
+			glDeleteFramebuffers( 1, &id.id );
 			id.Reset(); // OpenGL does not reset the id to zero.
 		}
 	}

@@ -1,7 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "Buffer.hpp"
+#include "Buffer.h"
 #include "Uniform.h"
 
 // std Includes.
@@ -15,10 +15,10 @@ namespace Kakadu
 	public:
 		DELETE_COPY_AND_MOVE_CONSTRUCTORS( UniformBufferManager );
 
-		static UniformBuffer* CreateOrRequest( const std::string& buffer_name, const Uniform::BufferInformation& buffer_info );
+		static Buffer* CreateOrRequest( const std::string& buffer_name, const Uniform::BufferInformation& buffer_info );
 
 	private:
-		UniformBufferManager();
+		UniformBufferManager() {}
 
 		/* Singleton related: */
 		static UniformBufferManager& Instance()
@@ -28,8 +28,8 @@ namespace Kakadu
 		}
 
 	private:
-		std::unordered_map< std::string, UniformBuffer > uniform_buffer_map_regular;
-		std::unordered_map< std::string, UniformBuffer > uniform_buffer_map_global;
-		std::unordered_map< std::string, UniformBuffer > uniform_buffer_map_intrinsic;
+		std::unordered_map< std::string, Buffer > uniform_buffer_map_regular;
+		std::unordered_map< std::string, Buffer > uniform_buffer_map_global;
+		std::unordered_map< std::string, Buffer > uniform_buffer_map_intrinsic;
 	};
 }

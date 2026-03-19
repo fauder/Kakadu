@@ -1,7 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "Buffer.hpp"
+#include "Buffer.h"
 #include "Std140StructTag.h"
 #include "Uniform.h"
 #include "UniformBufferManager.h"
@@ -195,7 +195,7 @@ namespace Kakadu
 
 		std::unordered_map< std::string, const Uniform::BufferInformation > buffer_info_map;
 
-		std::unordered_map< std::string, UniformBuffer* > buffer_map;
+		std::unordered_map< std::string, Buffer* > buffer_map;
 
 		std::unordered_map< std::string, BlobType > blob_map;
 	};

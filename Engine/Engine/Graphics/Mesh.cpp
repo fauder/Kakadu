@@ -1,5 +1,8 @@
 // Engine Includes.
 #include "Mesh.h"
+#include "GLLogger.h"
+#include "RHI/Usage.h"
+#include "Core/ServiceLocator.h"
 #include "Asset/Shader/_Attributes.glsl"
 
 namespace Kakadu
@@ -33,12 +36,13 @@ namespace Kakadu
 			ServiceLocator< GLLogger >::Get().Warning( "Mesh \"" + name + "\": Tangent & Normal count does not match (maybe only one of them was provided?)\nThis is most likely a mistake." );
 #endif // _EDITOR
 
-		unsigned int vertex_count_interleaved;
+		u32 vertex_count_interleaved;
 		const auto interleaved_vertices = MeshUtility::Interleave( vertex_count_interleaved, positions, normals, uvs, tangents );
 
-		vertex_buffer = VertexBuffer( vertex_count_interleaved, std::span( interleaved_vertices ), name, usage );
+		vertex_buffer = Buffer( BufferType::Vertex, vertex_count_interleaved, std::as_bytes( std::span( interleaved_vertices ) ), name, usage );
 		vertex_layout = VertexLayout( GatherAttributes( positions, normals, uvs, tangents ) );
-		index_buffer  = indices.empty() ? std::nullopt : std::optional< IndexBuffer >( std::in_place, std::span( indices ), name, usage );
+		index_buffer  = indices.empty() ? std::nullopt : std::optional< Buffer >( std::in_place,
+																				  BufferType::Index, ( u32 )indices.size(), std::as_bytes( std::span( indices ) ), name, usage );
 		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name );
 	}
 
@@ -63,9 +67,10 @@ namespace Kakadu
 		unsigned int vertex_count_interleaved;
 		const auto interleaved_vertices = MeshUtility::Interleave( vertex_count_interleaved, positions, normals, uvs, tangents );
 
-		vertex_buffer = VertexBuffer( vertex_count_interleaved, std::span( interleaved_vertices ), name, usage );
+		vertex_buffer = Buffer( BufferType::Vertex, vertex_count_interleaved, std::as_bytes( std::span( interleaved_vertices ) ), name, usage );
 		vertex_layout = VertexLayout( GatherAttributes( positions, normals, uvs, tangents ) );
-		index_buffer  = indices.empty() ? std::nullopt : std::optional< IndexBuffer >( std::in_place, std::span( indices ), name, usage );
+		index_buffer  = indices.empty() ? std::nullopt : std::optional< Buffer >( std::in_place,
+																				  BufferType::Index, ( u32 )indices.size(), std::as_bytes( std::span( indices ) ), name, usage );
 		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name );
 	}
 
@@ -73,7 +78,7 @@ namespace Kakadu
 				const std::initializer_list< VertexInstanceAttribute > instanced_attributes,
 				const std::vector< float >& instance_data,
 				const int instance_count,
-				const RHI::Usage usage )
+				const RHI::Usage instance_buffer_usage )
 		:
 		name( other.name ),
 		indices( other.indices ),
@@ -90,7 +95,8 @@ namespace Kakadu
 		for( auto instanced_attribute_iterator = instanced_attributes.begin(); instanced_attribute_iterator != instanced_attributes.end(); instanced_attribute_iterator++ )
 			vertex_layout.Push( *instanced_attribute_iterator );
 
-		instance_buffer = std::optional< InstanceBuffer >( std::in_place, instance_count, std::span( instance_data ), name, usage );
+		instance_buffer = std::optional< Buffer >( std::in_place,
+												   BufferType::Instance, instance_count, std::as_bytes( std::span( instance_data ) ), name, instance_buffer_usage );
 
 		vertex_array = VertexArray( vertex_buffer, vertex_layout, index_buffer, *instance_buffer, name );
 	}

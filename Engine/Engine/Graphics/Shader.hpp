@@ -3,11 +3,11 @@
 // Engine Includes.
 #include "Graphics.h"
 #include "Color.hpp"
-#include "Id.hpp"
 #include "ShaderSourcePath.hpp"
 #include "Std140StructTag.h"
 #include "Uniform.h"
 #include "VertexLayout.hpp"
+#include "RHI/ID/ShaderProgramID.h"
 #include "Math/Concepts_Math.h"
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
@@ -35,7 +35,6 @@ namespace Kakadu
 		using ReferenceCount = unsigned int;
 
 	public:
-		using ID       = ID< Renderer >;
 		using Features = std::vector< std::string >;
 
 		/* Features can be:
@@ -89,7 +88,7 @@ namespace Kakadu
 
 /* Queries: */
 
-			 ID								Id()							const { return program_id;							}
+		RHI::ShaderProgramID				Id()							const { return program_id;							}
 		const std::string&					Name()							const { return name;								}
 		bool								HasGeometryStage()				const { return not geometry_source_path.empty();	}
 		const std::string&					VertexSourcePath()				const { return vertex_source_path;					}
@@ -478,7 +477,7 @@ private:
 
 /* Queries: */
 
-		bool IsValid() const { return program_id.IsValid(); }
+		bool IsValid() const { return ( bool )program_id; }
 
 /* Compilation & Linkage: */
 
@@ -542,7 +541,7 @@ private:
 		std::string UniformEditorName_BufferMemberAggregate( const std::string_view aggregate_name );
 
 	private:
-		ID program_id;
+		RHI::ShaderProgramID program_id;
 		//int padding;
 		std::string name;
 

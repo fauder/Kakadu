@@ -130,7 +130,7 @@ namespace Kakadu::Editor
 
 		{
 			const auto& framebuffer_color_attachment = renderer->OutputFramebuffer().color_attachment;
-			viewport_panel.Render( *this, framebuffer_color_attachment.Id().Get(), framebuffer_color_attachment.Size() );
+			viewport_panel.Render( *this, framebuffer_color_attachment.Id().id, framebuffer_color_attachment.Size() );
 		}
 
 		RenderViewportControlsOverlay( *this, *renderer );

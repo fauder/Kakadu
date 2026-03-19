@@ -1,5 +1,8 @@
 #pragma once
 
+// Engine Includes.
+#include "Core/Macros.h"
+
 // std Includes.
 #include <string>
 

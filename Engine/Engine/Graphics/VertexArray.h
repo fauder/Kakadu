@@ -1,8 +1,9 @@
 #pragma once
 
 // Engine Includes.
-#include "Buffer.hpp"
+#include "Buffer.h"
 #include "VertexLayout.hpp"
+#include "RHI/ID/VertexArrayID.h"
 
 // std Includes.
 #include <optional>
@@ -12,9 +13,6 @@ namespace Kakadu
 	class VertexArray
 	{
 	public:
-		using ID = ID< VertexArray >;
-
-	public:
 		VertexArray( const std::string& name = {} );
 
 		DELETE_COPY_CONSTRUCTORS( VertexArray );
@@ -22,13 +20,13 @@ namespace Kakadu
 		VertexArray( VertexArray&& donor );
 		VertexArray& operator =( VertexArray&& donor );
 
-		VertexArray( const VertexBuffer& vertex_buffer, const VertexLayout& vertex_layout, const std::string& name = {} );
-		VertexArray( const VertexBuffer& vertex_buffer, const VertexLayout& vertex_layout, 
-					 const std::optional< IndexBuffer >& index_buffer,
+		VertexArray( const Buffer& vertex_buffer, const VertexLayout& vertex_layout, const std::string& name = {} );
+		VertexArray( const Buffer& vertex_buffer, const VertexLayout& vertex_layout, 
+					 const std::optional< Buffer >& index_buffer,
 					 const std::string& name = {} );
-		VertexArray( const VertexBuffer& vertex_buffer, const VertexLayout& vertex_layout,
-					 const std::optional< IndexBuffer >& index_buffer,
-					 const InstanceBuffer& instance_buffer,
+		VertexArray( const Buffer& vertex_buffer, const VertexLayout& vertex_layout,
+					 const std::optional< Buffer >& index_buffer,
+					 const Buffer& instance_buffer,
 					 const std::string& name = {} );
 		~VertexArray();
 
@@ -39,9 +37,9 @@ namespace Kakadu
 
 	/* Queries: */
 
-		bool IsValid() const { return id.IsValid(); }
+		bool IsValid() const { return ( bool )id; }
 
-		ID			 Id()				const { return id;				}
+		RHI::VertexArrayID Id()			const { return id;				}
 		unsigned int VertexCount()		const { return vertex_count;	}
 		unsigned int IndexCount()		const { return index_count;		}
 		unsigned int InstanceCount()	const { return instance_count;  }
@@ -50,19 +48,18 @@ namespace Kakadu
 
 		void Delete();
 
-		void CreateArrayAndRegisterVertexBufferAndAttributes( const VertexBuffer& vertex_buffer, const VertexLayout& vertex_layout );
-		void CreateArrayAndRegisterVertexBufferAndAttributes( const VertexBuffer& vertex_buffer, const InstanceBuffer& instance_buffer, const VertexLayout& vertex_layout );
+		void CreateArrayAndRegisterVertexBufferAndAttributes( const Buffer& vertex_buffer, const VertexLayout& vertex_layout );
+		void CreateArrayAndRegisterVertexBufferAndAttributes( const Buffer& vertex_buffer, const Buffer& instance_buffer, const VertexLayout& vertex_layout );
 
 	private:
-		ID id;
+		RHI::VertexArrayID id;
 		//int padding;
 
 		std::string name;
 
-		VertexBuffer::ID vertex_buffer_id;
-		IndexBuffer::ID index_buffer_id;
-
-		InstanceBuffer::ID instance_buffer_id;
+		RHI::BufferID vertex_buffer_id;
+		RHI::BufferID index_buffer_id;
+		RHI::BufferID instance_buffer_id;
 
 		unsigned int vertex_count;
 		unsigned int index_count;

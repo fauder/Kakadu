@@ -375,9 +375,9 @@ namespace Kakadu::ImGuiDrawer
 		if( texture )
 		{
 			if( texture->Type() == TextureType::Texture2D )
-				ImGui::Image( ( ImTextureID )texture->Id().Get(), ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
+				ImGui::Image( ( ImTextureID )texture->Id().id, ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
 			ImGui::SameLine();
-			ImGui::Text( "%s (ID: %d)", texture->Name().c_str(), texture->Id().Get() );
+			ImGui::Text( "%s (ID: %d)", texture->Name().c_str(), texture->Id().id );
 		}
 		else
 		{
@@ -449,7 +449,7 @@ namespace Kakadu::ImGuiDrawer
 				{
 					case TextureType::Texture2D:
 						ImGui::SetCursorPos( ImGui::GetCursorPos() + ImVec2( padding_x, padding_y ) );
-						ImGui::Image( ( ImTextureID )selected_texture->Id().Get(), ImVec2( image_width_fit, image_height_fit ), { 0, 1 }, { 1, 0 } );
+						ImGui::Image( ( ImTextureID )selected_texture->Id().id, ImVec2( image_width_fit, image_height_fit ), { 0, 1 }, { 1, 0 } );
 						break;
 
 					case TextureType::Texture2D_MultiSample:
@@ -540,7 +540,7 @@ namespace Kakadu::ImGuiDrawer
 				{
 					case TextureType::Texture2D:
 						ImGui::SetCursorPos( ImGui::GetCursorPos() + ImVec2( padding_x, padding_y ) );
-						ImGui::Image( ( ImTextureID )selected_texture->Id().Get(), ImVec2( image_width_fit, image_height_fit ), { 0, 1 }, { 1, 0 } );
+						ImGui::Image( ( ImTextureID )selected_texture->Id().id, ImVec2( image_width_fit, image_height_fit ), { 0, 1 }, { 1, 0 } );
 						break;
 
 					case TextureType::Texture2D_MultiSample:
@@ -1044,7 +1044,7 @@ namespace Kakadu::ImGuiDrawer
 		{
 			const auto& uniform_info_map = shader.GetUniformInfoMap();
 
-			if( ImGui::TreeNodeEx( shader.Name().c_str(), 0 /*, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed*/, "%s (ID: %d)", shader.Name().c_str(), shader.Id().Get() ) )
+			if( ImGui::TreeNodeEx( shader.Name().c_str(), 0 /*, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed*/, "%s (ID: %d)", shader.Name().c_str(), shader.Id().id ) )
 			{
 				ImGuiUtility::BeginGroupPanel();
 
@@ -1214,7 +1214,7 @@ namespace Kakadu::ImGuiDrawer
 		{
 			ImGui::TableNextRow();
 
-			int id = framebuffer.id.Get();
+			int id = framebuffer.id.id;
 			ImGui::TableNextColumn(); ImGui::TextDisabled( "ID" );
 			ImGui::TableNextColumn(); ImGui::InputInt( "##ID", &id, 0, 0, ImGuiInputTextFlags_ReadOnly );
 

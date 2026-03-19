@@ -1,6 +1,8 @@
 // Engine Includes.
+#include "GLLogger.h"
 #include "Model.h"
 #include "Core/AssetDatabase.hpp"
+#include "Core/ServiceLocator.h"
 #include "Math/Matrix.h"
 #include "Math/Quaternion.hpp"
 

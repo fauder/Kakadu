@@ -4,8 +4,8 @@
 #include "Color.hpp"
 #include "Graphics.h"
 #include "GraphicsMacros.h"
-#include "ID.hpp"
 #include "MSAA.h"
+#include "RHI/ID/TextureID.h"
 #include "Core/Concepts.h"
 #include "Math/Vector.hpp"
 
@@ -146,9 +146,6 @@ namespace Kakadu
 		ASSET_LOADER_CLASS_DECLARATION( Texture );
 
 	public:
-		using ID = ID< Texture >;
-
-	public:
 		Texture();
 		/* Allocate-only constructor (no data). */
 		Texture( const std::string_view name,
@@ -185,9 +182,9 @@ namespace Kakadu
 		~Texture();
 
 	/* Queries: */
-		bool IsValid() const { return id.Get(); }
+		bool IsValid() const { return ( bool )id; }
 
-		ID					Id()						const { return id; }
+		RHI::TextureID		Id()						const { return id; }
 		const Vector2I&		Size()						const { return size; }
 		int					Width()						const { return size.X(); }
 		int					Height()					const { return size.Y(); }
@@ -204,7 +201,7 @@ namespace Kakadu
 																	import_settings.format == Format::RGBA_16F ||
 																	import_settings.format == Format::RGBA_32F ||
 																	import_settings.format == Format::R11G11B10F; }
-		Format				PixelFormat()				const { return import_settings.format;														}
+		Format				PixelFormat()				const { return import_settings.format; }
 
 	/* Usage: */
 		void SetName( const std::string& new_name );
@@ -284,7 +281,7 @@ namespace Kakadu
 		void Unbind() const;
 
 	private:
-		ID id;
+		RHI::TextureID id;
 		Vector2I size;
 		TextureType type;
 		std::string name;

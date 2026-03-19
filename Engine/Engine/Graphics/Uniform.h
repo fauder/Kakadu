@@ -6,6 +6,7 @@
 #include "Core/Blob.hpp"
 
 // std Includes.
+#include <array>
 #include <optional>
 #include <string>
 #include <unordered_map>

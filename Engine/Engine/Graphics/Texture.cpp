@@ -1,4 +1,5 @@
 // Engine Includes.
+#include "GLLabelPrefixes.h"
 #include "GLLogger.h"
 #include "Renderer.h"
 #include "Texture.h"
@@ -40,12 +41,12 @@ namespace Kakadu
 			.format       = DetermineActualFormat( format )
 		}
 	{
-		glGenTextures( 1, id.Address() );
+		glGenTextures( 1, &id.id );
 		Bind();
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), GL_LABEL_PREFIX_TEXTURE + this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
@@ -80,12 +81,12 @@ namespace Kakadu
 			.msaa = MSAA{ Renderer::CheckMSAASupport( format, sample_count ) ? sample_count : std::uint8_t( 1 ) }
 		}
 	{
-		glGenTextures( 1, id.Address() );
+		glGenTextures( 1, &id.id );
 		Bind();
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), GL_LABEL_PREFIX_TEXTURE + this->name + 
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name + 
 														( name.find( "MSAA" ) == std::string::npos
 															? "(MSAA " + std::to_string( sample_count ) + "x)"
 															: "" ) );
@@ -120,12 +121,12 @@ namespace Kakadu
 			.format       = DetermineActualFormat( format )
 		}
 	{
-		glGenTextures( 1, id.Address() );
+		glGenTextures( 1, &id.id );
 		Bind();
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), GL_LABEL_PREFIX_TEXTURE + this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
 
@@ -252,12 +253,12 @@ namespace Kakadu
 			.format           = DetermineActualFormat( format )
 		}
 	{
-		glGenTextures( 1, id.Address() );
+		glGenTextures( 1, &id.id );
 		Bind();
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), GL_LABEL_PREFIX_TEXTURE + this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
@@ -298,12 +299,12 @@ namespace Kakadu
 			.format           = DetermineActualFormat( format )
 		}
 	{
-		glGenTextures( 1, id.Address() );
+		glGenTextures( 1, &id.id );
 		Bind();
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.Get(), GL_LABEL_PREFIX_TEXTURE + this->name );
+			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
 		for( auto i = 0; i < 6; i++ )
@@ -324,17 +325,17 @@ namespace Kakadu
 		if( IsValid() )
 		{
 #ifdef _EDITOR
-			std::cout << "Deleting Texture id #" << id.Get() << ": " << name << ".\n";
+			std::cout << "Deleting Texture id #" << id.id << ": " << name << ".\n";
 #endif // _EDITOR
 
-			glDeleteTextures( 1, id.Address() );
+			glDeleteTextures( 1, &id.id );
 			id.Reset(); // OpenGL does not reset the id to zero.
 		}
 	}
 
 	void Texture::Bind() const
 	{
-		glBindTexture( ( GLenum )type, id.Get() );
+		glBindTexture( ( GLenum )type, id.id );
 	}
 
 	void Texture::Unbind() const

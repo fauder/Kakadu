@@ -84,8 +84,8 @@ namespace Kakadu
 
 		PrimitiveType Primitive() const { return primitive_type; }
 
-		int VertexCount() const { return vertex_buffer.Count(); }
-		int IndexCount()  const { return index_buffer.has_value() ? index_buffer->Count() : 0; }
+		int VertexCount() const { return vertex_buffer.count; }
+		int IndexCount()  const { return index_buffer.has_value() ? index_buffer->count : 0; }
 
 		bool HasIndices() const { return IndexCount(); }
 
@@ -136,10 +136,10 @@ namespace Kakadu
 
 		int instance_count;
 
-		VertexBuffer vertex_buffer;
+		Buffer vertex_buffer;
 		VertexLayout vertex_layout;
-		std::optional< IndexBuffer > index_buffer;
-		std::optional< InstanceBuffer > instance_buffer;
+		std::optional< Buffer > index_buffer;
+		std::optional< Buffer > instance_buffer;
 		VertexArray vertex_array;
 	};
 }
