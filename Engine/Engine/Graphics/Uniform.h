@@ -23,7 +23,7 @@ namespace Kakadu
 		template< typename BlobType > requires( std::is_base_of_v< Blob, BlobType > )
 		friend class UniformBufferManagement;
 
-		using BindingPoint = unsigned int;
+		using BindingPoint = u32;
 
 		struct Information
 		{
@@ -130,7 +130,7 @@ namespace Kakadu
 		class BindingPointBookKeeping
 		{
 		public:
-			BindingPointBookKeeping( const unsigned int start_offset, const unsigned int maximum_allowed )
+			BindingPointBookKeeping( const u32 start_offset, const u32 maximum_allowed )
 				:
 				start_offset( start_offset ),
 				maximum_allowed( maximum_allowed )
@@ -169,10 +169,10 @@ namespace Kakadu
 
 		private:
 			std::unordered_map< std::string, Uniform::BindingPoint > binding_point_map;
-			unsigned int in_use = 0;
-			unsigned int start_offset;
-			unsigned int maximum_allowed;
-			//unsigned int padding;
+			u32 in_use = 0;
+			u32 start_offset;
+			u32 maximum_allowed;
+			/* 4 bytes of padding. */;
 		};
 	};
 }

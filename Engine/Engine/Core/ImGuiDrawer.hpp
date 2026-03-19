@@ -33,7 +33,7 @@ namespace Kakadu::ImGuiDrawer
 	{
 		if constexpr( std::is_same_v< Type, int > )
 			return ImGuiDataType_S32;
-		if constexpr( std::is_same_v< Type, unsigned int > )
+		if constexpr( std::is_same_v< Type, u32 > )
 			return ImGuiDataType_U32;
 		if constexpr( std::is_same_v< Type, float > )
 			return ImGuiDataType_Float;
@@ -46,7 +46,7 @@ namespace Kakadu::ImGuiDrawer
 	{
 		if constexpr( std::is_same_v< Type, int > )
 			return "%d";
-		if constexpr( std::is_same_v< Type, unsigned int > )
+		if constexpr( std::is_same_v< Type, u32 > )
 			return "%u";
 		if constexpr( std::is_same_v< Type, float > )
 			return "%.2f";
@@ -57,18 +57,18 @@ namespace Kakadu::ImGuiDrawer
 	bool Draw( const GLenum type,	    void* value_pointer, const char* name = "##hidden" );
 	void Draw( const GLenum type, const void* value_pointer, const char* name = "##hidden" );
 
-	bool Draw( int& scalar,					const char* name = "##scalar_int" 	 );
-	bool Draw( int& scalar,					const int min, const int max, const char* name = "##scalar_int" );
-	void Draw( const int& scalar,			const char* name = "##scalar_int"    );
-	bool Draw( unsigned int& scalar,		const char* name = "##scalar_uint"	 );
-	bool Draw( unsigned int& scalar,		const unsigned int min, const unsigned int max, const char* name = "##scalar_uint" );
-	void Draw( const unsigned int& scalar,	const char* name = "##scalar_uint"	 );
-	bool Draw( float& scalar,				const char* name = "##scalar_float",  const char* format = GetFormat< float  >() );
-	void Draw( const float& scalar,			const char* name = "##scalar_float",  const char* format = GetFormat< float  >() );
-	bool Draw( double& scalar,				const char* name = "##scalar_double", const char* format = GetFormat< double >() );
-	void Draw( const double& scalar,		const char* name = "##scalar_double", const char* format = GetFormat< double >() );
-	bool Draw( bool& value,					const char* name = "##bool" );
-	void Draw( const bool& value,			const char* name = "##bool" );
+	bool Draw( int& scalar,				const char* name = "##scalar_int" 	 );
+	bool Draw( int& scalar,				const int min, const int max, const char* name = "##scalar_int" );
+	void Draw( const int& scalar,		const char* name = "##scalar_int"    );
+	bool Draw( u32& scalar,				const char* name = "##scalar_uint"	 );
+	bool Draw( u32& scalar,				const u32 min, const u32 max, const char* name = "##scalar_uint" );
+	void Draw( const u32& scalar,		const char* name = "##scalar_uint"	 );
+	bool Draw( float& scalar,			const char* name = "##scalar_float",  const char* format = GetFormat< float  >() );
+	void Draw( const float& scalar,		const char* name = "##scalar_float",  const char* format = GetFormat< float  >() );
+	bool Draw( double& scalar,			const char* name = "##scalar_double", const char* format = GetFormat< double >() );
+	void Draw( const double& scalar,	const char* name = "##scalar_double", const char* format = GetFormat< double >() );
+	bool Draw( bool& value,				const char* name = "##bool" );
+	void Draw( const bool& value,		const char* name = "##bool" );
 
 	template< Concepts::Arithmetic_NotBool Component, std::size_t Size >
 		requires( Size > 1 )

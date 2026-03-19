@@ -41,13 +41,13 @@ namespace Kakadu
 	/* Buffer-Block connecting API: */
 		static void BindBufferToBindingPoint( const Buffer&, const Uniform::BindingPoint );
 		static void BindBufferToBindingPoint_Partial( const Buffer&, const Uniform::BindingPoint,
-													  const unsigned int offset, const unsigned int size );
+													  const u32 offset, const u32 size );
 
 	/* Misc.: */
-		static unsigned int QueryMaximumUniformBufferBindingCount();
+		static u32 QueryMaximumUniformBufferBindingCount();
 
 	private:
-		unsigned int binding_point_max_count;
+		u32 binding_point_max_count;
 		//int padding;
 
 		Uniform::BindingPointBookKeeping binding_point_book_keeping_intrinsic;

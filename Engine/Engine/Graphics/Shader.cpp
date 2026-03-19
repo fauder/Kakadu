@@ -171,7 +171,7 @@ namespace Kakadu
 			SaveTimeIfValid( geometry_source_path );
 		SaveTimeIfValid( fragment_source_path );
 
-		unsigned int vertex_shader_id = 0, geometry_shader_id = 0, fragment_shader_id = 0;
+		u32 vertex_shader_id = 0, geometry_shader_id = 0, fragment_shader_id = 0;
 
 		std::optional< std::string > vertex_shader_source;
 		std::optional< std::string > geometry_shader_source;
@@ -386,7 +386,7 @@ namespace Kakadu
 			case GL_INT_VEC2				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector2I*		>( value_pointer ) ); return;
 			case GL_INT_VEC3				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector3I*		>( value_pointer ) ); return;
 			case GL_INT_VEC4				: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector4I*		>( value_pointer ) ); return;
-			case GL_UNSIGNED_INT			: SetUniform( uniform_info.location_or_block_index, *static_cast< const unsigned int*	>( value_pointer ) ); return;
+			case GL_UNSIGNED_INT			: SetUniform( uniform_info.location_or_block_index, *static_cast< const u32*			>( value_pointer ) ); return;
 			case GL_UNSIGNED_INT_VEC2		: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector2U*		>( value_pointer ) ); return;
 			case GL_UNSIGNED_INT_VEC3		: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector3U*		>( value_pointer ) ); return;
 			case GL_UNSIGNED_INT_VEC4		: SetUniform( uniform_info.location_or_block_index, *static_cast< const Vector4U*		>( value_pointer ) ); return;
@@ -429,7 +429,7 @@ namespace Kakadu
 			case GL_INT_VEC2				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector2I*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_INT_VEC3				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector3I*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_INT_VEC4				: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector4I*		>( value_pointer ), uniform_info.count_array ); return;
-			case GL_UNSIGNED_INT			: SetUniformArray( uniform_info.location_or_block_index, static_cast< const unsigned int*	>( value_pointer ), uniform_info.count_array ); return;
+			case GL_UNSIGNED_INT			: SetUniformArray( uniform_info.location_or_block_index, static_cast< const u32*			>( value_pointer ), uniform_info.count_array ); return;
 			case GL_UNSIGNED_INT_VEC2		: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector2U*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_UNSIGNED_INT_VEC3		: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector3U*		>( value_pointer ), uniform_info.count_array ); return;
 			case GL_UNSIGNED_INT_VEC4		: SetUniformArray( uniform_info.location_or_block_index, static_cast< const Vector4U*		>( value_pointer ), uniform_info.count_array ); return;
@@ -643,7 +643,7 @@ namespace Kakadu
 	}
 
 	bool Shader::CompileShader( const char* source,
-								unsigned int& shader_id,
+								u32& shader_id,
 								const ShaderType shader_type,
 								std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file )
 	{
@@ -662,13 +662,13 @@ namespace Kakadu
 		return true;
 	}
 
-	bool Shader::LinkProgram( const unsigned int vertex_shader_id, const unsigned int fragment_shader_id )
+	bool Shader::LinkProgram( const u32 vertex_shader_id, const u32 fragment_shader_id )
 	{
 		return LinkProgram( vertex_shader_id, 0, fragment_shader_id );
 	}
 
 
-	bool Shader::LinkProgram( const unsigned int vertex_shader_id, const unsigned int geometry_shader_id, const unsigned int fragment_shader_id )
+	bool Shader::LinkProgram( const u32 vertex_shader_id, const u32 geometry_shader_id, const u32 fragment_shader_id )
 	{
 		program_id.id = glCreateProgram();
 
@@ -954,7 +954,7 @@ namespace Kakadu
 			 maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefixes( shader_source_view, { "layout", "location", "=" } ) )
 		{
 			const std::string_view location_sv( *maybe_next_token );
-			unsigned int location;
+			u32 location;
 			if( std::from_chars( location_sv.data(), location_sv.data() + location_sv.size(), location ).ec == std::errc{} )
 			{
 				maybe_next_token = Utility::String::ParseTokenAndAdvance_SkipPrefix( shader_source_view, "in" );
@@ -1000,7 +1000,7 @@ namespace Kakadu
 			int attribute_name_length, attribute_size;
 			GLenum attribute_vector_type;
 			glGetActiveAttrib( program_id.id, attribute_index, 255, &attribute_name_length, &attribute_size, &attribute_vector_type, attribute_name );
-			const unsigned int attribute_location = glGetAttribLocation( program_id.id, attribute_name );
+			const u32 attribute_location = glGetAttribLocation( program_id.id, attribute_name );
 
 			GLint divisor_data;
 			glGetIntegeri_v( GL_VERTEX_BINDING_DIVISOR, attribute_location, &divisor_data );
@@ -1022,7 +1022,7 @@ namespace Kakadu
 
 	/* Expects empty input vectors. */
 	bool Shader::GetActiveUniformBlockIndicesAndCorrespondingUniformIndices( const int active_uniform_count,
-																			 std::vector< unsigned int >& block_indices, std::vector< unsigned int >& corresponding_uniform_indices ) const
+																			 std::vector< u32 >& block_indices, std::vector< u32 >& corresponding_uniform_indices ) const
 	{
 		corresponding_uniform_indices.resize( active_uniform_count );
 		block_indices.resize( active_uniform_count );
@@ -1092,7 +1092,7 @@ namespace Kakadu
 
 	void Shader::QueryUniformData_BlockIndexAndOffsetForBufferMembers()
 	{
-		std::vector< unsigned int > block_indices, corresponding_uniform_indices;
+		std::vector< u32 > block_indices, corresponding_uniform_indices;
 		if( not GetActiveUniformBlockIndicesAndCorrespondingUniformIndices( uniform_book_keeping_info.count, block_indices, corresponding_uniform_indices ) )
 			return;
 

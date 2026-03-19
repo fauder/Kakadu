@@ -7,6 +7,11 @@
 #include "Math/Vector.hpp"
 
 #define DEFINE_MATH_TYPES() \
+using u8  = Kakadu::u8;  \
+using u16 = Kakadu::u16; \
+using u32 = Kakadu::u32; \
+using u64 = Kakadu::u64; \
+\
 using Degrees = Kakadu::Math::Degrees< float >; \
 using Radians = Kakadu::Math::Radians< float >; \
 \
@@ -22,9 +27,9 @@ using Vector4D = Kakadu::Math::Vector< double,			4 >; \
 using Vector2I = Kakadu::Math::Vector< int,				2 >; \
 using Vector3I = Kakadu::Math::Vector< int,				3 >; \
 using Vector4I = Kakadu::Math::Vector< int,				4 >; \
-using Vector2U = Kakadu::Math::Vector< unsigned int,	2 >; \
-using Vector3U = Kakadu::Math::Vector< unsigned int,	3 >; \
-using Vector4U = Kakadu::Math::Vector< unsigned int,	4 >; \
+using Vector2U = Kakadu::Math::Vector< u32,				2 >; \
+using Vector3U = Kakadu::Math::Vector< u32,				3 >; \
+using Vector4U = Kakadu::Math::Vector< u32,				4 >; \
 \
 using Matrix2x2  = Kakadu::Math::Matrix< float,		2, 2 >; \
 using Matrix3x3  = Kakadu::Math::Matrix< float,		3, 3 >; \

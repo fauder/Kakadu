@@ -176,7 +176,7 @@ namespace Kakadu
 
 	void Material::UploadUniforms()
 	{
-		unsigned int texture_unit_slots_in_use = 0; // This can be controlled via a central manager class if more complex use-cases arise. For now every Material will act as if it is the only one using Texture Unit slots.
+		u32 texture_unit_slots_in_use = 0; // This can be controlled via a central manager class if more complex use-cases arise. For now every Material will act as if it is the only one using Texture Unit slots.
 
 		auto UploadTexture = [ & ]( const std::string& sampler_name, const Texture& texture )
 		{
@@ -188,8 +188,8 @@ namespace Kakadu
 			}
 #endif // _EDITOR
 
-			const auto& sampler_uniform_info     = uniform_info_map->at( sampler_name );
-			const unsigned int texture_unit_slot = texture_unit_slots_in_use++;
+			const auto& sampler_uniform_info = uniform_info_map->at( sampler_name );
+			const u32 texture_unit_slot      = texture_unit_slots_in_use++;
 
 			uniform_blob_default_block.Set( ( const std::byte* )&texture_unit_slot, sampler_uniform_info.offset, sampler_uniform_info.size );
 

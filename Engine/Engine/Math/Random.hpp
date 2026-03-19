@@ -16,7 +16,7 @@ namespace Kakadu::Math
 	public:
 		DELETE_COPY_AND_MOVE_CONSTRUCTORS( Random );
 
-		static void Seed( const unsigned int seed )
+		static void Seed( const u32 seed )
 		{
 			Instance( seed );
 		}
@@ -80,12 +80,12 @@ namespace Kakadu::Math
 		}
 
 	private:
-		Random( const unsigned int seed )
+		Random( const u32 seed )
 			:
 			engine( seed )
 		{}
 
-		static Random& Instance( const unsigned int seed = std::default_random_engine::default_seed )
+		static Random& Instance( const u32 seed = std::default_random_engine::default_seed )
 		{
 			local_persist Random instance( seed );
 			return instance;

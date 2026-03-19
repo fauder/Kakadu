@@ -64,7 +64,7 @@ namespace Kakadu
 		primitive_type( primitive_type ),
 		instance_count( 1 )
 	{
-		unsigned int vertex_count_interleaved;
+		u32 vertex_count_interleaved;
 		const auto interleaved_vertices = MeshUtility::Interleave( vertex_count_interleaved, positions, normals, uvs, tangents );
 
 		vertex_buffer = Buffer( BufferType::Vertex, vertex_count_interleaved, std::as_bytes( std::span( interleaved_vertices ) ), name, usage );

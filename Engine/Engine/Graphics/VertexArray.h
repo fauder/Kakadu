@@ -39,10 +39,10 @@ namespace Kakadu
 
 		bool IsValid() const { return ( bool )id; }
 
-		RHI::VertexArrayID Id()			const { return id;				}
-		unsigned int VertexCount()		const { return vertex_count;	}
-		unsigned int IndexCount()		const { return index_count;		}
-		unsigned int InstanceCount()	const { return instance_count;  }
+		RHI::VertexArrayID Id()	const { return id;				}
+		u32 VertexCount()		const { return vertex_count;	}
+		u32 IndexCount()		const { return index_count;		}
+		u32 InstanceCount()		const { return instance_count;  }
 
 	private:
 
@@ -61,9 +61,9 @@ namespace Kakadu
 		RHI::BufferID index_buffer_id;
 		RHI::BufferID instance_buffer_id;
 
-		unsigned int vertex_count;
-		unsigned int index_count;
+		u32 vertex_count;
+		u32 index_count;
 
-		unsigned int instance_count;
+		u32 instance_count;
 	};
 }

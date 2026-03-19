@@ -22,13 +22,13 @@ namespace Kakadu
 		static constexpr int Infinity()				{ return std::numeric_limits< int >::infinity(); }
 	};
 
-	template<> struct TypeTraits< unsigned int >
+	template<> struct TypeTraits< u32 >
 	{
 		TypeTraits() = delete;
 
-		static constexpr unsigned int Min()			{ return ( std::numeric_limits< unsigned int >::min )(); }
-		static constexpr unsigned int Max()			{ return ( std::numeric_limits< unsigned int >::max )(); }
-		static constexpr unsigned int Infinity()	{ return std::numeric_limits< unsigned int >::infinity(); }
+		static constexpr u32 Min()					{ return ( std::numeric_limits< u32 >::min )(); }
+		static constexpr u32 Max()					{ return ( std::numeric_limits< u32 >::max )(); }
+		static constexpr u32 Infinity()				{ return std::numeric_limits< u32 >::infinity(); }
 	};
 
 	template<> struct TypeTraits< float >

@@ -32,10 +32,10 @@ namespace Kakadu
 
 	/* Stencil: */
 
-		unsigned int stencil_write_mask                = true;
+		u32 stencil_write_mask                         = true;
 		ComparisonFunction stencil_comparison_function = ComparisonFunction::Always;
-		unsigned int stencil_ref                       = 0;
-		unsigned int stencil_mask                      = 0xFF;
+		u32 stencil_ref                                = 0;
+		u32 stencil_mask                               = 0xFF;
 
 		StencilTestResponse stencil_test_response_stencil_fail            = StencilTestResponse::Keep;
 		StencilTestResponse stencil_test_response_stencil_pass_depth_fail = StencilTestResponse::Keep;

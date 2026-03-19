@@ -1,5 +1,6 @@
 // Engine Includes.
 #include "Math/Vector.hpp"
+#include "Core/Types.h"
 
 // std Includes.
 #include <utility>
@@ -49,16 +50,16 @@ namespace Kakadu
 		}
 
 		template< typename T >
-		constexpr unsigned int ComponentCount()
+		constexpr u32 ComponentCount()
 		{
 			if constexpr( Concepts::IsVector< T > )
-				return ( unsigned int )T::Dimension();
+				return ( u32 )T::Dimension();
 			else
 				return 1;
 		}
 
 		template< typename FirstVertexAttributeType, typename ... OtherVertexAttributeTypes >
-		auto Interleave( unsigned int& vertex_count,
+		auto Interleave( u32& vertex_count,
 						 FirstVertexAttributeType&& vertex_attribute_vector_first,
 						 OtherVertexAttributeTypes&& ... vertex_attribute_vector_pack )
 		{
@@ -73,13 +74,13 @@ namespace Kakadu
 			constexpr auto first_attribute_component_count = ComponentCount< typename std::remove_reference_t< decltype( vertex_attribute_vector_first ) >::value_type >();
 			const	  auto total_attribute_count           = first_attribute_component_count +
 														     ( ComponentCount_OnlyForNonEmpty( vertex_attribute_vector_pack ) + ... );
-			vertex_count = ( unsigned int )vertex_attribute_vector_first.size();
+			vertex_count = ( u32 )vertex_attribute_vector_first.size();
 
 			std::vector< float > interleaved_vertex_attribute_vector( total_attribute_count * vertex_count );
 
 			constexpr auto size_of_first_vertex_attribute = sizeof( typename std::remove_reference_t< decltype( vertex_attribute_vector_first ) >::value_type );
 
-			for( unsigned int vertex_index = 0, element_index = 0; vertex_index < vertex_count; vertex_index++ )
+			for( u32 vertex_index = 0, element_index = 0; vertex_index < vertex_count; vertex_index++ )
 			{
 				/* Copy the first attribute's elements. */
 				std::memcpy( interleaved_vertex_attribute_vector.data() + element_index, 

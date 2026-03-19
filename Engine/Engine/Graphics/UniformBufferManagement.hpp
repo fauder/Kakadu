@@ -93,7 +93,7 @@ namespace Kakadu
 
 		/* For PARTIAL setting of ARRAY uniforms INSIDE a Uniform Buffer. */
 		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
-		void SetPartial_Array( const std::string& buffer_name, const char* uniform_member_array_instance_name, const unsigned int array_index, const StructType& value )
+		void SetPartial_Array( const std::string& buffer_name, const char* uniform_member_array_instance_name, const u32 array_index, const StructType& value )
 		{
 			const auto& buffer_info              = buffer_info_map[ buffer_name ];
 			const auto& buffer_member_array_info = buffer_info.members_array_map.at( uniform_member_array_instance_name );
@@ -106,7 +106,7 @@ namespace Kakadu
 		}
 
 		/* For PARTIAL setting of ARRAY uniforms INSIDE a Uniform Buffer. */
-		void SetPartial_Array( const std::string& buffer_name, const char* uniform_member_array_instance_name, const unsigned int array_index, const std::byte* value )
+		void SetPartial_Array( const std::string& buffer_name, const char* uniform_member_array_instance_name, const u32 array_index, const std::byte* value )
 		{
 			const auto& buffer_info              = buffer_info_map[ buffer_name ];
 			const auto& buffer_member_array_info = buffer_info.members_array_map.at( uniform_member_array_instance_name );

@@ -7,7 +7,7 @@
 
 namespace Kakadu::Editor
 {
-	void RenderMagnifierOverlay( Context& context, const unsigned int viewport_texture_id )
+	void RenderMagnifierOverlay( Context& context, const u32 viewport_texture_id )
 	{
 		ViewportPanel& viewport_panel = context.viewport_panel;
 

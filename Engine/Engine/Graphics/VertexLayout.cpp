@@ -1,7 +1,7 @@
 // Engine Includes.
 #include "VertexLayout.hpp"
-
 #include "Asset/Shader/_Attributes.glsl"
+#include "Core/Types.h"
 
 namespace Kakadu
 {
@@ -33,10 +33,10 @@ namespace Kakadu
 	{
 		const auto instanced_attributes_begin = std::find_if( attributes.cbegin(), attributes.cend(), []( const VertexAttribute& attribute ) { return attribute.is_instanced; } );
 
-		const unsigned int stride = Stride_NonInstanced();
+		const u32 stride = Stride_NonInstanced();
 
 		constexpr int is_normalized = GL_FALSE;
-		unsigned int offset = 0;
+		u32 offset = 0;
 
 		for( auto iterator = attributes.cbegin(); iterator != instanced_attributes_begin; iterator++ )
 		{
@@ -75,10 +75,10 @@ namespace Kakadu
 	{
 		const auto instanced_attributes_begin = std::find_if( attributes.cbegin(), attributes.cend(), []( const VertexAttribute& attribute ) { return attribute.is_instanced; } );
 
-		const unsigned int stride = Stride_Instanced();
+		const u32 stride = Stride_Instanced();
 
 		constexpr int is_normalized = GL_FALSE;
-		unsigned int offset = 0;
+		u32 offset = 0;
 
 		for( auto iterator = instanced_attributes_begin; iterator != attributes.cend(); iterator++ )
 		{
@@ -119,27 +119,27 @@ namespace Kakadu
 		}
 	}
 
-	unsigned int VertexLayout::Stride_Total() const
+	u32 VertexLayout::Stride_Total() const
 	{
-		unsigned int stride = 0;
+		u32 stride = 0;
 		for( auto index = 0; index < attributes.size(); index++ )
 			stride += attributes[ index ].Size();
 
 		return stride;
 	}
 
-	unsigned int VertexLayout::Stride_NonInstanced() const
+	u32 VertexLayout::Stride_NonInstanced() const
 	{
-		unsigned int stride = 0;
+		u32 stride = 0;
 		for( auto index = 0; index < attributes.size(); index++ )
 			stride += attributes[ index ].Size() * ( 1 - attributes[ index ].is_instanced );
 
 		return stride;
 	}
 
-	unsigned int VertexLayout::Stride_Instanced() const
+	u32 VertexLayout::Stride_Instanced() const
 	{
-		unsigned int stride = 0;
+		u32 stride = 0;
 		for( auto index = 0; index < attributes.size(); index++ )
 			stride += attributes[ index ].Size() * attributes[ index ].is_instanced;
 

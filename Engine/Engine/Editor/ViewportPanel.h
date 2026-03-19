@@ -1,6 +1,7 @@
 #pragma once
 
 // Engine Includes.
+#include "Core/Types.h"
 #include "Math/Vector.hpp"
 
 // std Includes.
@@ -23,7 +24,7 @@ namespace Kakadu::Editor
 		void SetMagnifierZoomFactor( const std::uint8_t new_zoom_factor );
 		void OffsetMagnifierZoomFactor( const bool increment );
 
-		void Render( Context& editor_context, const unsigned int viewport_texture_id, const Vector2I viewport_framebuffer_size );
+		void Render( Context& editor_context, const u32 viewport_texture_id, const Vector2I viewport_framebuffer_size );
 
 		static constexpr std::uint8_t SMALLEST_MAGNIFIER_ZOOM_FACTOR = 4;
 		static constexpr std::uint8_t  LARGEST_MAGNIFIER_ZOOM_FACTOR = 32;

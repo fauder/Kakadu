@@ -135,12 +135,12 @@ namespace Kakadu
 		return OBJECT_LABEL_STORAGE;
 	}
 
-	void GLLogger::IgnoreID( const unsigned int id_to_ignore )
+	void GLLogger::IgnoreID( const u32 id_to_ignore )
 	{
 		glDebugMessageControl( GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 1, &id_to_ignore, false );
 	}
 
-	void GLLogger::DontIgnoreID( const unsigned int id_to_restore )
+	void GLLogger::DontIgnoreID( const u32 id_to_restore )
 	{
 		glDebugMessageControl( GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 1, &id_to_restore, true );
 	}
@@ -152,7 +152,7 @@ namespace Kakadu
 
 	GLLogger::CallbackType GLLogger::GetCallback()
 	{
-		return [ = ]( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters )
+		return [ = ]( GLenum source, GLenum type, u32 id, GLenum severity, GLsizei length, const char* message, const void* parameters )
 		{
 			this->InternalDebugOutputCallback( source, type, id, severity, length, message, parameters );
 		};
@@ -162,7 +162,7 @@ namespace Kakadu
  * Private API:
  */
 
-	void GLLogger::InternalDebugOutputCallback( GLenum source, GLenum type, unsigned int id /* ignored */, GLenum severity, GLsizei length, const char* message, 
+	void GLLogger::InternalDebugOutputCallback( GLenum source, GLenum type, u32 id /* ignored */, GLenum severity, GLsizei length, const char* message, 
 												const void* parameters /* ignored */ )
 	{
 		if( type == GL_DEBUG_TYPE_MARKER )

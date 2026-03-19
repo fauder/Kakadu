@@ -162,7 +162,7 @@ namespace Kakadu
 
 		/* For PARTIAL setting of ARRAY uniforms INSIDE a Uniform Buffer. */
 		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
-		void SetShaderGlobal( const std::string& buffer_name, const char* uniform_member_array_instance_name, const unsigned int array_index, const StructType& value )
+		void SetShaderGlobal( const std::string& buffer_name, const char* uniform_member_array_instance_name, const u32 array_index, const StructType& value )
 		{
 			uniform_buffer_management_global.SetPartial_Array( buffer_name, uniform_member_array_instance_name, array_index, value );
 		}
@@ -313,9 +313,9 @@ namespace Kakadu
 
 		void EnableStencilTest();
 		void DisableStencilTest();
-		void SetStencilWriteMask( const unsigned int mask );
+		void SetStencilWriteMask( const u32 mask );
 		void SetStencilTestResponses( const StencilTestResponse stencil_fail, const StencilTestResponse stencil_pass_depth_fail, const StencilTestResponse both_pass );
-		void SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const unsigned int mask );
+		void SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const u32 mask );
 
 		/*
 		 * Depth Test:

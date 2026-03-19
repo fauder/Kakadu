@@ -4,6 +4,7 @@
 #include "Graphics.h"
 #include "GraphicsMacros.h"
 #include "ShaderTypeInformation.h"
+#include "Core/Types.h"
 #include "Math/Concepts_Math.h"
 
 // std Includes.
@@ -16,7 +17,7 @@ namespace Kakadu
 		int count;
 		GLenum type;
 		bool is_instanced;
-		unsigned int location;
+		u32 location;
 
 		/* Comparison operators. */
 		constexpr bool operator ==( const VertexAttribute& other ) const = default;
@@ -26,14 +27,14 @@ namespace Kakadu
 
 		/* Comparison operators. */
 
-		unsigned int Size() const { return count * GL::Type::SizeOf( type ); }
+		u32 Size() const { return count * GL::Type::SizeOf( type ); }
 	};
 
 	struct VertexInstanceAttribute
 	{
 		int count;
 		GLenum type;
-		unsigned int location;
+		u32 location;
 
 		/* Comparison operators. */
 		constexpr bool operator ==( const VertexInstanceAttribute& other ) const = default;
@@ -43,7 +44,7 @@ namespace Kakadu
 
 		/* Comparison operators. */
 
-		unsigned int Size() const { return count * GL::Type::SizeOf( type ); }
+		u32 Size() const { return count * GL::Type::SizeOf( type ); }
 	};
 
 	class VertexLayout
@@ -69,11 +70,11 @@ namespace Kakadu
 		void SetAndEnableAttributes_NonInstanced() const;
 		void SetAndEnableAttributes_Instanced() const;
 
-		unsigned int Stride_Total() const;
-		unsigned int Stride_NonInstanced() const;
-		unsigned int Stride_Instanced() const;
+		u32 Stride_Total() const;
+		u32 Stride_NonInstanced() const;
+		u32 Stride_Instanced() const;
 		
-		unsigned int Count() const { return ( unsigned int )attributes.size(); }
+		u32 Count() const { return ( u32 )attributes.size(); }
 
 		bool IsCompatibleWith( const VertexLayout& other ) const;
 

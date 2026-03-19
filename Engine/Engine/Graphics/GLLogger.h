@@ -4,6 +4,7 @@
 #include "GLLogType.h"
 #include "Core/Macros.h"
 #include "Core/ImGuiLog.hpp"
+#include "Core/Types.h"
 
 // std Includes.
 #include <functional>
@@ -33,7 +34,7 @@ namespace Kakadu
 		};
 
 	private:
-		using CallbackType = std::function< void( GLenum source, GLenum type, unsigned int id /* will be ignored */, GLenum severity, GLsizei length, const char* message,
+		using CallbackType = std::function< void( GLenum source, GLenum type, u32 id /* will be ignored */, GLenum severity, GLsizei length, const char* message,
 												  const void* parameters /* will be ignored */ ) >;
 
 	public:
@@ -69,8 +70,8 @@ namespace Kakadu
 		std::string GetLabel( const GLenum object_type, const GLuint object_id ) const;
 
 	/* Filtering IDs: */
-		static void IgnoreID( const unsigned int id_to_ignore );
-		static void DontIgnoreID( const unsigned int id_to_restore );
+		static void IgnoreID( const u32 id_to_ignore );
+		static void DontIgnoreID( const u32 id_to_restore );
 
 	/* Main: */
 		void Draw( bool* show = nullptr );
@@ -79,7 +80,7 @@ namespace Kakadu
 		CallbackType GetCallback();
 
 	private:
-		void InternalDebugOutputCallback( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters );
+		void InternalDebugOutputCallback( GLenum source, GLenum type, u32 id, GLenum severity, GLsizei length, const char* message, const void* parameters );
 		void Log( GLenum source, GLenum type, GLenum severity, GLsizei length, const char* message, const void* parameters );
 
 		static const char* GLenumToString_Source( const GLenum source );

@@ -1,6 +1,7 @@
 #pragma once
 
 // Project Includes.
+#include "Core/Types.h"
 #include "Math/Vector.hpp"
 
 // std Includes.
@@ -24,9 +25,9 @@ namespace Kakadu::Primitive::Indexed::CircleTemplate
 	};
 
 	template< std::uint8_t VertexCount = 20 > requires( VertexCount >= 3 )
-	std::array< unsigned int, 3 * ( VertexCount - 2 ) > Indices()
+	std::array< u32, 3 * ( VertexCount - 2 ) > Indices()
 	{
-		using IndexType = unsigned int;
+		using IndexType = u32;
 
 		constexpr IndexType triangle_count = VertexCount - 2;
 		constexpr IndexType index_count    = triangle_count * 3;

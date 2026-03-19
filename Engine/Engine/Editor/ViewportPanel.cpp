@@ -31,7 +31,7 @@ namespace Kakadu::Editor
 								: magnifier_zoom_factor >> 1 );
 	}
 
-	void ViewportPanel::Render( Context& editor_context, const unsigned int viewport_texture_id, const Vector2I viewport_framebuffer_size )
+	void ViewportPanel::Render( Context& editor_context, const u32 viewport_texture_id, const Vector2I viewport_framebuffer_size )
 	{
 		{
 			const auto framebuffer_size = Platform::GetFramebufferSizeInPixels();

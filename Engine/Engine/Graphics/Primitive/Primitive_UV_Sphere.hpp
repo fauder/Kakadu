@@ -90,9 +90,9 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 		constexpr IndexType cap_index_count          = 3 * LongitudeCount;
 		constexpr IndexType total_index_count        = 2 * cap_index_count + side_band_count * side_band_index_count;
 
-		std::array< unsigned int, total_index_count > indices;
+		std::array< u32, total_index_count > indices;
 
-		constexpr unsigned int stride = LongitudeCount + 1;
+		constexpr u32 stride = LongitudeCount + 1;
 
 		IndexType array_index = 0;
 
@@ -108,7 +108,7 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 
 		for( IndexType side_band_index = 0; side_band_index < side_band_count; side_band_index++ )
 		{
-			const unsigned int first_vertex = stride + ( unsigned int )side_band_index * stride;
+			const u32 first_vertex = stride + ( u32 )side_band_index * stride;
 			for( std::uint8_t i = 0; i < LongitudeCount; i++ )
 			{
 				indices[ array_index++ ] = first_vertex + i;
@@ -122,8 +122,8 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 
 		/* Bottom cap: */
 		{
-			constexpr unsigned int first_south_pole_vertex = vertex_count - stride;
-			constexpr unsigned int first_vertex_of_last_band = first_south_pole_vertex - stride;
+			constexpr u32 first_south_pole_vertex   = vertex_count - stride;
+			constexpr u32 first_vertex_of_last_band = first_south_pole_vertex - stride;
 			for( auto i = 0; i < LongitudeCount; i++ )
 			{
 				indices[ array_index++ ] = first_vertex_of_last_band + i;

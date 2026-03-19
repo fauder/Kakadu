@@ -8,7 +8,7 @@
 
 namespace Kakadu
 {
-	enum class ClearTarget : unsigned int
+	enum class ClearTarget : u32
 	{
 		None = 0,
 

@@ -2,6 +2,7 @@
 
 // Engine Includes.
 #include "Math/Vector.hpp"
+#include "Types.h"
 
 // std Includes.
 #include <chrono>
@@ -205,7 +206,7 @@ namespace Kakadu::Platform
 
 #ifdef _EDITOR
 	/* GL Debug Output. */
-	void SetGLDebugOutputCallback( std::function< void( unsigned int source, unsigned int type, unsigned int id, unsigned int severity, int length, 
+	void SetGLDebugOutputCallback( std::function< void( u32 source, u32 type, u32 id, u32 severity, int length, 
 														const char* message, const void* parameters ) > callback = {} );
 #endif // _EDITOR
 

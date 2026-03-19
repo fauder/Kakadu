@@ -145,8 +145,8 @@ namespace Kakadu::Math
 
 	/* Getters & Setters. */
 		const Type* Data() const { return &data[ 0 ][ 0 ]; };
-		constexpr Type* operator[] ( const unsigned int row_index ) { return data[ row_index ]; }
-		constexpr const Type* operator[] ( const unsigned int row_index ) const { return data[ row_index ]; }
+		constexpr Type* operator[] ( const u32 row_index ) { return data[ row_index ]; }
+		constexpr const Type* operator[] ( const u32 row_index ) const { return data[ row_index ]; }
 		
 		/* For now, just allow square sub-matrices. */
 		template< std::size_t Size >
@@ -191,31 +191,31 @@ namespace Kakadu::Math
 		}
 
 		template< std::size_t VectorSize = RowSize >
-		constexpr Matrix& SetRow( const Vector< Type, VectorSize >& vector, const unsigned int row_index = 0, const unsigned int start_index_inRow = 0 ) requires( VectorSize <= ColumnSize )
+		constexpr Matrix& SetRow( const Vector< Type, VectorSize >& vector, const u32 row_index = 0, const u32 start_index_inRow = 0 ) requires( VectorSize <= ColumnSize )
 		{
 			ASSERT_DEBUG_ONLY( row_index < RowSize && "Row index out of bounds." );
 			ASSERT_DEBUG_ONLY( start_index_inRow + VectorSize <= ColumnSize && "Given vector does not fit inside the row when starting from start_index_inRow." );
 
-			for( unsigned int i = 0; i < VectorSize; i++ )
+			for( u32 i = 0; i < VectorSize; i++ )
 				data[ row_index ][ i + start_index_inRow ] = vector.data[ i ];
 
 			return *this;
 		}
 
 		template< std::size_t VectorSize = ColumnSize >
-		constexpr Matrix& SetColumn( const Vector< Type, VectorSize >& vector, const unsigned int column_index = 0, const unsigned int start_index_inColumn = 0 ) requires( VectorSize <= RowSize )
+		constexpr Matrix& SetColumn( const Vector< Type, VectorSize >& vector, const u32 column_index = 0, const u32 start_index_inColumn = 0 ) requires( VectorSize <= RowSize )
 		{
 			ASSERT_DEBUG_ONLY( column_index < ColumnSize && "Column index out of bounds." );
 			ASSERT_DEBUG_ONLY( start_index_inColumn + VectorSize <= RowSize && "Given vector does not fit inside the column when starting from start_index_inColumn." );
 
-			for( unsigned int i = 0; i < VectorSize; i++ )
+			for( u32 i = 0; i < VectorSize; i++ )
 				data[ i + start_index_inColumn ][ column_index ] = vector.data[ i ];
 
 			return *this;
 		}
 
 		template< std::size_t VectorSize = RowSize >
-		constexpr const Vector< Type, VectorSize >& GetRow( const unsigned int row_index = 0, const unsigned int start_index_inRow = 0 ) const requires( VectorSize <= ColumnSize )
+		constexpr const Vector< Type, VectorSize >& GetRow( const u32 row_index = 0, const u32 start_index_inRow = 0 ) const requires( VectorSize <= ColumnSize )
 		{
 			ASSERT_DEBUG_ONLY( row_index < RowSize && "Row index out of bounds." );
 			ASSERT_DEBUG_ONLY( start_index_inRow + VectorSize <= ColumnSize && "Given vector does not fit inside the row when starting from start_index_inRow." );
@@ -224,7 +224,7 @@ namespace Kakadu::Math
 		}
 
 		template< std::size_t VectorSize = RowSize >
-		Vector< Type, VectorSize >& GetRow( const unsigned int row_index = 0, const unsigned int start_index_inRow = 0 ) requires( VectorSize <= ColumnSize )
+		Vector< Type, VectorSize >& GetRow( const u32 row_index = 0, const u32 start_index_inRow = 0 ) requires( VectorSize <= ColumnSize )
 		{
 			ASSERT_DEBUG_ONLY( row_index < RowSize && "Row index out of bounds." );
 			ASSERT_DEBUG_ONLY( start_index_inRow + VectorSize <= ColumnSize && "Given vector does not fit inside the row when starting from start_index_inRow." );
@@ -234,14 +234,14 @@ namespace Kakadu::Math
 
 		/* Obligatory copy is returned as the data is laid out such that rows are contiguous, not columns. */
 		template< std::size_t VectorSize = ColumnSize >
-		constexpr Vector< Type, VectorSize > GetColumn( const unsigned int column_index = 0, const unsigned int start_index_inColumn = 0 ) const requires( VectorSize <= RowSize )
+		constexpr Vector< Type, VectorSize > GetColumn( const u32 column_index = 0, const u32 start_index_inColumn = 0 ) const requires( VectorSize <= RowSize )
 		{
 			ASSERT_DEBUG_ONLY( column_index < ColumnSize && "Column index out of bounds." );
 			ASSERT_DEBUG_ONLY( start_index_inColumn + VectorSize <= RowSize && "Given vector does not fit inside the column when starting from start_index_inColumn." );
 
 			Vector< Type, VectorSize > vector( NO_INITIALIZATION );
 
-			for( unsigned int i = 0; i < VectorSize; i++ )
+			for( u32 i = 0; i < VectorSize; i++ )
 				vector.data[ i ] = data[ i + start_index_inColumn ][ column_index ];
 
 			return vector;
@@ -399,15 +399,15 @@ namespace Kakadu::Math
 	extern template struct Kakadu::Math::Matrix< int, 4, 2 >;
 	extern template struct Kakadu::Math::Matrix< int, 4, 3 >;
 	extern template struct Kakadu::Math::Matrix< int, 4, 4 >;
-	extern template struct Kakadu::Math::Matrix< unsigned int, 2, 2 >;
-	extern template struct Kakadu::Math::Matrix< unsigned int, 2, 3 >;
-	extern template struct Kakadu::Math::Matrix< unsigned int, 2, 4 >;
-	extern template struct Kakadu::Math::Matrix< unsigned int, 3, 2 >;
-	extern template struct Kakadu::Math::Matrix< unsigned int, 3, 3 >;
-	extern template struct Kakadu::Math::Matrix< unsigned int, 3, 4 >;
-	extern template struct Kakadu::Math::Matrix< unsigned int, 4, 2 >;
-	extern template struct Kakadu::Math::Matrix< unsigned int, 4, 3 >;
-	extern template struct Kakadu::Math::Matrix< unsigned int, 4, 4 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 2, 2 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 2, 3 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 2, 4 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 3, 2 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 3, 3 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 3, 4 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 4, 2 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 4, 3 >;
+	extern template struct Kakadu::Math::Matrix< Kakadu::u32, 4, 4 >;
 }
 
 namespace Kakadu

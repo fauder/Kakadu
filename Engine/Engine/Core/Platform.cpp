@@ -64,7 +64,7 @@ namespace Kakadu::Platform
 	internal_variable std::function< void( const int width_new_pixels, const int height_new_pixels )						> FRAMEBUFFER_RESIZE_CALLBACK;
 
 #ifdef _EDITOR
-	internal_variable std::function< void( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
+	internal_variable std::function< void( GLenum source, GLenum type, u32 id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > GL_DEBUG_OUTPUT_CALLBACK;
 #endif // _EDITOR
 
 	internal_function void OnResizeWindow( GLFWwindow* window, const int width_new_pixels, const int height_new_pixels )
@@ -129,7 +129,7 @@ namespace Kakadu::Platform
 	}
 
 #ifdef _EDITOR
-	internal_function void OnDebugOutput( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters )
+	internal_function void OnDebugOutput( GLenum source, GLenum type, u32 id, GLenum severity, GLsizei length, const char* message, const void* parameters )
 	{
 		GL_DEBUG_OUTPUT_CALLBACK( source, type, id, severity, length, message, parameters );
 	}
@@ -595,7 +595,7 @@ namespace Kakadu::Platform
 	 * GL Debug Output:
 	 */
 
-	void SetGLDebugOutputCallback( std::function< void( GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > callback )
+	void SetGLDebugOutputCallback( std::function< void( GLenum source, GLenum type, u32 id, GLenum severity, GLsizei length, const char* message, const void* parameters ) > callback )
 	{
 		GL_DEBUG_OUTPUT_CALLBACK = callback;
 	}

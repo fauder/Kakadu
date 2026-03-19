@@ -2,6 +2,7 @@
 #include "Math/Angle.hpp"
 #include "Math/Math.hpp"
 #include "Math/Matrix.h"
+#include "Core/Types.h"
 
 template struct Kakadu::Math::Matrix< float, 2, 2 >;
 template struct Kakadu::Math::Matrix< float, 2, 3 >;
@@ -30,15 +31,15 @@ template struct Kakadu::Math::Matrix< int, 3, 4 >;
 template struct Kakadu::Math::Matrix< int, 4, 2 >;
 template struct Kakadu::Math::Matrix< int, 4, 3 >;
 template struct Kakadu::Math::Matrix< int, 4, 4 >;
-template struct Kakadu::Math::Matrix< unsigned int, 2, 2 >;
-template struct Kakadu::Math::Matrix< unsigned int, 2, 3 >;
-template struct Kakadu::Math::Matrix< unsigned int, 2, 4 >;
-template struct Kakadu::Math::Matrix< unsigned int, 3, 2 >;
-template struct Kakadu::Math::Matrix< unsigned int, 3, 3 >;
-template struct Kakadu::Math::Matrix< unsigned int, 3, 4 >;
-template struct Kakadu::Math::Matrix< unsigned int, 4, 2 >;
-template struct Kakadu::Math::Matrix< unsigned int, 4, 3 >;
-template struct Kakadu::Math::Matrix< unsigned int, 4, 4 >;
+template struct Kakadu::Math::Matrix< Kakadu::u32, 2, 2 >;
+template struct Kakadu::Math::Matrix< Kakadu::u32, 2, 3 >;
+template struct Kakadu::Math::Matrix< Kakadu::u32, 2, 4 >;
+template struct Kakadu::Math::Matrix< Kakadu::u32, 3, 2 >;
+template struct Kakadu::Math::Matrix< Kakadu::u32, 3, 3 >;
+template struct Kakadu::Math::Matrix< Kakadu::u32, 3, 4 >;
+template struct Kakadu::Math::Matrix< Kakadu::u32, 4, 2 >;
+template struct Kakadu::Math::Matrix< Kakadu::u32, 4, 3 >;
+template struct Kakadu::Math::Matrix< Kakadu::u32, 4, 4 >;
 
 namespace Kakadu::Matrix
 {

@@ -1412,7 +1412,7 @@ namespace Kakadu
 				bloom_downsampling.material.Set( "uniform_source_resolution", downsample_step.texture_input->Size() );
 
 				if( bloom_downsampling.material.shader->name.find( "flicker" ) != std::string::npos )
-					bloom_downsampling.material.Set( "uniform_mip_level", ( unsigned int )step_index );
+					bloom_downsampling.material.Set( "uniform_mip_level", ( u32 )step_index );
 
 				bloom_downsampling.material.UploadUniforms();
 
@@ -1482,7 +1482,7 @@ namespace Kakadu
 		glDisable( GL_STENCIL_TEST );
 	}
 
-	void Renderer::SetStencilWriteMask( const unsigned int mask )
+	void Renderer::SetStencilWriteMask( const u32 mask )
 	{
 		glStencilMask( mask );
 	}
@@ -1492,7 +1492,7 @@ namespace Kakadu
 		glStencilOp( ( GLenum )stencil_fail, ( GLenum )stencil_pass_depth_fail, ( GLenum )both_pass );
 	}
 
-	void Renderer::SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const unsigned int mask )
+	void Renderer::SetStencilComparisonFunction( const ComparisonFunction comparison_function, const int reference_value, const u32 mask )
 	{
 		glStencilFunc( ( GLenum )comparison_function, reference_value, mask );
 	}

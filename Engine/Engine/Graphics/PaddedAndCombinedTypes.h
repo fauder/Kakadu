@@ -2,6 +2,7 @@
 
 // Engine Includes.
 #include "Color.hpp"
+#include "Core/Types.h"
 #include "Math/Vector.hpp"
 
 namespace Kakadu
@@ -34,7 +35,7 @@ namespace Kakadu
 	struct Vector3U_AndScalar
 	{
 		Vector3U vector;
-		unsigned int scalar;
+		u32 scalar;
 	};
 
 	struct Vector3I_AndScalar

@@ -1,7 +1,8 @@
 #pragma once
 
 // Project Includes.
-#include "Primitive_Circle.hpp"
+#include "Primitive_Circle_Template.hpp"
+#include "Core/Types.h"
 #include "Math/Vector.hpp"
 #include "Math/Quaternion.hpp"
 
@@ -93,7 +94,7 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 		constexpr IndexType cap_index_count     = 3 * ( LongitudeCount - 2 );
 		constexpr IndexType total_index_count   = 2 * cap_index_count + side_index_count;
 
-		std::array< unsigned int, total_index_count > indices;
+		std::array< u32, total_index_count > indices;
 
 		const auto cap_indices( CircleTemplate::Indices< LongitudeCount >() );
 
@@ -117,7 +118,7 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 		/* Bottom cap: */
 		std::transform( cap_indices.cbegin(), cap_indices.cend(), 
 						indices.begin() + array_index,
-						[]( const unsigned int index ) { return cap_vertex_count + side_vertex_count + index; } );
+						[]( const u32 index ) { return cap_vertex_count + side_vertex_count + index; } );
 
 		return indices;
 	}

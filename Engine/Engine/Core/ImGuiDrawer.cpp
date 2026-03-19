@@ -55,7 +55,7 @@ namespace Kakadu::ImGuiDrawer
 			case GL_INT_VEC2				: return Draw( *reinterpret_cast< Vector2I*		>( value_pointer ), name );
 			case GL_INT_VEC3				: return Draw( *reinterpret_cast< Vector3I*		>( value_pointer ), name );
 			case GL_INT_VEC4				: return Draw( *reinterpret_cast< Vector4I*		>( value_pointer ), name );
-			case GL_UNSIGNED_INT			: return Draw( *reinterpret_cast< unsigned int*	>( value_pointer ), name );
+			case GL_UNSIGNED_INT			: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
 			case GL_UNSIGNED_INT_VEC2		: return Draw( *reinterpret_cast< Vector2U*		>( value_pointer ), name );
 			case GL_UNSIGNED_INT_VEC3		: return Draw( *reinterpret_cast< Vector3U*		>( value_pointer ), name );
 			case GL_UNSIGNED_INT_VEC4		: return Draw( *reinterpret_cast< Vector4U*		>( value_pointer ), name );
@@ -76,11 +76,11 @@ namespace Kakadu::ImGuiDrawer
 			case GL_FLOAT_MAT4x3 			: return Draw( *reinterpret_cast< Matrix4x3*	>( value_pointer ), name );
 
 			/* Other: */
-			case GL_SAMPLER_1D 				: return Draw( *reinterpret_cast< unsigned int*	>( value_pointer ), name );
-			case GL_SAMPLER_2D_MULTISAMPLE 	: return Draw( *reinterpret_cast< unsigned int*	>( value_pointer ), name );
-			case GL_SAMPLER_2D 				: return Draw( *reinterpret_cast< unsigned int*	>( value_pointer ), name );
-			case GL_SAMPLER_3D 				: return Draw( *reinterpret_cast< unsigned int*	>( value_pointer ), name );
-			case GL_SAMPLER_CUBE			: return Draw( *reinterpret_cast< unsigned int*	>( value_pointer ), name );
+			case GL_SAMPLER_1D 				: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case GL_SAMPLER_2D_MULTISAMPLE 	: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case GL_SAMPLER_2D 				: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case GL_SAMPLER_3D 				: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case GL_SAMPLER_CUBE			: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
 		}
 
 		throw std::runtime_error( "ERROR::IMGUIDRAWER::DRAW( type, void* value_pointer ) called for an undefined GL type!" );
@@ -100,7 +100,7 @@ namespace Kakadu::ImGuiDrawer
 			case GL_INT_VEC2				: return Draw( *reinterpret_cast< const Vector2I*		>( value_pointer ), name );
 			case GL_INT_VEC3				: return Draw( *reinterpret_cast< const Vector3I*		>( value_pointer ), name );
 			case GL_INT_VEC4				: return Draw( *reinterpret_cast< const Vector4I*		>( value_pointer ), name );
-			case GL_UNSIGNED_INT			: return Draw( *reinterpret_cast< const unsigned int*	>( value_pointer ), name );
+			case GL_UNSIGNED_INT			: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
 			case GL_UNSIGNED_INT_VEC2		: return Draw( *reinterpret_cast< const Vector2U*		>( value_pointer ), name );
 			case GL_UNSIGNED_INT_VEC3		: return Draw( *reinterpret_cast< const Vector3U*		>( value_pointer ), name );
 			case GL_UNSIGNED_INT_VEC4		: return Draw( *reinterpret_cast< const Vector4U*		>( value_pointer ), name );
@@ -121,11 +121,11 @@ namespace Kakadu::ImGuiDrawer
 			case GL_FLOAT_MAT4x3 			: return Draw( *reinterpret_cast< const Matrix4x3*		>( value_pointer ), name );
 
 			/* Other: */
-			case GL_SAMPLER_1D 				: return Draw( *reinterpret_cast< const unsigned int*	>( value_pointer ), name );
-			case GL_SAMPLER_2D_MULTISAMPLE 	: return Draw( *reinterpret_cast< const unsigned int*	>( value_pointer ), name );
-			case GL_SAMPLER_2D 				: return Draw( *reinterpret_cast< const unsigned int*	>( value_pointer ), name );
-			case GL_SAMPLER_3D 				: return Draw( *reinterpret_cast< const unsigned int*	>( value_pointer ), name );
-			case GL_SAMPLER_CUBE 			: return Draw( *reinterpret_cast< const unsigned int*	>( value_pointer ), name );
+			case GL_SAMPLER_1D 				: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case GL_SAMPLER_2D_MULTISAMPLE 	: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case GL_SAMPLER_2D 				: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case GL_SAMPLER_3D 				: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case GL_SAMPLER_CUBE 			: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
 		}
 
 		throw std::runtime_error( "ERROR::IMGUIDRAWER::DRAW( type, const void* value_pointer ) called for an undefined GL type!" );
@@ -148,20 +148,20 @@ namespace Kakadu::ImGuiDrawer
 		ImGui::PopStyleColor();
 	}
 
-	bool Draw( unsigned int& scalar, const char* name )
+	bool Draw( u32& scalar, const char* name )
 	{
-		return ImGui::DragScalar( name, GetImGuiDataType< unsigned int >(), &scalar, 1.0f, 0, 0, GetFormat< unsigned int >() );
+		return ImGui::DragScalar( name, GetImGuiDataType< u32 >(), &scalar, 1.0f, 0, 0, GetFormat< u32 >() );
 	}
 
-	bool Draw( unsigned int& scalar, const unsigned int min, const unsigned int max, const char* name )
+	bool Draw( u32& scalar, const u32 min, const u32 max, const char* name )
 	{
-		return ImGui::SliderScalar( name, GetImGuiDataType< unsigned int >(), &scalar, &min, &max, GetFormat< unsigned int >() );
+		return ImGui::SliderScalar( name, GetImGuiDataType< u32 >(), &scalar, &min, &max, GetFormat< u32 >() );
 	}
 
-	void Draw( const unsigned int& scalar, const char* name )
+	void Draw( const u32& scalar, const char* name )
 	{
 		ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
-		ImGui::InputScalar( name, GetImGuiDataType< unsigned int >(), const_cast< unsigned int* >( &scalar ), 0, 0, GetFormat< unsigned int >(), ImGuiInputTextFlags_ReadOnly );
+		ImGui::InputScalar( name, GetImGuiDataType< u32 >(), const_cast< u32* >( &scalar ), 0, 0, GetFormat< u32 >(), ImGuiInputTextFlags_ReadOnly );
 		ImGui::PopStyleColor();
 	}
 

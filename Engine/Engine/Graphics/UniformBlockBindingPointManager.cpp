@@ -85,7 +85,7 @@ namespace Kakadu
 		{
 			const auto binding_point_found = *maybe_binding_point;
 
-			const unsigned int block_index = glGetUniformBlockIndex( shader.Id().id, block_name.c_str() );
+			const u32 block_index = glGetUniformBlockIndex( shader.Id().id, block_name.c_str() );
 			glUniformBlockBinding( shader.Id().id, block_index, binding_point_found );
 
 			return binding_point_found;
@@ -96,7 +96,7 @@ namespace Kakadu
 			{
 				const auto binding_point_to_assign = binding_point_book_keeping.Assign( block_name );
 
-				const unsigned int block_index = glGetUniformBlockIndex( shader.Id().id, block_name.c_str() );
+				const u32 block_index = glGetUniformBlockIndex( shader.Id().id, block_name.c_str() );
 				glUniformBlockBinding( shader.Id().id, block_index, binding_point_to_assign );
 
 				return binding_point_to_assign;
@@ -116,14 +116,14 @@ namespace Kakadu
 	}
 
 	void UniformBlockBindingPointManager::BindBufferToBindingPoint_Partial( const Buffer& uniform_buffer, const Uniform::BindingPoint binding_point,
-																			 const unsigned int offset, const unsigned int size )
+																			const u32 offset, const u32 size )
 	{
 		glBindBufferRange( GL_UNIFORM_BUFFER, binding_point, uniform_buffer.id.id, ( GLintptr )offset, ( GLsizeiptr )size );
 	}
 
-	unsigned int UniformBlockBindingPointManager::QueryMaximumUniformBufferBindingCount()
+	u32 UniformBlockBindingPointManager::QueryMaximumUniformBufferBindingCount()
 	{
-		unsigned int query_result;
+		u32 query_result;
 		glGetIntegerv( GL_MAX_UNIFORM_BUFFER_BINDINGS, ( int* )&query_result );
 		return query_result;
 	}

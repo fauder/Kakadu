@@ -32,7 +32,7 @@ namespace Kakadu
 		friend class BuiltinShaders;
 		friend class std::unordered_map< std::string, Shader >;
 
-		using ReferenceCount = unsigned int;
+		using ReferenceCount = u32;
 
 	public:
 		using Features = std::vector< std::string >;
@@ -151,7 +151,7 @@ namespace Kakadu
 		}
 
 		template<>
-		void SetUniform< unsigned int >( const int location, const unsigned int& value )
+		void SetUniform< u32 >( const int location, const u32& value )
 		{
 			glUniform1ui( location, value );
 		}
@@ -199,7 +199,7 @@ namespace Kakadu
 				}
 			}
 
-			if constexpr( std::is_same_v< Component, unsigned int > )
+			if constexpr( std::is_same_v< Component, u32 > )
 			{
 				if constexpr( Size == 2 )
 				{
@@ -296,7 +296,7 @@ namespace Kakadu
 		}
 
 		template<>
-		void SetUniformArray< unsigned int >( const int location, const unsigned int* address, const int element_count )
+		void SetUniformArray< u32 >( const int location, const u32* address, const int element_count )
 		{
 			ASSERT_DEBUG_ONLY( element_count > 1 );
 			glUniform1uiv( location, element_count, address );
@@ -347,19 +347,19 @@ namespace Kakadu
 				}
 			}
 
-			if constexpr( std::is_same_v< Component, unsigned int > )
+			if constexpr( std::is_same_v< Component, u32 > )
 			{
 				if constexpr( Size == 2 )
 				{
-					glUniform2uiv( location, element_count, reinterpret_cast< const unsigned int* >( address ) );
+					glUniform2uiv( location, element_count, reinterpret_cast< const u32* >( address ) );
 				}
 				if constexpr( Size == 3 )
 				{
-					glUniform3uiv( location, element_count, reinterpret_cast< const unsigned int* >( address ) );
+					glUniform3uiv( location, element_count, reinterpret_cast< const u32* >( address ) );
 				}
 				if constexpr( Size == 4 )
 				{
-					glUniform4uiv( location, element_count, reinterpret_cast< const unsigned int* >( address ) );
+					glUniform4uiv( location, element_count, reinterpret_cast< const u32* >( address ) );
 				}
 			}
 		}
@@ -493,11 +493,11 @@ private:
 													  const ShaderType shader_type,
 													  std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file );
 		bool CompileShader( const char* source,
-							unsigned int& shader_id,
+							u32& shader_id,
 							const ShaderType shader_type,
 							std::unordered_map< std::int16_t, std::filesystem::path >& map_of_IDs_per_source_file );
-		bool LinkProgram( const unsigned int vertex_shader_id, const unsigned int fragment_shader_id );
-		bool LinkProgram( const unsigned int vertex_shader_id, const unsigned int geometry_shader_id, const unsigned int fragment_shader_id );
+		bool LinkProgram( const u32 vertex_shader_id, const u32 fragment_shader_id );
+		bool LinkProgram( const u32 vertex_shader_id, const u32 geometry_shader_id, const u32 fragment_shader_id );
 
 		/*std::string ShaderSource_CommentsStripped( const std::string& shader_source );*/
 		void ParseShaderSource_UniformAnnotations( const std::string& shader_source, const ShaderType shader_type );
@@ -511,7 +511,7 @@ private:
 		
 		/* Expects empty input vectors. */
 		bool GetActiveUniformBlockIndicesAndCorrespondingUniformIndices( const int active_uniform_count,
-																		 std::vector< unsigned int >& block_indices, std::vector< unsigned int >& corresponding_uniform_indices ) const;
+																		 std::vector< u32 >& block_indices, std::vector< u32 >& corresponding_uniform_indices ) const;
 		void QueryUniformData();
 		void QueryUniformData_BlockIndexAndOffsetForBufferMembers();
 		void QueryUniformBufferData( std::unordered_map< std::string, Uniform::BufferInformation >& uniform_buffer_info_map, const Uniform::BufferCategory category );

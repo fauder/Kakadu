@@ -18,7 +18,7 @@ namespace Kakadu
 
 	struct RenderQueue
 	{
-		using ReferenceCount = unsigned int;
+		using ReferenceCount = u32;
 
 		enum class ID : std::uint16_t {};
 

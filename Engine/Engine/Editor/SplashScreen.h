@@ -1,5 +1,8 @@
 #pragma once
 
+// Engine Includes.
+#include "Core/Types.h"
+
 // std Includes.
 #include <string>
 
@@ -18,7 +21,7 @@ namespace Kakadu::Editor
 		void CreateTexture();
 
 	private:
-		unsigned int tex_id;
+		u32 tex_id;
 		int source_width, source_height;
 	};
 }

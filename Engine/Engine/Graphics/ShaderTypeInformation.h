@@ -32,7 +32,7 @@ namespace Kakadu::GL::Type
 			case GL_INT_VEC3			: return sizeof( Vector3I );
 			case GL_INT_VEC4			: return sizeof( Vector4I );
 
-			case GL_UNSIGNED_INT		: return sizeof( unsigned int );
+			case GL_UNSIGNED_INT		: return sizeof( u32 );
 			case GL_UNSIGNED_INT_VEC2	: return sizeof( Vector2U );
 			case GL_UNSIGNED_INT_VEC3	: return sizeof( Vector3U );
 			case GL_UNSIGNED_INT_VEC4	: return sizeof( Vector4U );
@@ -245,7 +245,7 @@ namespace Kakadu::GL::Type
 			case GL_INT_VEC3										: return "ivec3";
 			case GL_INT_VEC4										: return "ivec4";
 			
-			case GL_UNSIGNED_INT									: return "unsigned int";
+			case GL_UNSIGNED_INT									: return "uint";
 			case GL_UNSIGNED_INT_VEC2								: return "uvec2";
 			case GL_UNSIGNED_INT_VEC3								: return "uvec3";
 			case GL_UNSIGNED_INT_VEC4								: return "uvec4";
@@ -365,7 +365,7 @@ namespace Kakadu::GL::Type
 			{ "ivec3",					GL_INT_VEC3 },
 			{ "ivec4",					GL_INT_VEC4 },
 			
-			{ "unsigned int",			GL_UNSIGNED_INT },
+			{ "uint",					GL_UNSIGNED_INT },
 			{ "uvec2",					GL_UNSIGNED_INT_VEC2 },
 			{ "uvec3",					GL_UNSIGNED_INT_VEC3 },
 			{ "uvec4",					GL_UNSIGNED_INT_VEC4 },

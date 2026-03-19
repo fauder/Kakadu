@@ -1,6 +1,7 @@
 #pragma once
 
 // Engine Includes.
+#include "Core/Types.h"
 #include "Math/Concepts_Math.h"
 #include "Math/Vector.hpp"
 
@@ -16,7 +17,7 @@ namespace Kakadu
 			Base( ZERO_INITIALIZATION )
 		{}
 
-		constexpr Color3( const unsigned int r, const unsigned int g, const unsigned int b )
+		constexpr Color3( const u32 r, const u32 g, const u32 b )
 			:
 			Base( float( r ) / 255.0f, float( g ) / 255.0f, float( b ) / 255.0f )
 		{}
@@ -67,7 +68,7 @@ namespace Kakadu
 			Base( ZERO_INITIALIZATION )
 		{}
 
-		constexpr Color4( const unsigned int r, const unsigned int g, const unsigned int b, const unsigned int a )
+		constexpr Color4( const u32 r, const u32 g, const u32 b, const u32 a )
 			:
 			Base( float( r ) / 255.0f, float( g ) / 255.0f, float( b ) / 255.0f, float( a ) / 255.0f )
 		{}
