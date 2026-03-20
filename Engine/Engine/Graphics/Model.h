@@ -2,7 +2,7 @@
 
 // Engine Includes.
 #include "Mesh.h"
-#include "Texture.h"
+#include "RHI/Texture.h"
 #include "RHI/Usage.h"
 
 // std Includes
@@ -33,8 +33,8 @@ namespace Kakadu
 			std::string name;
 			Mesh& mesh; // Actual mesh storage is kept in the Model class.
 			
-			Texture* texture_albedo;
-			Texture* texture_normal;
+			RHI::Texture* texture_albedo;
+			RHI::Texture* texture_normal;
 			std::optional< Color3 > color_albedo;
 		};
 
@@ -90,17 +90,17 @@ namespace Kakadu
 		
 		const std::vector< std::size_t >& TopLevelNodeIndices() const { return node_indices_top_level; }
 
-		const std::vector< Node		>& Nodes()		const { return nodes; }
-		const std::vector< Mesh		>& Meshes()		const { return meshes; }
-		const std::vector< Texture*	>& Textures()	const { return textures; }
+		const std::vector< Node				>& Nodes()		const { return nodes; }
+		const std::vector< Mesh				>& Meshes()		const { return meshes; }
+		const std::vector< RHI::Texture*	>& Textures()	const { return textures; }
 
 	private:
 		std::string name;
 
-		std::vector< Node		> nodes;
-		std::vector< MeshGroup	> mesh_groups;
-		std::vector< Mesh		> meshes;
-		std::vector< Texture*	> textures; // Storage of textures is kept by the AssetDatabase< Texture >.
+		std::vector< Node			> nodes;
+		std::vector< MeshGroup		> mesh_groups;
+		std::vector< Mesh			> meshes;
+		std::vector< RHI::Texture*	> textures; // Storage of textures is kept by the AssetDatabase< Texture >.
 
 		std::vector< std::size_t > node_indices_top_level;
 

@@ -12,7 +12,7 @@
 #include "Graphics/GLLogger.h"
 #include "Graphics/Model.h"
 #include "Graphics/Renderer.h"
-#include "Graphics/Texture.h"
+#include "Graphics/RHI/Texture.h"
 
 #ifdef _EDITOR
 #include "Editor/EditorContext.h" 
@@ -80,8 +80,8 @@ namespace Kakadu
 		GLLogger gl_logger;
 #endif // _EDITOR
 
-		AssetDatabase< Texture > asset_database_texture;
-		AssetDatabase_Tracked< Texture* > asset_database_texture_tracked;
+		AssetDatabase< RHI::Texture > asset_database_texture;
+		AssetDatabase_Tracked< RHI::Texture* > asset_database_texture_tracked;
 		AssetDatabase< Model > asset_database_model;
 
 		std::unique_ptr< Renderer > renderer;

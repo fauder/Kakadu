@@ -1,10 +1,10 @@
 #pragma once
 
 // Engine Includes.
-#include "Graphics/Framebuffer.h"
 #include "Graphics/FullscreenEffect.h"
 #include "Graphics/RenderPass.h"
 #include "Graphics/RenderQueue.h"
+#include "Graphics/RHI/Framebuffer.h"
 #include "Math/OrthographicProjectionParameters.h"
 
 // std Includes.
@@ -14,7 +14,7 @@ namespace Kakadu
 {
 	struct RendererIntrospectionSurface
 	{
-		std::vector< Framebuffer >* framebuffers;
+		std::vector< RHI::Framebuffer >* framebuffers;
 
 		std::map< RenderPass::ID,  RenderPass  >* render_pass_map;
 		std::map< RenderQueue::ID, RenderQueue >* render_queue_map;

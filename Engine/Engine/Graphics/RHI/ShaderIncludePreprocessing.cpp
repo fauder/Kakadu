@@ -3,7 +3,7 @@
 #include "Core/Types.h"
 #include "Core/Utility.hpp"
 
-namespace Kakadu::ShaderIncludePreprocessing
+namespace Kakadu::RHI::ShaderIncludePreprocessing
 {
 	/* Implementation Function prototype: */
 	std::string Resolve( const std::filesystem::path& source_path,

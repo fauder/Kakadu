@@ -1,7 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "GLLogType.h"
+#include "RHI/GLLogType.h"
 #include "Core/Macros.h"
 #include "Core/ImGuiLog.hpp"
 #include "Core/Types.h"
@@ -88,7 +88,7 @@ namespace Kakadu
 		static const char* GLenumToString_Severity( const GLenum severity );
 
 	private:
-		ImGuiLog< GLLogType, std::size_t( GLLogType::COUNT ) > logger;
+		ImGuiLog< RHI::GLLogType, std::size_t( RHI::GLLogType::COUNT ) > logger;
 
 		std::stack< const char* > groups_empty; /* We keep tabs of the empty groups & while we do push/pop them, we do not log them. */
 	};

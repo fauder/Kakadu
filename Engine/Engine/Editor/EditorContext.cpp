@@ -142,8 +142,8 @@ namespace Kakadu::Editor
 
 		RenderSceneCameraInspectorPanel( scene_camera, viewport_resolution );
 
-		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase< Texture > >::Get().Assets() );
-		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().Assets() );
+		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase< RHI::Texture > >::Get().Assets() );
+		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase_Tracked< RHI::Texture* > >::Get().Assets() );
 
 		auto log_group( ServiceLocator< GLLogger >::Get().TemporaryLogGroup( "ImGuiSetup::EndFrame()" ) );
 	}

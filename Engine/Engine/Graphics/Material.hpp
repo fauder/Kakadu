@@ -2,11 +2,11 @@
 
 // Engine Includes.
 #include "GLLogger.h"
-#include "Shader.hpp"
 #include "UniformBufferManagement.hpp"
-#include "Texture.h"
 #include "Core/Blob.hpp"
 #include "Core/ServiceLocator.h"
+#include "RHI/Shader.hpp"
+#include "RHI/Texture.h"
 
 // std Includes.
 #include <cstddef> // std::byte.
@@ -24,7 +24,7 @@ namespace Kakadu
 	public:
 		Material();
 		Material( const std::string& name );
-		Material( const std::string& name, Shader* const shader );
+		Material( const std::string& name, RHI::Shader* const shader );
 
 		DELETE_COPY_CONSTRUCTORS( Material );
 		DEFAULT_MOVE_CONSTRUCTORS( Material );
@@ -35,7 +35,7 @@ namespace Kakadu
 		const std::string& Name() const { return name; }
 
 	/* Main: */
-		const Shader* Bind() const;
+		const RHI::Shader* Bind() const;
 
 	/* Shader: */
 		const std::string& GetShaderName() const
@@ -45,24 +45,24 @@ namespace Kakadu
 		}
 		bool HasShaderAssigned() const { return shader; }
 
-		Shader* GetShader();
-		void SetShader( Shader* shader );
+		RHI::Shader* GetShader();
+		void SetShader( RHI::Shader* shader );
 
 #ifdef _EDITOR
 		void OnShaderHotReload();
 #endif // _EDITOR
 
 	/* Uniforms: */
-		const std::unordered_map< std::string, Uniform::Information				>& GetUniformInfoMap()			const { return *uniform_info_map; }
-		const std::unordered_map< std::string, const Uniform::BufferInformation	>& GetUniformBufferInfoMap()	const { return uniform_buffer_management_regular
+		const std::unordered_map< std::string, RHI::Uniform::Information			 >& GetUniformInfoMap()			const { return *uniform_info_map; }
+		const std::unordered_map< std::string, const RHI::Uniform::BufferInformation >& GetUniformBufferInfoMap()	const { return uniform_buffer_management_regular
 																																	.GetBufferInformationMap();	}
-		const std::unordered_map< std::string, const Texture*					>& GetTextureMap()				const { return texture_map; }
+		const std::unordered_map< std::string, const RHI::Texture*					 >& GetTextureMap()				const { return texture_map; }
 
 		bool HasUniform( const std::string& uniform_name ) const { return uniform_info_map->contains( uniform_name ); }
 		bool HasUniformBuffer( const std::string& uniform_buffer_name ) const { return uniform_buffer_management_regular.GetBufferInformationMap().contains( uniform_buffer_name ); }
 
-		const void* Get( const Uniform::Information& uniform_info ) const;
-			  void* Get( const Uniform::Information& uniform_info );
+		const void* Get( const RHI::Uniform::Information& uniform_info ) const;
+			  void* Get( const RHI::Uniform::Information& uniform_info );
 		const void* Get( const std::string& uniform_buffer_name ) const;
 			  void* Get( const std::string& uniform_buffer_name );
 		
@@ -114,14 +114,14 @@ namespace Kakadu
 			uniform_blob_default_block.Set( ( std::byte* )address, uniform_info.offset, sizeof( UniformType )* uniform_info.count_array );
 		}
 
-		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
+		template< typename StructType > requires( std::is_base_of_v< RHI::Std140StructTag, StructType > )
 		void Set( const std::string& uniform_buffer_name, const StructType& value )
 		{
 			uniform_buffer_management_regular.Set( uniform_buffer_name, value );
 		}
 
 		/* For PARTIAL setting ARRAY uniforms INSIDE a Uniform Buffer. */
-		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
+		template< typename StructType > requires( std::is_base_of_v< RHI::Std140StructTag, StructType > )
 		void SetPartial_Array( const std::string& uniform_buffer_name, const char* uniform_member_array_instance_name, const u32 array_index, const StructType& value )
 		{
 			uniform_buffer_management_regular.SetPartial_Array( uniform_buffer_name, uniform_member_array_instance_name, array_index, value );
@@ -134,7 +134,7 @@ namespace Kakadu
 		}
 
 		/* For PARTIAL setting STRUCT uniforms INSIDE a Uniform Buffer. */
-		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
+		template< typename StructType > requires( std::is_base_of_v< RHI::Std140StructTag, StructType > )
 		void SetPartial_Struct( const std::string& uniform_buffer_name, const char* uniform_member_struct_instance_name, const StructType& value )
 		{
 			uniform_buffer_management_regular.SetPartial_Struct( uniform_buffer_name, uniform_member_struct_instance_name, value );
@@ -160,17 +160,17 @@ namespace Kakadu
 		}
 
 	/* Textures: */
-		void SetTexture( const char* sampler_name_of_new_texture, const Texture* texture_to_be_set );
-		const Texture* GetTexture( const char* sampler_name_of_new_texture ) const;
+		void SetTexture( const char* sampler_name_of_new_texture, const RHI::Texture* texture_to_be_set );
+		const RHI::Texture* GetTexture( const char* sampler_name_of_new_texture ) const;
 
 	private:
 	/* Shader: */
-		const Shader* GetShader() const { return shader; };
+		const RHI::Shader* GetShader() const { return shader; };
 
 	/* Uniform: */
-		const Uniform::Information& GetUniformInformation( const std::string& uniform_name ) const;
+		const RHI::Uniform::Information& GetUniformInformation( const std::string& uniform_name ) const;
 
-		void UploadUniform( const Uniform::Information& uniform_info );
+		void UploadUniform( const RHI::Uniform::Information& uniform_info );
 		void UploadUniforms(); // Renderer calls this, it has private access through friend declaration.
 
 		template< typename UniformType >
@@ -234,17 +234,17 @@ namespace Kakadu
 	private:
 		std::string name;
 
-		Shader* shader;
+		RHI::Shader* shader;
 
 		/* Allocated/Resized only when a shader is assigned. 
 		 * NOTE: Can't use a DirtyBlob for the default block as each Material possibly has different values per Material, thus the uniforms need to be updated per-frame. */
 		Blob uniform_blob_default_block;
 
 		/* Map pointer below is assigned only when the Shader itself is assigned/re-assigned to the Material, through Shader::GetUniformInfoMap(). */
-		const std::unordered_map< std::string, Uniform::Information >* uniform_info_map;
+		const std::unordered_map< std::string, RHI::Uniform::Information >* uniform_info_map;
 
 		UniformBufferManagement< Blob > uniform_buffer_management_regular; // Read above for why this does not use a DirtyBlob instead of a regular Blob.
 
-		std::unordered_map< std::string, const Texture* > texture_map;
+		std::unordered_map< std::string, const RHI::Texture* > texture_map;
 	};
 }

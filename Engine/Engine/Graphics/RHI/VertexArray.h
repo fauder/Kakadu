@@ -3,12 +3,12 @@
 // Engine Includes.
 #include "Buffer.h"
 #include "VertexLayout.hpp"
-#include "RHI/ID/VertexArrayID.h"
+#include "ID/VertexArrayID.h"
 
 // std Includes.
 #include <optional>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	class VertexArray
 	{

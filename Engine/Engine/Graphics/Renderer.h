@@ -5,22 +5,23 @@
  * Do not introduce new Render* or Draw* functions without following that document. */
 
 // Engine Includes.
-#include "Framebuffer.h"
 #include "FullscreenEffect.h"
-#include "GraphicsDeviceInfo.h"
 #include "Renderable.h"
 #include "RenderPass.h"
 #include "ViewportShadingMode.h"
 #include "Core/BitFlags.hpp"
 #include "Core/DirtyBlob.h"
+#include "Introspection/RendererIntrospectionSurface.h"
 #include "Lighting/DirectionalLight.h"
 #include "Lighting/PointLight.h"
 #include "Lighting/SpotLight.h"
-#include "UniformBufferManagement.hpp"
-#include "Introspection/RendererIntrospectionSurface.h"
 #include "Math/OrthographicProjectionParameters.h"
 #include "Math/Percentage.hpp"
+#include "RHI/Enums.h"
+#include "RHI/Framebuffer.h"
+#include "RHI/DeviceInfo.h"
 #include "Scene/Camera.h"
+#include "UniformBufferManagement.hpp"
 
 // std Includes.
 #include <map>
@@ -51,7 +52,7 @@ namespace Kakadu
 
 		struct Description
 		{
-			Texture::Format main_framebuffer_color_format = Texture::Format::RGBA_16F;
+			RHI::Texture::Format main_framebuffer_color_format = RHI::Texture::Format::RGBA_16F;
 			u8 msaa_sample_count = 4;
 			bool output_to_composite_framebuffer;
 		};
@@ -115,7 +116,7 @@ namespace Kakadu
 
 		void IsolateRenderable( Renderable* renderable_to_isolate );
 
-		void OnShaderReassign( Shader* previous_shader, const std::string& name_of_material_whose_shader_changed );
+		void OnShaderReassign( RHI::Shader* previous_shader, const std::string& name_of_material_whose_shader_changed );
 
 		/* 
 		 * Lights:
@@ -138,14 +139,14 @@ namespace Kakadu
 		 */
 
 		void ToggleSkybox( const bool enable );
-		Texture* GetSkyboxTexture() const { return skybox_texture; }
+		RHI::Texture* GetSkyboxTexture() const { return skybox_texture; }
 		void SetSkyboxTexture( std::array< const char*, 6 > cube_map_face_file_paths );
 
 		/*
 		 * Shadow-mapping:
 		 */
 
-		const Texture* ShadowMapTexture() const { return &( framebuffers[ BuiltinFramebufferIndex::ShadowMapping_DirectionalLight ].depth_attachment ); }
+		const RHI::Texture* ShadowMapTexture() const { return &( framebuffers[ BuiltinFramebufferIndex::ShadowMapping_DirectionalLight ].depth_attachment ); }
 
 		/*
 		 * Shaders:
@@ -154,21 +155,21 @@ namespace Kakadu
 		const void* GetShaderGlobal( const std::string& buffer_name ) const;
 			  void* GetShaderGlobal( const std::string& buffer_name );
 
-		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
-		void SetShaderGlobal( const std::string& buffer_name, const StructType& value )
+		template< typename StructType > requires( std::is_base_of_v< RHI::Std140StructTag, StructType > )
+			void SetShaderGlobal( const std::string& buffer_name, const StructType& value )
 		{
 			uniform_buffer_management_global.Set( buffer_name, value );
 		}
 
 		/* For PARTIAL setting of ARRAY uniforms INSIDE a Uniform Buffer. */
-		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
-		void SetShaderGlobal( const std::string& buffer_name, const char* uniform_member_array_instance_name, const u32 array_index, const StructType& value )
+		template< typename StructType > requires( std::is_base_of_v< RHI::Std140StructTag, StructType > )
+			void SetShaderGlobal( const std::string& buffer_name, const char* uniform_member_array_instance_name, const u32 array_index, const StructType& value )
 		{
 			uniform_buffer_management_global.SetPartial_Array( buffer_name, uniform_member_array_instance_name, array_index, value );
 		}
 
 		/* For PARTIAL setting of STRUCT uniforms INSIDE a Uniform Buffer. */
-		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
+		template< typename StructType > requires( std::is_base_of_v< RHI::Std140StructTag, StructType > )
 		void SetShaderGlobal( const std::string& buffer_name, const char* uniform_member_struct_instance_name, const StructType& value )
 		{
 			uniform_buffer_management_global.SetPartial_Struct( buffer_name, uniform_member_struct_instance_name, value );
@@ -181,9 +182,9 @@ namespace Kakadu
 			uniform_buffer_management_global.SetPartial( buffer_name, uniform_member_name, value );
 		}
 
-		const std::unordered_set< Shader* > RegisteredShaders() const { return shaders_registered; }
-		void RegisterShader( Shader& shader );
-		void UnregisterShader( Shader& shader );
+		const std::unordered_set< RHI::Shader* > RegisteredShaders() const { return shaders_registered; }
+		void RegisterShader( RHI::Shader& shader );
+		void UnregisterShader( RHI::Shader& shader );
 
 		void RecompileModifiedShaders();
 
@@ -193,37 +194,34 @@ namespace Kakadu
 
 		void ResetToDefaultFramebuffer();
 		bool DefaultFramebufferIsBound() const;
-		Framebuffer* CurrentDestinationFramebuffer();
+		RHI::Framebuffer* CurrentDestinationFramebuffer();
 
 		void OutputToDefaultFramebuffer();
 		void OutputToCompositeFramebuffer();
 		bool IsOutputtingToCompositeFramebuffer() const { return framebuffer_output_index == BuiltinFramebufferIndex::Composite; }
 
-		const std::vector< Framebuffer >& Framebuffers() const { return framebuffers; }
-			  Framebuffer& MainFramebuffer()			{ return framebuffers[ BuiltinFramebufferIndex::Main ]; }
-		const Framebuffer& MainFramebuffer() const		{ return framebuffers[ BuiltinFramebufferIndex::Main ]; }
-			  Framebuffer& OutputFramebuffer()			{ return framebuffers[ framebuffer_output_index ]; }
-		const Framebuffer& OutputFramebuffer() const	{ return framebuffers[ framebuffer_output_index ]; }
+		const std::vector< RHI::Framebuffer >& Framebuffers() const { return framebuffers; }
+			  RHI::Framebuffer& MainFramebuffer()			{ return framebuffers[ BuiltinFramebufferIndex::Main ]; }
+		const RHI::Framebuffer& MainFramebuffer() const		{ return framebuffers[ BuiltinFramebufferIndex::Main ]; }
+			  RHI::Framebuffer& OutputFramebuffer()			{ return framebuffers[ framebuffer_output_index ]; }
+		const RHI::Framebuffer& OutputFramebuffer() const	{ return framebuffers[ framebuffer_output_index ]; }
 
-		void Blit( Framebuffer& source, Framebuffer& destination, const Texture::Filtering filtering = Texture::Filtering::Nearest );
+		void Blit( RHI::Framebuffer& source, RHI::Framebuffer& destination, const RHI::Texture::Filtering filtering = RHI::Texture::Filtering::Nearest );
 
 		/*
 		 * MSAA:
 		 */
 
 		/* Returns the MSAA info. for the main framebuffer MSAA. */
-		MSAA GetMSAAInfo() const;
+		RHI::MSAA GetMSAAInfo() const;
 		/* Sets the sample count for the main framebuffer MSAA. */
-		MSAA SetMSAASampleCount( const u8 new_sample_count );\
+		RHI::MSAA SetMSAASampleCount( const u8 new_sample_count );\
 		
 		/*
 		 * Queries:
 		 */
 
-		/* Logs a warning if the sample count in question is not available for the given format. */
-		static bool CheckMSAASupport( const Texture::Format format, const u8 sample_count_to_query );
-		static void DisplayAvailableGLExtensions( std::vector< std::string >& list_of_strings );
-		const std::vector< u8 >& MSAASupportedSampleCountsFor( const Texture::Format format ) { return msaa_supported_sample_counts_per_format[ format ]; }
+		const std::vector< u8 >& MSAASupportedSampleCountsFor( const RHI::Texture::Format format ) { return msaa_supported_sample_counts_per_format[ format ]; }
 
 		/*
 		 * Tone-mapping:
@@ -276,13 +274,13 @@ namespace Kakadu
 		void InitializeBuiltinFullscreenEffects();
 		void InitializeBuiltinPostprocessingEffects();
 
-		void SetPolygonMode( const PolygonMode mode );
+		void SetPolygonMode( const RHI::PolygonMode mode );
 
 		/*
 		 * Framebuffer:
 		 */
 
-		void SetDestinationFramebuffer( Framebuffer* framebuffer );
+		void SetDestinationFramebuffer( RHI::Framebuffer* framebuffer );
 
 		void EnableFramebuffer_sRGBEncoding();
 		void DisableFramebuffer_sRGBEncoding();
@@ -298,14 +296,14 @@ namespace Kakadu
 			Count
 		};
 
-			  Framebuffer& DefaultFramebuffer()									{ return framebuffers[ BuiltinFramebufferIndex::Default ]; }
-		const Framebuffer& DefaultFramebuffer() const							{ return framebuffers[ BuiltinFramebufferIndex::Default ]; }
-			  Framebuffer& ShadowMappingFramebuffer_DirectionalLight()			{ return framebuffers[ BuiltinFramebufferIndex::ShadowMapping_DirectionalLight ]; }
-		const Framebuffer& ShadowMappingFramebuffer_DirectionalLight() const	{ return framebuffers[ BuiltinFramebufferIndex::ShadowMapping_DirectionalLight ]; }
-			  Framebuffer& PostProcessingFramebuffer()							{ return framebuffers[ BuiltinFramebufferIndex::PostProcessing ]; }
-		const Framebuffer& PostProcessingFramebuffer() const					{ return framebuffers[ BuiltinFramebufferIndex::PostProcessing ]; }
-			  Framebuffer& CompositeFramebuffer()								{ return framebuffers[ BuiltinFramebufferIndex::Composite ]; }
-		const Framebuffer& CompositeFramebuffer() const							{ return framebuffers[ BuiltinFramebufferIndex::Composite ]; }
+			  RHI::Framebuffer& DefaultFramebuffer()								{ return framebuffers[ BuiltinFramebufferIndex::Default ]; }
+		const RHI::Framebuffer& DefaultFramebuffer() const							{ return framebuffers[ BuiltinFramebufferIndex::Default ]; }
+			  RHI::Framebuffer& ShadowMappingFramebuffer_DirectionalLight()			{ return framebuffers[ BuiltinFramebufferIndex::ShadowMapping_DirectionalLight ]; }
+		const RHI::Framebuffer& ShadowMappingFramebuffer_DirectionalLight() const	{ return framebuffers[ BuiltinFramebufferIndex::ShadowMapping_DirectionalLight ]; }
+			  RHI::Framebuffer& PostProcessingFramebuffer()							{ return framebuffers[ BuiltinFramebufferIndex::PostProcessing ]; }
+		const RHI::Framebuffer& PostProcessingFramebuffer() const					{ return framebuffers[ BuiltinFramebufferIndex::PostProcessing ]; }
+			  RHI::Framebuffer& CompositeFramebuffer()								{ return framebuffers[ BuiltinFramebufferIndex::Composite ]; }
+		const RHI::Framebuffer& CompositeFramebuffer() const						{ return framebuffers[ BuiltinFramebufferIndex::Composite ]; }
 
 		/*
 		 * Stencil Test:
@@ -314,8 +312,8 @@ namespace Kakadu
 		void EnableStencilTest();
 		void DisableStencilTest();
 		void SetStencilWriteMask( const u32 mask );
-		void SetStencilTestResponses( const StencilTestResponse stencil_fail, const StencilTestResponse stencil_pass_depth_fail, const StencilTestResponse both_pass );
-		void SetStencilComparisonFunction( const ComparisonFunction comparison_function, const i32 reference_value, const u32 mask );
+		void SetStencilTestResponses( const RHI::StencilTestResponse stencil_fail, const RHI::StencilTestResponse stencil_pass_depth_fail, const RHI::StencilTestResponse both_pass );
+		void SetStencilComparisonFunction( const RHI::ComparisonFunction comparison_function, const i32 reference_value, const u32 mask );
 
 		/*
 		 * Depth Test:
@@ -324,7 +322,7 @@ namespace Kakadu
 		void EnableDepthTest();
 		void DisableDepthTest();
 		void ToggleDepthWrite( const bool enable );
-		void SetDepthComparisonFunction( const ComparisonFunction comparison_function );
+		void SetDepthComparisonFunction( const RHI::ComparisonFunction comparison_function );
 
 		/*
 		 * Blending:
@@ -332,9 +330,9 @@ namespace Kakadu
 
 		void EnableBlending();
 		void DisableBlending();
-		void SetBlendingFactors( const BlendingFactor source_color_factor, const BlendingFactor destination_color_factor,
-								 const BlendingFactor source_alpha_factor, const BlendingFactor destination_alpha_factor );
-		void SetBlendingFunction( const BlendingFunction function );
+		void SetBlendingFactors( const RHI::BlendingFactor source_color_factor, const RHI::BlendingFactor destination_color_factor,
+								 const RHI::BlendingFactor source_alpha_factor, const RHI::BlendingFactor destination_alpha_factor );
+		void SetBlendingFunction( const RHI::BlendingFunction function );
 
 		void RenderOtherViewportShadingModes();
 
@@ -343,7 +341,7 @@ namespace Kakadu
 		 */
 
 		void SetRenderState( const RenderState& render_state_to_set );
-		void SetRenderState( const RenderState& render_state_to_set, Framebuffer* target_framebuffer, const bool clear_framebuffer = false );
+		void SetRenderState( const RenderState& render_state_to_set, RHI::Framebuffer* target_framebuffer, const bool clear_framebuffer = false );
 		void SortRenderablesInQueue( const Vector3& camera_position, std::vector< Renderable* >& renderable_array_to_sort, const SortingMode sorting_mode );
 
 		/*
@@ -352,8 +350,8 @@ namespace Kakadu
 
 		void EnableFaceCulling();
 		void DisableFaceCulling();
-		void SetCullFace( const Face face );
-		void SetFrontFaceConvention( const WindingOrder winding_order_of_front_faces );
+		void SetCullFace( const RHI::Face face );
+		void SetFrontFaceConvention( const RHI::WindingOrder winding_order_of_front_faces );
 
 		/*
 		 * MSAA:
@@ -426,18 +424,18 @@ namespace Kakadu
 		 * Graphics Device Info:
 		 */
 
-		Graphics::DeviceInfo graphics_device_info;
+		RHI::DeviceInfo graphics_device_info;
 
 		/*
 		 * Framebuffer:
 		 */
 
-		Framebuffer* framebuffer_current_source;	  // Corresponds to READ  target of a GL blit operation.
-		Framebuffer* framebuffer_current_destination; // Corresponds to WRITE target of a GL blit operation.
+		RHI::Framebuffer* framebuffer_current_source;	  // Corresponds to READ  target of a GL blit operation.
+		RHI::Framebuffer* framebuffer_current_destination; // Corresponds to WRITE target of a GL blit operation.
 
-		Framebuffer::Description framebuffer_main_description;
+		RHI::Framebuffer::Description framebuffer_main_description;
 
-		std::vector< Framebuffer > framebuffers;
+		std::vector< RHI::Framebuffer > framebuffers;
 
 		BuiltinFramebufferIndex framebuffer_output_index;
 
@@ -460,8 +458,8 @@ namespace Kakadu
 		std::map< RenderPass::ID,  RenderPass  > render_pass_map;
 		std::map< RenderQueue::ID, RenderQueue > render_queue_map;
 
-		std::unordered_set< Shader* > shaders_registered;
-		std::unordered_map< Shader*, Shader::ReferenceCount > shaders_registered_reference_count_map;
+		std::unordered_set< RHI::Shader* > shaders_registered;
+		std::unordered_map< RHI::Shader*, RHI::Shader::ReferenceCount > shaders_registered_reference_count_map;
 
 		Mesh full_screen_cube_mesh;
 
@@ -471,7 +469,7 @@ namespace Kakadu
 
 		Renderable skybox_renderable;
 		Material skybox_material;
-		Texture* skybox_texture;
+		RHI::Texture* skybox_texture;
 
 		/*
 		 * Fullscreen Effects:
@@ -481,7 +479,7 @@ namespace Kakadu
 
 		FullscreenEffect msaa_resolve;
 
-		std::map< Texture::Format, std::vector< u8 > > msaa_supported_sample_counts_per_format;
+		std::map< RHI::Texture::Format, std::vector< u8 > > msaa_supported_sample_counts_per_format;
 
 		FullscreenEffect tone_mapping;
 
@@ -510,8 +508,8 @@ namespace Kakadu
 		 * Uniform Management:
 		 */
 
-		std::unordered_set< const Shader* > shaders_using_intrinsics_lighting;
-		std::unordered_set< const Shader* > shaders_using_intrinsics_other;
+		std::unordered_set< const RHI::Shader* > shaders_using_intrinsics_lighting;
+		std::unordered_set< const RHI::Shader* > shaders_using_intrinsics_other;
 
 		UniformBufferManagement< DirtyBlob > uniform_buffer_management_global;
 		UniformBufferManagement< DirtyBlob > uniform_buffer_management_intrinsic;

@@ -1,8 +1,8 @@
 #pragma once
 
 // Engine Includes.
-#include "Graphics/Color.hpp"
 #include "Introspection/RendererIntrospectionSurface.h"
+#include "Math/Color.hpp"
 
 namespace Kakadu
 {

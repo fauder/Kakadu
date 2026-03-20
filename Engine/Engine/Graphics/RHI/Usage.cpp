@@ -1,5 +1,5 @@
 // Engine Includes.
-#include "Graphics/Graphics.h"
+#include "RHI.h"
 #include "Usage.h"
 #include "Core/Assertion.h"
 

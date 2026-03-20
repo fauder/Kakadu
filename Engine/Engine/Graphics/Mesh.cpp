@@ -39,11 +39,15 @@ namespace Kakadu
 		u32 vertex_count_interleaved;
 		const auto interleaved_vertices = MeshUtility::Interleave( vertex_count_interleaved, positions, normals, uvs, tangents );
 
-		vertex_buffer = Buffer( BufferType::Vertex, vertex_count_interleaved, std::as_bytes( std::span( interleaved_vertices ) ), name, usage );
-		vertex_layout = VertexLayout( GatherAttributes( positions, normals, uvs, tangents ) );
-		index_buffer  = indices.empty() ? std::nullopt : std::optional< Buffer >( std::in_place,
-																				  BufferType::Index, ( u32 )indices.size(), std::as_bytes( std::span( indices ) ), name, usage );
-		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name );
+		vertex_buffer = RHI::Buffer( RHI::BufferType::Vertex, vertex_count_interleaved, std::as_bytes( std::span( interleaved_vertices ) ), name, usage );
+		vertex_layout = RHI::VertexLayout( GatherAttributes( positions, normals, uvs, tangents ) );
+		index_buffer  = indices.empty() ? std::nullopt : std::optional< RHI::Buffer >( std::in_place,
+																					   RHI::BufferType::Index,
+																					   ( u32 )indices.size(),
+																					   std::as_bytes( std::span( indices ) ),
+																					   name,
+																					   usage );
+		vertex_array  = RHI::VertexArray( vertex_buffer, vertex_layout, index_buffer, name );
 	}
 
 	Mesh::Mesh( std::vector< Vector3 >&&	positions,
@@ -67,15 +71,19 @@ namespace Kakadu
 		u32 vertex_count_interleaved;
 		const auto interleaved_vertices = MeshUtility::Interleave( vertex_count_interleaved, positions, normals, uvs, tangents );
 
-		vertex_buffer = Buffer( BufferType::Vertex, vertex_count_interleaved, std::as_bytes( std::span( interleaved_vertices ) ), name, usage );
-		vertex_layout = VertexLayout( GatherAttributes( positions, normals, uvs, tangents ) );
-		index_buffer  = indices.empty() ? std::nullopt : std::optional< Buffer >( std::in_place,
-																				  BufferType::Index, ( u32 )indices.size(), std::as_bytes( std::span( indices ) ), name, usage );
-		vertex_array  = VertexArray( vertex_buffer, vertex_layout, index_buffer, name );
+		vertex_buffer = RHI::Buffer( RHI::BufferType::Vertex, vertex_count_interleaved, std::as_bytes( std::span( interleaved_vertices ) ), name, usage );
+		vertex_layout = RHI::VertexLayout( GatherAttributes( positions, normals, uvs, tangents ) );
+		index_buffer  = indices.empty() ? std::nullopt : std::optional< RHI::Buffer >( std::in_place,
+																					   RHI::BufferType::Index,
+																					   ( u32 )indices.size(),
+																					   std::as_bytes( std::span( indices ) ),
+																					   name,
+																					   usage );
+		vertex_array  = RHI::VertexArray( vertex_buffer, vertex_layout, index_buffer, name );
 	}
 
 	Mesh::Mesh( const Mesh& other,
-				const std::initializer_list< VertexInstanceAttribute > instanced_attributes,
+				const std::initializer_list< RHI::VertexInstanceAttribute > instanced_attributes,
 				const std::vector< float >& instance_data,
 				const i32 instance_count,
 				const RHI::Usage instance_buffer_usage )
@@ -95,10 +103,14 @@ namespace Kakadu
 		for( auto instanced_attribute_iterator = instanced_attributes.begin(); instanced_attribute_iterator != instanced_attributes.end(); instanced_attribute_iterator++ )
 			vertex_layout.Push( *instanced_attribute_iterator );
 
-		instance_buffer = std::optional< Buffer >( std::in_place,
-												   BufferType::Instance, instance_count, std::as_bytes( std::span( instance_data ) ), name, instance_buffer_usage );
+		instance_buffer = std::optional< RHI::Buffer >( std::in_place,
+														RHI::BufferType::Instance,
+														instance_count,
+														std::as_bytes( std::span( instance_data ) ),
+														name,
+														instance_buffer_usage );
 
-		vertex_array = VertexArray( vertex_buffer, vertex_layout, index_buffer, *instance_buffer, name );
+		vertex_array = RHI::VertexArray( vertex_buffer, vertex_layout, index_buffer, *instance_buffer, name );
 	}
 
 	Mesh::~Mesh()
@@ -128,21 +140,21 @@ namespace Kakadu
 		instance_buffer->Upload_Partial( data_span, offset_from_buffer_start );
 	}
 
-	std::array< VertexAttribute, 4 > Mesh::GatherAttributes( const std::span< const Vector3 >& positions,
-															 const std::span< const Vector3 >& normals,
-															 const std::span< const Vector2 >& uvs,
-															 const std::span< const Vector3 >& tangents )
+	std::array< RHI::VertexAttribute, 4 > Mesh::GatherAttributes( const std::span< const Vector3 >& positions,
+																  const std::span< const Vector3 >& normals,
+																  const std::span< const Vector2 >& uvs,
+																  const std::span< const Vector3 >& tangents )
 	{
 		auto CountOf = []( auto&& attribute_container ) { return attribute_container.empty() ? 0 : i32( sizeof( attribute_container.front() ) / sizeof( float ) ); };
 
 		constexpr bool is_instanced = false;
 
-		return std::array< VertexAttribute, 4 >
+		return std::array< RHI::VertexAttribute, 4 >
 		( {
-			VertexAttribute{ CountOf( positions ),		GL_FLOAT,	is_instanced, POSITION_LOCATION		},
-			VertexAttribute{ CountOf( normals ),		GL_FLOAT,	is_instanced, NORMAL_LOCATION		},
-			VertexAttribute{ CountOf( uvs ),			GL_FLOAT,	is_instanced, TEXCOORDS_LOCATION	},
-			VertexAttribute{ CountOf( tangents ),		GL_FLOAT,	is_instanced, TANGENT_LOCATION		},
+			  RHI::VertexAttribute{ CountOf( positions ),	GL_FLOAT,	is_instanced, POSITION_LOCATION		},
+			  RHI::VertexAttribute{ CountOf( normals ),		GL_FLOAT,	is_instanced, NORMAL_LOCATION		},
+			  RHI::VertexAttribute{ CountOf( uvs ),			GL_FLOAT,	is_instanced, TEXCOORDS_LOCATION	},
+			  RHI::VertexAttribute{ CountOf( tangents ),	GL_FLOAT,	is_instanced, TANGENT_LOCATION		},
 		} );
 	}
 }

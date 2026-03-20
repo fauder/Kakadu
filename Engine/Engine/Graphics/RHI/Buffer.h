@@ -1,8 +1,8 @@
 #pragma once
 
 // Engine Includes.
-#include "RHI/ID/BufferID.h"
-#include "RHI/Usage.h"
+#include "ID/BufferID.h"
+#include "Usage.h"
 #include "Core/Types.h"
 
 // std Includes.
@@ -11,7 +11,7 @@
 
 // TODO: Keep track of buffer ids and debug/inspect them via ImGuiDrawer::Draw() or something.
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	/* This is so we can explicitly work with instance buffers in higher level code while it maps down to a vertex buffer behind the scenes. */
 	enum struct BufferType : u8
@@ -31,14 +31,14 @@ namespace Kakadu
 		Buffer( const BufferType type,
 				const u32 size,
 				const std::string& name = {},
-				const RHI::Usage usage = RHI::Usage::StaticDraw );
+				const Usage usage = Usage::StaticDraw );
 
 		/* Allocates and sets buffer memory. */
 		Buffer( const BufferType type,
 				const u32 count,
 				const std::span< const std::byte > data_span,
 				const std::string& name = {},
-				const RHI::Usage usage = RHI::Usage::StaticDraw );
+				const Usage usage = Usage::StaticDraw );
 
 		Buffer( const Buffer& other );
 		Buffer& operator=( const Buffer& other );
@@ -59,7 +59,7 @@ namespace Kakadu
 
 		operator bool() const { return ( bool )id; } // Use the size to implicitly define validness state.
 
-		RHI::BufferID id;
+		BufferID id;
 		BufferType type;
 		/* 3 bytes of padding. */
 		std::string name;

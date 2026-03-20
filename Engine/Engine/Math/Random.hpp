@@ -1,9 +1,9 @@
 #pragma once
 
 // Engince Includes.
+#include "Color.hpp"
 #include "Concepts_Math.h"
 #include "Vector.hpp"
-#include "Graphics/Color.hpp"
 
 // std Includes.
 #include <random>

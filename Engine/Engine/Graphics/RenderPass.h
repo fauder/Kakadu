@@ -1,8 +1,8 @@
 #pragma once
 
 // Engine Includes.
-#include "Framebuffer.h"
 #include "RenderQueue.h"
+#include "RHI/Framebuffer.h"
 
 // std Includes.
 #include <optional>
@@ -19,7 +19,7 @@ namespace Kakadu
 
 		std::string name = "<unnamed-pass>";
 
-		Framebuffer* target_framebuffer;
+		RHI::Framebuffer* target_framebuffer;
 
 		std::set< RenderQueue::ID > queue_id_set;
 

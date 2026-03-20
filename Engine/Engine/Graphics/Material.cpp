@@ -20,7 +20,7 @@ namespace Kakadu
 	{
 	}
 
-	Material::Material( const std::string& name, Shader* const shader )
+	Material::Material( const std::string& name, RHI::Shader* const shader )
 		:
 		name( name ),
 		shader( shader ),
@@ -41,18 +41,18 @@ namespace Kakadu
 	{
 	}
 
-	const Shader* Material::Bind() const
+	const RHI::Shader* Material::Bind() const
 	{
 		shader->Bind(); 
 		return shader;
 	}
 
-	Shader* Material::GetShader()
+	RHI::Shader* Material::GetShader()
 	{
 		return shader;
 	}
 
-	void Material::SetShader( Shader* shader )
+	void Material::SetShader( RHI::Shader* shader )
 	{
 		/* Clean-up of previous data: */
 		uniform_buffer_management_regular.UnregisterAllBuffers();
@@ -92,7 +92,7 @@ namespace Kakadu
 	}
 #endif // _EDITOR
 
-	const void* Material::Get( const Uniform::Information& uniform_info ) const
+	const void* Material::Get( const RHI::Uniform::Information& uniform_info ) const
 	{
 		ASSERT_DEBUG_ONLY( not uniform_info.is_buffer_member &&
 						   "Material::Get( const Uniform::Information& ) called to obtain value of a UBO member.\n"
@@ -101,7 +101,7 @@ namespace Kakadu
 		return uniform_blob_default_block.Get( uniform_info.offset );
 	}
 
-	void* Material::Get( const Uniform::Information& uniform_info )
+	void* Material::Get( const RHI::Uniform::Information& uniform_info )
 	{
 		ASSERT_DEBUG_ONLY( not uniform_info.is_buffer_member &&
 						   "Material::Get( const Uniform::Information& ) called to obtain value of a UBO member.\n"
@@ -126,7 +126,7 @@ namespace Kakadu
  *
  */
 
-	void Material::SetTexture( const char* sampler_name_of_new_texture, const Texture* texture_to_be_set )
+	void Material::SetTexture( const char* sampler_name_of_new_texture, const RHI::Texture* texture_to_be_set )
 	{
 #ifdef _EDITOR
 		if( const auto found = texture_map.find( sampler_name_of_new_texture ); 
@@ -143,7 +143,7 @@ namespace Kakadu
 #endif // _EDITOR
 	}
 
-	const Texture* Material::GetTexture( const char* sampler_name_of_new_texture ) const
+	const RHI::Texture* Material::GetTexture( const char* sampler_name_of_new_texture ) const
 	{
 		if( const auto iterator = texture_map.find( sampler_name_of_new_texture ); 
 			iterator != texture_map.cend() )
@@ -154,7 +154,7 @@ namespace Kakadu
 		return nullptr;
 	}
 
-	const Uniform::Information& Material::GetUniformInformation( const std::string& uniform_name ) const
+	const RHI::Uniform::Information& Material::GetUniformInformation( const std::string& uniform_name ) const
 	{
 		try
 		{
@@ -166,7 +166,7 @@ namespace Kakadu
 		}
 	}
 
-	void Material::UploadUniform( const Uniform::Information& uniform_info )
+	void Material::UploadUniform( const RHI::Uniform::Information& uniform_info )
 	{
 		if( uniform_info.count_array > 1 )
 			shader->SetUniformArray( uniform_info, uniform_blob_default_block.Get( uniform_info.offset ) );
@@ -178,7 +178,7 @@ namespace Kakadu
 	{
 		u32 texture_unit_slots_in_use = 0; // This can be controlled via a central manager class if more complex use-cases arise. For now every Material will act as if it is the only one using Texture Unit slots.
 
-		auto UploadTexture = [ & ]( const std::string& sampler_name, const Texture& texture )
+		auto UploadTexture = [ & ]( const std::string& sampler_name, const RHI::Texture& texture )
 		{
 #ifdef _EDITOR
 			if( not uniform_info_map->contains( sampler_name ) )

@@ -6,22 +6,22 @@
 
 // Engince Includes.
 #include "Asset/Paths.h"
-#include "Core/BitFlags.hpp"
-#include "Core/ServiceLocator.h"
-#include "Core/Utility.hpp"
+#include "DeviceInfo.h"
 #include "GLLabelPrefixes.h"
-#include "GLLogger.h"
-#include "GraphicsDeviceInfo.h"
 #include "Shader.hpp"
 #include "ShaderIncludePreprocessing.h"
 #include "ShaderTypeInformation.h"
 #include "UniformBlockBindingPointManager.h"
+#include "Core/BitFlags.hpp"
+#include "Core/ServiceLocator.h"
+#include "Core/Utility.hpp"
+#include "Graphics/GLLogger.h" // TODO: GLLogger dependency - wrong direction, fix when logger is properly split.
 
 // std Includes.
 #include <numeric> // std::iota.
 #include <charconv>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	/* Will be initialized later with FromFile(). */
 	Shader::Shader( const char* name )
@@ -311,13 +311,13 @@ namespace Kakadu
 			EnumerateUniformBufferCategories();
 
 			for( auto& [ uniform_buffer_name, uniform_buffer_info ] : uniform_buffer_info_map_regular )
-				UniformBlockBindingPointManager::RegisterUniformBlock( *this, uniform_buffer_name, uniform_buffer_info );
+				Uniform::BlockBindingPointManager::RegisterUniformBlock( *this, uniform_buffer_name, uniform_buffer_info );
 
 			for( auto& [ uniform_buffer_name, uniform_buffer_info ] : uniform_buffer_info_map_global )
-				UniformBlockBindingPointManager::RegisterUniformBlock( *this, uniform_buffer_name, uniform_buffer_info );
+				Uniform::BlockBindingPointManager::RegisterUniformBlock( *this, uniform_buffer_name, uniform_buffer_info );
 
 			for( auto& [ uniform_buffer_name, uniform_buffer_info ] : uniform_buffer_info_map_intrinsic )
-				UniformBlockBindingPointManager::RegisterUniformBlock( *this, uniform_buffer_name, uniform_buffer_info );
+				Uniform::BlockBindingPointManager::RegisterUniformBlock( *this, uniform_buffer_name, uniform_buffer_info );
 		}
 
 		return link_result;
@@ -970,9 +970,9 @@ namespace Kakadu
 						std::string name_string( *maybe_next_token );*/
 					std::string type_string( type_sv );
 
-					const GLenum type( GL::Type::TypeOf( type_string.data() ) );
+					const GLenum type( RHI::Type::TypeOf( type_string.data() ) );
 					/* Source attributes */
-					attributes.emplace_back( GL::Type::CountOf( type ), GL::Type::ComponentTypeOf( type ), false /* => instance info does not matter. */,
+					attributes.emplace_back( RHI::Type::CountOf( type ), RHI::Type::ComponentTypeOf( type ), false /* => instance info does not matter. */,
 											 location );
 					/*}*/
 				}
@@ -1006,7 +1006,7 @@ namespace Kakadu
 			glGetIntegeri_v( GL_VERTEX_BINDING_DIVISOR, attribute_location, &divisor_data );
 			const bool is_instanced = divisor_data >= 1;
 
-			attributes.emplace_back( GL::Type::CountOf( attribute_vector_type ), GL::Type::ComponentTypeOf( attribute_vector_type ), is_instanced, attribute_location );
+			attributes.emplace_back( RHI::Type::CountOf( attribute_vector_type ), RHI::Type::ComponentTypeOf( attribute_vector_type ), is_instanced, attribute_location );
 		}
 
 		std::sort( attributes.begin(), attributes.end(), []( const VertexAttribute& left, const VertexAttribute& right ) { return left.location < right.location; } );
@@ -1068,7 +1068,7 @@ namespace Kakadu
 								&length_dontCare, &array_element_count, &type, 
 								uniform_book_keeping_info.name_holder.data() );
 
-			const i32 size = GL::Type::SizeOf( type );
+			const i32 size = RHI::Type::SizeOf( type );
 
 			const auto location = glGetUniformLocation( program_id.id, uniform_book_keeping_info.name_holder.c_str() );
 
@@ -1415,7 +1415,7 @@ namespace Kakadu
 										const i32 log_length,
 										std::unordered_map< i16, std::filesystem::path >& map_of_IDs_per_source_file ) const
 	{
-		const auto& graphics_device_vendor = ServiceLocator< Graphics::DeviceInfo >::Get().vendor;
+		const auto& graphics_device_vendor = ServiceLocator< DeviceInfo >::Get().vendor;
 
 		std::string info_log_str( "\n" );
 		info_log_str.reserve( log_length );
@@ -1433,7 +1433,7 @@ namespace Kakadu
 			 * Expected format: <id>(<line>) error ...
 			 * Example: 0(123) error ...
 			 */
-			if( graphics_device_vendor == Graphics::DeviceInfo::Vendor::Nvidia )
+			if( graphics_device_vendor == DeviceInfo::Vendor::Nvidia )
 			{
 				const std::size_t paren_pos = line.find( "(" );
 
@@ -1451,7 +1451,7 @@ namespace Kakadu
 			 * Expected format: <id>:<line>: error ...
 			 * Example: ERROR: 0:123: ...
 			 */
-			else if( graphics_device_vendor == Graphics::DeviceInfo::Vendor::Amd )
+			else if( graphics_device_vendor == DeviceInfo::Vendor::Amd )
 			{
 				// Expected: ERROR: <id>:<line>: ...
 				const std::size_t first_colon = line.find( ':' );
@@ -1481,8 +1481,8 @@ namespace Kakadu
 			 * 
 			 * Expected format: <id>:<line>(<col>): ...
 			 */
-			else if( graphics_device_vendor == Graphics::DeviceInfo::Vendor::Intel ||
-					 graphics_device_vendor == Graphics::DeviceInfo::Vendor::Mesa )
+			else if( graphics_device_vendor == DeviceInfo::Vendor::Intel ||
+					 graphics_device_vendor == DeviceInfo::Vendor::Mesa )
 			{
 				const std::size_t first_colon = line.find( ':' );
 				if( first_colon != std::string_view::npos )

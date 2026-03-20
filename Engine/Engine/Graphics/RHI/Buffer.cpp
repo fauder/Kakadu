@@ -1,8 +1,8 @@
 // Engine Includes.
+#include "RHI.h"
 #include "Buffer.h"
-#include "GLLogger.h"
+#include "Graphics/GLLogger.h" // TODO: GLLogger dependency - wrong direction, fix when logger is properly split.
 #include "GLLabelPrefixes.h"
-#include "Graphics.h"
 #include "Core/Assertion.h"
 #include "Core/Optimization.h"
 #include "Core/ServiceLocator.h"
@@ -10,13 +10,13 @@
 // std Includes.
 #include <map>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	/*
 	 * Internal variables:
 	 */
 
-	internal_variable std::map< RHI::BufferID, u32 > REF_COUNT_MAP;
+	internal_variable std::map< BufferID, u32 > REF_COUNT_MAP;
 
 	/*
 	 * Internal functions:
@@ -39,13 +39,13 @@ namespace Kakadu
 		UNREACHABLE();
 	}
 
-	internal_function void Create( Buffer& buffer, const void* data, const RHI::Usage usage )
+	internal_function void Create( Buffer& buffer, const void* data, const Usage usage )
 	{
 		glGenBuffers( 1, &buffer.id.id );
 		REF_COUNT_MAP[ buffer.id ]++;
 
 		buffer.Bind();
-		glBufferData( TypeToGLEnum( buffer.type ), buffer.size, data, RHI::UsageToGLEnum( usage ) );
+		glBufferData( TypeToGLEnum( buffer.type ), buffer.size, data, UsageToGLEnum( usage ) );
 	}
 
 	internal_function void CloneBuffer( Buffer& buffer )
@@ -114,7 +114,7 @@ namespace Kakadu
 	Buffer::Buffer( const BufferType type,
 					const u32 size,
 					const std::string& name,
-					const RHI::Usage usage )
+					const Usage usage )
 		:
 		id(),
 		type( type ),
@@ -122,7 +122,7 @@ namespace Kakadu
 		count( 0 ),
 		size( size )
 	{
-		ASSERT_DEBUG_ONLY( size > 0 && "'size' parameter passed to Buffer::Buffer( const BufferType type, const u32 size, const std::string& name, const RHI::Usage usage ) is empty!" );
+		ASSERT_DEBUG_ONLY( size > 0 && "'size' parameter passed to Buffer::Buffer( const BufferType type, const u32 size, const std::string& name, const Usage usage ) is empty!" );
 
 		Create( *this, nullptr, usage );
 
@@ -137,7 +137,7 @@ namespace Kakadu
 					const u32 count,
 					const std::span< const std::byte > data_span,
 					const std::string& name,
-					const RHI::Usage usage )
+					const Usage usage )
 		:
 		id(),
 		type( type ),
@@ -146,7 +146,7 @@ namespace Kakadu
 		size( ( u32 )data_span.size_bytes() )
 	{
 		ASSERT_DEBUG_ONLY( size > 0 && count > 0 && "'data_span' parameter passed to "
-							"Buffer::Buffer( const BufferType type, const u32 count, const std::span< const std::byte > data_span, const std::string& name, const RHI::Usage usage )"
+							"Buffer::Buffer( const BufferType type, const u32 count, const std::span< const std::byte > data_span, const std::string& name, const Usage usage )"
 							"is empty!" );
 
 		Create( *this, data_span.data(), usage );

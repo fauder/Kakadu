@@ -5,7 +5,7 @@
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Mesh.h"
 #include "Engine/Graphics/ModelInstance.h"
-#include "Engine/Graphics/Texture.h"
+#include "Engine/Graphics/RHI/Texture.h"
 
 #include "Engine/DefineMathTypes.h"
 
@@ -19,8 +19,8 @@ class SandboxApplication : public Kakadu::Application
 	struct ModelInfo
 	{
 		Kakadu::ModelInstance model_instance;
-		Kakadu::Shader* shader;
-		Kakadu::Shader* shader_shadow_receiving;
+		Kakadu::RHI::Shader* shader;
+		Kakadu::RHI::Shader* shader_shadow_receiving;
 		std::string file_path;
 		bool is_receiving_shadows;
 		bool is_casting_shadows;
@@ -83,16 +83,16 @@ private:
 	static constexpr Kakadu::RenderPass::ID RENDER_PASS_ID_LIGHTING_REAR_VIEW = Kakadu::RenderPass::ID( ( u32 )Kakadu::Renderer::RENDER_PASS_ID_LIGHTING - 1 );
 
 /* Textures: */
-	Kakadu::Texture* container_texture_diffuse_map;
-	Kakadu::Texture* container_texture_specular_map;
-	Kakadu::Texture* container_texture_normal_map;
+	Kakadu::RHI::Texture* container_texture_diffuse_map;
+	Kakadu::RHI::Texture* container_texture_specular_map;
+	Kakadu::RHI::Texture* container_texture_normal_map;
 
-	Kakadu::Texture* brickwall_diffuse_map;
-	Kakadu::Texture* brickwall_normal_map;
-	Kakadu::Texture* brickwall_displacement_map;
+	Kakadu::RHI::Texture* brickwall_diffuse_map;
+	Kakadu::RHI::Texture* brickwall_normal_map;
+	Kakadu::RHI::Texture* brickwall_displacement_map;
 
-	Kakadu::Texture* checker_pattern_texture;
-	Kakadu::Texture* transparent_window_texture;
+	Kakadu::RHI::Texture* checker_pattern_texture;
+	Kakadu::RHI::Texture* transparent_window_texture;
 
 /* Vertex Info.: */
 	Kakadu::Mesh cube_mesh, quad_mesh, quad_mesh_uvs_only, quad_mesh_fullscreen;
@@ -102,22 +102,22 @@ private:
 	Kakadu::Mesh sphere_mesh, sphere_mesh_lower_detail;
 
 /* Shaders: */
-	Kakadu::Shader* shader_blinn_phong;
-	Kakadu::Shader* shader_blinn_phong_shadowed;
-	Kakadu::Shader* shader_blinn_phong_shadowed_parallax;
-	Kakadu::Shader* shader_blinn_phong_instanced;
-	Kakadu::Shader* shader_blinn_phong_shadowed_instanced;
-	Kakadu::Shader* shader_blinn_phong_shadowed_parallax_instanced;
-	Kakadu::Shader* shader_blinn_phong_skybox_reflection;
-	Kakadu::Shader* shader_blinn_phong_skybox_reflection_instanced;
-	Kakadu::Shader* shader_blinn_phong_skybox_reflection_shadowed_instanced;
-	Kakadu::Shader* shader_basic_color;
-	Kakadu::Shader* shader_basic_color_instanced;
-	Kakadu::Shader* shader_basic_textured;
-	Kakadu::Shader* shader_basic_textured_transparent_discard;
-	Kakadu::Shader* shader_outline;
+	Kakadu::RHI::Shader* shader_blinn_phong;
+	Kakadu::RHI::Shader* shader_blinn_phong_shadowed;
+	Kakadu::RHI::Shader* shader_blinn_phong_shadowed_parallax;
+	Kakadu::RHI::Shader* shader_blinn_phong_instanced;
+	Kakadu::RHI::Shader* shader_blinn_phong_shadowed_instanced;
+	Kakadu::RHI::Shader* shader_blinn_phong_shadowed_parallax_instanced;
+	Kakadu::RHI::Shader* shader_blinn_phong_skybox_reflection;
+	Kakadu::RHI::Shader* shader_blinn_phong_skybox_reflection_instanced;
+	Kakadu::RHI::Shader* shader_blinn_phong_skybox_reflection_shadowed_instanced;
+	Kakadu::RHI::Shader* shader_basic_color;
+	Kakadu::RHI::Shader* shader_basic_color_instanced;
+	Kakadu::RHI::Shader* shader_basic_textured;
+	Kakadu::RHI::Shader* shader_basic_textured_transparent_discard;
+	Kakadu::RHI::Shader* shader_outline;
 
-	Kakadu::Shader* shader_texture_blit;
+	Kakadu::RHI::Shader* shader_texture_blit;
 
 /* Models: */
 	ModelInfo test_model_info;

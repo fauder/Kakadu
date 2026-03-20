@@ -6,7 +6,7 @@
 #include "Engine/Graphics/Mesh.h"
 #include "Engine/Graphics/ModelInstance.h"
 #include "Engine/Graphics/Renderer.h"
-#include "Engine/Graphics/Texture.h"
+#include "Engine/Graphics/RHI/Texture.h"
 
 #include "Engine/DefineMathTypes.h"
 
@@ -20,8 +20,8 @@ class BloomDemoApplication : public Kakadu::Application
 	struct ModelInfo
 	{
 		Kakadu::ModelInstance model_instance;
-		Kakadu::Shader* shader;
-		Kakadu::Shader* shader_shadow_receiving;
+		Kakadu::RHI::Shader* shader;
+		Kakadu::RHI::Shader* shader_shadow_receiving;
 		std::string file_path;
 		bool is_receiving_shadows;
 		bool is_casting_shadows;
@@ -44,7 +44,7 @@ public:
 	virtual void OnMouseScrollEvent( const float x_offset, const float y_offset ) override;
 	virtual void OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods ) override;
 	virtual void OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels ) override;
-	
+
 private:
 	void ResetLightingData();
 	void ResetMaterialData();
@@ -56,11 +56,11 @@ private:
 	void ReplaceMeteoriteAndCubeRenderables( bool use_meteorites );
 
 private:
-/* Renderer: */
+	/* Renderer: */
 	Kakadu::Renderable light_sources_renderable;
 	Kakadu::Renderable stars_renderable;
 
-	const static constexpr i32 CUBE_COUNT           = 200'000;
+	const static constexpr i32 CUBE_COUNT = 200'000;
 	const static constexpr i32 CUBE_REFLECTED_COUNT = 10;
 	Kakadu::Renderable cube_renderable;
 	Kakadu::Renderable cube_renderable_outline;
@@ -82,19 +82,19 @@ private:
 	const static constexpr i32 WINDOW_COUNT = 5;
 	std::array< Kakadu::Renderable, WINDOW_COUNT > window_renderable_array;
 
-/* Textures: */
-	Kakadu::Texture* container_texture_diffuse_map;
-	Kakadu::Texture* container_texture_specular_map;
-	Kakadu::Texture* container_texture_normal_map;
+	/* Textures: */
+	Kakadu::RHI::Texture* container_texture_diffuse_map;
+	Kakadu::RHI::Texture* container_texture_specular_map;
+	Kakadu::RHI::Texture* container_texture_normal_map;
 
-	Kakadu::Texture* brickwall_diffuse_map;
-	Kakadu::Texture* brickwall_normal_map;
-	Kakadu::Texture* brickwall_displacement_map;
+	Kakadu::RHI::Texture* brickwall_diffuse_map;
+	Kakadu::RHI::Texture* brickwall_normal_map;
+	Kakadu::RHI::Texture* brickwall_displacement_map;
 
-	Kakadu::Texture* checker_pattern_texture;
-	Kakadu::Texture* transparent_window_texture;
+	Kakadu::RHI::Texture* checker_pattern_texture;
+	Kakadu::RHI::Texture* transparent_window_texture;
 
-/* Vertex Info.: */
+	/* Vertex Info.: */
 	Kakadu::Mesh cube_mesh, quad_mesh, quad_mesh_uvs_only, quad_mesh_fullscreen, quad_mesh_mirror;
 	Kakadu::Mesh cube_mesh_instanced;
 	Kakadu::Mesh cube_reflected_mesh_instanced;
@@ -103,21 +103,21 @@ private:
 	Kakadu::Mesh triangle_mesh_instanced_with_color; // For stars.
 	Kakadu::Mesh triangle_mesh_positions_only;
 
-/* Shaders: */
-	Kakadu::Shader* shader_blinn_phong;
-	Kakadu::Shader* shader_blinn_phong_shadowed;
-	Kakadu::Shader* shader_blinn_phong_shadowed_parallax;
-	Kakadu::Shader* shader_blinn_phong_instanced;
-	Kakadu::Shader* shader_blinn_phong_shadowed_instanced;
-	Kakadu::Shader* shader_blinn_phong_shadowed_parallax_instanced;
-	Kakadu::Shader* shader_blinn_phong_skybox_reflection;
-	Kakadu::Shader* shader_blinn_phong_skybox_reflection_instanced;
-	Kakadu::Shader* shader_blinn_phong_skybox_reflection_shadowed_instanced;
-	Kakadu::Shader* shader_basic_color;
-	Kakadu::Shader* shader_basic_color_instanced;
-	Kakadu::Shader* shader_basic_textured;
-	Kakadu::Shader* shader_basic_textured_transparent_discard;
-	Kakadu::Shader* shader_outline;
+	/* Shaders: */
+	Kakadu::RHI::Shader* shader_blinn_phong;
+	Kakadu::RHI::Shader* shader_blinn_phong_shadowed;
+	Kakadu::RHI::Shader* shader_blinn_phong_shadowed_parallax;
+	Kakadu::RHI::Shader* shader_blinn_phong_instanced;
+	Kakadu::RHI::Shader* shader_blinn_phong_shadowed_instanced;
+	Kakadu::RHI::Shader* shader_blinn_phong_shadowed_parallax_instanced;
+	Kakadu::RHI::Shader* shader_blinn_phong_skybox_reflection;
+	Kakadu::RHI::Shader* shader_blinn_phong_skybox_reflection_instanced;
+	Kakadu::RHI::Shader* shader_blinn_phong_skybox_reflection_shadowed_instanced;
+	Kakadu::RHI::Shader* shader_basic_color;
+	Kakadu::RHI::Shader* shader_basic_color_instanced;
+	Kakadu::RHI::Shader* shader_basic_textured;
+	Kakadu::RHI::Shader* shader_basic_textured_transparent_discard;
+	Kakadu::RHI::Shader* shader_outline;
 
 /* Models: */
 	ModelInfo test_model_info;

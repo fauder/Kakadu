@@ -1,9 +1,9 @@
 #pragma once
 
-// std Includes.
-#include <cstdint>
+// Engine Includes.
+#include "Core/Types.h"
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	struct MSAA
 	{

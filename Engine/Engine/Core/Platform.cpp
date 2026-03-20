@@ -7,7 +7,7 @@
 #endif // _WIN32
 
 // Engine Includes.
-#include "Graphics/Graphics.h"
+#include "Graphics/RHI/RHI.h"
 #include "Optimization.h"
 #include "Platform.h"
 #include "Utility.hpp"

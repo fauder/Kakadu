@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	struct Std140StructTag {};
 }

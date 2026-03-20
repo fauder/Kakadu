@@ -205,7 +205,7 @@ namespace Kakadu::Editor
 
 				if( ImGui::BeginTabItem( ICON_FA_OBJECT_GROUP " Framebuffers" ) )
 				{
-					auto DrawFramebufferImGui_Decorations = []( const Framebuffer& framebuffer )
+					auto DrawFramebufferImGui_Decorations = []( const RHI::Framebuffer& framebuffer )
 					{
 						if( framebuffer.IsMultiSampled() )
 						{
@@ -226,7 +226,7 @@ namespace Kakadu::Editor
 						}
 					};
 
-					auto DrawFramebufferImGui = [ & ]( const Framebuffer& framebuffer )
+					auto DrawFramebufferImGui = [ & ]( const RHI::Framebuffer& framebuffer )
 					{
 						if( framebuffer.IsValid() )
 						{
@@ -242,7 +242,7 @@ namespace Kakadu::Editor
 						}
 					};
 
-					auto DrawCustomFramebufferImGui = [ & ]( const Framebuffer& custom_framebuffer )
+					auto DrawCustomFramebufferImGui = [ & ]( const RHI::Framebuffer& custom_framebuffer )
 					{
 						const auto name = custom_framebuffer.name.c_str();
 						if( custom_framebuffer.IsValid() )

@@ -1,10 +1,11 @@
 // Engine Includes.
 #include "ShaderType.h"
+#include "Core/Macros.h"
 
 // std Include.
 #include <filesystem>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	template< ShaderType Type > 
 	class ShaderSourcePath

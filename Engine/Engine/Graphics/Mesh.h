@@ -1,10 +1,10 @@
 #pragma once
 
 // Engine Includes.
-#include "Color.hpp"
 #include "MeshUtility.hpp"
-#include "VertexArray.h"
+#include "Math/Color.hpp"
 #include "RHI/Usage.h"
+#include "RHI/VertexArray.h"
 
 // std Includes.
 #include <array>
@@ -51,7 +51,7 @@ namespace Kakadu
 			  const RHI::Usage			usage          = RHI::Usage::StaticDraw );
 
 		Mesh( const Mesh& other,
-			  const std::initializer_list< VertexInstanceAttribute > instanced_attributes,
+			  const std::initializer_list< RHI::VertexInstanceAttribute > instanced_attributes,
 			  const std::vector< float >& instance_data,
 			  const i32 instance_count,
 			  const RHI::Usage usage = RHI::Usage::StaticDraw );
@@ -92,7 +92,7 @@ namespace Kakadu
 		bool HasInstancing() const { return ( bool )instance_buffer; }
 		i32 InstanceCount()  const { return instance_count; }
 
-		bool IsCompatibleWith( const VertexLayout& other_vertex_layout ) const { return vertex_layout.IsCompatibleWith( other_vertex_layout ); }
+		bool IsCompatibleWith( const RHI::VertexLayout& other_vertex_layout ) const { return vertex_layout.IsCompatibleWith( other_vertex_layout ); }
 
 	/*
 	 * Index Data:
@@ -117,10 +117,10 @@ namespace Kakadu
 		const float* Uvs_Raw()			const { return reinterpret_cast< const float* >( uvs.data()			); };
 
 	private:
-		static std::array< VertexAttribute, 4 > GatherAttributes( const std::span< const Vector3 >& positions,
-																  const std::span< const Vector3 >& normals,
-																  const std::span< const Vector2 >& uvs,
-																  const std::span< const Vector3 >& tangents );
+		static std::array< RHI::VertexAttribute, 4 > GatherAttributes( const std::span< const Vector3 >& positions,
+																	   const std::span< const Vector3 >& normals,
+																	   const std::span< const Vector2 >& uvs,
+																	   const std::span< const Vector3 >& tangents );
 
  	private:
 		std::string name;
@@ -136,10 +136,10 @@ namespace Kakadu
 
 		i32 instance_count;
 
-		Buffer vertex_buffer;
-		VertexLayout vertex_layout;
-		std::optional< Buffer > index_buffer;
-		std::optional< Buffer > instance_buffer;
-		VertexArray vertex_array;
+		RHI::Buffer vertex_buffer;
+		RHI::VertexLayout vertex_layout;
+		std::optional< RHI::Buffer > index_buffer;
+		std::optional< RHI::Buffer > instance_buffer;
+		RHI::VertexArray vertex_array;
 	};
 }

@@ -44,7 +44,7 @@ BloomDemoApplication::BloomDemoApplication( const Kakadu::BitFlags< Kakadu::Crea
 	Kakadu::Application( flags,
 						 Kakadu::Renderer::Description
 						 {
-							 .main_framebuffer_color_format = Kakadu::Texture::Format::RGBA_16F,
+							 .main_framebuffer_color_format = Kakadu::RHI::Texture::Format::RGBA_16F,
 							 .msaa_sample_count             = 4
 						 } ),
 	test_model_info
@@ -87,43 +87,43 @@ void BloomDemoApplication::Initialize()
 	auto log_group( gl_logger.TemporaryLogGroup( "Bloom Demo GL Init." ) );
 
 /* Textures: */
-	auto& texture_database = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::Texture > >::Get();
+	auto& texture_database = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::RHI::Texture > >::Get();
 
-	container_texture_diffuse_map  = texture_database.CreateAssetFromFile( "Container (Diffuse) Map",  AssetDir R"(container2.png)" );
+	container_texture_diffuse_map = texture_database.CreateAssetFromFile( "Container (Diffuse) Map", AssetDir R"(container2.png)" );
 	container_texture_specular_map = texture_database.CreateAssetFromFile( "Container (Specular) Map", AssetDir R"(container2_specular.png)" );
 
 	brickwall_diffuse_map = texture_database.CreateAssetFromFile( "Brickwall (Diffuse) Map",
 																  AssetDir R"(bricks2.jpg)",
-																  Kakadu::Texture::ImportSettings
+																  Kakadu::RHI::Texture::ImportSettings
 																  {
-																	  .wrap_u = Kakadu::Texture::Wrapping::Repeat,
-																	  .wrap_v = Kakadu::Texture::Wrapping::Repeat
+																	  .wrap_u = Kakadu::RHI::Texture::Wrapping::Repeat,
+																	  .wrap_v = Kakadu::RHI::Texture::Wrapping::Repeat
 																  } );
-	brickwall_normal_map   = texture_database.CreateAssetFromFile( "Brickwall (Normal) Map", 
-																   AssetDir R"(bricks2_normal.jpg)",
-																   Kakadu::Texture::ImportSettings
-																   {
-																	   .wrap_u = Kakadu::Texture::Wrapping::Repeat,
-																	   .wrap_v = Kakadu::Texture::Wrapping::Repeat,
-																	   .format = Kakadu::Texture::Format::RGBA,
-																   } );
+	brickwall_normal_map = texture_database.CreateAssetFromFile( "Brickwall (Normal) Map",
+																 AssetDir R"(bricks2_normal.jpg)",
+																 Kakadu::RHI::Texture::ImportSettings
+																 {
+																	 .wrap_u = Kakadu::RHI::Texture::Wrapping::Repeat,
+																	 .wrap_v = Kakadu::RHI::Texture::Wrapping::Repeat,
+																	 .format = Kakadu::RHI::Texture::Format::RGBA,
+																 } );
 
 	brickwall_displacement_map = texture_database.CreateAssetFromFile( "Brickwall (Displacement) Map",
 																	   AssetDir R"(bricks2_disp.jpg)",
-																	   Kakadu::Texture::ImportSettings
+																	   Kakadu::RHI::Texture::ImportSettings
 																	   {
-																		   .format = Kakadu::Texture::Format::RGBA,
+																		   .format = Kakadu::RHI::Texture::Format::RGBA,
 																	   } );
 
 	transparent_window_texture = texture_database.CreateAssetFromFile( "Transparent Window",
 																	   AssetDir R"(blending_transparent_window.png)" );
-	
+
 	checker_pattern_texture = texture_database.CreateAssetFromFile( "Checkerboard Pattern 09",
-																	AssetDir R"(kenney_prototype/texture_09.png)", 
-																	Kakadu::Texture::ImportSettings
+																	AssetDir R"(kenney_prototype/texture_09.png)",
+																	Kakadu::RHI::Texture::ImportSettings
 																	{
-																		.wrap_u = Kakadu::Texture::Wrapping::Repeat,
-																		.wrap_v = Kakadu::Texture::Wrapping::Repeat
+																		.wrap_u = Kakadu::RHI::Texture::Wrapping::Repeat,
+																		.wrap_v = Kakadu::RHI::Texture::Wrapping::Repeat
 																	} );
 
 /* Shaders: */
@@ -301,7 +301,7 @@ void BloomDemoApplication::Initialize()
 
 	cube_mesh_instanced = Kakadu::Mesh( cube_mesh,
 										{
-											Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
+											Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
 										},
 										reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 										CUBE_COUNT,
@@ -309,7 +309,7 @@ void BloomDemoApplication::Initialize()
 
 	cube_reflected_mesh_instanced = Kakadu::Mesh( cube_mesh,
 												  {
-													  Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
+													  Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
 												  },
 												  reinterpret_cast< std::vector< float >& >( cube_reflected_instance_data_array ),
 												  CUBE_REFLECTED_COUNT,
@@ -348,8 +348,8 @@ void BloomDemoApplication::Initialize()
 
 	sphere_mesh_instanced_with_color = Kakadu::Mesh( sphere_mesh_lower_detail,
 													 {
-														 Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START     }, // Transform.
-														 Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }	// Color.
+														 Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START     }, // Transform.
+														 Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }	// Color.
 													 },
 													 reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
 													 LIGHT_POINT_COUNT,
@@ -360,8 +360,8 @@ void BloomDemoApplication::Initialize()
 
 	triangle_mesh_instanced_with_color = Kakadu::Mesh( triangle_mesh_positions_only,
 													   {
-														   Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START     }, // Transform.
-														   Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }  // Color.
+														   Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START     }, // Transform.
+														   Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }  // Color.
 													   },
 													   reinterpret_cast< std::vector< float >& >( star_instance_data_array ),
 													   STAR_COUNT,
@@ -1061,7 +1061,7 @@ void BloomDemoApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorit
 		meteorite_renderable = &meteorite_model_info.model_instance.Renderables().front();
 		cube_mesh_instanced = Kakadu::Mesh( *meteorite_renderable->GetMesh(),
 											{
-												Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
+												Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
 											},
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,
@@ -1075,7 +1075,7 @@ void BloomDemoApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorit
 		meteorite_renderable = nullptr;
 		cube_mesh_instanced = Kakadu::Mesh( cube_mesh,
 											{
-												Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
+												Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
 											},
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,

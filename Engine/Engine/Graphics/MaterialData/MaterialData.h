@@ -1,13 +1,13 @@
 #pragma once
 
 // Engine Includes.
-#include "Graphics/Color.hpp"
-#include "Graphics/PaddedAndCombinedTypes.h"
-#include "Graphics/Std140StructTag.h"
+#include "Math/Color.hpp"
+#include "Math/PaddedAndCombinedTypes.h"
+#include "Graphics/RHI/Std140StructTag.h"
 
 namespace Kakadu::MaterialData
 {
-	struct BlinnPhongMaterialData : public Std140StructTag
+	struct BlinnPhongMaterialData : public RHI::Std140StructTag
 	{
 		Color3 color_diffuse;
 		i32 has_texture_diffuse;
@@ -16,8 +16,8 @@ namespace Kakadu::MaterialData
 		float shininess;
 	};
 
-	struct BasicColorMaterialData : public Std140StructTag
+	struct BasicColorMaterialData : public RHI::Std140StructTag
 	{
-		Color3_Padded color;
+		Math::Color3_Padded color;
 	};
 }

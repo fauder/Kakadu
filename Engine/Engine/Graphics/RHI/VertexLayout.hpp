@@ -1,8 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "Graphics.h"
-#include "GraphicsMacros.h"
+#include "RHI.h"
 #include "ShaderTypeInformation.h"
 #include "Core/Types.h"
 #include "Math/Concepts_Math.h"
@@ -10,7 +9,7 @@
 // std Includes.
 #include <vector>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	struct VertexAttribute
 	{
@@ -27,7 +26,7 @@ namespace Kakadu
 
 		/* Comparison operators. */
 
-		u32 Size() const { return count * GL::Type::SizeOf( type ); }
+		u32 Size() const { return count * RHI::Type::SizeOf( type ); }
 	};
 
 	struct VertexInstanceAttribute
@@ -44,7 +43,7 @@ namespace Kakadu
 
 		/* Comparison operators. */
 
-		u32 Size() const { return count * GL::Type::SizeOf( type ); }
+		u32 Size() const { return count * RHI::Type::SizeOf( type ); }
 	};
 
 	class VertexLayout

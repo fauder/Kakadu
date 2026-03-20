@@ -1,12 +1,12 @@
 #pragma once
 
 // Engine Includes.
-#include "Color.hpp"
-#include "Graphics.h"
-#include "GraphicsMacros.h"
+#include "RHI.h"
 #include "MSAA.h"
-#include "RHI/ID/TextureID.h"
+#include "Core/AssetLoader.Codegen.h"
 #include "Core/Concepts.h"
+#include "ID/TextureID.h"
+#include "Math/Color.hpp"
 #include "Math/Vector.hpp"
 
 // std Includes.
@@ -17,7 +17,10 @@ namespace Kakadu
 {
 	template< Concepts::NotPointer AssetType >
 	class AssetDatabase;
+}
 
+namespace Kakadu::RHI
+{
 	enum class TextureType
 	{
 		None,

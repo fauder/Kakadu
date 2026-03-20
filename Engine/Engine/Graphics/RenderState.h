@@ -1,7 +1,8 @@
 #pragma once
 
 // Engine Includes.
-#include "Enums.h"
+#include "SortingMode.h"
+#include "RHI/Enums.h"
 
 namespace Kakadu
 {
@@ -23,32 +24,32 @@ namespace Kakadu
 
 	/* Face-culling & winding-order: */
 
-		Face face_culling_face_to_cull          = Face::Back;
-		WindingOrder face_culling_winding_order = WindingOrder::Clockwise;
+		RHI::Face face_culling_face_to_cull          = RHI::Face::Back;
+		RHI::WindingOrder face_culling_winding_order = RHI::WindingOrder::Clockwise;
 
 	/* Depth: */
 
-		ComparisonFunction depth_comparison_function = ComparisonFunction::Less;
+		RHI::ComparisonFunction depth_comparison_function = RHI::ComparisonFunction::Less;
 
-	/* Stencil: */
+		/* Stencil: */
 
-		u32 stencil_write_mask                         = true;
-		ComparisonFunction stencil_comparison_function = ComparisonFunction::Always;
-		u32 stencil_ref                                = 0;
-		u32 stencil_mask                               = 0xFF;
+		u32 stencil_write_mask                              = true;
+		RHI::ComparisonFunction stencil_comparison_function = RHI::ComparisonFunction::Always;
+		u32 stencil_ref                                     = 0;
+		u32 stencil_mask                                    = 0xFF;
 
-		StencilTestResponse stencil_test_response_stencil_fail            = StencilTestResponse::Keep;
-		StencilTestResponse stencil_test_response_stencil_pass_depth_fail = StencilTestResponse::Keep;
-		StencilTestResponse stencil_test_response_both_pass               = StencilTestResponse::Keep;
+		RHI::StencilTestResponse stencil_test_response_stencil_fail            = RHI::StencilTestResponse::Keep;
+		RHI::StencilTestResponse stencil_test_response_stencil_pass_depth_fail = RHI::StencilTestResponse::Keep;
+		RHI::StencilTestResponse stencil_test_response_both_pass               = RHI::StencilTestResponse::Keep;
 
 	/* Blending: */
 
-		BlendingFactor blending_source_color_factor      = BlendingFactor::One;
-		BlendingFactor blending_destination_color_factor = BlendingFactor::Zero;
-		BlendingFactor blending_source_alpha_factor      = BlendingFactor::One;
-		BlendingFactor blending_destination_alpha_factor = BlendingFactor::Zero;
+		RHI::BlendingFactor blending_source_color_factor      = RHI::BlendingFactor::One;
+		RHI::BlendingFactor blending_destination_color_factor = RHI::BlendingFactor::Zero;
+		RHI::BlendingFactor blending_source_alpha_factor      = RHI::BlendingFactor::One;
+		RHI::BlendingFactor blending_destination_alpha_factor = RHI::BlendingFactor::Zero;
 
-		BlendingFunction blending_function = BlendingFunction::Add;
+		RHI::BlendingFunction blending_function = RHI::BlendingFunction::Add;
 
 	}; /* Total: 2 bytes of padding. */
 }

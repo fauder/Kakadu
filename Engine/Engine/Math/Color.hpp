@@ -5,7 +5,7 @@
 #include "Math/Concepts_Math.h"
 #include "Math/Vector.hpp"
 
-namespace Kakadu
+namespace Kakadu::Math
 {
 	class Color3 : public Vector3
 	{
@@ -120,4 +120,10 @@ namespace Kakadu
 		static constexpr Color4 Zero()												{ return Black( 0.0f ); }
 		static constexpr Color4 One()												{ return White(); }
 	};
+}
+
+namespace Kakadu
+{
+	using Color3 = Math::Color3;
+	using Color4 = Math::Color4;
 }

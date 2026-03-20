@@ -1,13 +1,13 @@
 #pragma once
 
 // Engine Includes.
-#include "Graphics.h"
-#include "Color.hpp"
+#include "RHI.h"
 #include "ShaderSourcePath.hpp"
 #include "Std140StructTag.h"
 #include "Uniform.h"
 #include "VertexLayout.hpp"
-#include "RHI/ID/ShaderProgramID.h"
+#include "ID/ShaderProgramID.h"
+#include "Math/Color.hpp"
 #include "Math/Concepts_Math.h"
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
@@ -25,7 +25,10 @@ namespace Kakadu
 	/* Forward Declarations: */
 	class Renderer;
 	class BuiltinShaders;
+}
 
+namespace Kakadu::RHI
+{
 	class Shader
 	{
 		friend class Renderer;

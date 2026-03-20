@@ -1,28 +1,20 @@
 #pragma once
 
 // Engine Includes.
-#include "Color.hpp"
 #include "Enums.h"
 #include "MSAA.h"
 #include "Texture.h"
-#include "RHI/ID/FramebufferID.h"
+#include "ID/FramebufferID.h"
 #include "Core/BitFlags.hpp"
+#include "Math/Color.hpp"
 
 // std Includes.
 #include <string>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	struct Framebuffer
 	{
-		enum class ActivationMode
-		{
-			Invalid = 0,
-			Both    = GL_FRAMEBUFFER,
-			Write   = GL_DRAW_FRAMEBUFFER,
-			Read    = GL_READ_FRAMEBUFFER
-		};
-
 		enum class AttachmentType : u8
 		{
 			Color                = 1,

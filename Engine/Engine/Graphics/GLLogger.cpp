@@ -58,32 +58,32 @@ namespace Kakadu
 
 	void GLLogger::Info( const std::string& message )
 	{
-		logger.AddLog( GLLogType::NORMAL, message );
+		logger.AddLog( RHI::GLLogType::NORMAL, message );
 	}
 
 	void GLLogger::Info( const char* message )
 	{
-		logger.AddLog( GLLogType::NORMAL, message );
+		logger.AddLog( RHI::GLLogType::NORMAL, message );
 	}
 
 	void GLLogger::Warning( const std::string& message )
 	{
-		logger.AddLog( GLLogType::WARNING, ICON_FA_TRIANGLE_EXCLAMATION + ( " " + message ) );
+		logger.AddLog( RHI::GLLogType::WARNING, ICON_FA_TRIANGLE_EXCLAMATION + ( " " + message ) );
 	}
 
 	void GLLogger::Warning( const char* message )
 	{
-		logger.AddLog( GLLogType::WARNING, ( std::string( ICON_FA_TRIANGLE_EXCLAMATION ) + " " + message ).c_str() );
+		logger.AddLog( RHI::GLLogType::WARNING, ( std::string( ICON_FA_TRIANGLE_EXCLAMATION ) + " " + message ).c_str() );
 	}
 
 	void GLLogger::Error( const std::string& message )
 	{
-		logger.AddLog( GLLogType::ERROR_, ICON_FA_CIRCLE_EXCLAMATION + ( " " + message ) );
+		logger.AddLog( RHI::GLLogType::ERROR_, ICON_FA_CIRCLE_EXCLAMATION + ( " " + message ) );
 	}
 
 	void GLLogger::Error( const char* message )
 	{
-		logger.AddLog( GLLogType::ERROR_, ( std::string( ICON_FA_CIRCLE_EXCLAMATION ) + " " + message ).c_str() );
+		logger.AddLog( RHI::GLLogType::ERROR_, ( std::string( ICON_FA_CIRCLE_EXCLAMATION ) + " " + message ).c_str() );
 	}
 
 	/* omit_empty_group: If true, defers the push operation until an actual log is recorded between this function call & the PopGroup() call. If no calls were made in-between,
@@ -220,7 +220,7 @@ namespace Kakadu
 			sprintf_s( full_message.data(), full_message.size(), ICON_FA_ELLIPSIS_VERTICAL "\t%-17s | %13s | %13s: \t%s", severity_string, source_string, type_string, message );
 		}
 
-		logger.AddLog( GLenumToGLLogType( type ), full_message.data() );
+		logger.AddLog( RHI::GLenumToGLLogType( type ), full_message.data() );
 	}
 
 	const char* GLLogger::GLenumToString_Source( const GLenum source )

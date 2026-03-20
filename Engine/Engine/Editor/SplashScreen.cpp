@@ -1,6 +1,6 @@
 // Engine Includes.
+#include "Graphics/RHI/RHI.h"
 #include "SplashScreen.h"
-#include "Graphics/Graphics.h"
 
 // Vendor/stb Includes.
 #include "stb/stb_image.h"

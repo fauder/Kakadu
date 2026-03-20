@@ -3,7 +3,12 @@
 #include "Asset/Shader/_Attributes.glsl"
 #include "Core/Types.h"
 
-namespace Kakadu
+// std Includes.
+#include <cstddef> // std::byte.
+
+#define BUFFER_OFFSET( idx ) ( static_cast< std::byte* >( 0 ) + ( idx ) )
+
+namespace Kakadu::RHI
 {
 	VertexLayout::VertexLayout()
 	{}
@@ -42,12 +47,12 @@ namespace Kakadu
 		{
 			const auto& attribute = *iterator;
 
-			if( const auto underlying_count = GL::Type::CountOf( attribute.type );
+			if( const auto underlying_count = RHI::Type::CountOf( attribute.type );
 				underlying_count > 1 )
 			{
-				const auto underlying_type            = GL::Type::ComponentTypeOf( attribute.type );
-				const auto underlying_type_size       = GL::Type::SizeOf( underlying_type );
-				const auto& [ slot_count, slot_size ] = GL::Type::RowAndColumnCountOf( attribute.type );
+				const auto underlying_type            = RHI::Type::ComponentTypeOf( attribute.type );
+				const auto underlying_type_size       = RHI::Type::SizeOf( underlying_type );
+				const auto& [ slot_count, slot_size ] = RHI::Type::RowAndColumnCountOf( attribute.type );
 				const auto slot_stride                = slot_size * underlying_type_size;
 				
 				ASSERT_DEBUG_ONLY( underlying_type != GL_DOUBLE ); // DOUBLES ARE NOT IMPLEMENTED FOR CONVENIENCE.
@@ -84,12 +89,12 @@ namespace Kakadu
 		{
 			const auto& attribute = *iterator;
 
-			if( const auto underlying_count = GL::Type::CountOf( attribute.type );
+			if( const auto underlying_count = RHI::Type::CountOf( attribute.type );
 				underlying_count > 1 )
 			{
-				const auto underlying_type            = GL::Type::ComponentTypeOf( attribute.type );
-				const auto underlying_type_size       = GL::Type::SizeOf( underlying_type );
-				const auto& [ slot_count, slot_size ] = GL::Type::RowAndColumnCountOf( attribute.type );
+				const auto underlying_type            = RHI::Type::ComponentTypeOf( attribute.type );
+				const auto underlying_type_size       = RHI::Type::SizeOf( underlying_type );
+				const auto& [ slot_count, slot_size ] = RHI::Type::RowAndColumnCountOf( attribute.type );
 				const auto slot_stride                = slot_size * underlying_type_size;
 				
 				ASSERT_DEBUG_ONLY( underlying_type != GL_DOUBLE ); // DOUBLES ARE NOT IMPLEMENTED FOR CONVENIENCE.
@@ -170,7 +175,7 @@ namespace Kakadu
 		else
 		{
 			const auto& previous_attribute = attributes.back();
-			const auto& [previous_attribute_occupied_slot_count, dont_care_slot_size] = GL::Type::RowAndColumnCountOf( previous_attribute.type );
+			const auto& [previous_attribute_occupied_slot_count, dont_care_slot_size] = RHI::Type::RowAndColumnCountOf( previous_attribute.type );
 			attributes.push_back(
 			{
 				.count        = count,

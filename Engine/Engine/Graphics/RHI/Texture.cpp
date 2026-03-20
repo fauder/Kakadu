@@ -1,12 +1,12 @@
 // Engine Includes.
+#include "Capabilities.h"
 #include "GLLabelPrefixes.h"
-#include "GLLogger.h"
-#include "Renderer.h"
+#include "Graphics/GLLogger.h" // TODO: GLLogger dependency - wrong direction, fix when logger is properly split.
 #include "Texture.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Assertion.h"
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	Texture::Texture()
 		:
@@ -78,7 +78,7 @@ namespace Kakadu
 		import_settings
 		{
 			.format = DetermineActualFormat( format ),
-			.msaa = MSAA{ Renderer::CheckMSAASupport( format, sample_count ) ? sample_count : u8( 1 ) }
+			.msaa = MSAA{ Capabilities::QueryMSAASupport( format, sample_count ) ? sample_count : u8( 1 ) }
 		}
 	{
 		glGenTextures( 1, &id.id );

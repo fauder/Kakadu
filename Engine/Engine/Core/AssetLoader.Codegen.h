@@ -3,8 +3,6 @@
 // std Includes.
 #include <cstddef> // std::byte.
 
-#define BUFFER_OFFSET( idx ) ( static_cast< std::byte* >( 0 ) + ( idx ) )
-
 #define ASSET_LOADER_CLASS_DECLARATION_FROM_FILE_ONLY( class_name ) \
 class Loader\
 {\

@@ -2,10 +2,10 @@
 
 // Engine Includes.
 #include "Color.hpp"
+#include "Vector.hpp"
 #include "Core/Types.h"
-#include "Math/Vector.hpp"
 
-namespace Kakadu
+namespace Kakadu::Math
 {
 	using Color3_Padded = Color4;
 	

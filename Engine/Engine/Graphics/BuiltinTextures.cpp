@@ -1,16 +1,16 @@
 // Engine Includes.
 #include "BuiltinTextures.h"
 #include "Renderer.h"
+#include "Asset/Paths.h"
 #include "Core/AssetDatabase.hpp"
 #include "Core/Utility.hpp"
-#include "Asset/Paths.h"
 
 namespace Kakadu
 {
 	/* Static member variable definitions: */
-	std::unordered_map< std::string, Texture* > BuiltinTextures::TEXTURE_MAP;
+	std::unordered_map< std::string, RHI::Texture* > BuiltinTextures::TEXTURE_MAP;
 
-	Texture* BuiltinTextures::Get( const std::string& name )
+	RHI::Texture* BuiltinTextures::Get( const std::string& name )
 	{
 		// Just to get a better error message.
 		ASSERT_DEBUG_ONLY( TEXTURE_MAP.contains( name ) && ( "Built-in texture with the name \"" + name + "\" was not found!" ).c_str() );
@@ -18,40 +18,40 @@ namespace Kakadu
 		return TEXTURE_MAP.find( name )->second;
 	}
 
-	Texture* BuiltinTextures::CreateSingleTexelTexture( const Color4& texel, const std::string& name,
-														std::optional< Texture::ImportSettings > import_settings )
+	RHI::Texture* BuiltinTextures::CreateSingleTexelTexture( const Color4& texel, const std::string& name,
+															 std::optional< RHI::Texture::ImportSettings > import_settings )
 	{
 		return CreateSingleTexelTexture( std::array< unsigned char, 4 >
-										 {
-											 ( unsigned char )( texel.R() * 255.0f ),
-											 ( unsigned char )( texel.G() * 255.0f ),
-											 ( unsigned char )( texel.B() * 255.0f ),
-											 ( unsigned char )( texel.A() * 255.0f )
-										 },
-										 name,
-										 import_settings );
+		{
+			( unsigned char )( texel.R() * 255.0f ),
+			( unsigned char )( texel.G() * 255.0f ),
+			( unsigned char )( texel.B() * 255.0f ),
+			( unsigned char )( texel.A() * 255.0f )
+		},
+		name,
+		import_settings );
 	}
 
-	Texture* BuiltinTextures::CreateSingleTexelTexture( const std::array< unsigned char, 4 > texel, const std::string& name, 
-														std::optional< Texture::ImportSettings > import_settings )
+	RHI::Texture* BuiltinTextures::CreateSingleTexelTexture( const std::array< unsigned char, 4 > texel, const std::string& name,
+															 std::optional< RHI::Texture::ImportSettings > import_settings )
 	{
 		if( not import_settings.has_value() )
 		{
-			import_settings = Texture::ImportSettings
+			import_settings = RHI::Texture::ImportSettings
 			{
-				.wrap_u           = Texture::Wrapping::ClampToEdge,
-				.wrap_v           = Texture::Wrapping::ClampToEdge,
-				.min_filter       = Texture::Filtering::Nearest,
-				.mag_filter       = Texture::Filtering::Nearest,
+				.wrap_u           = RHI::Texture::Wrapping::ClampToEdge,
+				.wrap_v           = RHI::Texture::Wrapping::ClampToEdge,
+				.min_filter       = RHI::Texture::Filtering::Nearest,
+				.mag_filter       = RHI::Texture::Filtering::Nearest,
 				.flip_vertically  = false,
 				.generate_mipmaps = false
 			};
 		}
 
-		return ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromRawBytes( name,
-																						  reinterpret_cast< const std::byte* >( &texel ),
-																						  Vector2I{ 1, 1 },
-																						  *import_settings );
+		return ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromRawBytes( name,
+																							   reinterpret_cast< const std::byte* >( &texel ),
+																							   Vector2I{ 1, 1 },
+																							   *import_settings );
 	}
 
 	void BuiltinTextures::Initialize()
@@ -60,16 +60,17 @@ namespace Kakadu
 		TEXTURE_MAP.try_emplace( "Gray",		CreateSingleTexelTexture( Color4::Gray( 0.5f ),	"Gray"	) );
 		TEXTURE_MAP.try_emplace( "Black",		CreateSingleTexelTexture( Color4::Black(),		"Black" ) );
 		TEXTURE_MAP.try_emplace( "Normal Map",	CreateSingleTexelTexture( std::array< unsigned char, 4 >{ 127, 127, 255, 255 }, "Default Normal Map",
-																		  Texture::ImportSettings
+																		  RHI::Texture::ImportSettings
 																		  {
-																			  .wrap_u           = Texture::Wrapping::ClampToEdge,
-																			  .wrap_v           = Texture::Wrapping::ClampToEdge,
-																			  .min_filter       = Texture::Filtering::Nearest,
-																			  .mag_filter       = Texture::Filtering::Nearest,
+																			  .wrap_u           = RHI::Texture::Wrapping::ClampToEdge,
+																			  .wrap_v           = RHI::Texture::Wrapping::ClampToEdge,
+																			  .min_filter       = RHI::Texture::Filtering::Nearest,
+																			  .mag_filter       = RHI::Texture::Filtering::Nearest,
+
 																			  .flip_vertically  = false,
 																			  .generate_mipmaps = false,
 
-																			  .format = Texture::Format::RGBA
+																			  .format           = RHI::Texture::Format::RGBA
 																		  } ) );
 
 		{
@@ -87,37 +88,37 @@ namespace Kakadu
 			};
 
 			TEXTURE_MAP.try_emplace( "Bayer Dither",
-									 ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromRawBytes( "Bayer Dither",
-																												reinterpret_cast< const std::byte* >( &bayer_dither_matrix ),
-																												Vector2I{ 8, 8 },
-																												Texture::ImportSettings
-																												{
-																													.wrap_u     = Texture::Wrapping::Repeat,
-																													.wrap_v     = Texture::Wrapping::Repeat,
-																													.min_filter = Texture::Filtering::Nearest,
-																													.mag_filter = Texture::Filtering::Nearest,
+									 ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromRawBytes( "Bayer Dither",
+																													 reinterpret_cast< const std::byte* >( &bayer_dither_matrix ),
+																													 Vector2I{ 8, 8 },
+																													 RHI::Texture::ImportSettings
+																													 {
+																														 .wrap_u     = RHI::Texture::Wrapping::Repeat,
+																														 .wrap_v     = RHI::Texture::Wrapping::Repeat,
+																														 .min_filter = RHI::Texture::Filtering::Nearest,
+																														 .mag_filter = RHI::Texture::Filtering::Nearest,
 
-																													.flip_vertically  = false,
-																													.generate_mipmaps = false,
+																														 .flip_vertically  = false,
+																														 .generate_mipmaps = false,
 
-																													.format = Texture::Format::R,
-																												} ) );
+																														 .format = RHI::Texture::Format::R,
+																													 } ) );
 		}
 
-		TEXTURE_MAP.try_emplace( "Missing", ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromFile( "Missing",
-																												   ENGINE_TEXTURE_PATH_ABSOLUTE( "missing_texture.jpg" ),
-																												   Texture::ImportSettings
-																												   {
-																													   .wrap_u = Texture::Wrapping::Repeat,
-																													   .wrap_v = Texture::Wrapping::Repeat
-																												   } ) );
+		TEXTURE_MAP.try_emplace( "Missing", ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromFile( "Missing",
+																														ENGINE_TEXTURE_PATH_ABSOLUTE( "missing_texture.jpg" ),
+																														RHI::Texture::ImportSettings
+																														{
+																															.wrap_u = RHI::Texture::Wrapping::Repeat,
+																															.wrap_v = RHI::Texture::Wrapping::Repeat
+																														} ) );
 
-		TEXTURE_MAP.try_emplace( "UV Test", ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromFile( "UV Test",
-																												   ENGINE_TEXTURE_PATH_ABSOLUTE( "uv_test.png" ),
-																												   Texture::ImportSettings
-																												   {
-																													   .wrap_u = Texture::Wrapping::Repeat,
-																													   .wrap_v = Texture::Wrapping::Repeat
-																												   } ) );
+		TEXTURE_MAP.try_emplace( "UV Test", ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromFile( "UV Test",
+																														ENGINE_TEXTURE_PATH_ABSOLUTE( "uv_test.png" ),
+																														RHI::Texture::ImportSettings
+																														{
+																															.wrap_u = RHI::Texture::Wrapping::Repeat,
+																															.wrap_v = RHI::Texture::Wrapping::Repeat
+																														} ) );
 	}
 }

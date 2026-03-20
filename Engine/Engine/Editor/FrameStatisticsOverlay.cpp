@@ -3,7 +3,7 @@
 // Engine Includes.
 #include "FrameStatisticsOverlay.h"
 #include "Core/ImGuiUtility.h"
-#include "Graphics/Color.hpp"
+#include "Math/Color.hpp"
 #include "Math/VectorConversion.hpp"
 
 // Vendor Includes.

@@ -1,13 +1,13 @@
 #pragma once
 
 // Engine Includes.
-#include "Graphics.h"
+#include "RHI.h"
 #include "Core/Macros.h"
 
 // std Includes.
 #include <iostream>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	enum class GLLogType
 	{

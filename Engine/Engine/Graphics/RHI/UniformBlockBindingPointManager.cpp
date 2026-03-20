@@ -5,42 +5,47 @@
 #endif // _WIN32
 
 // Engine Includes.
+#include "Capabilities.h"
 #include "Shader.hpp"
 #include "UniformBlockBindingPointManager.h"
 
-namespace Kakadu
+namespace Kakadu::RHI::Uniform
 {
-	Uniform::BindingPoint UniformBlockBindingPointManager::RegisterUniformBlock( const Shader& shader, const std::string& block_name, Uniform::BufferInformation& uniform_buffer_info )
+	BindingPoint BlockBindingPointManager::RegisterUniformBlock( const Shader& shader,
+																 const std::string& block_name,
+																 BufferInformation& uniform_buffer_info )
 	{
 		auto& instance = Instance();
 
 		switch( uniform_buffer_info.category )
 		{
-			case Uniform::BufferCategory::Global:
+			case BufferCategory::Global:
 				return uniform_buffer_info.binding_point = RegisterUniformBlock( shader, block_name, instance.binding_point_book_keeping_global );
-			case Uniform::BufferCategory::Intrinsic:
+			case BufferCategory::Intrinsic:
 				return uniform_buffer_info.binding_point = RegisterUniformBlock( shader, block_name, instance.binding_point_book_keeping_intrinsic );
-			// case Uniform::BufferCategory::Regular:
+			// case BufferCategory::Regular:
 			default:
 				return uniform_buffer_info.binding_point = RegisterUniformBlock( shader, block_name, instance.binding_point_book_keeping_regular );
 		}
 	}
 
-	void UniformBlockBindingPointManager::ConnectBufferToBlock( const Buffer& uniform_buffer, const std::string& block_name, const Uniform::BufferCategory category )
+	void BlockBindingPointManager::ConnectBufferToBlock( const Buffer& uniform_buffer,
+														 const std::string& block_name,
+														 const BufferCategory category )
 	{
 		auto& instance = Instance();
 
-		std::optional< Uniform::BindingPoint > binding_point;
+		std::optional< BindingPoint > binding_point;
 
 		switch( category )
 		{
-			case Uniform::BufferCategory::Regular:
+			case BufferCategory::Regular:
 				binding_point = instance.binding_point_book_keeping_regular.Find( block_name );
 				break;
-			case Uniform::BufferCategory::Global:
+			case BufferCategory::Global:
 				binding_point = instance.binding_point_book_keeping_global.Find( block_name );
 				break;
-			case Uniform::BufferCategory::Intrinsic:
+			case BufferCategory::Intrinsic:
 				binding_point = instance.binding_point_book_keeping_intrinsic.Find( block_name );
 				break;
 		}
@@ -54,9 +59,9 @@ namespace Kakadu
 		{
 		#if defined( _WIN32 )
 			if( IsDebuggerPresent() )
-				OutputDebugStringA( ( "\nUniformBlockBindingPointManager::ConnectBufferToBlock(): Block with name \"" + block_name + "\" was not registered.\n" ).c_str() );
+				OutputDebugStringA( ( "\nBlockBindingPointManager::ConnectBufferToBlock(): Block with name \"" + block_name + "\" was not registered.\n" ).c_str() );
 		#endif // _WIN32
-			throw std::runtime_error( "UniformBlockBindingPointManager::ConnectBufferToBlock(): Block with name \"" + block_name + "\" was not registered." );
+			throw std::runtime_error( "BlockBindingPointManager::ConnectBufferToBlock(): Block with name \"" + block_name + "\" was not registered." );
 		}
 	#endif // _DEBUG
 	}
@@ -67,18 +72,19 @@ namespace Kakadu
  *
  */
 
-	UniformBlockBindingPointManager::UniformBlockBindingPointManager()
+	BlockBindingPointManager::BlockBindingPointManager()
 		:
 		/* Divide max. binding points = max. uniform buffers/blocks allowed into 3 categories and determine their starting offsets from 0. */
-		binding_point_max_count( QueryMaximumUniformBufferBindingCount() ),
+		binding_point_max_count( RHI::Capabilities::QueryMaximumUniformBufferBindingCount() ),
 		binding_point_book_keeping_intrinsic( 0, 4 ),
 		binding_point_book_keeping_global( 0 + 4, 4 ),
 		binding_point_book_keeping_regular( 0 + 4 + 4, binding_point_max_count - 8 )
 	{
 	}
 
-	Uniform::BindingPoint UniformBlockBindingPointManager::RegisterUniformBlock( const Shader& shader, const std::string& block_name, 
-																				 Uniform::BindingPointBookKeeping& binding_point_book_keeping )
+	BindingPoint BlockBindingPointManager::RegisterUniformBlock( const Shader& shader,
+																 const std::string& block_name, 
+																 BlockBindingPointBookKeeping& binding_point_book_keeping )
 	{
 		if( const auto maybe_binding_point = binding_point_book_keeping.Find( block_name );
 			maybe_binding_point.has_value() )
@@ -102,29 +108,25 @@ namespace Kakadu
 				return binding_point_to_assign;
 			}
 
-			throw std::runtime_error( "UniformBlockBindingPointManager::RegisterUniformBuffer(): Maximum binding point count has been reached. Can not assign new blocks/buffers." );
+			throw std::runtime_error( "BlockBindingPointManager::RegisterUniformBuffer(): Maximum binding point count has been reached. Can not assign new blocks/buffers." );
 #if defined( _WIN32 )
 			if( IsDebuggerPresent() )
-				OutputDebugStringA( "\nUniformBlockBindingPointManager::RegisterUniformBuffer(): Maximum binding point count has been reached. Can not assign new blocks/buffers.\n" );
+				OutputDebugStringA( "\nBlockBindingPointManager::RegisterUniformBuffer(): Maximum binding point count has been reached. Can not assign new blocks/buffers.\n" );
 #endif // _WIN32
 		}
 	}
 
-	void UniformBlockBindingPointManager::BindBufferToBindingPoint( const Buffer& uniform_buffer, const Uniform::BindingPoint binding_point )
+	void BlockBindingPointManager::BindBufferToBindingPoint( const Buffer& uniform_buffer, 
+															 const BindingPoint binding_point )
 	{
 		glBindBufferBase( GL_UNIFORM_BUFFER, binding_point, uniform_buffer.id.id );
 	}
 
-	void UniformBlockBindingPointManager::BindBufferToBindingPoint_Partial( const Buffer& uniform_buffer, const Uniform::BindingPoint binding_point,
-																			const u32 offset, const u32 size )
+	void BlockBindingPointManager::BindBufferToBindingPoint_Partial( const Buffer& uniform_buffer,
+																	 const BindingPoint binding_point,
+																	 const u32 offset,
+																	 const u32 size )
 	{
 		glBindBufferRange( GL_UNIFORM_BUFFER, binding_point, uniform_buffer.id.id, ( GLintptr )offset, ( GLsizeiptr )size );
-	}
-
-	u32 UniformBlockBindingPointManager::QueryMaximumUniformBufferBindingCount()
-	{
-		u32 query_result;
-		glGetIntegerv( GL_MAX_UNIFORM_BUFFER_BINDINGS, ( i32* )&query_result );
-		return query_result;
 	}
 }

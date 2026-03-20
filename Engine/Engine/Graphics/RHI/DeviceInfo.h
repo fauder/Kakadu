@@ -6,9 +6,8 @@
 // std Includes.
 #include <cstdint>
 #include <string>
-#include <string_view>
 
-namespace Kakadu::Graphics
+namespace Kakadu::RHI
 {
 	struct DeviceInfo
 	{

@@ -45,7 +45,7 @@ namespace Kakadu
 
 	Model::~Model()
 	{
-		auto& asset_database = ServiceLocator< AssetDatabase< Texture > >::Get();
+		auto& asset_database = ServiceLocator< AssetDatabase< RHI::Texture > >::Get();
 
 		for( auto& texture : textures )
 			if( texture )

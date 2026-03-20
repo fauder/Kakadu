@@ -1,16 +1,24 @@
 // Engine Includes.
-#include "Graphics.h"
+#include "RHI.h"
 #include "Framebuffer.h"
 #include "GLLabelPrefixes.h"
-#include "GLLogger.h"
+#include "Graphics/GLLogger.h" // TODO: GLLogger dependency - wrong direction, fix when logger is properly split.
 #include "Core/Assertion.h"
 #include "Core/AssetDatabase_Tracked.hpp"
 #include "Core/Platform.h"
 #include "Core/ServiceLocator.h"
 #include "Core/MorphSystem.h"
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
+	enum class ActivationMode
+	{
+		Invalid = 0,
+		Both    = GL_FRAMEBUFFER,
+		Write   = GL_DRAW_FRAMEBUFFER,
+		Read    = GL_READ_FRAMEBUFFER
+	};
+
 	Framebuffer::Framebuffer()
 		:
 		id( {} ),
@@ -269,27 +277,27 @@ namespace Kakadu
 		{
 			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) +
 								   " (MSAA " + std::to_string( msaa.sample_count ) + "x)" );
-			attachment_texture = Kakadu::Texture( full_name,
+			attachment_texture = Texture( full_name,
 												  format,
 												  msaa.sample_count,
 												  size.X(),
 												  size.Y() );
 				
-			Kakadu::ServiceLocator< AssetDatabase_Tracked< Kakadu::Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
+			Kakadu::ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
 		}
 		else
 		{
 			std::string full_name( this->name + attachment_type_name + std::to_string( size.X() ) + "x" + std::to_string( size.Y() ) );
-			attachment_texture = Kakadu::Texture( full_name, format,
-												  size.X(),
-												  size.Y(),
-												  description.wrap_u,
-												  description.wrap_v,
-												  description.border_color,
-												  description.minification_filter,
-												  description.magnification_filter );
+			attachment_texture = Texture( full_name, format,
+										  size.X(),
+										  size.Y(),
+										  description.wrap_u,
+										  description.wrap_v,
+										  description.border_color,
+										  description.minification_filter,
+										  description.magnification_filter );
 
-			Kakadu::ServiceLocator< AssetDatabase_Tracked< Kakadu::Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
+			Kakadu::ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get().AddOrUpdateAsset( &attachment_texture );
 		}
 
 		constexpr i32 gl_spec_required_level = 0;
@@ -335,7 +343,7 @@ namespace Kakadu
 	{
 		if( IsValid() ) // Also prevents the default framebuffer from getting processed here.
 		{
-			auto& texture_database = Kakadu::ServiceLocator< AssetDatabase_Tracked< Kakadu::Texture* > >::Get();
+			auto& texture_database = Kakadu::ServiceLocator< AssetDatabase_Tracked< Texture* > >::Get();
 
 			if( HasColorAttachment() )
 				texture_database.RemoveAsset( color_attachment.Name() );

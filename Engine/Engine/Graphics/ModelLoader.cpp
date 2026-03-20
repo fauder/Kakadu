@@ -45,24 +45,24 @@ struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase
 namespace Kakadu
 {
 	bool LoadMesh( const fastgltf::Asset& gltf_asset, const fastgltf::Mesh& gltf_mesh,
-                   Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes, const std::vector< Texture* >& textures )
+                   Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes, const std::vector< RHI::Texture* >& textures )
     {
 		/* Naming variables sub-mesh instead of gltf's "primitive" for better readibility. */
 
         mesh_group_to_load.sub_meshes.reserve( gltf_mesh.primitives.size() );
         mesh_group_to_load.name = gltf_mesh.name;
 
-        auto& texture_database = ServiceLocator< AssetDatabase< Texture > >::Get();
+        auto& texture_database = ServiceLocator< AssetDatabase< RHI::Texture > >::Get();
 
 		for( auto submesh_iterator = gltf_mesh.primitives.begin(); submesh_iterator != gltf_mesh.primitives.end(); ++submesh_iterator )
         {
             std::size_t base_color_uv_index = 0;
             std::size_t material_index      = -1;
 
-            Texture* sub_mesh_albedo_texture    = nullptr;
-            Texture* sub_mesh_normal_texture    = nullptr;
-            Texture* metallic_roughness_texture = nullptr;
-            Texture* occlusion_texture          = nullptr;
+            RHI::Texture* sub_mesh_albedo_texture    = nullptr;
+            RHI::Texture* sub_mesh_normal_texture    = nullptr;
+            RHI::Texture* metallic_roughness_texture = nullptr;
+            RHI::Texture* occlusion_texture          = nullptr;
             std::optional< Color3 > sub_mesh_albedo_color;
 
 			auto* position_iterator = submesh_iterator->findAttribute( "POSITION" );
@@ -328,9 +328,9 @@ namespace Kakadu
     }
 
     bool LoadTexture( const fastgltf::Asset& gltf_asset, const fastgltf::Image& gltf_image,
-                      Texture*& texture_to_load, const Kakadu::Texture::ImportSettings& import_settings )
+                      RHI::Texture*& texture_to_load, const RHI::Texture::ImportSettings& import_settings )
     {
-        auto& texture_database = ServiceLocator< AssetDatabase< Texture > >::Get();
+        auto& texture_database = ServiceLocator< AssetDatabase< RHI::Texture > >::Get();
 
         std::visit( fastgltf::visitor
                     {
@@ -484,10 +484,10 @@ namespace Kakadu
             const std::size_t texture_index = gltf_texture_index_from_image_index[ image_index ];
             const auto& gltf_texture = gltf_asset.textures[ texture_index ];
 
-            Texture::ImportSettings import_settings
+            RHI::Texture::ImportSettings import_settings
             {
-                .wrap_u          = Texture::Wrapping::Repeat,
-                .wrap_v          = Texture::Wrapping::Repeat,
+                .wrap_u = RHI::Texture::Wrapping::Repeat,
+                .wrap_v = RHI::Texture::Wrapping::Repeat,
                 /* gltf spec dictates that V coordinates increase in downward direction (i.e., UV origin is top-left).
                  * This is compatible with how stb interprets/treats uvs, so no need to flip uvs coming from gltf. */
                 .flip_vertically = false
@@ -496,12 +496,12 @@ namespace Kakadu
             if( gltf_texture.samplerIndex.has_value() )
             {
                 const auto& sampler = gltf_asset.samplers[ *gltf_texture.samplerIndex ];
-                import_settings.wrap_u = Texture::Wrapping( sampler.wrapS );
-                import_settings.wrap_v = Texture::Wrapping( sampler.wrapT );
+                import_settings.wrap_u = RHI::Texture::Wrapping( sampler.wrapS );
+                import_settings.wrap_v = RHI::Texture::Wrapping( sampler.wrapT );
                 if( sampler.minFilter.has_value() )
-                    import_settings.min_filter = Texture::Filtering( *sampler.minFilter );
+                    import_settings.min_filter = RHI::Texture::Filtering( *sampler.minFilter );
                 if( sampler.magFilter.has_value() )
-                    import_settings.mag_filter = Texture::Filtering( *sampler.magFilter );
+                    import_settings.mag_filter = RHI::Texture::Filtering( *sampler.magFilter );
 
             }
 
@@ -520,7 +520,7 @@ namespace Kakadu
 						( material.packedOcclusionRoughnessMetallicTextures->roughnessMetallicOcclusionTexture &&
 						  material.packedOcclusionRoughnessMetallicTextures->roughnessMetallicOcclusionTexture->textureIndex == texture_index ) ) ) )
                 {
-                    import_settings.format = Texture::Format::RGBA;
+                    import_settings.format = RHI::Texture::Format::RGBA;
                 }
             }
 

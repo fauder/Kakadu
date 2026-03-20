@@ -1,11 +1,11 @@
 #pragma once
 
 // Engine Includes.
-#include "Buffer.h"
-#include "Std140StructTag.h"
-#include "Uniform.h"
 #include "UniformBufferManager.h"
 #include "Core/DirtyBlob.h"
+#include "RHI/Buffer.h"
+#include "RHI/Std140StructTag.h"
+#include "RHI/Uniform.h"
 
 // std Includes.
 #include <unordered_map>
@@ -25,10 +25,10 @@ namespace Kakadu
 		~UniformBufferManagement() = default;
 
 	/* Queries: */
-		const std::unordered_map< std::string, const Uniform::BufferInformation >& GetBufferInformationMap() const { return buffer_info_map; }
+		const std::unordered_map< std::string, const RHI::Uniform::BufferInformation >& GetBufferInformationMap() const { return buffer_info_map; }
 
 	/* Register/Unregister Buffer API: */
-		void RegisterBuffer( const std::string& buffer_name, const Uniform::BufferInformation buffer_info )
+		void RegisterBuffer( const std::string& buffer_name, const RHI::Uniform::BufferInformation buffer_info )
 		{
 			if( buffer_info_map.try_emplace( buffer_name, buffer_info ).second ) // .second returns whether the emplace was successfull or not.
 			{
@@ -39,8 +39,8 @@ namespace Kakadu
 		}
 
 		/* This is used by the Renderer, for Intrinsics/Globals:
-		 * Since Uniform::BufferInformation holds pointers to Shader data, it is effectively lost/corrupted when the host Shader is destroyed (upon recompilation). */
-		void RegisterBuffer_ForceUpdateBufferInfoIfBufferExists( const std::string& buffer_name, const Uniform::BufferInformation& buffer_info )
+		 * Since RHI::Uniform::BufferInformation holds pointers to Shader data, it is effectively lost/corrupted when the host Shader is destroyed (upon recompilation). */
+		void RegisterBuffer_ForceUpdateBufferInfoIfBufferExists( const std::string& buffer_name, const RHI::Uniform::BufferInformation& buffer_info )
 		{
 			if( buffer_info_map.contains( buffer_name ) )
 			{
@@ -83,7 +83,7 @@ namespace Kakadu
 			return blob_map[ buffer_name ].Get( 0 );
 		}
 
-		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
+		template< typename StructType > requires( std::is_base_of_v< RHI::Std140StructTag, StructType > )
 		void Set( const std::string& buffer_name, const StructType& value )
 		{
 			const auto& buffer_info = buffer_info_map[ buffer_name ];
@@ -92,7 +92,7 @@ namespace Kakadu
 		}
 
 		/* For PARTIAL setting of ARRAY uniforms INSIDE a Uniform Buffer. */
-		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
+		template< typename StructType > requires( std::is_base_of_v< RHI::Std140StructTag, StructType > )
 		void SetPartial_Array( const std::string& buffer_name, const char* uniform_member_array_instance_name, const u32 array_index, const StructType& value )
 		{
 			const auto& buffer_info              = buffer_info_map[ buffer_name ];
@@ -119,7 +119,7 @@ namespace Kakadu
 		}
 
 		/* For PARTIAL setting of STRUCT uniforms INSIDE a Uniform Buffer. */
-		template< typename StructType > requires( std::is_base_of_v< Std140StructTag, StructType > )
+		template< typename StructType > requires( std::is_base_of_v< RHI::Std140StructTag, StructType > )
 		void SetPartial_Struct( const std::string& buffer_name, const char* uniform_member_struct_instance_name, const StructType& value )
 		{
 			const auto& buffer_info               = buffer_info_map[ buffer_name ];
@@ -193,9 +193,9 @@ namespace Kakadu
 	private:
 		// TODO: Use hashes instead of strings as keys.
 
-		std::unordered_map< std::string, const Uniform::BufferInformation > buffer_info_map;
+		std::unordered_map< std::string, const RHI::Uniform::BufferInformation > buffer_info_map;
 
-		std::unordered_map< std::string, Buffer* > buffer_map;
+		std::unordered_map< std::string, RHI::Buffer* > buffer_map;
 
 		std::unordered_map< std::string, BlobType > blob_map;
 	};

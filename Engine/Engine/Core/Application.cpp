@@ -1,10 +1,10 @@
 // Engine Includes.
 #include "Application.h"
-#include "Graphics/Graphics.h"
 #include "ImGuiDrawer.hpp"
 #include "ImGuiSetup.h"
 #include "ImGuiUtility.h"
-#include "Graphics/Enums.h"
+#include "Graphics/RHI/RHI.h"
+#include "Graphics/RHI/Enums.h"
 #include "Math/Math.hpp"
 
 #ifdef _EDITOR
@@ -170,8 +170,8 @@ namespace Kakadu
 	void Application::Initialize()
 	{
 		ServiceLocator< GLLogger >::Register( &gl_logger );
-		ServiceLocator< AssetDatabase< Texture > >::Register( &asset_database_texture );
-		ServiceLocator< AssetDatabase_Tracked< Texture* > >::Register( &asset_database_texture_tracked );
+		ServiceLocator< AssetDatabase< RHI::Texture > >::Register( &asset_database_texture );
+		ServiceLocator< AssetDatabase_Tracked< RHI::Texture* > >::Register( &asset_database_texture_tracked );
 		ServiceLocator< AssetDatabase< Model > >::Register( &asset_database_model );
 		ServiceLocator< MorphSystem >::Register( &morph_system );
 

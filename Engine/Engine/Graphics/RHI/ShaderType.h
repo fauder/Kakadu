@@ -1,12 +1,13 @@
 #pragma once
 
 // Engine Includes.
-#include "Graphics.h"
+#include "RHI.h"
+#include "Core/Types.h"
 
 // std Includes.
 #include <array>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	enum class ShaderType
 	{

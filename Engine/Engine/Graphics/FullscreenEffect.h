@@ -1,10 +1,10 @@
 #pragma once
 
 // Engine Includes.
-#include "Framebuffer.h"
 #include "Material.hpp"
 #include "Renderable.h"
 #include "RenderState.h"
+#include "RHI/Framebuffer.h"
 
 // std Includes.
 #include <vector>
@@ -28,8 +28,8 @@ namespace Kakadu
 
 		struct Step
 		{
-			Framebuffer* framebuffer_target;
-			const Texture* texture_input;
+			RHI::Framebuffer* framebuffer_target;
+			const RHI::Texture* texture_input;
 		};
 
 		std::string name;
@@ -37,7 +37,7 @@ namespace Kakadu
 		std::vector< Step > steps;
 		Material material;
 
-		std::vector< Framebuffer > framebuffers;
+		std::vector< RHI::Framebuffer > framebuffers;
 
 		/* If this is not set, Renderer will default-execute the effect. */
 		std::function< void( Renderer& renderer ) > execution_routine;

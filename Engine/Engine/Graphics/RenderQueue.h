@@ -32,8 +32,8 @@ namespace Kakadu
 
 		std::vector< Renderable* > renderable_list;
 
-		std::unordered_map< Shader*, ReferenceCount > shader_reference_counts;
-		std::map< std::string, Shader* > shaders_in_flight;
+		std::unordered_map< RHI::Shader*, ReferenceCount > shader_reference_counts;
+		std::map< std::string, RHI::Shader* > shaders_in_flight;
 
 		std::map< std::string, Material* > materials_in_flight; // TODO: Generate an ID for Materials (who will generate it?) and use that ID as the key here.
 

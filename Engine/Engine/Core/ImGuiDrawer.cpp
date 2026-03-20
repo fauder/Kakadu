@@ -6,7 +6,7 @@
 #include "ImGuiDrawer.hpp"
 #include "ImGuiUtility.h"
 #include "Platform.h"
-#include "Graphics/ShaderTypeInformation.h"
+#include "Graphics/RHI/ShaderTypeInformation.h"
 #include "Math/VectorConversion.hpp"
 
 // Vendor Includes.
@@ -370,11 +370,11 @@ namespace Kakadu::ImGuiDrawer
 		Draw( spherical_coords.Radius(),  "Radius"  );
 	}
 
-	void Draw( const Texture* texture, const char* name )
+	void Draw( const RHI::Texture* texture, const char* name )
 	{
 		if( texture )
 		{
-			if( texture->Type() == TextureType::Texture2D )
+			if( texture->Type() == RHI::TextureType::Texture2D )
 				ImGui::Image( ( ImTextureID )texture->Id().id, ImVec2( 24, 24 ), { 0, 1 }, { 1, 0 } );
 			ImGui::SameLine();
 			ImGui::Text( "%s (ID: %d)", texture->Name().c_str(), texture->Id().id );
@@ -388,9 +388,9 @@ namespace Kakadu::ImGuiDrawer
 		}
 	}
 
-	void Draw( const std::map< std::string, Texture >& texture_map, const Vector2& window_size )
+	void Draw( const std::map< std::string, RHI::Texture >& texture_map, const Vector2& window_size )
 	{
-		local_persist const Texture* selected_texture = nullptr;
+		local_persist const RHI::Texture* selected_texture = nullptr;
 
 		ImGui::SetNextWindowSize( reinterpret_cast< const ImVec2& >( window_size ) );
 		if( ImGui::Begin( ICON_FA_IMAGE " Textures" ) )
@@ -447,16 +447,16 @@ namespace Kakadu::ImGuiDrawer
 
 				switch( selected_texture->Type() )
 				{
-					case TextureType::Texture2D:
+					case RHI::TextureType::Texture2D:
 						ImGui::SetCursorPos( ImGui::GetCursorPos() + ImVec2( padding_x, padding_y ) );
 						ImGui::Image( ( ImTextureID )selected_texture->Id().id, ImVec2( image_width_fit, image_height_fit ), { 0, 1 }, { 1, 0 } );
 						break;
 
-					case TextureType::Texture2D_MultiSample:
+					case RHI::TextureType::Texture2D_MultiSample:
 						DisplayPreviewUnavailableTextInsteadOfImage( ICON_FA_NOTDEF " 2D Texture (Multisampled) Preview Unavailable" );
 						break;
 
-					case TextureType::Cubemap:
+					case RHI::TextureType::Cubemap:
 						DisplayPreviewUnavailableTextInsteadOfImage( ICON_FA_NOTDEF " Cubemap Texture Preview Unavailable" );
 						break;
 
@@ -466,7 +466,7 @@ namespace Kakadu::ImGuiDrawer
 				}
 
 				char info_line_buffer[ 255 ];
-				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( i32 )image_width, ( i32 )image_height, Texture::FormatName( selected_texture->PixelFormat() ) );
+				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( i32 )image_width, ( i32 )image_height, RHI::Texture::FormatName( selected_texture->PixelFormat() ) );
 				ImGui::Indent( ( preview_area_size.x - ImGui::CalcTextSize( info_line_buffer ).x ) / 2.0f );
 				ImGui::TextUnformatted( info_line_buffer );
 				ImGui::SameLine();
@@ -479,9 +479,9 @@ namespace Kakadu::ImGuiDrawer
 		ImGui::End();
 	}
 
-	void Draw( const std::map< std::string, Texture* >& internal_texture_map, const Vector2& window_size )
+	void Draw( const std::map< std::string, RHI::Texture* >& internal_texture_map, const Vector2& window_size )
 	{
-		local_persist const Texture* selected_texture = nullptr;
+		local_persist const RHI::Texture* selected_texture = nullptr;
 
 		ImGui::SetNextWindowSize( reinterpret_cast< const ImVec2& >( window_size ) );
 		if( ImGui::Begin( ICON_FA_IMAGE " Textures (Internal)" ) )
@@ -538,16 +538,16 @@ namespace Kakadu::ImGuiDrawer
 
 				switch( selected_texture->Type() )
 				{
-					case TextureType::Texture2D:
+					case RHI::TextureType::Texture2D:
 						ImGui::SetCursorPos( ImGui::GetCursorPos() + ImVec2( padding_x, padding_y ) );
 						ImGui::Image( ( ImTextureID )selected_texture->Id().id, ImVec2( image_width_fit, image_height_fit ), { 0, 1 }, { 1, 0 } );
 						break;
 
-					case TextureType::Texture2D_MultiSample:
+					case RHI::TextureType::Texture2D_MultiSample:
 						DisplayPreviewUnavailableTextInsteadOfImage( ICON_FA_NOTDEF " 2D Texture (Multisampled) Preview Unavailable" );
 						break;
 
-					case TextureType::Cubemap:
+					case RHI::TextureType::Cubemap:
 						DisplayPreviewUnavailableTextInsteadOfImage( ICON_FA_NOTDEF " Cubemap Texture Preview Unavailable" );
 						break;
 
@@ -557,7 +557,7 @@ namespace Kakadu::ImGuiDrawer
 				}
 
 				char info_line_buffer[ 255 ];
-				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( i32 )image_width, ( i32 )image_height, Texture::FormatName( selected_texture->PixelFormat() ) );
+				sprintf_s( info_line_buffer, 255, "%dx%d | %s", ( i32 )image_width, ( i32 )image_height, RHI::Texture::FormatName( selected_texture->PixelFormat() ) );
 				ImGui::Indent( ( preview_area_size.x - ImGui::CalcTextSize( info_line_buffer ).x ) / 2.0f );
 				ImGui::TextUnformatted( info_line_buffer );
 				ImGui::SameLine();
@@ -634,7 +634,7 @@ namespace Kakadu::ImGuiDrawer
 
 		const auto& drawer_state = ServiceLocator< State >::Get();
 
-		Shader* new_shader_to_assign = nullptr; // This is only set upon new shader assignment.
+		RHI::Shader* new_shader_to_assign = nullptr; // This is only set upon new shader assignment.
 
 		if( ImGui::Begin( ICON_FA_PAINTBRUSH " Materials", nullptr ) )
 		{
@@ -709,7 +709,7 @@ namespace Kakadu::ImGuiDrawer
 								{
 									for( i32 j = 0; j < array_dimensions[ 1 ]; j++ )
 									{
-										void* element_address = GL::Type::AddressOf( type, address, +i * array_dimensions[ 1 ] + j );
+										void* element_address = RHI::Type::AddressOf( type, address, +i * array_dimensions[ 1 ] + j );
 										ImGui::PushID( element_address );
 										is_modified |= Draw( type, element_address );
 										ImGui::PopID();
@@ -961,7 +961,7 @@ namespace Kakadu::ImGuiDrawer
 													   current_texture_name.c_str(),
 													   ImGuiComboFlags_WidthFitPreview | ImGuiComboFlags_HeightLarge ) )
 								{
-									const auto& texture_map( ServiceLocator< AssetDatabase< Texture > >::Get().Assets() );
+									const auto& texture_map( ServiceLocator< AssetDatabase< RHI::Texture > >::Get().Assets() );
 									for( const auto& [ texture_name, texture ] : texture_map )
 									{
 										if( ImGui::Selectable( ( ICON_FA_IMAGE " " + texture.Name() ).c_str() ) )
@@ -1000,7 +1000,7 @@ namespace Kakadu::ImGuiDrawer
 		return is_modified;
 	}
 	
-	void Draw( const Shader& shader, ImGuiWindowFlags window_flags )
+	void Draw( const RHI::Shader& shader, ImGuiWindowFlags window_flags )
 	{
 		auto DrawClickableShaderPath = []( const char* source_path )
 		{
@@ -1080,7 +1080,7 @@ namespace Kakadu::ImGuiDrawer
 						ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info.location_or_block_index );
 						ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info.size );
 						ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info.offset );
-						ImGui::TableNextColumn(); ImGui::TextUnformatted( GL::Type::NameOf( uniform_info.type ) );
+						ImGui::TableNextColumn(); ImGui::TextUnformatted( RHI::Type::NameOf( uniform_info.type ) );
 					}
 
 					ImGui::PopStyleColor();
@@ -1128,7 +1128,7 @@ namespace Kakadu::ImGuiDrawer
 										ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info->location_or_block_index );
 										ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info->size );
 										ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info->offset );
-										ImGui::TableNextColumn(); ImGui::TextUnformatted( GL::Type::NameOf( uniform_info->type ) );
+										ImGui::TableNextColumn(); ImGui::TextUnformatted( RHI::Type::NameOf( uniform_info->type ) );
 									}
 								}
 
@@ -1205,7 +1205,7 @@ namespace Kakadu::ImGuiDrawer
 		ImGui::End();
 	}
 
-	void Draw( const Framebuffer& framebuffer, ImGuiWindowFlags window_flags )
+	void Draw( const RHI::Framebuffer& framebuffer, ImGuiWindowFlags window_flags )
 	{
 		const auto name_cstr = framebuffer.name.c_str();
 		ImGui::PushID( name_cstr );
@@ -1244,21 +1244,21 @@ namespace Kakadu::ImGuiDrawer
 			{
 				ImGui::TableNextColumn(); ImGui::TextDisabled( "Combined Depth/Stencil Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( Texture::FormatName( framebuffer.depth_stencil_attachment.PixelFormat() ) );
+				ImGui::TextUnformatted( RHI::Texture::FormatName( framebuffer.depth_stencil_attachment.PixelFormat() ) );
 			}
 
 			if( framebuffer.HasSeparateDepthAttachment() )
 			{
 				ImGui::TableNextColumn(); ImGui::TextDisabled( "Depth Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( Texture::FormatName( framebuffer.depth_attachment.PixelFormat() ) );
+				ImGui::TextUnformatted( RHI::Texture::FormatName( framebuffer.depth_attachment.PixelFormat() ) );
 			}
 
 			if( framebuffer.HasSeparateStencilAttachment() )
 			{
 				ImGui::TableNextColumn(); ImGui::TextDisabled( "Stencil Format" );
 				ImGui::TableNextColumn();
-				ImGui::TextUnformatted( Texture::FormatName( framebuffer.stencil_attachment.PixelFormat() ) );
+				ImGui::TextUnformatted( RHI::Texture::FormatName( framebuffer.stencil_attachment.PixelFormat() ) );
 			}
 
 			ImGui::EndTable();
@@ -1268,15 +1268,15 @@ namespace Kakadu::ImGuiDrawer
 	}
 
 	/* Decorations are icon-like text with rectangles. Example uses are for HDR, MSAA & sRGB. */
-	void DrawTextureFormatWithDecorations( const Texture& texture )
+	void DrawTextureFormatWithDecorations( const RHI::Texture& texture )
 	{
 		const auto format = texture.PixelFormat();
-		ImGui::TextUnformatted( Texture::FormatName( format ) );
+		ImGui::TextUnformatted( RHI::Texture::FormatName( format ) );
 
 		DrawTextureFormatDecorationsOnly( texture );
 	}
 
-	void DrawTextureFormatDecorationsOnly( const Texture& texture )
+	void DrawTextureFormatDecorationsOnly( const RHI::Texture& texture )
 	{
 		if( texture.IsMultiSampled() )
 		{

@@ -1,12 +1,10 @@
 #pragma once
 
 // Engine Includes.
-#include "Graphics.h"
+#include "RHI.h"
+#include "Core/Types.h"
 
-// std Includes.
-#include <cstdint>
-
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	enum class ClearTarget : u32
 	{
@@ -74,13 +72,6 @@ namespace Kakadu
 		Subtract        = GL_FUNC_SUBTRACT,
 		Minimum         = GL_MIN,
 		Maximum         = GL_MAX
-	};
-
-	enum class SortingMode : u8
-	{
-		None,
-		FrontToBack,
-		BackToFront
 	};
 
 	enum class Face

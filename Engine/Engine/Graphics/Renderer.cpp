@@ -2,7 +2,6 @@
 #include "Renderer.h"
 #include "BuiltinShaders.h"
 #include "BuiltinTextures.h"
-#include "GLLabelPrefixes.h"
 #include "Core/AssetDatabase.hpp"
 #include "Core/AssetDatabase_Tracked.hpp"
 #include "Core/ImGuiCustomColors.h"
@@ -11,6 +10,7 @@
 #include "Core/MorphSystem.h"
 #include "Primitive/Primitive_Quad_FullScreen.h"
 #include "Primitive/Primitive_Cube_FullScreen.h"
+#include "RHI/GLLabelPrefixes.h"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -44,15 +44,15 @@ namespace Kakadu
 		wireframe_thickness_in_pixels( 2.0f ),
 		wireframe_color( 0.29f, 0.75f, 0.67f, 1.0f ),
 		logger( ServiceLocator< GLLogger >::Get() ),
-		graphics_device_info( Graphics::QueryDeviceInfo() ),
+		graphics_device_info( RHI::QueryDeviceInfo() ),
 		framebuffer_main_description(
-			Framebuffer::Description
+			RHI::Framebuffer::Description
 			{
 				.name = "Main",
 
 				.color_format    = description.main_framebuffer_color_format,
-				.attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined,
-				.msaa            = MSAA( description.msaa_sample_count )
+				.attachment_bits = RHI::Framebuffer::AttachmentType::Color_DepthStencilCombined,
+				.msaa            = RHI::MSAA( description.msaa_sample_count )
 			}
 		),
 		framebuffer_output_index( description.output_to_composite_framebuffer ? BuiltinFramebufferIndex::Composite : BuiltinFramebufferIndex::Default ),
@@ -65,7 +65,7 @@ namespace Kakadu
 		introspection_surface( introspection_surface ),
 		viewport_shading_mode( ViewportShadingMode::Shaded )
 	{
-		framebuffers.emplace_back( Framebuffer( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR ) );
+		framebuffers.emplace_back( RHI::Framebuffer( RHI::Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR ) );
 
 		for( i32 i = 1; i < BuiltinFramebufferIndex::Count; i++ )
 			framebuffers.emplace_back();
@@ -75,7 +75,7 @@ namespace Kakadu
 
 		logger.IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
 
-		ServiceLocator< Graphics::DeviceInfo >::Register( &graphics_device_info );
+		ServiceLocator< RHI::DeviceInfo >::Register( &graphics_device_info );
 
 		BuiltinShaders::Initialize( *this );
 		BuiltinTextures::Initialize();
@@ -175,8 +175,8 @@ namespace Kakadu
 						{
 							case RENDER_PASS_ID_SHADOW_MAPPING:
 							{
-								Shader& shadow_map_write_shader           = *BuiltinShaders::Get( "Shadow-map Write" );
-								Shader& shadow_map_write_instanced_shader = *BuiltinShaders::Get( "Shadow-map Write (Instanced)" );
+								RHI::Shader& shadow_map_write_shader           = *BuiltinShaders::Get( "Shadow-map Write" );
+								RHI::Shader& shadow_map_write_instanced_shader = *BuiltinShaders::Get( "Shadow-map Write (Instanced)" );
 								
 								shadow_map_write_shader.Bind();
 
@@ -289,64 +289,64 @@ namespace Kakadu
 			uniform_buffer_management_intrinsic.SetPartial( "_Intrinsic_Other", "_INTRINSIC_VIEWPORT_SIZE", Vector2( ( float )new_width_in_pixels, ( float )new_height_in_pixels ) );
 		}
 
-		DefaultFramebuffer() = Framebuffer( Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR );
+		DefaultFramebuffer() = RHI::Framebuffer( RHI::Framebuffer::DEFAULT_FRAMEBUFFER_CONSTRUCTOR );
 
 		/* Shadow maps: */
-		ShadowMappingFramebuffer_DirectionalLight() = Framebuffer( Framebuffer::Description
-																   {
-																	   .name = "Shadow Map [Dir. Light]",
+		ShadowMappingFramebuffer_DirectionalLight() = RHI::Framebuffer( RHI::Framebuffer::Description
+																		{
+																			.name = "Shadow Map [Dir. Light]",
 
-																	   .width_in_pixels  = new_width_in_pixels,
-																	   .height_in_pixels = new_height_in_pixels,
+																			.width_in_pixels  = new_width_in_pixels,
+																			.height_in_pixels = new_height_in_pixels,
 
-																	   .minification_filter  = Texture::Filtering::Nearest,
-																	   .magnification_filter = Texture::Filtering::Nearest,
+																			.minification_filter  = RHI::Texture::Filtering::Nearest,
+																			.magnification_filter = RHI::Texture::Filtering::Nearest,
 
-																	   /* Default wrapping = clamp to border, with border = Color4{ 0,0,0,0 }. */
+																			/* Default wrapping = clamp to border, with border = Color4{ 0,0,0,0 }. */
 
-																	   /* Default color format = RGBA. */
+																			/* Default color format = RGBA. */
 
-																	   .attachment_bits = Framebuffer::AttachmentType::Depth
-																   } );
+																			.attachment_bits = RHI::Framebuffer::AttachmentType::Depth
+																		} );
 
 
 		/* Main: */
 		framebuffer_main_description.width_in_pixels  = new_width_in_pixels;
 		framebuffer_main_description.height_in_pixels = new_height_in_pixels;
 
-		MainFramebuffer() = Framebuffer( framebuffer_main_description );
+		MainFramebuffer() = RHI::Framebuffer( framebuffer_main_description );
 
 		/* Same parameters as the main FBO. */
-		PostProcessingFramebuffer() = Framebuffer( Framebuffer::Description
+		PostProcessingFramebuffer() = RHI::Framebuffer( RHI::Framebuffer::Description
+														{
+															.name = "Post-processing",
+
+															.width_in_pixels  = new_width_in_pixels,
+															.height_in_pixels = new_height_in_pixels,
+
+															.color_format    = framebuffer_main_description.color_format,
+															.attachment_bits = RHI::Framebuffer::AttachmentType::Color_DepthStencilCombined
+														} );
+
+	
+		/* Composite: */
+		CompositeFramebuffer() = RHI::Framebuffer( RHI::Framebuffer::Description
 												   {
-													   .name = "Post-processing",
+													   .name = "Composite",
 
 													   .width_in_pixels  = new_width_in_pixels,
 													   .height_in_pixels = new_height_in_pixels,
 
-													   .color_format    = framebuffer_main_description.color_format,
-													   .attachment_bits = Framebuffer::AttachmentType::Color_DepthStencilCombined
+													   .magnification_filter = RHI::Texture::Filtering::Nearest,
+
+													   .color_format =
+														   IsOutputtingToCompositeFramebuffer() ||
+														   ( viewport_shading_mode == ViewportShadingMode::Shaded || viewport_shading_mode == ViewportShadingMode::ShadedWireframe )
+															   ? RHI::Texture::Format::SRGBA /* This is the final step, so sRGB encoding should be on. */
+															   : RHI::Texture::Format::RGBA,
+
+													   .attachment_bits = RHI::Framebuffer::AttachmentType::Color
 												   } );
-
-	
-		/* Composite: */
-		CompositeFramebuffer() = Framebuffer( Framebuffer::Description
-											  {
-												  .name = "Composite",
-
-												  .width_in_pixels  = new_width_in_pixels,
-												  .height_in_pixels = new_height_in_pixels,
-
-												  .magnification_filter = Texture::Filtering::Nearest,
-
-												  .color_format =
-												      IsOutputtingToCompositeFramebuffer() ||
-											          ( viewport_shading_mode == ViewportShadingMode::Shaded || viewport_shading_mode == ViewportShadingMode::ShadedWireframe )
-											              ? Texture::Format::SRGBA /* This is the final step, so sRGB encoding should be on. */
-											              : Texture::Format::RGBA,
-
-												  .attachment_bits = Framebuffer::AttachmentType::Color
-											  } );
 
 		InitializeBuiltinFullscreenEffects();
 		InitializeBuiltinPostprocessingEffects();
@@ -554,7 +554,7 @@ namespace Kakadu
 				renderable->is_enabled = renderable == renderable_to_isolate;
 	}
 
-	void Renderer::OnShaderReassign( Shader* previous_shader, const std::string& name_of_material_whose_shader_changed )
+	void Renderer::OnShaderReassign( RHI::Shader* previous_shader, const std::string& name_of_material_whose_shader_changed )
 	{
 		for( auto& [ queue_id, queue ] : render_queue_map )
 		{
@@ -638,20 +638,20 @@ namespace Kakadu
 
 	void Renderer::SetSkyboxTexture( const std::array< const char*, 6 > cube_map_face_file_paths )
 	{
-		skybox_texture = ServiceLocator< AssetDatabase< Texture > >::Get().CreateAssetFromFile( "Skybox",
-																								{
-																									cube_map_face_file_paths[ 0 ],
-																									cube_map_face_file_paths[ 1 ],
-																									cube_map_face_file_paths[ 2 ],
-																									cube_map_face_file_paths[ 3 ],
-																									cube_map_face_file_paths[ 4 ],
-																									cube_map_face_file_paths[ 5 ]
-																								},
-																								Kakadu::Texture::ImportSettings
-																								{
-																									.min_filter      = Kakadu::Texture::Filtering::Linear,
-																									.flip_vertically = false,
-																								} );
+		skybox_texture = ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromFile( "Skybox",
+																									 {
+																										 cube_map_face_file_paths[ 0 ],
+																										 cube_map_face_file_paths[ 1 ],
+																										 cube_map_face_file_paths[ 2 ],
+																										 cube_map_face_file_paths[ 3 ],
+																										 cube_map_face_file_paths[ 4 ],
+																										 cube_map_face_file_paths[ 5 ]
+																									 },
+																									 RHI::Texture::ImportSettings
+																									 {
+																										 .min_filter      = RHI::Texture::Filtering::Linear,
+																										 .flip_vertically = false,
+																									 } );
 		skybox_material.SetTexture( "uniform_tex", skybox_texture );
 	}
 
@@ -665,7 +665,7 @@ namespace Kakadu
 		return uniform_buffer_management_global.Get( buffer_name );
 	}
 
-	void Renderer::RegisterShader( Shader& shader )
+	void Renderer::RegisterShader( RHI::Shader& shader )
 	{
 		if( shader.HasUniformBlocks() )
 		{
@@ -705,7 +705,7 @@ namespace Kakadu
 			shaders_registered.insert( &shader );
 	}
 
-	void Renderer::UnregisterShader( Shader& shader )
+	void Renderer::UnregisterShader( RHI::Shader& shader )
 	{
 		if( shader.HasUniformBlocks() )
 		{
@@ -720,7 +720,10 @@ namespace Kakadu
 				{
 					// Check if this buffer is still used by other registered Shaders:
 					if( std::find_if( shaders_registered.cbegin(), shaders_registered.cend(),
-										[ &uniform_buffer_name ]( const Shader* shader ) { return shader->HasGlobalUniformBlock( uniform_buffer_name ); } ) == shaders_registered.cend() )
+									  [ &uniform_buffer_name ]( const RHI::Shader* shader )
+									  {
+										   return shader->HasGlobalUniformBlock( uniform_buffer_name );
+									  } ) == shaders_registered.cend() )
 						uniform_buffer_management_global.UnregisterBuffer( uniform_buffer_name );
 				}
 			}
@@ -733,7 +736,10 @@ namespace Kakadu
 				{
 					// Check if this buffer is still used by other registered Shaders:
 					if( std::find_if( shaders_registered.cbegin(), shaders_registered.cend(),
-										[ &uniform_buffer_name ]( const Shader* shader ) { return shader->HasIntrinsicUniformBlock( uniform_buffer_name ); } ) == shaders_registered.cend() )
+									  [ &uniform_buffer_name ]( const RHI::Shader* shader )
+									  {
+										   return shader->HasIntrinsicUniformBlock( uniform_buffer_name );
+									  } ) == shaders_registered.cend() )
 						uniform_buffer_management_intrinsic.UnregisterBuffer( uniform_buffer_name );
 				}
 			}
@@ -759,7 +765,7 @@ namespace Kakadu
 	
 	void Renderer::RecompileModifiedShaders()
 	{
-		std::vector< Shader* > shaders_to_recompile;
+		std::vector< RHI::Shader* > shaders_to_recompile;
 
 		/* Can not traverse registered shaders AND remove/add shaders to be recompiled at the same time. */
 
@@ -769,7 +775,7 @@ namespace Kakadu
 
 		for( auto& shader : shaders_to_recompile )
 		{
-			Shader new_shader( shader->name.c_str() );
+			RHI::Shader new_shader( shader->name.c_str() );
 			if( shader->RecompileFromThis( new_shader ) )
 			{
 				UnregisterShader( *shader );
@@ -801,7 +807,7 @@ namespace Kakadu
 		return framebuffer_current_destination == &DefaultFramebuffer();
 	}
 
-	Framebuffer* Renderer::CurrentDestinationFramebuffer()
+	RHI::Framebuffer* Renderer::CurrentDestinationFramebuffer()
 	{
 		return framebuffer_current_destination;
 	}
@@ -817,9 +823,9 @@ namespace Kakadu
 		framebuffer_output_index = BuiltinFramebufferIndex::Composite;
 	}
 
-	void Renderer::Blit( Framebuffer& source, Framebuffer& destination, const Texture::Filtering filtering )
+	void Renderer::Blit( RHI::Framebuffer& source, RHI::Framebuffer& destination, const RHI::Texture::Filtering filtering )
 	{
-		ASSERT_EDITOR_ONLY( filtering == Texture::Filtering::Nearest || filtering == Texture::Filtering::Linear );
+		ASSERT_EDITOR_ONLY( filtering == RHI::Texture::Filtering::Nearest || filtering == RHI::Texture::Filtering::Linear );
 
 		framebuffer_current_source      = &source;
 		framebuffer_current_destination = &destination;
@@ -831,20 +837,20 @@ namespace Kakadu
 						   GL_COLOR_BUFFER_BIT, ( i32 )filtering );
 	}
 
-	MSAA Renderer::GetMSAAInfo() const
+	RHI::MSAA Renderer::GetMSAAInfo() const
 	{
 		return MainFramebuffer().msaa;
 	}
 
 	/* Sets the sample count for main framebuffer MSAA. */
-	MSAA Renderer::SetMSAASampleCount( const u8 new_sample_count )
+	RHI::MSAA Renderer::SetMSAASampleCount( const u8 new_sample_count )
 	{
 		if( new_sample_count == framebuffer_main_description.msaa.sample_count )
-			return MSAA( framebuffer_main_description.msaa.sample_count );
+			return RHI::MSAA( framebuffer_main_description.msaa.sample_count );
 
-		framebuffer_main_description.msaa = MSAA( new_sample_count );
+		framebuffer_main_description.msaa = RHI::MSAA( new_sample_count );
 
-		MainFramebuffer() = Framebuffer( framebuffer_main_description );
+		MainFramebuffer() = RHI::Framebuffer( framebuffer_main_description );
 
 		if( new_sample_count > 1 )
 		{
@@ -856,39 +862,6 @@ namespace Kakadu
 		}
 
 		return framebuffer_main_description.msaa;
-	}
-
-	bool Renderer::CheckMSAASupport( const Texture::Format format, const u8 sample_count_to_query )
-	{
-		local_persist std::unordered_map< Texture::Format, std::unordered_set< u8 > > SAMPLE_COUNTS_BY_FORMAT_MAP;
-
-		if( const auto iterator = SAMPLE_COUNTS_BY_FORMAT_MAP.find( format ); iterator != SAMPLE_COUNTS_BY_FORMAT_MAP.cend() )
-			return iterator->second.contains( sample_count_to_query );
-
-		i32 number_of_sample_counts = 0;
-		glGetInternalformativ( GL_RENDERBUFFER, Texture::InternalFormat( format ), GL_NUM_SAMPLE_COUNTS, 1, &number_of_sample_counts );
-
-		std::vector< i32 > sample_counts( number_of_sample_counts );
-		glGetInternalformativ( GL_RENDERBUFFER, Texture::InternalFormat( format ), GL_SAMPLES, number_of_sample_counts, sample_counts.data() );
-		auto& set_of_sample_counts_queried = SAMPLE_COUNTS_BY_FORMAT_MAP[ format ];
-		std::transform( sample_counts.begin(), sample_counts.end(), std::inserter( set_of_sample_counts_queried, set_of_sample_counts_queried.begin() ),
-						[]( i32 sample_count ) { return sample_count; } );
-
-		return set_of_sample_counts_queried.contains( sample_count_to_query );
-	}
-
-	void Renderer::DisplayAvailableGLExtensions( std::vector< std::string >& list_of_strings )
-	{
-		GLint num_extensions = 0;
-		glGetIntegerv( GL_NUM_EXTENSIONS, &num_extensions );
-
-		list_of_strings.reserve( num_extensions );
-
-		for( GLint i = 0; i < num_extensions; ++i )
-		{
-			const char* ext = reinterpret_cast< const char* >( glGetStringi( GL_EXTENSIONS, i ) );
-			list_of_strings.emplace_back( ext );
-		}
 	}
 
 	void Renderer::SetTonemappingExposure( const float new_exposure_ev )
@@ -957,10 +930,10 @@ namespace Kakadu
 
 						  .sorting_mode = Kakadu::SortingMode::BackToFront,
 
-						  .blending_source_color_factor      = BlendingFactor::SourceAlpha,
-						  .blending_destination_color_factor = BlendingFactor::OneMinusSourceAlpha,
-						  .blending_source_alpha_factor      = BlendingFactor::SourceAlpha,
-						  .blending_destination_alpha_factor = BlendingFactor::OneMinusSourceAlpha
+						  .blending_source_color_factor      = RHI::BlendingFactor::SourceAlpha,
+						  .blending_destination_color_factor = RHI::BlendingFactor::OneMinusSourceAlpha,
+						  .blending_source_alpha_factor      = RHI::BlendingFactor::SourceAlpha,
+						  .blending_destination_alpha_factor = RHI::BlendingFactor::OneMinusSourceAlpha
 					  }
 				  } );
 
@@ -972,7 +945,7 @@ namespace Kakadu
 					  {
 						 .face_culling_enable = false,
 
-						 .depth_comparison_function = ComparisonFunction::LessOrEqual
+						 .depth_comparison_function = RHI::ComparisonFunction::LessOrEqual
 					  }
 				  } );
 	}
@@ -1299,10 +1272,10 @@ namespace Kakadu
 
 		/* Upsampling steps will progressively combine resolution R textures with the upscaled R/2 resolution textures via additive blending. */
 		bloom_upsampling.render_state.blending_enable                   = true;
-		bloom_upsampling.render_state.blending_source_color_factor      = BlendingFactor::One;
-		bloom_upsampling.render_state.blending_destination_color_factor = BlendingFactor::One;
-		bloom_upsampling.render_state.blending_source_alpha_factor      = BlendingFactor::One;
-		bloom_upsampling.render_state.blending_destination_alpha_factor = BlendingFactor::One;
+		bloom_upsampling.render_state.blending_source_color_factor      = RHI::BlendingFactor::One;
+		bloom_upsampling.render_state.blending_destination_color_factor = RHI::BlendingFactor::One;
+		bloom_upsampling.render_state.blending_source_alpha_factor      = RHI::BlendingFactor::One;
+		bloom_upsampling.render_state.blending_destination_alpha_factor = RHI::BlendingFactor::One;
 
 		bloom_downsampling.name     = "Bloom | Downsampling",
 		bloom_downsampling.material = Material( "[Renderer] Bloom | Downsampling", BuiltinShaders::Get( "Post-Process Bloom Downsample (Anti Flicker Fine)" ) ),
@@ -1319,7 +1292,7 @@ namespace Kakadu
 
 		Vector2I output_texture_size = PostProcessingFramebuffer().size;
 
-		bloom_downsampling.framebuffers.emplace_back( Framebuffer::Description
+		bloom_downsampling.framebuffers.emplace_back( RHI::Framebuffer::Description
 													  {
 														  .name = bloom_mip_chain_size >= 10
 																	? "[Renderer] Bloom [00] Full Res."
@@ -1330,10 +1303,10 @@ namespace Kakadu
 
 														  .color_format = PostProcessingFramebuffer().color_attachment.PixelFormat(),
 
-														  .attachment_bits = Framebuffer::AttachmentType::Color
+														  .attachment_bits = RHI::Framebuffer::AttachmentType::Color
 													  } );
 
-		const Texture* input_texture = &PostProcessingFramebuffer().color_attachment;
+		const RHI::Texture* input_texture = &PostProcessingFramebuffer().color_attachment;
 
 		const i32 digit_count = ( bloom_mip_chain_size >= 10 ) ? 2 : 1;
 
@@ -1345,7 +1318,7 @@ namespace Kakadu
 
 			output_texture_size /= 2;
 
-			bloom_downsampling.framebuffers.emplace_back( Framebuffer::Description
+			bloom_downsampling.framebuffers.emplace_back( RHI::Framebuffer::Description
 														  {
 															  .name = buffer,
 
@@ -1354,7 +1327,7 @@ namespace Kakadu
 
 															  .color_format = PostProcessingFramebuffer().color_attachment.PixelFormat(),
 
-															  .attachment_bits = Framebuffer::AttachmentType::Color
+															  .attachment_bits = RHI::Framebuffer::AttachmentType::Color
 														  } );
 
 			FullscreenEffect::Step step
@@ -1442,12 +1415,12 @@ namespace Kakadu
 		post_processing_effect_map[ bloom_upsampling.name ]   = &bloom_upsampling;
 	}
 
-	void Renderer::SetPolygonMode( const PolygonMode mode )
+	void Renderer::SetPolygonMode( const RHI::PolygonMode mode )
 	{
 		glPolygonMode( GL_FRONT_AND_BACK, ( GLenum )mode + GL_POINT );
 	}
 
-	void Renderer::SetDestinationFramebuffer( Framebuffer* framebuffer )
+	void Renderer::SetDestinationFramebuffer( RHI::Framebuffer* framebuffer )
 	{
 		ASSERT_DEBUG_ONLY( framebuffer );
 
@@ -1487,12 +1460,12 @@ namespace Kakadu
 		glStencilMask( mask );
 	}
 
-	void Renderer::SetStencilTestResponses( const StencilTestResponse stencil_fail, const StencilTestResponse stencil_pass_depth_fail, const StencilTestResponse both_pass )
+	void Renderer::SetStencilTestResponses( const RHI::StencilTestResponse stencil_fail, const RHI::StencilTestResponse stencil_pass_depth_fail, const RHI::StencilTestResponse both_pass )
 	{
 		glStencilOp( ( GLenum )stencil_fail, ( GLenum )stencil_pass_depth_fail, ( GLenum )both_pass );
 	}
 
-	void Renderer::SetStencilComparisonFunction( const ComparisonFunction comparison_function, const i32 reference_value, const u32 mask )
+	void Renderer::SetStencilComparisonFunction( const RHI::ComparisonFunction comparison_function, const i32 reference_value, const u32 mask )
 	{
 		glStencilFunc( ( GLenum )comparison_function, reference_value, mask );
 	}
@@ -1512,7 +1485,7 @@ namespace Kakadu
 		glDepthMask( ( GLint )enable );
 	}
 
-	void Renderer::SetDepthComparisonFunction( const ComparisonFunction comparison_function )
+	void Renderer::SetDepthComparisonFunction( const RHI::ComparisonFunction comparison_function )
 	{
 		glDepthFunc( ( GLenum )comparison_function );
 	}
@@ -1527,13 +1500,13 @@ namespace Kakadu
 		glDisable( GL_BLEND );
 	}
 
-	void Renderer::SetBlendingFactors( const BlendingFactor source_color_factor, const BlendingFactor destination_color_factor,
-									   const BlendingFactor source_alpha_factor, const BlendingFactor destination_alpha_factor )
+	void Renderer::SetBlendingFactors( const RHI::BlendingFactor source_color_factor, const RHI::BlendingFactor destination_color_factor,
+									   const RHI::BlendingFactor source_alpha_factor, const RHI::BlendingFactor destination_alpha_factor )
 	{
 		glBlendFuncSeparate( ( GLenum )source_color_factor, ( GLenum )destination_color_factor, ( GLenum )source_alpha_factor, ( GLenum )destination_alpha_factor );
 	}
 
-	void Renderer::SetBlendingFunction( const BlendingFunction function )
+	void Renderer::SetBlendingFunction( const RHI::BlendingFunction function )
 	{
 		glBlendEquation( ( GLenum )function );
 	}
@@ -1542,8 +1515,8 @@ namespace Kakadu
 	{
 		ASSERT_EDITOR_ONLY( viewport_shading_mode != ViewportShadingMode::Shaded );
 
-		Shader* shader_not_instanced = nullptr;
-		Shader* shader_instanced     = nullptr;
+		RHI::Shader* shader_not_instanced = nullptr;
+		RHI::Shader* shader_instanced     = nullptr;
 
 		constexpr RenderState render_state{};
 		constexpr RenderState render_state_wireframe // Nearly the same as transparent queue's, i.e., uses alpha blending.
@@ -1556,10 +1529,10 @@ namespace Kakadu
 
 			.sorting_mode = Kakadu::SortingMode::None, // No point in sorting, since depth test is disabled.
 
-			.blending_source_color_factor      = BlendingFactor::SourceAlpha,
-			.blending_destination_color_factor = BlendingFactor::OneMinusSourceAlpha,
-			.blending_source_alpha_factor      = BlendingFactor::SourceAlpha,
-			.blending_destination_alpha_factor = BlendingFactor::OneMinusSourceAlpha
+			.blending_source_color_factor      = RHI::BlendingFactor::SourceAlpha,
+			.blending_destination_color_factor = RHI::BlendingFactor::OneMinusSourceAlpha,
+			.blending_source_alpha_factor      = RHI::BlendingFactor::SourceAlpha,
+			.blending_destination_alpha_factor = RHI::BlendingFactor::OneMinusSourceAlpha
 		};
 		constexpr RenderState render_state_shaded_wireframe
 		{
@@ -1567,10 +1540,10 @@ namespace Kakadu
 
 			.sorting_mode = Kakadu::SortingMode::BackToFront,
 
-			.blending_source_color_factor      = BlendingFactor::SourceAlpha,
-			.blending_destination_color_factor = BlendingFactor::OneMinusSourceAlpha,
-			.blending_source_alpha_factor      = BlendingFactor::SourceAlpha,
-			.blending_destination_alpha_factor = BlendingFactor::OneMinusSourceAlpha
+			.blending_source_color_factor      = RHI::BlendingFactor::SourceAlpha,
+			.blending_destination_color_factor = RHI::BlendingFactor::OneMinusSourceAlpha,
+			.blending_source_alpha_factor      = RHI::BlendingFactor::SourceAlpha,
+			.blending_destination_alpha_factor = RHI::BlendingFactor::OneMinusSourceAlpha
 		};
 
 		switch( viewport_shading_mode )
@@ -1727,7 +1700,7 @@ namespace Kakadu
 		SetBlendingFunction( render_state_to_set.blending_function );
 	}
 
-	void Renderer::SetRenderState( const RenderState& render_state_to_set, Framebuffer* target_framebuffer, const bool clear_framebuffer )
+	void Renderer::SetRenderState( const RenderState& render_state_to_set, RHI::Framebuffer* target_framebuffer, const bool clear_framebuffer )
 	{
 		ASSERT_DEBUG_ONLY( target_framebuffer );
 
@@ -1793,12 +1766,12 @@ namespace Kakadu
 		glDisable( GL_CULL_FACE );
 	}
 
-	void Renderer::SetCullFace( const Face face )
+	void Renderer::SetCullFace( const RHI::Face face )
 	{
 		glCullFace( ( GLenum )face );
 	}
 
-	void Renderer::SetFrontFaceConvention( const WindingOrder winding_order_of_front_faces )
+	void Renderer::SetFrontFaceConvention( const RHI::WindingOrder winding_order_of_front_faces )
 	{
 		glFrontFace( ( GLenum )winding_order_of_front_faces );
 	}
@@ -1809,18 +1782,18 @@ namespace Kakadu
 		GLint num_samples = 0;
 		GLint samples[ 16 ] = { 0 };
 
-		constexpr Texture::Format formats_of_interest[] =
+		constexpr RHI::Texture::Format formats_of_interest[] =
 		{
-			Texture::Format::RGBA,
-			Texture::Format::RGBA_16F,
-			Texture::Format::RGBA_32F,
-			Texture::Format::R11G11B10F,
-			Texture::Format::DEPTH_STENCIL
+			RHI::Texture::Format::RGBA,
+			RHI::Texture::Format::RGBA_16F,
+			RHI::Texture::Format::RGBA_32F,
+			RHI::Texture::Format::R11G11B10F,
+			RHI::Texture::Format::DEPTH_STENCIL
 		};
 
 		for( const auto format : formats_of_interest )
 		{
-			const auto internal_format = Texture::InternalFormat( format );
+			const auto internal_format = RHI::Texture::InternalFormat( format );
 
 			// Get how many sample counts are supported
 			glGetInternalformativ( GL_RENDERBUFFER, internal_format, GL_NUM_SAMPLE_COUNTS, 1, &num_samples );

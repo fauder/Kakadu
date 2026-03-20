@@ -2,6 +2,7 @@
 
 // Engine Includes.
 #include "Core/Macros.h"
+#include "Core/Types.h"
 
 // std Includes.
 #include <string>

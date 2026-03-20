@@ -38,7 +38,7 @@ HDR_DemoApplication::HDR_DemoApplication( const Kakadu::BitFlags< Kakadu::Creati
 	Kakadu::Application( flags,
 						 Kakadu::Renderer::Description
 						 {
-							 .main_framebuffer_color_format = Kakadu::Texture::Format::RGBA_16F,
+							 .main_framebuffer_color_format = Kakadu::RHI::Texture::Format::RGBA_16F,
 							 .msaa_sample_count             = 4
 						 } ),
 	light_point_transform_array( LIGHT_POINT_COUNT )
@@ -60,12 +60,12 @@ void HDR_DemoApplication::Initialize()
 	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo GL Init." ) );
 
 /* Textures: */
-	wood_diffuse_map = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::Texture > >::Get().CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)",
-																													  Kakadu::Texture::ImportSettings
-																													  {
-																														  .wrap_u = Kakadu::Texture::Wrapping::Repeat,
-																														  .wrap_v = Kakadu::Texture::Wrapping::Repeat
-																													  } );
+	wood_diffuse_map = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::RHI::Texture > >::Get().CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)",
+																														   Kakadu::RHI::Texture::ImportSettings
+																														   {
+																															   .wrap_u = Kakadu::RHI::Texture::Wrapping::Repeat,
+																															   .wrap_v = Kakadu::RHI::Texture::Wrapping::Repeat
+																														   } );
 
 /* Shaders: */
 	shader_blinn_phong           = Kakadu::BuiltinShaders::Get( "Blinn-Phong" );
@@ -119,8 +119,8 @@ void HDR_DemoApplication::Initialize()
 
 	light_source_sphere_mesh = Kakadu::Mesh( sphere_mesh,
 											 {
-												 Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START },    // Transform.
-												 Kakadu::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 } // Color.
+												 Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START },    // Transform.
+												 Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 } // Color.
 											 },
 											 reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
 											 LIGHT_POINT_COUNT,
@@ -138,7 +138,7 @@ void HDR_DemoApplication::Initialize()
 						    .name = "Custom (Inverted)",
 						    .render_state_override = Kakadu::RenderState
 						    {
-							    .face_culling_face_to_cull = Kakadu::Face::Front
+							    .face_culling_face_to_cull = Kakadu::RHI::Face::Front
 						    }
 						} );
 

@@ -1,14 +1,14 @@
 // Engine Includes.
-#include "Graphics.h"
-#include "GLLogger.h"
+#include "RHI.h"
 #include "GLLabelPrefixes.h"
 #include "VertexArray.h"
+#include "Graphics/GLLogger.h" // TODO: GLLogger dependency - wrong direction, fix when logger is properly split.
 #include "Core/ServiceLocator.h"
 
 // std Includes.
 #include <utility>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	VertexArray::VertexArray( const std::string& name )
 		:

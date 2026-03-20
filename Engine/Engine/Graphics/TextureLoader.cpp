@@ -1,7 +1,7 @@
 // Engine Includes.
-#include "Texture.h"
 #include "GLLogger.h"
 #include "Core/ServiceLocator.h"
+#include "RHI/Texture.h"
 
 // Vendor/stb Includes.
 #include "stb/stb_image.h"
@@ -15,14 +15,14 @@ namespace Kakadu
 {
 	constexpr i32 DESIRED_CHANNELS = 4;
 
-	std::optional< Texture > Texture::Loader::FromFile( const::std::string_view name, const std::string& file_path, const ImportSettings& import_settings )
+	std::optional< RHI::Texture > RHI::Texture::Loader::FromFile( const::std::string_view name, const std::string& file_path, const RHI::Texture::ImportSettings& import_settings )
 	{
 		//auto& instance = Instance();
 
 		// OpenGL expects uv coordinate v = 0 to be on the most bottom whereas stb loads image data with v = 0 to be top.
 		stbi_set_flip_vertically_on_load( import_settings.flip_vertically );
 
-		std::optional< Texture > maybe_texture;
+		std::optional< RHI::Texture > maybe_texture;
 
 		i32 width, height;
 		i32 number_of_channels = -1;
@@ -49,8 +49,8 @@ namespace Kakadu
 		return maybe_texture;
 	}
 
-	std::optional< Texture > Texture::Loader::FromFile( const::std::string_view cubemap_name, const std::initializer_list< std::string > cubemap_file_paths,
-														const ImportSettings& import_settings )
+	std::optional< RHI::Texture > RHI::Texture::Loader::FromFile( const::std::string_view cubemap_name, const std::initializer_list< std::string > cubemap_file_paths,
+																  const RHI::Texture::ImportSettings& import_settings )
 	{
 		//auto& instance = Instance();
 
@@ -104,14 +104,14 @@ namespace Kakadu
 	}
 
 	/* 'data' argument here contains the parsed file contents that are still encoded and need to be decoded before actual use. */
-	std::optional< Texture > Texture::Loader::FromFileBytes( const::std::string_view name,
-															 const std::byte* data,
-															 const i32 length,
-															 const ImportSettings& import_settings )
+	std::optional< RHI::Texture > RHI::Texture::Loader::FromFileBytes( const::std::string_view name,
+																	   const std::byte* data,
+																	   const i32 length,
+																	   const RHI::Texture::ImportSettings& import_settings )
 	{
 		//auto& instance = Instance();
 
-		std::optional< Texture > maybe_texture;
+		std::optional< RHI::Texture > maybe_texture;
 
 		// OpenGL expects uv coordinate v = 0 to be on the most bottom whereas stb loads image data with v = 0 to be top.
 		stbi_set_flip_vertically_on_load( import_settings.flip_vertically );
@@ -121,14 +121,14 @@ namespace Kakadu
 		auto image_data = stbi_load_from_memory( ( stbi_uc* )data, length, &width, &height, &number_of_channels, DESIRED_CHANNELS );
 		if( image_data )
 		{
-			maybe_texture = Texture( name, 
-									 ( std::byte* )image_data, 
-									 import_settings.format, 
-									 width, height, 
-									 import_settings.generate_mipmaps,
-									 import_settings.wrap_u, import_settings.wrap_v,
-									 import_settings.border_color,
-									 import_settings.min_filter, import_settings.mag_filter );
+			maybe_texture = RHI::Texture( name,
+										  ( std::byte* )image_data,
+										  import_settings.format,
+										  width, height,
+										  import_settings.generate_mipmaps,
+										  import_settings.wrap_u, import_settings.wrap_v,
+										  import_settings.border_color,
+										  import_settings.min_filter, import_settings.mag_filter );
 		}
 		else
 		{
@@ -142,23 +142,23 @@ namespace Kakadu
 	}
 
 	/* 'data' here is already decoded and ready to be consumed directly. */
-	std::optional< Texture > Texture::Loader::FromRawBytes( const::std::string_view name,
-															const std::byte* data,
-															const SizeType size,
-															const ImportSettings& import_settings )
+	std::optional< RHI::Texture > RHI::Texture::Loader::FromRawBytes( const::std::string_view name,
+																	  const std::byte* data,
+																	  const RHI::Texture::SizeType size,
+																	  const RHI::Texture::ImportSettings& import_settings )
 	{
 		//auto& instance = Instance();
 
-		std::optional< Texture > maybe_texture;
+		std::optional< RHI::Texture > maybe_texture;
 
-		maybe_texture = Texture( name,
-								 data,
-								 import_settings.format,
-								 size.X(), size.Y(),
-								 import_settings.generate_mipmaps,
-								 import_settings.wrap_u, import_settings.wrap_v,
-								 import_settings.border_color,
-								 import_settings.min_filter, import_settings.mag_filter );
+		maybe_texture = RHI::Texture( name,
+									  data,
+									  import_settings.format,
+									  size.X(), size.Y(),
+									  import_settings.generate_mipmaps,
+									  import_settings.wrap_u, import_settings.wrap_v,
+									  import_settings.border_color,
+									  import_settings.min_filter, import_settings.mag_filter );
 		return maybe_texture;
 	}
 }

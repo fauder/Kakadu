@@ -2,13 +2,13 @@
 
 // Engine Includes.
 #include "Core/BitFlags.hpp"
-#include "Graphics/Color.hpp"
 #include "Graphics/Lighting/DirectionalLight.h"
 #include "Graphics/Lighting/PointLight.h"
 #include "Graphics/Lighting/SpotLight.h"
 #include "Graphics/Material.hpp"
 #include "Graphics/Renderer.h"
 #include "Graphics/UniformBufferManagement.hpp"
+#include "Math/Color.hpp"
 #include "Math/Polar.h"
 #include "Math/Quaternion.hpp"
 #include "Scene/Camera.h"
@@ -323,10 +323,10 @@ namespace Kakadu::ImGuiDrawer
 
 	/* non-const Texture* overload is not needed for now so it is removed. */
 
-	void Draw( const Texture* texture, const char* name = "##texture" );
+	void Draw( const RHI::Texture* texture, const char* name = "##texture" );
 
-	void Draw( const std::map< std::string, Texture  >& texture_map, const Vector2& window_size = { 512.0f, 512.0f } );
-	void Draw( const std::map< std::string, Texture* >& texture_map, const Vector2& window_size = { 512.0f, 512.0f } );
+	void Draw( const std::map< std::string, RHI::Texture  >& texture_map, const Vector2& window_size = { 512.0f, 512.0f } );
+	void Draw( const std::map< std::string, RHI::Texture* >& texture_map, const Vector2& window_size = { 512.0f, 512.0f } );
 
 	bool Draw(		 Camera& camera, const char* name = "##camera", const bool disable_aspect_ratio_and_fov = false );
 	void Draw( const Camera& camera, const char* name = "##camera" );
@@ -615,12 +615,12 @@ namespace Kakadu::ImGuiDrawer
 		ImGui::End();
 	}
 
-	void Draw( const Shader& shader, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
+	void Draw( const RHI::Shader& shader, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 
-	void Draw( const Framebuffer& framebuffer, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
+	void Draw( const RHI::Framebuffer& framebuffer, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 	/* Decorations are icon-like text with rectangles. Example uses are for HDR, MSAA & sRGB. */
-	void DrawTextureFormatWithDecorations( const Texture& texture );
-	void DrawTextureFormatDecorationsOnly( const Texture& texture );
+	void DrawTextureFormatWithDecorations( const RHI::Texture& texture );
+	void DrawTextureFormatDecorationsOnly( const RHI::Texture& texture );
 
 	bool Draw(		 DirectionalLight&	directional_light,	const char* light_name,											ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 	void Draw( const DirectionalLight&	directional_light,	const char* light_name,											ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );

@@ -1,7 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "Graphics.h"
+#include "RHI.h"
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
 
@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <variant>
 
-namespace Kakadu::GL::Type
+namespace Kakadu::RHI::Type
 {
 	header_function	i32 SizeOf( const GLenum type )
 	{

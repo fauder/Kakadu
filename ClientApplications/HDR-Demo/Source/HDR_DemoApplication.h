@@ -4,7 +4,7 @@
 #include "Engine/Graphics/MaterialData/MaterialData.h"
 #include "Engine/Graphics/Material.hpp"
 #include "Engine/Graphics/Mesh.h"
-#include "Engine/Graphics/Texture.h"
+#include "Engine/Graphics/RHI/Texture.h"
 
 #include "Engine/DefineMathTypes.h"
 
@@ -44,24 +44,22 @@ private:
 
 	Kakadu::Renderable light_sources_renderable;
 
-	Kakadu::Framebuffer framebuffer_hdr;
-
 /* Textures: */
-	Kakadu::Texture* wood_diffuse_map;
+	Kakadu::RHI::Texture* wood_diffuse_map;
 
-	Kakadu::Texture* framebuffer_hdr_color_attachment;
-	Kakadu::Texture* framebuffer_hdr_depth_attachment;
+	Kakadu::RHI::Texture* framebuffer_hdr_color_attachment;
+	Kakadu::RHI::Texture* framebuffer_hdr_depth_attachment;
 
 /* Vertex Info.: */
 	Kakadu::Mesh cube_mesh_inverted;
 	Kakadu::Mesh light_source_sphere_mesh;
 
 /* Shaders: */
-	Kakadu::Shader* shader_blinn_phong;
+	Kakadu::RHI::Shader* shader_blinn_phong;
 
-	Kakadu::Shader* shader_basic_color_instanced;
+	Kakadu::RHI::Shader* shader_basic_color_instanced;
 
-	Kakadu::Shader* shader_texture_blit;
+	Kakadu::RHI::Shader* shader_texture_blit;
 
 /* Materials: */
 	Kakadu::Material wood_material;

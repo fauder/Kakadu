@@ -2,7 +2,7 @@
 #include "Assertion.h"
 #include "ImGuiUtility.h"
 #include "ImGuiCustomColors.h"
-#include "Graphics/Color.hpp"
+#include "Math/Color.hpp"
 #include "Math/VectorConversion.hpp"
 
 // Vendor Includes.

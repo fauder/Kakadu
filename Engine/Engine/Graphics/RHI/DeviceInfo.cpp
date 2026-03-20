@@ -1,10 +1,13 @@
 // Engine Includes.
-#include "Graphics.h"
-#include "GraphicsDeviceInfo.h"
+#include "RHI.h"
+#include "DeviceInfo.h"
 #include "Core/Macros.h"
 #include "Core/Utility.hpp"
 
-namespace Kakadu::Graphics
+// std Includes.
+#include <string_view>
+
+namespace Kakadu::RHI
 {
 	internal_function DeviceInfo::Vendor DetectVendor( const std::string_view vendor_string )
 	{
