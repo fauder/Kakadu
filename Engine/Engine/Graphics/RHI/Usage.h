@@ -11,5 +11,5 @@ namespace Kakadu::RHI
 		DynamicDraw
 	};
 
-	i32 UsageToGLEnum( Usage );
+	u32 UsageToGLEnum( Usage );
 };

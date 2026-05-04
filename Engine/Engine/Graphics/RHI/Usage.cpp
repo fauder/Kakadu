@@ -5,7 +5,7 @@
 
 namespace Kakadu::RHI
 {
-	i32 UsageToGLEnum( Usage usage )
+	u32 UsageToGLEnum( Usage usage )
 	{
 		switch( usage )
 		{
@@ -13,7 +13,7 @@ namespace Kakadu::RHI
 			case Usage::DynamicDraw: return GL_DYNAMIC_DRAW;
 		}
 
-		ASSERT( false && "Invalid usage in Kakadu::GL::UsageToGLEnum( usage 0 )!" );
+		ASSERT( false && "Invalid usage in Kakadu::RHI::UsageToGLEnum( usage )!" );
 		return GL_NONE;
 	}
 }
