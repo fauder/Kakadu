@@ -1,7 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "RHI/GLLogType.h"
+#include "RHI/DebugMessageType.h"
 #include "Core/Macros.h"
 #include "Core/ImGuiLog.hpp"
 #include "Core/Types.h"
@@ -34,7 +34,7 @@ namespace Kakadu
 		};
 
 	private:
-		using CallbackType = std::function< void( GLenum source, GLenum type, u32 id /* will be ignored */, GLenum severity, GLsizei length, const char* message,
+		using CallbackType = std::function< void( u32 source, u32 type, u32 id /* will be ignored */, u32 severity, i32 length, const char* message,
 												  const void* parameters /* will be ignored */ ) >;
 
 	public:
@@ -64,10 +64,10 @@ namespace Kakadu
 		void Marker( const char* marker_label );
 
 	/* Labeling: */
-		void SetLabel( const GLenum object_type, const GLuint object_id, const char* label ) const;
-		void SetLabel( const GLenum object_type, const GLuint object_id, const std::string& name ) const;
-		void GetLabel( const GLenum object_type, const GLuint object_id, char* label ) const;
-		std::string GetLabel( const GLenum object_type, const GLuint object_id ) const;
+		void SetLabel( const u32 object_type, const u32 object_id, const char* label ) const;
+		void SetLabel( const u32 object_type, const u32 object_id, const std::string& name ) const;
+		void GetLabel( const u32 object_type, const u32 object_id, char* label ) const;
+		std::string GetLabel( const u32 object_type, const u32 object_id ) const;
 
 	/* Filtering IDs: */
 		static void IgnoreID( const u32 id_to_ignore );
@@ -80,15 +80,15 @@ namespace Kakadu
 		CallbackType GetCallback();
 
 	private:
-		void InternalDebugOutputCallback( GLenum source, GLenum type, u32 id, GLenum severity, GLsizei length, const char* message, const void* parameters );
-		void Log( GLenum source, GLenum type, GLenum severity, GLsizei length, const char* message, const void* parameters );
+		void InternalDebugOutputCallback( u32 source, u32 type, u32 id, u32 severity, i32 length, const char* message, const void* parameters );
+		void Log( u32 source, u32 type, u32 severity, i32 length, const char* message, const void* parameters );
 
-		static const char* GLenumToString_Source( const GLenum source );
-		static const char* GLenumToString_Type( const GLenum type );
-		static const char* GLenumToString_Severity( const GLenum severity );
+		static const char* GLenumToString_Source( const u32 source );
+		static const char* GLenumToString_Type( const u32 type );
+		static const char* GLenumToString_Severity( const u32 severity );
 
 	private:
-		ImGuiLog< RHI::GLLogType, std::size_t( RHI::GLLogType::COUNT ) > logger;
+		ImGuiLog< RHI::DebugMessageType, std::size_t( RHI::DebugMessageType::COUNT ) > logger;
 
 		std::stack< const char* > groups_empty; /* We keep tabs of the empty groups & while we do push/pop them, we do not log them. */
 	};

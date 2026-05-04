@@ -210,7 +210,7 @@
     <ClInclude Include="Engine\Graphics\RHI\Capabilities.h" />
     <ClInclude Include="Engine\Graphics\RHI\Enums.h" />
     <ClInclude Include="Engine\Graphics\RHI\Framebuffer.h" />
-    <ClInclude Include="Engine\Graphics\RHI\GLLogType.h" />
+    <ClInclude Include="Engine\Graphics\RHI\DebugMessageType.h" />
     <ClInclude Include="Engine\Graphics\RHI\DeviceInfo.h" />
     <ClInclude Include="Engine\Graphics\RHI\ID\BufferID.h" />
     <ClInclude Include="Engine\Graphics\RHI\ID\FramebufferID.h" />
@@ -320,6 +320,7 @@
     <ClCompile Include="Engine\Graphics\RHI\Capabilities.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Framebuffer.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\DeviceInfo.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\DebugMessageType.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Shader.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Texture.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Usage.cpp" />

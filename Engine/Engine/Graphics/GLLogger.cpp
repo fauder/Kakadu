@@ -1,4 +1,5 @@
 // Engine Includes.
+#include "RHI/RHI.h"
 #include "GLLogger.h"
 
 // Vendor Includes.
@@ -58,32 +59,32 @@ namespace Kakadu
 
 	void GLLogger::Info( const std::string& message )
 	{
-		logger.AddLog( RHI::GLLogType::NORMAL, message );
+		logger.AddLog( RHI::DebugMessageType::NORMAL, message );
 	}
 
 	void GLLogger::Info( const char* message )
 	{
-		logger.AddLog( RHI::GLLogType::NORMAL, message );
+		logger.AddLog( RHI::DebugMessageType::NORMAL, message );
 	}
 
 	void GLLogger::Warning( const std::string& message )
 	{
-		logger.AddLog( RHI::GLLogType::WARNING, ICON_FA_TRIANGLE_EXCLAMATION + ( " " + message ) );
+		logger.AddLog( RHI::DebugMessageType::WARNING, ICON_FA_TRIANGLE_EXCLAMATION + ( " " + message ) );
 	}
 
 	void GLLogger::Warning( const char* message )
 	{
-		logger.AddLog( RHI::GLLogType::WARNING, ( std::string( ICON_FA_TRIANGLE_EXCLAMATION ) + " " + message ).c_str() );
+		logger.AddLog( RHI::DebugMessageType::WARNING, ( std::string( ICON_FA_TRIANGLE_EXCLAMATION ) + " " + message ).c_str() );
 	}
 
 	void GLLogger::Error( const std::string& message )
 	{
-		logger.AddLog( RHI::GLLogType::ERROR_, ICON_FA_CIRCLE_EXCLAMATION + ( " " + message ) );
+		logger.AddLog( RHI::DebugMessageType::ERROR_, ICON_FA_CIRCLE_EXCLAMATION + ( " " + message ) );
 	}
 
 	void GLLogger::Error( const char* message )
 	{
-		logger.AddLog( RHI::GLLogType::ERROR_, ( std::string( ICON_FA_CIRCLE_EXCLAMATION ) + " " + message ).c_str() );
+		logger.AddLog( RHI::DebugMessageType::ERROR_, ( std::string( ICON_FA_CIRCLE_EXCLAMATION ) + " " + message ).c_str() );
 	}
 
 	/* omit_empty_group: If true, defers the push operation until an actual log is recorded between this function call & the PopGroup() call. If no calls were made in-between,
@@ -111,23 +112,23 @@ namespace Kakadu
 		glDebugMessageInsert( GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, marker_label );
 	}
 
-	void GLLogger::SetLabel( const GLenum object_type, const GLuint object_id, const char* label ) const
+	void GLLogger::SetLabel( const u32 object_type, const u32 object_id, const char* label ) const
 	{
 		glObjectLabel( object_type, object_id, -1, label );
 	}
 
-	void GLLogger::SetLabel( const GLenum object_type, const GLuint object_id, const std::string& name ) const
+	void GLLogger::SetLabel( const u32 object_type, const u32 object_id, const std::string& name ) const
 	{
 		glObjectLabel( object_type, object_id, -1, name.c_str() );
 	}
 
-	void GLLogger::GetLabel( const GLenum object_type, const GLuint object_id, char* label ) const
+	void GLLogger::GetLabel( const u32 object_type, const u32 object_id, char* label ) const
 	{
 		i32 label_length;
 		glGetObjectLabel( object_type, object_id, GL_MAX_LABEL_LENGTH, &label_length, label );
 	}
 
-	std::string GLLogger::GetLabel( const GLenum object_type, const GLuint object_id ) const
+	std::string GLLogger::GetLabel( const u32 object_type, const u32 object_id ) const
 	{
 		thread_local_persist char OBJECT_LABEL_STORAGE[ GL_MAX_LABEL_LENGTH ];
 		i32 label_length;
@@ -152,7 +153,7 @@ namespace Kakadu
 
 	GLLogger::CallbackType GLLogger::GetCallback()
 	{
-		return [ = ]( GLenum source, GLenum type, u32 id, GLenum severity, GLsizei length, const char* message, const void* parameters )
+		return [ = ]( u32 source, u32 type, u32 id, u32 severity, i32 length, const char* message, const void* parameters )
 		{
 			this->InternalDebugOutputCallback( source, type, id, severity, length, message, parameters );
 		};
@@ -162,7 +163,7 @@ namespace Kakadu
  * Private API:
  */
 
-	void GLLogger::InternalDebugOutputCallback( GLenum source, GLenum type, u32 id /* ignored */, GLenum severity, GLsizei length, const char* message, 
+	void GLLogger::InternalDebugOutputCallback( u32 source, u32 type, u32 id /* ignored */, u32 severity, i32 length, const char* message, 
 												const void* parameters /* ignored */ )
 	{
 		if( type == GL_DEBUG_TYPE_MARKER )
@@ -192,7 +193,7 @@ namespace Kakadu
 		Log( source, type, severity, length, message, parameters );
 	}
 
-	void GLLogger::Log( GLenum source, GLenum type, GLenum severity, GLsizei length, const char* message, const void* parameters )
+	void GLLogger::Log( u32 source, u32 type, u32 severity, i32 length, const char* message, const void* parameters )
 	{
 		constexpr std::size_t fixed_portion_length =
 			1 + 1 +				// 1 vertical line + 1 space.
@@ -223,7 +224,7 @@ namespace Kakadu
 		logger.AddLog( RHI::GLenumToGLLogType( type ), full_message.data() );
 	}
 
-	const char* GLLogger::GLenumToString_Source( const GLenum source )
+	const char* GLLogger::GLenumToString_Source( const u32 source )
 	{
 		switch( source )
 		{
@@ -239,7 +240,7 @@ namespace Kakadu
 		}
 	}
 
-	const char* GLLogger::GLenumToString_Type( const GLenum type )
+	const char* GLLogger::GLenumToString_Type( const u32 type )
 	{
 		
 		switch( type )
@@ -259,7 +260,7 @@ namespace Kakadu
 		}
 	}
 
-	const char* GLLogger::GLenumToString_Severity( const GLenum severity )
+	const char* GLLogger::GLenumToString_Severity( const u32 severity )
 	{
 		switch( severity )
 		{

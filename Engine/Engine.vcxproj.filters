@@ -357,7 +357,7 @@
     <ClInclude Include="Engine\Graphics\RHI\Framebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\RHI\GLLogType.h">
+    <ClInclude Include="Engine\Graphics\RHI\DebugMessageType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\RHI\DeviceInfo.h">
@@ -558,6 +558,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\RHI\Capabilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\RHI\DebugMessageType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
