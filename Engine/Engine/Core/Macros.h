@@ -4,12 +4,13 @@
 #include <string_view>
 
 // Typedefs:
-#define internal_function static
-#define local_persist     static
+#define internal_function		static
+#define local_persist			static
+#define thread_local_persist	static thread_local
 /* This is used for static global variables, with internal linkage.
  * For global variables intended to be shared across translation units, simply use the extern keyword and define them inside a translation unit. */
-#define internal_variable static
-#define header_function   inline
+#define internal_variable		static
+#define header_function			inline
 
 /*
  * Default Constructors:
