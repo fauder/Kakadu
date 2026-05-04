@@ -63,12 +63,6 @@ namespace Kakadu
 	/* Marker: */
 		void Marker( const char* marker_label );
 
-	/* Labeling: */
-		void SetLabel( const u32 object_type, const u32 object_id, const char* label ) const;
-		void SetLabel( const u32 object_type, const u32 object_id, const std::string& name ) const;
-		void GetLabel( const u32 object_type, const u32 object_id, char* label ) const;
-		std::string GetLabel( const u32 object_type, const u32 object_id ) const;
-
 	/* Filtering IDs: */
 		static void IgnoreID( const u32 id_to_ignore );
 		static void DontIgnoreID( const u32 id_to_restore );

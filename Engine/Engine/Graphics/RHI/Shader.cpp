@@ -6,6 +6,7 @@
 
 // Engince Includes.
 #include "Asset/Paths.h"
+#include "DebugLabel.h"
 #include "DeviceInfo.h"
 #include "GLLabelPrefixes.h"
 #include "Shader.hpp"
@@ -199,7 +200,7 @@ namespace Kakadu::RHI
 			return false;
 
 #ifdef _EDITOR
-		ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, vertex_shader_id, GL_LABEL_PREFIX_VERTEX_SHADER + name );
+		DebugLabel::Set( GL_SHADER, vertex_shader_id, GL_LABEL_PREFIX_VERTEX_SHADER + name );
 #endif // _EDITOR
 
 		feature_map.insert( vertex_shader_features.begin(), vertex_shader_features.end() );
@@ -233,7 +234,7 @@ namespace Kakadu::RHI
 			feature_map.insert( geometry_shader_features.begin(), geometry_shader_features.end() );
 
 #ifdef _EDITOR
-				ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, geometry_shader_id, GL_LABEL_PREFIX_GEOMETRY_SHADER + name );
+				DebugLabel::Set( GL_SHADER, geometry_shader_id, GL_LABEL_PREFIX_GEOMETRY_SHADER + name );
 #endif // _EDITOR
 		}
 
@@ -267,7 +268,7 @@ namespace Kakadu::RHI
 		}
 
 #ifdef _EDITOR
-		ServiceLocator< GLLogger >::Get().SetLabel( GL_SHADER, fragment_shader_id, GL_LABEL_PREFIX_FRAGMENT_SHADER + name );
+		DebugLabel::Set( GL_SHADER, fragment_shader_id, GL_LABEL_PREFIX_FRAGMENT_SHADER + name );
 #endif // _EDITOR
 
 		feature_map.insert( fragment_shader_features.begin(), fragment_shader_features.end() );
@@ -282,7 +283,7 @@ namespace Kakadu::RHI
 		if( link_result )
 		{
 #ifdef _EDITOR
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_PROGRAM, program_id.id, GL_LABEL_PREFIX_SHADER_PROGRAM + name );
+			DebugLabel::Set( GL_PROGRAM, program_id.id, GL_LABEL_PREFIX_SHADER_PROGRAM + name );
 #endif // _EDITOR
 
 			QueryVertexAttributes();

@@ -112,30 +112,6 @@ namespace Kakadu
 		glDebugMessageInsert( GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, marker_label );
 	}
 
-	void GLLogger::SetLabel( const u32 object_type, const u32 object_id, const char* label ) const
-	{
-		glObjectLabel( object_type, object_id, -1, label );
-	}
-
-	void GLLogger::SetLabel( const u32 object_type, const u32 object_id, const std::string& name ) const
-	{
-		glObjectLabel( object_type, object_id, -1, name.c_str() );
-	}
-
-	void GLLogger::GetLabel( const u32 object_type, const u32 object_id, char* label ) const
-	{
-		i32 label_length;
-		glGetObjectLabel( object_type, object_id, GL_MAX_LABEL_LENGTH, &label_length, label );
-	}
-
-	std::string GLLogger::GetLabel( const u32 object_type, const u32 object_id ) const
-	{
-		thread_local_persist char OBJECT_LABEL_STORAGE[ GL_MAX_LABEL_LENGTH ];
-		i32 label_length;
-		glGetObjectLabel( object_type, object_id, GL_MAX_LABEL_LENGTH, &label_length, OBJECT_LABEL_STORAGE );
-		return OBJECT_LABEL_STORAGE;
-	}
-
 	void GLLogger::IgnoreID( const u32 id_to_ignore )
 	{
 		glDebugMessageControl( GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 1, &id_to_ignore, false );

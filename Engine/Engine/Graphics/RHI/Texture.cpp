@@ -1,7 +1,7 @@
 // Engine Includes.
 #include "Capabilities.h"
+#include "DebugLabel.h"
 #include "GLLabelPrefixes.h"
-#include "Graphics/GLLogger.h" // TODO: GLLogger dependency - wrong direction, fix when logger is properly split.
 #include "Texture.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Assertion.h"
@@ -46,7 +46,7 @@ namespace Kakadu::RHI
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
+			DebugLabel::Set( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
@@ -86,10 +86,10 @@ namespace Kakadu::RHI
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name + 
-														( name.find( "MSAA" ) == std::string::npos
-															? "(MSAA " + std::to_string( sample_count ) + "x)"
-															: "" ) );
+			DebugLabel::Set( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name +
+							 ( name.find( "MSAA" ) == std::string::npos
+							   ? "(MSAA " + std::to_string( sample_count ) + "x)"
+							   : "" ) );
 #endif // _EDITOR
 
 		glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, sample_count, InternalFormat( format ), width, height, GL_TRUE );
@@ -126,7 +126,7 @@ namespace Kakadu::RHI
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
+			DebugLabel::Set( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
 
@@ -258,7 +258,7 @@ namespace Kakadu::RHI
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
+			DebugLabel::Set( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
@@ -304,7 +304,7 @@ namespace Kakadu::RHI
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
+			DebugLabel::Set( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
 		for( auto i = 0; i < 6; i++ )

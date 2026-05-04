@@ -1,14 +1,16 @@
 // Engine Includes.
 #include "RHI.h"
 #include "Buffer.h"
-#include "Graphics/GLLogger.h" // TODO: GLLogger dependency - wrong direction, fix when logger is properly split.
+#include "DebugLabel.h"
 #include "GLLabelPrefixes.h"
 #include "Core/Assertion.h"
+#include "Core/Macros.h"
 #include "Core/Optimization.h"
 #include "Core/ServiceLocator.h"
 
 // std Includes.
 #include <map>
+#include <iostream>
 
 namespace Kakadu::RHI
 {
@@ -128,7 +130,7 @@ namespace Kakadu::RHI
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.id, LabelPrefix( type ) + name );
+			DebugLabel::Set( GL_BUFFER, id.id, LabelPrefix( type ) + name );
 #endif // _EDITOR
 	}
 
@@ -153,7 +155,7 @@ namespace Kakadu::RHI
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_BUFFER, id.id, LabelPrefix( type ) + name );
+			DebugLabel::Set( GL_BUFFER, id.id, LabelPrefix( type ) + name );
 #endif // _EDITOR
 	}
 

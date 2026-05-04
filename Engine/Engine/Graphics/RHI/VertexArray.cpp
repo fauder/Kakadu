@@ -1,8 +1,8 @@
 // Engine Includes.
 #include "RHI.h"
+#include "DebugLabel.h"
 #include "GLLabelPrefixes.h"
 #include "VertexArray.h"
-#include "Graphics/GLLogger.h" // TODO: GLLogger dependency - wrong direction, fix when logger is properly split.
 #include "Core/ServiceLocator.h"
 
 // std Includes.
@@ -154,7 +154,7 @@ namespace Kakadu::RHI
 
 #ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.id, GL_LABEL_PREFIX_VERTEX_ARRAY + name );
+			DebugLabel::Set( GL_VERTEX_ARRAY, id.id, GL_LABEL_PREFIX_VERTEX_ARRAY + name );
 	#endif // _EDITOR
 
 		vertex_buffer.Bind();
@@ -168,7 +168,7 @@ namespace Kakadu::RHI
 
 	#ifdef _EDITOR
 		if( not name.empty() )
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_VERTEX_ARRAY, id.id, GL_LABEL_PREFIX_VERTEX_ARRAY + name );
+			DebugLabel::Set( GL_VERTEX_ARRAY, id.id, GL_LABEL_PREFIX_VERTEX_ARRAY + name );
 	#endif // _EDITOR
 
 		vertex_buffer.Bind();

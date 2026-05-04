@@ -1,8 +1,8 @@
 // Engine Includes.
 #include "RHI.h"
+#include "DebugLabel.h"
 #include "Framebuffer.h"
 #include "GLLabelPrefixes.h"
-#include "Graphics/GLLogger.h" // TODO: GLLogger dependency - wrong direction, fix when logger is properly split.
 #include "Core/Assertion.h"
 #include "Core/AssetDatabase_Tracked.hpp"
 #include "Core/Platform.h"
@@ -178,7 +178,7 @@ namespace Kakadu::RHI
 			const std::string full_name( IsMultiSampled()
 										   ? this->name + " (MSAA " + std::to_string( msaa.sample_count ) + "x)"
 										   : this->name );
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.id, GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
+			DebugLabel::Set( GL_FRAMEBUFFER, id.id, GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
 		}
 #endif // _EDITOR
 
@@ -211,7 +211,7 @@ namespace Kakadu::RHI
 			const std::string full_name( IsMultiSampled()
 											? this->name + " (MSAA " + std::to_string( msaa.sample_count ) + "x)"
 										    : this->name );
-			ServiceLocator< GLLogger >::Get().SetLabel( GL_FRAMEBUFFER, id.id, GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
+			DebugLabel::Set( GL_FRAMEBUFFER, id.id, GL_LABEL_PREFIX_FRAMEBUFFER + full_name );
 		}
 #endif // _EDITOR
 

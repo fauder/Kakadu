@@ -399,6 +399,9 @@
     <ClInclude Include="Engine\Graphics\RHI\Uniform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\RHI\DebugLabel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\Application.cpp">
@@ -561,6 +564,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\RHI\DebugMessageType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\RHI\DebugLabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
