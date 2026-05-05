@@ -166,6 +166,16 @@ namespace Kakadu
 		logger.AddLog( ImGuiLogger::EntryType::ERROR_, ( std::string( ICON_FA_CIRCLE_EXCLAMATION ) + " " + message ).c_str() );
 	}
 
+	void GLLogger::Success( const std::string& message )
+	{
+		logger.AddLog( ImGuiLogger::EntryType::SUCCESS, ICON_FA_CIRCLE_EXCLAMATION + ( " " + message ) );
+	}
+
+	void GLLogger::Success( const char* message )
+	{
+		logger.AddLog( ImGuiLogger::EntryType::SUCCESS, ( std::string( ICON_FA_CIRCLE_EXCLAMATION ) + " " + message ).c_str() );
+	}
+
 	/* omit_empty_group: If true, defers the push operation until an actual log is recorded between this function call & the PopGroup() call. If no calls were made in-between,
 	 * the group is not pushed/popped. It is effectively omitted. */
 	void GLLogger::PushGroup( const char* group_name )

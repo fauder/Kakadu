@@ -50,6 +50,8 @@ namespace Kakadu
 		void Warning( const char* message );
 		void Error( const std::string& message );
 		void Error( const char* message );
+		void Success( const std::string& message );
+		void Success( const char* message );
 
 	/* Grouping: */
 		/* omit_empty_group: If true, defers the push operation until an actual log is recorded between this function call & the PopGroup() call. If no calls were made in-between,
