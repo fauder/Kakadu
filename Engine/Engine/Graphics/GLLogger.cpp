@@ -201,11 +201,6 @@ namespace Kakadu
 		glDebugMessageControl( GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 1, &id_to_restore, true );
 	}
 
-	void GLLogger::Draw( bool* show )
-	{
-		logger.Draw( ICON_FA_BOOK " GL Logs", show );
-	}
-
 	GLLogger::CallbackType GLLogger::GetCallback()
 	{
 		return [ = ]( u32 source, u32 type, u32 id, u32 severity, i32 length, const char* message, const void* parameters )

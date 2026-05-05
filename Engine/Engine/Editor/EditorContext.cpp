@@ -12,6 +12,9 @@
 #include "Core/ServiceLocator.h"
 #include "Graphics/Renderer.h"
 
+// Vendor Includes.
+#include <IconFontCppHeaders/IconsFontAwesome6.h>
+
 // TODO: Add the menu bar => and a window entry => ability to close/reopen desired panels.
 
 namespace Kakadu::Editor
@@ -137,8 +140,8 @@ namespace Kakadu::Editor
 
 		FRAME_STATS_OVERLAY.Render( *this );
 
-		if( show_gl_logger )
-			ServiceLocator< GLLogger >::Get().Draw( &show_gl_logger );
+		if( show_logger )
+			ServiceLocator< ImGuiLogger >::Get().Draw( ICON_FA_BOOK " Console", &show_logger );
 
 		RenderSceneCameraInspectorPanel( scene_camera, viewport_resolution );
 

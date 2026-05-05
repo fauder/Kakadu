@@ -66,9 +66,6 @@ namespace Kakadu
 		static void IgnoreID( const u32 id_to_ignore );
 		static void DontIgnoreID( const u32 id_to_restore );
 
-	/* Main: */
-		void Draw( bool* show = nullptr );
-
 	/* Queries: */
 		CallbackType GetCallback();
 

@@ -74,7 +74,7 @@ namespace Kakadu
 			editor_context->show_imgui_demo_window                   = false;
 			editor_context->show_frame_statistics_overlay            = true;
 			editor_context->show_mouse_screen_space_position_overlay = false;
-			editor_context->show_gl_logger                           = true;
+			editor_context->show_logger                              = true;
 			editor_context->ui_interaction_enabled                   = true;
 
 			editor_context->Initialize();
@@ -171,6 +171,7 @@ namespace Kakadu
 	void Application::Initialize()
 	{
 		ServiceLocator< GLLogger >::Register( &gl_logger );
+		ServiceLocator< ImGuiLogger >::Register( &logger );
 		ServiceLocator< AssetDatabase< RHI::Texture > >::Register( &asset_database_texture );
 		ServiceLocator< AssetDatabase_Tracked< RHI::Texture* > >::Register( &asset_database_texture_tracked );
 		ServiceLocator< AssetDatabase< Model > >::Register( &asset_database_model );
