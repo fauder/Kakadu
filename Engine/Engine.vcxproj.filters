@@ -126,7 +126,7 @@
     <ClInclude Include="Engine\Core\ImGuiDrawer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\ImGuiLog.hpp">
+    <ClInclude Include="Engine\Core\ImGuiLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\GLLogger.h">
@@ -357,9 +357,6 @@
     <ClInclude Include="Engine\Graphics\RHI\Framebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\RHI\DebugMessageType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Graphics\RHI\DeviceInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -563,10 +560,10 @@
     <ClCompile Include="Engine\Graphics\RHI\Capabilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\RHI\DebugMessageType.cpp">
+    <ClCompile Include="Engine\Graphics\RHI\DebugLabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\RHI\DebugLabel.cpp">
+    <ClCompile Include="Engine\Core\ImGuiLogger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

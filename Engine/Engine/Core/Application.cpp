@@ -28,7 +28,8 @@ namespace Kakadu
 		:
 		is_running( true ),
 		vsync_is_enabled( false ),
-		msaa_sample_count( renderer_description.msaa_sample_count )
+		msaa_sample_count( renderer_description.msaa_sample_count ),
+		gl_logger( logger )
 	{
 		renderer_description.output_to_composite_framebuffer = true; // TODO: Remove this from here when editor becomes its own project & executable.
 

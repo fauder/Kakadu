@@ -5,8 +5,15 @@
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
+// std Includes.
+#include <iostream>
+
 namespace Kakadu
 {
+/*
+ * GLLogger::GLLogGroup:
+ */
+
 	GLLogger::GLLogGroup::GLLogGroup( GLLogger* logger, const char* group_name )
 		:
 		logger( logger )
@@ -39,17 +46,89 @@ namespace Kakadu
 		}
 	}
 
-	GLLogger::GLLogger()
-		:
-		logger(
+/*
+ * Internal Functions:
+ */
+
+	internal_function const char* ConvertGLMessageSourceString( const u32 source )
+	{
+		switch( source )
 		{
-			/* Red for errors.			*/ ImVec4( 1.0f,  0.0f,  0.0f,  1.0f ), // <-- ERROR
-			/* Yellow for warnings.		*/ ImVec4( 1.0f,  1.0f,  0.0f,  1.0f ), // <-- WARNING
-			/* Dark green for markers.	*/ ImVec4( 0.04f, 0.3f,  0.15f, 1.0f ), // <-- MARKER
-			/* Teal for group logs.		*/ ImVec4( 0.38f, 1.0f,  0.82f, 1.0f ), // <-- PUSH_GROUP
-			/* Teal for group logs.		*/ ImVec4( 0.38f, 1.0f,  0.82f, 1.0f ), // <-- POP_GROUP
-			/* White for normal logs.	*/ ImVec4( 1.0f,  1.0f,  1.0f,  1.0f ), // <-- NORMAL
-		} )
+			case GL_DEBUG_SOURCE_API				: return "GL";
+			case GL_DEBUG_SOURCE_WINDOW_SYSTEM 		: return "WINDOW SYS.";
+			case GL_DEBUG_SOURCE_SHADER_COMPILER 	: return "SHADER COMP.";
+			case GL_DEBUG_SOURCE_THIRD_PARTY 		: return "3RD PARTY";
+			case GL_DEBUG_SOURCE_APPLICATION 		: return "APPLICATION";
+			case GL_DEBUG_SOURCE_OTHER				: return "OTHER";
+			
+			default:
+				return "INVALID ENUM";
+		}
+	}
+
+	internal_function const char* ConvertGLMessageTypeString( const u32 type )
+	{
+		
+		switch( type )
+		{
+			case GL_DEBUG_TYPE_ERROR 				: return ICON_FA_CIRCLE_EXCLAMATION;
+			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR 	: return ICON_FA_TRIANGLE_EXCLAMATION " DEPRECATED";
+			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR 	: return ICON_FA_TRIANGLE_EXCLAMATION " UNDEFINED";
+			case GL_DEBUG_TYPE_PORTABILITY 			: return ICON_FA_TRIANGLE_EXCLAMATION " PORTABILITY";
+			case GL_DEBUG_TYPE_PERFORMANCE 			: return ICON_FA_GAUGE;
+			case GL_DEBUG_TYPE_MARKER 				: return ICON_FA_FLAG;
+			case GL_DEBUG_TYPE_PUSH_GROUP 			: return "PUSH_GROUP";
+			case GL_DEBUG_TYPE_POP_GROUP 			: return "POP_GROUP";
+			case GL_DEBUG_TYPE_OTHER 				: return "OTHER";
+
+			default:
+				return "INVALID ENUM";
+		}
+	}
+
+	internal_function const char* ConvertGLMessageSeverityString( const u32 severity )
+	{
+		switch( severity )
+		{
+			case GL_DEBUG_SEVERITY_HIGH 			: return "SEVERITY: HIGH";
+			case GL_DEBUG_SEVERITY_MEDIUM 			: return "SEVERITY: MEDIUM";
+			case GL_DEBUG_SEVERITY_LOW 				: return "SEVERITY: LOW";
+			case GL_DEBUG_SEVERITY_NOTIFICATION		: return "SEVERITY: NOTIF.";
+
+			default:
+				return "INVALID ENUM";
+		}
+	}
+
+	internal_function ImGuiLogger::EntryType ConvertGLMessageType( u32 value )
+	{
+		switch( value )
+		{
+			case GL_DEBUG_TYPE_ERROR:				return ImGuiLogger::EntryType::ERROR_;
+			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return ImGuiLogger::EntryType::WARNING;
+			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:	return ImGuiLogger::EntryType::WARNING;
+			case GL_DEBUG_TYPE_PORTABILITY:			return ImGuiLogger::EntryType::WARNING;
+			case GL_DEBUG_TYPE_PERFORMANCE:			return ImGuiLogger::EntryType::WARNING;
+
+			case GL_DEBUG_TYPE_MARKER:				return ImGuiLogger::EntryType::GROUP_SEPARATOR;
+			case GL_DEBUG_TYPE_PUSH_GROUP:			return ImGuiLogger::EntryType::GROUP_SEPARATOR;
+			case GL_DEBUG_TYPE_POP_GROUP:			return ImGuiLogger::EntryType::GROUP_SEPARATOR;
+
+			case GL_DEBUG_TYPE_OTHER:				return ImGuiLogger::EntryType::NORMAL;
+
+			default:
+				std::cerr << "Invalid GLenum passed to ConvertGLMessageType( GLenum value )!\n";
+				return ImGuiLogger::EntryType::INVALID;
+		}
+	}
+
+/*
+ * GL Logger:
+ */
+
+	GLLogger::GLLogger( ImGuiLogger& logger )
+		:
+		logger( logger )
 	{
 	}
 		
@@ -59,32 +138,32 @@ namespace Kakadu
 
 	void GLLogger::Info( const std::string& message )
 	{
-		logger.AddLog( RHI::DebugMessageType::NORMAL, message );
+		logger.AddLog( ImGuiLogger::EntryType::NORMAL, message );
 	}
 
 	void GLLogger::Info( const char* message )
 	{
-		logger.AddLog( RHI::DebugMessageType::NORMAL, message );
+		logger.AddLog( ImGuiLogger::EntryType::NORMAL, message );
 	}
 
 	void GLLogger::Warning( const std::string& message )
 	{
-		logger.AddLog( RHI::DebugMessageType::WARNING, ICON_FA_TRIANGLE_EXCLAMATION + ( " " + message ) );
+		logger.AddLog( ImGuiLogger::EntryType::WARNING, ICON_FA_TRIANGLE_EXCLAMATION + ( " " + message ) );
 	}
 
 	void GLLogger::Warning( const char* message )
 	{
-		logger.AddLog( RHI::DebugMessageType::WARNING, ( std::string( ICON_FA_TRIANGLE_EXCLAMATION ) + " " + message ).c_str() );
+		logger.AddLog( ImGuiLogger::EntryType::WARNING, ( std::string( ICON_FA_TRIANGLE_EXCLAMATION ) + " " + message ).c_str() );
 	}
 
 	void GLLogger::Error( const std::string& message )
 	{
-		logger.AddLog( RHI::DebugMessageType::ERROR_, ICON_FA_CIRCLE_EXCLAMATION + ( " " + message ) );
+		logger.AddLog( ImGuiLogger::EntryType::ERROR_, ICON_FA_CIRCLE_EXCLAMATION + ( " " + message ) );
 	}
 
 	void GLLogger::Error( const char* message )
 	{
-		logger.AddLog( RHI::DebugMessageType::ERROR_, ( std::string( ICON_FA_CIRCLE_EXCLAMATION ) + " " + message ).c_str() );
+		logger.AddLog( ImGuiLogger::EntryType::ERROR_, ( std::string( ICON_FA_CIRCLE_EXCLAMATION ) + " " + message ).c_str() );
 	}
 
 	/* omit_empty_group: If true, defers the push operation until an actual log is recorded between this function call & the PopGroup() call. If no calls were made in-between,
@@ -93,7 +172,7 @@ namespace Kakadu
 	{
 		groups_empty.push( group_name ); // This will be checked & popped by the actual debug output callback.
 
-		glPushDebugGroup( GL_DEBUG_SOURCE_APPLICATION, 0 /* ignored */, -1, group_name);
+		glPushDebugGroup( GL_DEBUG_SOURCE_APPLICATION, 0 /* ignored */, -1, group_name );
 	}
 
 	void GLLogger::PopGroup()
@@ -190,63 +269,13 @@ namespace Kakadu
 			sprintf_s( full_message.data(), full_message.size(), ICON_FA_ANGLE_DOWN );
 		else
 		{
-			const auto severity_string = GLenumToString_Severity( severity );	// Has a max length of 17.
-			const auto source_string   = GLenumToString_Source( source );		// Has a max length of 13.
-			const auto type_string     = GLenumToString_Type( type );			// Has a max length of 13.
+			const auto severity_string = ConvertGLMessageSeverityString( severity );	// Has a max length of 17.
+			const auto source_string   = ConvertGLMessageSourceString( source );		// Has a max length of 13.
+			const auto type_string     = ConvertGLMessageTypeString( type );			// Has a max length of 13.
 
 			sprintf_s( full_message.data(), full_message.size(), ICON_FA_ELLIPSIS_VERTICAL "\t%-17s | %13s | %13s: \t%s", severity_string, source_string, type_string, message );
 		}
 
-		logger.AddLog( RHI::GLenumToGLLogType( type ), full_message.data() );
-	}
-
-	const char* GLLogger::GLenumToString_Source( const u32 source )
-	{
-		switch( source )
-		{
-			case GL_DEBUG_SOURCE_API				: return "GL";
-			case GL_DEBUG_SOURCE_WINDOW_SYSTEM 		: return "WINDOW SYS.";
-			case GL_DEBUG_SOURCE_SHADER_COMPILER 	: return "SHADER COMP.";
-			case GL_DEBUG_SOURCE_THIRD_PARTY 		: return "3RD PARTY";
-			case GL_DEBUG_SOURCE_APPLICATION 		: return "APPLICATION";
-			case GL_DEBUG_SOURCE_OTHER				: return "OTHER";
-			
-			default:
-				return "INVALID ENUM";
-		}
-	}
-
-	const char* GLLogger::GLenumToString_Type( const u32 type )
-	{
-		
-		switch( type )
-		{
-			case GL_DEBUG_TYPE_ERROR 				: return ICON_FA_CIRCLE_EXCLAMATION;
-			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR 	: return ICON_FA_TRIANGLE_EXCLAMATION " DEPRECATED";
-			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR 	: return ICON_FA_TRIANGLE_EXCLAMATION " UNDEFINED";
-			case GL_DEBUG_TYPE_PORTABILITY 			: return ICON_FA_TRIANGLE_EXCLAMATION " PORTABILITY";
-			case GL_DEBUG_TYPE_PERFORMANCE 			: return ICON_FA_GAUGE;
-			case GL_DEBUG_TYPE_MARKER 				: return ICON_FA_FLAG;
-			case GL_DEBUG_TYPE_PUSH_GROUP 			: return "PUSH_GROUP";
-			case GL_DEBUG_TYPE_POP_GROUP 			: return "POP_GROUP";
-			case GL_DEBUG_TYPE_OTHER 				: return "OTHER";
-
-			default:
-				return "INVALID ENUM";
-		}
-	}
-
-	const char* GLLogger::GLenumToString_Severity( const u32 severity )
-	{
-		switch( severity )
-		{
-			case GL_DEBUG_SEVERITY_HIGH 			: return "SEVERITY: HIGH";
-			case GL_DEBUG_SEVERITY_MEDIUM 			: return "SEVERITY: MEDIUM";
-			case GL_DEBUG_SEVERITY_LOW 				: return "SEVERITY: LOW";
-			case GL_DEBUG_SEVERITY_NOTIFICATION		: return "SEVERITY: NOTIF.";
-
-			default:
-				return "INVALID ENUM";
-		}
+		logger.AddLog( ConvertGLMessageType( type ), full_message.data() );
 	}
 }

@@ -10,7 +10,6 @@
 #include "Engine/Core/ImGuiUtility.h"
 #include "Engine/Core/Platform.h"
 #include "Engine/Core/ServiceLocator.h"
-#include "Engine/Graphics/GLLogger.h"
 #include "Engine/Graphics/BuiltinShaders.h"
 #include "Engine/Graphics/BuiltinTextures.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"

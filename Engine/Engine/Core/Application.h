@@ -4,7 +4,7 @@
 #include "AssetDatabase.hpp"
 #include "AssetDatabase_Tracked.hpp"
 #include "BitFlags.hpp"
-#include "ImGuiLog.hpp"
+#include "ImGuiLogger.h"
 #include "MorphSystem.h"
 #include "Platform.h"
 #include "FrameTime.h"
@@ -77,6 +77,7 @@ namespace Kakadu
 #ifdef _EDITOR
 		std::unique_ptr< Editor::Context > editor_context;
 
+		ImGuiLogger logger;
 		GLLogger gl_logger;
 #endif // _EDITOR
 

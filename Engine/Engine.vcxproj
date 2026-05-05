@@ -173,7 +173,7 @@
     <ClInclude Include="Engine\Core\Concepts.h" />
     <ClInclude Include="Engine\Core\ImGuiCustomColors.h" />
     <ClInclude Include="Engine\Core\ImGuiDrawer.hpp" />
-    <ClInclude Include="Engine\Core\ImGuiLog.hpp" />
+    <ClInclude Include="Engine\Core\ImGuiLogger.h" />
     <ClInclude Include="Engine\Core\ImGuiUtility.h" />
     <ClInclude Include="Engine\Core\Initialization.h" />
     <ClInclude Include="Engine\Core\Blob.hpp" />
@@ -211,7 +211,6 @@
     <ClInclude Include="Engine\Graphics\RHI\DebugLabel.h" />
     <ClInclude Include="Engine\Graphics\RHI\Enums.h" />
     <ClInclude Include="Engine\Graphics\RHI\Framebuffer.h" />
-    <ClInclude Include="Engine\Graphics\RHI\DebugMessageType.h" />
     <ClInclude Include="Engine\Graphics\RHI\DeviceInfo.h" />
     <ClInclude Include="Engine\Graphics\RHI\ID\BufferID.h" />
     <ClInclude Include="Engine\Graphics\RHI\ID\FramebufferID.h" />
@@ -288,6 +287,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\FrameTime.cpp" />
+    <ClCompile Include="Engine\Core\ImGuiLogger.cpp" />
     <ClCompile Include="Engine\Editor\EditorContext.cpp" />
     <ClCompile Include="Engine\Core\Application.cpp" />
     <ClCompile Include="Engine\Core\Blob.cpp" />
@@ -322,7 +322,6 @@
     <ClCompile Include="Engine\Graphics\RHI\DebugLabel.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Framebuffer.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\DeviceInfo.cpp" />
-    <ClCompile Include="Engine\Graphics\RHI\DebugMessageType.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Shader.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Texture.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Usage.cpp" />

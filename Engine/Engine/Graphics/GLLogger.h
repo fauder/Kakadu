@@ -1,9 +1,8 @@
 #pragma once
 
 // Engine Includes.
-#include "RHI/DebugMessageType.h"
 #include "Core/Macros.h"
-#include "Core/ImGuiLog.hpp"
+#include "Core/ImGuiLogger.h"
 #include "Core/Types.h"
 
 // std Includes.
@@ -38,7 +37,7 @@ namespace Kakadu
 												  const void* parameters /* will be ignored */ ) >;
 
 	public:
-		GLLogger();
+		GLLogger( ImGuiLogger& logger );
 
 		DELETE_COPY_AND_MOVE_CONSTRUCTORS( GLLogger );
 
@@ -77,12 +76,8 @@ namespace Kakadu
 		void InternalDebugOutputCallback( u32 source, u32 type, u32 id, u32 severity, i32 length, const char* message, const void* parameters );
 		void Log( u32 source, u32 type, u32 severity, i32 length, const char* message, const void* parameters );
 
-		static const char* GLenumToString_Source( const u32 source );
-		static const char* GLenumToString_Type( const u32 type );
-		static const char* GLenumToString_Severity( const u32 severity );
-
 	private:
-		ImGuiLog< RHI::DebugMessageType, std::size_t( RHI::DebugMessageType::COUNT ) > logger;
+		ImGuiLogger& logger;
 
 		std::stack< const char* > groups_empty; /* We keep tabs of the empty groups & while we do push/pop them, we do not log them. */
 	};
