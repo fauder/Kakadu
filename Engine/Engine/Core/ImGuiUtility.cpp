@@ -127,12 +127,12 @@ namespace Kakadu::ImGuiUtility
     }
 
     /* Simple Reinhard tonemapping. */
-    Color4 ToneMapForUI( const Color3& c )
+    internal_function Color4 ToneMapForUI( const Color3& c )
     {
         return Color4( c / ( 1 + c ), 1.0f );
     }
 
-    bool DrawHDRColorExposureSwatches( const Color3& base_color, Color3& hdr_color, float& intensity, float& exposure )
+    internal_function bool DrawHDRColorExposureSwatches( const Color3& base_color, Color3& hdr_color, float& intensity, float& exposure )
     {
         bool is_modified = false;
 
