@@ -10,13 +10,14 @@ namespace Kakadu
 {
 	ImGuiLogger::ImGuiLogger()
 		:
-		colors_by_type( {
-							/* Red for errors.				*/ ImVec4( 1.0f,  0.0f,  0.0f,  1.0f ), // <-- ERROR
-							/* Yellow for warnings.			*/ ImVec4( 1.0f,  1.0f,  0.0f,  1.0f ), // <-- WARNING
-							/* Green for success.			*/ ImVec4( 0.3f,  0.6f,  0.2f,  1.0f ), // <-- SUCCESS
-							/* White for normal logs.		*/ ImVec4( 1.0f,  1.0f,  1.0f,  1.0f ), // <-- NORMAL
-							/* Teal for group separators.	*/ ImVec4( 0.38f, 1.0f,  0.82f, 1.0f ), // <-- GROUP SEPARATOR
-						} ),
+		colors_by_type(
+			{
+				/* Red for errors.				*/ ImVec4( 1.0f,  0.0f,  0.0f,  1.0f ), // <-- ERROR
+				/* Yellow for warnings.			*/ ImVec4( 1.0f,  1.0f,  0.0f,  1.0f ), // <-- WARNING
+				/* Green for success.			*/ ImVec4( 0.3f,  0.6f,  0.2f,  1.0f ), // <-- SUCCESS
+				/* White for normal logs.		*/ ImVec4( 1.0f,  1.0f,  1.0f,  1.0f ), // <-- NORMAL
+				/* Teal for group separators.	*/ ImVec4( 0.38f, 1.0f,  0.82f, 1.0f ), // <-- GROUP SEPARATOR
+			} ),
 		total_line_count( 0 ),
 		total_unique_line_count( 0 ),
 		auto_scroll( true ),
@@ -41,7 +42,8 @@ namespace Kakadu
 		std::string_view text_view( text );
 
 		const std::size_t entry_hash = std::hash< std::string_view >{}( text_view );
-		if( auto iterator = unique_entry_map.find( entry_hash );
+		decltype( unique_entry_map )::iterator iterator;
+		if( iterator = unique_entry_map.find( entry_hash );
 			iterator != unique_entry_map.cend() )
 		{
 			iterator->second.repeat_count++;
@@ -73,7 +75,8 @@ namespace Kakadu
 
 				for( auto line_index = 2, accumulated_offset = 0; line_index < lines.size(); line_index++ )
 				{
-					unique_entry.line_start_offsets[ line_index - 1 ] = unique_entry.line_start_offsets[ line_index - 2 ] + ( u16 )lines[ line_index - 1 ].size() + 1; // + 1 for new-line.
+					unique_entry.line_start_offsets[ line_index - 1 ] =
+						unique_entry.line_start_offsets[ line_index - 2 ] + ( u16 )lines[ line_index - 1 ].size() + 1; // + 1 for new-line.
 				}
 			}
 
@@ -85,14 +88,14 @@ namespace Kakadu
 				unique_entry.unique_text_end++;
 			}
 
-			unique_entry_map[ entry_hash ] = unique_entry;
+			iterator = unique_entry_map.insert( { entry_hash, unique_entry } ).first;
 
 			total_unique_line_count += unique_entry.LineCount();
 
 			unique_entry_hashes_per_unique_line.insert( unique_entry_hashes_per_unique_line.end(), unique_entry.LineCount(), entry_hash );
 		}
 
-		UniqueEntryInfo& unique_entry_definitely_existing_now = unique_entry_map.find( entry_hash )->second;
+		UniqueEntryInfo& unique_entry_definitely_existing_now = iterator->second;
 
 		total_line_count += unique_entry_definitely_existing_now.LineCount();
 
