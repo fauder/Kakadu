@@ -83,7 +83,7 @@ void BloomDemoApplication::Initialize()
 	
 	//Kakadu::Math::Random::SeedRandom();
 
-	auto log_group( gl_logger.TemporaryLogGroup( "Bloom Demo GL Init." ) );
+	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "Bloom Demo GL Init." ) );
 
 /* Textures: */
 	auto& texture_database = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::RHI::Texture > >::Get();
@@ -476,9 +476,8 @@ void BloomDemoApplication::Update()
 {
 	Application::Update();
 
-	auto log_group( gl_logger.TemporaryLogGroup( "Bloom Demo Update()" ) );
+	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "Bloom Demo Update()" ) );
 
-	// TODO: Separate application logs from GL logs.
 
 	current_time_as_angle = Radians( frame_time.time_current );
 	constexpr float lights_slow_down_factor = 0.45f;

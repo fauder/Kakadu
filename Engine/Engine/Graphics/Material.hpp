@@ -1,9 +1,9 @@
 #pragma once
 
 // Engine Includes.
-#include "GLLogger.h"
 #include "UniformBufferManagement.hpp"
 #include "Core/Blob.hpp"
+#include "Core/Console.h"
 #include "Core/ServiceLocator.h"
 #include "RHI/Shader.hpp"
 #include "RHI/Texture.h"
@@ -72,7 +72,7 @@ namespace Kakadu
 #ifdef _EDITOR
 			if( not HasUniform( uniform_name ) )
 			{
-				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" does not exist!)" );
+				ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" does not exist!)" );
 				return;
 			}
 #endif // _EDITOR
@@ -82,7 +82,7 @@ namespace Kakadu
 #ifdef _EDITOR
 			if( uniform_info.size != sizeof( value ) )
 			{
-				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" is being set with a type of unmatching size!)" );
+				ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" is being set with a type of unmatching size!)" );
 				return;
 			}
 #endif // _EDITOR
@@ -96,7 +96,7 @@ namespace Kakadu
 #ifdef _EDITOR
 			if( not HasUniform( uniform_name ) )
 			{
-				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" does not exist!)" );
+				ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" does not exist!)" );
 				return;
 			}
 #endif // _EDITOR
@@ -106,7 +106,7 @@ namespace Kakadu
 #ifdef _EDITOR
 			if( uniform_info.size != sizeof( UniformType ) )
 			{
-				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" is being set with a pointer type of unmatching size!)" );
+				ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" is being set with a pointer type of unmatching size!)" );
 				return;
 			}
 #endif // _EDITOR
@@ -179,7 +179,7 @@ namespace Kakadu
 #ifdef _EDITOR
 			if( not HasUniform( uniform_name ) )
 			{
-				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" does not exist!)" );
+				ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" does not exist!)" );
 				return;
 			}
 #endif // _EDITOR
@@ -190,7 +190,7 @@ namespace Kakadu
 #ifdef _EDITOR
 			if( uniform_info.size != sizeof( value ) )
 			{
-				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" is being set & uploaded with a type of unmatching size!)" );
+				ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": uniform ")" + std::string( uniform_name ) + R"(" is being set & uploaded with a type of unmatching size!)" );
 				return;
 			}
 #endif // _EDITOR
@@ -206,7 +206,7 @@ namespace Kakadu
 #ifdef _EDITOR
 			if( not HasUniform( uniform_name ) )
 			{
-				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" does not exist!)" );
+				ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" does not exist!)" );
 				return;
 			}
 #endif // _EDITOR
@@ -217,7 +217,7 @@ namespace Kakadu
 #ifdef _EDITOR
 			if( uniform_info.size != sizeof( UniformType ) )
 			{
-				ServiceLocator< GLLogger >::Get().Error( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" is being set & uploaded with a pointer type of unmatching size!)" );
+				ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": uniform (array) ")" + std::string( uniform_name ) + R"(" is being set & uploaded with a pointer type of unmatching size!)" );
 				return;
 			}
 #endif // _EDITOR

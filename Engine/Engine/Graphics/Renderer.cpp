@@ -10,24 +10,25 @@
 #include "Core/MorphSystem.h"
 #include "Primitive/Primitive_Quad_FullScreen.h"
 #include "Primitive/Primitive_Cube_FullScreen.h"
+#include "RHI/GLDebugOutput.h"
 #include "RHI/GLLabelPrefixes.h"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
 #ifdef _EDITOR
-#define CONSOLE_WARNING( message ) logger.Warning( ICON_FA_DRAW_POLYGON " " message )
-#define CONSOLE_ERROR( message ) logger.Error( ICON_FA_DRAW_POLYGON " " message )
+#define CONSOLE_WARNING( message ) console.LogWarning( ICON_FA_DRAW_POLYGON " " message )
+#define CONSOLE_ERROR( message ) console.LogError( ICON_FA_DRAW_POLYGON " " message )
 #define CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id )\
 if( not render_pass_map.contains( pass_id ) )\
 {\
-	logger.Error( ICON_FA_DRAW_POLYGON " " function_name "() called for non-existing pass." );\
+	console.LogError( ICON_FA_DRAW_POLYGON " " function_name "() called for non-existing pass." );\
 	return;\
 }
 #define CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id )\
 if( not render_queue_map.contains( queue_id ) )\
 {\
-	logger.Error( ICON_FA_DRAW_POLYGON " " function_name "() called for non-existing queue." );\
+	console.LogError( ICON_FA_DRAW_POLYGON " " function_name "() called for non-existing queue." );\
 	return;\
 }
 #else
@@ -43,7 +44,7 @@ namespace Kakadu
 		:
 		wireframe_thickness_in_pixels( 2.0f ),
 		wireframe_color( 0.29f, 0.75f, 0.67f, 1.0f ),
-		logger( ServiceLocator< GLLogger >::Get() ),
+		console( ServiceLocator< Console >::Get() ),
 		graphics_device_info( RHI::QueryDeviceInfo() ),
 		framebuffer_main_description(
 			RHI::Framebuffer::Description
@@ -73,7 +74,7 @@ namespace Kakadu
 		framebuffer_current_source      = &DefaultFramebuffer();
 		framebuffer_current_destination = &DefaultFramebuffer();
 
-		logger.IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
+		ServiceLocator< GLDebugOutput >::Get().IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
 
 		ServiceLocator< RHI::DeviceInfo >::Register( &graphics_device_info );
 
@@ -144,7 +145,7 @@ namespace Kakadu
 		{
 			if( PassHasContentToRender( pass ) )
 			{
-				const auto log_group( logger.TemporaryLogGroup( ( GL_LABEL_PREFIX_RENDER_PASS + pass.name ).c_str() ) );
+				// TODO: const auto log_group( console.TemporaryLogGroup( ( GL_LABEL_PREFIX_RENDER_PASS + pass.name ).c_str() ) );
 
 				SetIntrinsicsPerPass( pass );
 
@@ -160,7 +161,7 @@ namespace Kakadu
 					if( auto& queue = render_queue_map[ queue_id ]; 
 						QueueHasContentToRender( queue ) )
 					{
-						const auto log_group( logger.TemporaryLogGroup( ( GL_LABEL_PREFIX_RENDER_QUEUE + queue.name ).c_str() ) );
+						// TODO: const auto log_group( console.TemporaryLogGroup( ( GL_LABEL_PREFIX_RENDER_QUEUE + queue.name ).c_str() ) );
 
 						// TODO: Do not set render state for state that is not changing (i.e., dirty check).
 						if( queue.render_state_override )
@@ -255,7 +256,7 @@ namespace Kakadu
 		else
 			Blit( MainFramebuffer(), PostProcessingFramebuffer() );
 
-		const auto log_group( logger.TemporaryLogGroup( ( "[Post-Processing] " ) ) );
+		// TODO: const auto log_group( console.TemporaryLogGroup( ( "[Post-Processing] " ) ) );
 
 		for( auto& [ post_fx_name, post_fx ] : post_processing_effect_map )
 			if( post_fx->is_enabled )
@@ -577,7 +578,7 @@ namespace Kakadu
 				for( auto& renderable : queue.renderable_list )
 					if( renderable->material == material &&
 						not renderable->mesh->IsCompatibleWith( renderable->material->shader->GetSourceVertexLayout() ) )
-						logger.Warning( "Mesh \"" + renderable->mesh->Name() + "\" is not compatible with its current shader \"" + material->shader->Name() + "\"." );
+						console.LogWarning( "Mesh \"" + renderable->mesh->Name() + "\" is not compatible with its current shader \"" + material->shader->Name() + "\"." );
 			}
 		}
 	}
@@ -789,10 +790,10 @@ namespace Kakadu
 						if( material->shader == shader )
 							material->OnShaderHotReload();
 
-				logger.Info( "Recompiled modified shader: \"" + shader->name + "\"" );
+				console.Log( "Recompiled modified shader: \"" + shader->name + "\"" );
 			}
 			else
-				logger.Error( "Failed to recompile modified shader: \"" + shader->name + "\"" );
+				console.LogError( "Failed to recompile modified shader: \"" + shader->name + "\"" );
 		}
 	}
 
@@ -1007,7 +1008,7 @@ namespace Kakadu
 
 	void Renderer::RenderFullscreenEffect( FullscreenEffect& effect )
 	{
-		const auto log_group( logger.TemporaryLogGroup( ( "[FULLSCREEN-FX-EMOJI] " + effect.name ).c_str() ) );
+		// TODO: const auto log_group( console.TemporaryLogGroup( "[FULLSCREEN-FX-EMOJI] " + effect.name ) );
 
 		full_screen_quad_mesh.Bind();
 
@@ -1616,10 +1617,11 @@ namespace Kakadu
 					pass.target_framebuffer == &MainFramebuffer() &&
 					PassHasContentToRender( pass ) )
 				{
-					const auto log_group( logger.TemporaryLogGroup( ( ( shader_index == 0
+					// TODO:
+					/*const auto log_group( console.TemporaryLogGroup( ( ( shader_index == 0
 																		? GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_PASS
 																		: GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_PASS "[INSTANCED] " )
-																	  + pass.name ).c_str() ) );
+																	  + pass.name ).c_str() ) );*/
 
 					const Vector3 camera_position( Matrix::CameraWorldPositionFromViewMatrix( current_camera_info.view_matrix ) );
 
@@ -1628,10 +1630,11 @@ namespace Kakadu
 						if( auto& queue = render_queue_map[ queue_id ];
 							QueueHasContentToRender( queue ) )
 						{
-							const auto log_group( logger.TemporaryLogGroup( ( ( shader_index == 0
+							// TODO:
+							/*const auto log_group( console.TemporaryLogGroup( ( ( shader_index == 0
 																				? GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_QUEUE
 																				: GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_QUEUE "[INSTANCED] " )
-																			  + queue.name ).c_str() ) );
+																			  + queue.name ).c_str() ) );*/
 
 							SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override->sorting_mode );
 

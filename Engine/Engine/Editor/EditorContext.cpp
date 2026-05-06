@@ -140,14 +140,14 @@ namespace Kakadu::Editor
 
 		FRAME_STATS_OVERLAY.Render( *this );
 
-		if( show_logger )
-			ServiceLocator< ImGuiLogger >::Get().Draw( ICON_FA_BOOK " Console", &show_logger );
+		if( show_debug_console )
+			ServiceLocator< ImGuiLogger >::Get().Draw( ICON_FA_BOOK " Console", &show_debug_console );
 
 		RenderSceneCameraInspectorPanel( scene_camera, viewport_resolution );
 
 		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase< RHI::Texture > >::Get().Assets() );
 		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase_Tracked< RHI::Texture* > >::Get().Assets() );
 
-		auto log_group( ServiceLocator< GLLogger >::Get().TemporaryLogGroup( "ImGuiSetup::EndFrame()" ) );
+		// TODO: auto log_group( ServiceLocator< GLLogger >::Get().TemporaryLogGroup( "ImGuiSetup::EndFrame()" ) );
 	}
 }

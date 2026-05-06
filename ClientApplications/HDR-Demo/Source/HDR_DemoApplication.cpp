@@ -56,7 +56,7 @@ void HDR_DemoApplication::Initialize()
 
 	//Kakadu::Math::Random::SeedRandom();
 
-	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo GL Init." ) );
+	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo GL Init." ) );
 
 /* Textures: */
 	wood_diffuse_map = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::RHI::Texture > >::Get().CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)",
@@ -165,9 +165,7 @@ void HDR_DemoApplication::Update()
 {
 	Application::Update();
 
-	auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo Update()" ) );
-
-	// TODO: Separate application logs from GL logs.
+	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo Update()" ) );
 
 	current_time_as_angle = Radians( frame_time.time_current );
 	const Radians current_time_mod_two_pi( std::fmod( frame_time.time_current, Kakadu::Constants< float >::Two_Pi() ) );

@@ -159,6 +159,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Core\Console.h" />
     <ClInclude Include="Engine\Core\Types.h" />
     <ClInclude Include="Engine\Editor\FrameStatisticsOverlay.h" />
     <ClInclude Include="Engine.h" />
@@ -241,7 +242,7 @@
     <ClInclude Include="Engine\Core\ServiceLocator.h" />
     <ClInclude Include="Engine\Core\DirtyBlob.h" />
     <ClInclude Include="Engine\Graphics\Renderable.h" />
-    <ClInclude Include="Engine\Graphics\GLLogger.h" />
+    <ClInclude Include="Engine\Graphics\RHI\GLDebugOutput.h" />
     <ClInclude Include="Engine\Graphics\MaterialData\MaterialData.h" />
     <ClInclude Include="Engine\Graphics\Lighting\DirectionalLight.h" />
     <ClInclude Include="Engine\Graphics\Lighting\Light.hpp" />
@@ -286,6 +287,7 @@
     <ClInclude Include="Engine\Graphics\RenderState.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Core\Console.cpp" />
     <ClCompile Include="Engine\Core\FrameTime.cpp" />
     <ClCompile Include="Engine\Core\ImGuiLogger.cpp" />
     <ClCompile Include="Engine\Editor\EditorContext.cpp" />
@@ -310,7 +312,7 @@
     <ClInclude Include="Engine\Graphics\RHI\GLLabelPrefixes.h" />
     <ClCompile Include="Engine\Graphics\ModelInstance.cpp" />
     <ClCompile Include="Engine\Graphics\Renderable.cpp" />
-    <ClCompile Include="Engine\Graphics\GLLogger.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\GLDebugOutput.cpp" />
     <ClCompile Include="Engine\Graphics\Material.cpp" />
     <ClCompile Include="Engine\Graphics\Mesh.cpp" />
     <ClCompile Include="Engine\Graphics\Model.cpp" />

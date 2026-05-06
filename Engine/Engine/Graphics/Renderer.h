@@ -10,6 +10,7 @@
 #include "RenderPass.h"
 #include "ViewportShadingMode.h"
 #include "Core/BitFlags.hpp"
+#include "Core/Console.h"
 #include "Core/DirtyBlob.h"
 #include "Introspection/RendererIntrospectionSurface.h"
 #include "Lighting/DirectionalLight.h"
@@ -418,7 +419,7 @@ namespace Kakadu
 		 * Logging:
 		 */
 
-		GLLogger& logger;
+		Console& console;
 
 		/*
 		 * Graphics Device Info:

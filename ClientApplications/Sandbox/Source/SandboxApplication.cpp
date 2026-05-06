@@ -82,7 +82,7 @@ void SandboxApplication::Initialize()
 	
 	//Kakadu::Math::Random::SeedRandom();
 
-	auto log_group( gl_logger.TemporaryLogGroup( "Sandbox GL Init." ) );
+	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "Sandbox GL Init." ) );
 
 /* Textures: */
 	auto& texture_database = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::RHI::Texture > >::Get();
@@ -429,9 +429,7 @@ void SandboxApplication::Update()
 {
 	Application::Update();
 
-	auto log_group( gl_logger.TemporaryLogGroup( "Sandbox Update()" ) );
-
-	// TODO: Separate application logs from GL logs.
+	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "Sandbox Update()" ) );
 
 	current_time_as_angle = Radians( frame_time.time_current );
 	const Radians current_time_mod_two_pi( std::fmod( frame_time.time_current, Kakadu::Constants< float >::Two_Pi() ) );

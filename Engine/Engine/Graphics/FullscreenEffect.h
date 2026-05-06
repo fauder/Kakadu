@@ -7,6 +7,7 @@
 #include "RHI/Framebuffer.h"
 
 // std Includes.
+#include <functional>
 #include <vector>
 
 namespace Kakadu
