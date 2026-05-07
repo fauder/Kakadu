@@ -74,7 +74,7 @@ namespace Kakadu
 		framebuffer_current_source      = &DefaultFramebuffer();
 		framebuffer_current_destination = &DefaultFramebuffer();
 
-		ServiceLocator< GLDebugOutput >::Get().IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
+		ServiceLocator< RHI::GLDebugOutput >::Get().IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
 
 		ServiceLocator< RHI::DeviceInfo >::Register( &graphics_device_info );
 

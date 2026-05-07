@@ -9,7 +9,7 @@
 // std Includes.
 #include <iostream>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 /*
  * Internal Functions:

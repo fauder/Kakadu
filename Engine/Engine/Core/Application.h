@@ -80,7 +80,7 @@ namespace Kakadu
 
 		ImGuiLogger logger; // TODO: Move completely inside the Console.
 		Console console;
-		GLDebugOutput gl_debug_output;
+		RHI::GLDebugOutput gl_debug_output;
 #endif // _EDITOR
 
 		AssetDatabase< RHI::Texture > asset_database_texture;

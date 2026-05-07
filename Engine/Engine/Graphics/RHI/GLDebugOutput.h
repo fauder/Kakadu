@@ -8,7 +8,7 @@
 // std Includes.
 #include <functional>
 
-namespace Kakadu
+namespace Kakadu::RHI
 {
 	class GLDebugOutput
 	{
