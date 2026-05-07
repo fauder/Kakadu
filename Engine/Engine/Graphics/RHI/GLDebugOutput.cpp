@@ -1,6 +1,7 @@
 // Engine Includes.
 #include "RHI.h"
 #include "GLDebugOutput.h"
+#include "Core/Assertion.h"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -79,7 +80,7 @@ namespace Kakadu
 			case GL_DEBUG_TYPE_OTHER:				return ImGuiLogger::EntryType::NORMAL;
 
 			default:
-				std::cerr << "Invalid GLenum passed to ConvertGLMessageType( GLenum value )!\n";
+				std::cerr << "Invalid GL enum value passed to ConvertGLMessageType( u32 value )!\n";
 				return ImGuiLogger::EntryType::INVALID;
 		}
 	}
@@ -134,23 +135,16 @@ namespace Kakadu
 	void GLDebugOutput::LogDebugOutput( u32 source, u32 type, u32 severity, i32 length, const char* message, const void* parameters )
 	{
 		constexpr std::size_t fixed_portion_length =
-			1 + 1 +				// 1 vertical line + 1 space.
-			17 + 1 + 1 + 1 +	// Severity ( max length = 17 ) + 1 space + 1 vertical line + 1 space.
-			13 + 1 + 1 + 1 +	// Source   ( max length = 13 ) + 1 space + 1 vertical line + 1 space.
-			13 + 1 + 1 +		// Type     ( max length = 13 ) + 1 space + 1 vertical line.
-			1 + 4;				// Colon + 4 spaces.
+			6 + 1 + 1 + 1 +	// Source ( max length = 6  ) + 1 space + 1 vertical line + 1 space.
+			11 + 1 + 1;		// Type   ( max length = 11 ) + 1 colon + 1 space.
 
-		local_persist std::vector< char > full_message( fixed_portion_length + 255, ' ' ); // Initial max. message length of 255 reserved.
-
-		if( length > 255 )
-			full_message.resize( fixed_portion_length + length );
+		char buffer[ fixed_portion_length + 255 ];
+		ASSERT_EDITOR_ONLY( length <= 255 );
 
 		const auto source_string = ConvertGLMessageSourceString( source ); // Has a max length > 6 BUT most of those are rare.
 		const auto type_string   = ConvertGLMessageTypeString( type ); // Has a max length of 11.
-		//const auto severity_string = ConvertGLMessageSeverityString( severity ); // Has a max length of 6.
 
-		//sprintf_s( full_message.data(), full_message.size(), "%-6s | %-6s | %s: %s", source_string, severity_string, type_string, message );
-		sprintf_s( full_message.data(), full_message.size(), "%-6s | %s: %s", source_string, type_string, message ); // Ignore severity; not that useful.
-		console.Log( ConvertGLMessageType( type ), full_message.data() );
+		sprintf_s( buffer, sizeof( buffer ), "%-6s | %s: %s", source_string, type_string, message ); // Ignore severity; not that useful.
+		console.Log( ConvertGLMessageType( type ), buffer );
 	}
 }
