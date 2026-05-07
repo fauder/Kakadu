@@ -12,6 +12,7 @@
 #include "Primitive/Primitive_Cube_FullScreen.h"
 #include "RHI/GLDebugOutput.h"
 #include "RHI/GLLabelPrefixes.h"
+#include "RHI/GLDebugGroup.h" // TODO: Enable only for non-standalone builds.
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -145,7 +146,7 @@ namespace Kakadu
 		{
 			if( PassHasContentToRender( pass ) )
 			{
-				// TODO: const auto log_group( console.TemporaryLogGroup( ( GL_LABEL_PREFIX_RENDER_PASS + pass.name ).c_str() ) );
+				KAKADU_GL_DEBUG_GROUP( GL_LABEL_PREFIX_RENDER_PASS + pass.name );
 
 				SetIntrinsicsPerPass( pass );
 
@@ -161,7 +162,7 @@ namespace Kakadu
 					if( auto& queue = render_queue_map[ queue_id ]; 
 						QueueHasContentToRender( queue ) )
 					{
-						// TODO: const auto log_group( console.TemporaryLogGroup( ( GL_LABEL_PREFIX_RENDER_QUEUE + queue.name ).c_str() ) );
+						KAKADU_GL_DEBUG_GROUP( GL_LABEL_PREFIX_RENDER_QUEUE + queue.name );
 
 						// TODO: Do not set render state for state that is not changing (i.e., dirty check).
 						if( queue.render_state_override )
@@ -256,7 +257,7 @@ namespace Kakadu
 		else
 			Blit( MainFramebuffer(), PostProcessingFramebuffer() );
 
-		// TODO: const auto log_group( console.TemporaryLogGroup( ( "[Post-Processing] " ) ) );
+		KAKADU_GL_DEBUG_GROUP( "[Post-Processing] " );
 
 		for( auto& [ post_fx_name, post_fx ] : post_processing_effect_map )
 			if( post_fx->is_enabled )
@@ -1008,7 +1009,7 @@ namespace Kakadu
 
 	void Renderer::RenderFullscreenEffect( FullscreenEffect& effect )
 	{
-		// TODO: const auto log_group( console.TemporaryLogGroup( "[FULLSCREEN-FX-EMOJI] " + effect.name ) );
+		KAKADU_GL_DEBUG_GROUP( "[FULLSCREEN-FX-EMOJI] " + effect.name );
 
 		full_screen_quad_mesh.Bind();
 

@@ -16,6 +16,7 @@
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad.h"
 #include "Engine/Graphics/Primitive/Primitive_Quad_FullScreen.h"
+#include "Engine/Graphics/RHI/GLDebugGroup.h" // TODO: Enable only for non-standalone builds.
 #include "Engine/Graphics/RHI/Usage.h"
 #include "Engine/Math/Math.hpp"
 #include "Engine/Math/Matrix.h"
@@ -82,7 +83,7 @@ void SandboxApplication::Initialize()
 	
 	//Kakadu::Math::Random::SeedRandom();
 
-	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "Sandbox GL Init." ) );
+	KAKADU_GL_DEBUG_GROUP( "Sandbox GL Init." );
 
 /* Textures: */
 	auto& texture_database = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::RHI::Texture > >::Get();
@@ -429,7 +430,7 @@ void SandboxApplication::Update()
 {
 	Application::Update();
 
-	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "Sandbox Update()" ) );
+	KAKADU_GL_DEBUG_GROUP( "Sandbox Update()" );
 
 	current_time_as_angle = Radians( frame_time.time_current );
 	const Radians current_time_mod_two_pi( std::fmod( frame_time.time_current, Kakadu::Constants< float >::Two_Pi() ) );

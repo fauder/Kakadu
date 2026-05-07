@@ -213,6 +213,7 @@
     <ClInclude Include="Engine\Graphics\RHI\Enums.h" />
     <ClInclude Include="Engine\Graphics\RHI\Framebuffer.h" />
     <ClInclude Include="Engine\Graphics\RHI\DeviceInfo.h" />
+    <ClInclude Include="Engine\Graphics\RHI\GLDebugGroup.h" />
     <ClInclude Include="Engine\Graphics\RHI\ID\BufferID.h" />
     <ClInclude Include="Engine\Graphics\RHI\ID\FramebufferID.h" />
     <ClInclude Include="Engine\Graphics\RHI\ID\ID.codegen.h" />
@@ -312,6 +313,7 @@
     <ClInclude Include="Engine\Graphics\RHI\GLLabelPrefixes.h" />
     <ClCompile Include="Engine\Graphics\ModelInstance.cpp" />
     <ClCompile Include="Engine\Graphics\Renderable.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\GLDebugGroup.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\GLDebugOutput.cpp" />
     <ClCompile Include="Engine\Graphics\Material.cpp" />
     <ClCompile Include="Engine\Graphics\Mesh.cpp" />

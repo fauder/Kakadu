@@ -129,6 +129,10 @@ namespace Kakadu::RHI
 	void GLDebugOutput::InternalDebugOutputCallback( u32 source, u32 type, u32 id /* ignored */, u32 severity, i32 length, const char* message, 
 													 const void* parameters /* ignored */ )
 	{
+		if( type == GL_DEBUG_TYPE_PUSH_GROUP ||
+			type == GL_DEBUG_TYPE_POP_GROUP )
+			return;
+
 		LogDebugOutput( source, type, severity, length, message, parameters );
 	}
 

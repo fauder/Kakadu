@@ -14,6 +14,7 @@
 #include "Engine/Graphics/BuiltinTextures.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
 #include "Engine/Graphics/Primitive/Primitive_Sphere.h"
+#include "Engine/Graphics/RHI/GLDebugGroup.h" // TODO: Enable only for non-standalone builds.
 #include "Engine/Graphics/RHI/Usage.h"
 #include "Engine/Math/Math.hpp"
 #include "Engine/Math/VectorConversion.hpp"
@@ -56,7 +57,7 @@ void HDR_DemoApplication::Initialize()
 
 	//Kakadu::Math::Random::SeedRandom();
 
-	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo GL Init." ) );
+	KAKADU_GL_DEBUG_GROUP( "HDR-Demo GL Init." );
 
 /* Textures: */
 	wood_diffuse_map = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::RHI::Texture > >::Get().CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)",
@@ -165,7 +166,7 @@ void HDR_DemoApplication::Update()
 {
 	Application::Update();
 
-	// TODO: auto log_group( gl_logger.TemporaryLogGroup( "HDR-Demo Update()" ) );
+	KAKADU_GL_DEBUG_GROUP( "HDR-Demo Update()" );
 
 	current_time_as_angle = Radians( frame_time.time_current );
 	const Radians current_time_mod_two_pi( std::fmod( frame_time.time_current, Kakadu::Constants< float >::Two_Pi() ) );

@@ -3,8 +3,9 @@
 #include "ImGuiDrawer.hpp"
 #include "ImGuiSetup.h"
 #include "ImGuiUtility.h"
-#include "Graphics/RHI/RHI.h"
 #include "Graphics/RHI/Enums.h"
+#include "Graphics/RHI/GLDebugGroup.h" // TODO: Enable only for non-standalone builds.
+#include "Graphics/RHI/RHI.h"
 #include "Math/Math.hpp"
 
 #ifdef _EDITOR
@@ -149,7 +150,10 @@ namespace Kakadu
 				ZoneScopedN( "RenderToolsUI" ); // Is overridden in the client app. Makes sense to instrument here instead.
 				RenderToolsUI();
 			}
-			ImGuiSetup::EndFrame();
+			{
+				KAKADU_GL_DEBUG_GROUP( "ImGuiSetup::EndFrame()" );
+				ImGuiSetup::EndFrame();
+			}
 #else
 			{
 				ZoneScopedN( "RenderFrame" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.

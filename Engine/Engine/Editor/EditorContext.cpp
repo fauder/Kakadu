@@ -147,7 +147,5 @@ namespace Kakadu::Editor
 
 		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase< RHI::Texture > >::Get().Assets() );
 		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase_Tracked< RHI::Texture* > >::Get().Assets() );
-
-		// TODO: auto log_group( ServiceLocator< GLLogger >::Get().TemporaryLogGroup( "ImGuiSetup::EndFrame()" ) );
 	}
 }
