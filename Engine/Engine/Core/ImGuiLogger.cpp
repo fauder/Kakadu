@@ -186,9 +186,6 @@ namespace Kakadu
 		 * - A) random access into your data
 		 * - B) items all being the  same height,
 		 * both of which we can handle since we have an array pointing to the beginning of each line of text.
-		 * When using the filter (in the block of code above) we don't have random access into the data to display
-		 * anymore, which is why we don't use the clipper. Storing or skimming through the search result would make
-		 * it possible (and would be recommended if you want to search through tens of thousands of entries).
 		 *
 		 * Clipper needs to know about total item count. So we need to find out how many lines are currently enabled. */
 		ImGuiListClipper clipper;
