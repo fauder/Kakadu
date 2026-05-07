@@ -183,12 +183,6 @@ void HDR_DemoApplication::RenderFrame()
 
 void HDR_DemoApplication::RenderToolsUI()
 {
-	/* Reminder: The rest of the rendering code (namely, ImGui) will be working in sRGB for the remainder of this frame,
-	 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the final FBO). */
-
-	/* Need to switch to the default framebuffer, so ImGui can render onto it. */
-	renderer->ResetToDefaultFramebuffer();
-
 	const auto& style = ImGui::GetStyle();
 
 	Kakadu::ImGuiDrawer::Draw( wood_material, *renderer );

@@ -124,8 +124,7 @@ namespace Kakadu
 			}
 
 #ifdef _EDITOR
-
-			/* Editor, when rendering the UI, will not (and can not) modify Application state directly; It enqueues commands instead. 
+			/* Editor, when rendering the UI, will not (and can not) modify Application state directly; It enqueues commands instead.
 			 * These commands are processed and cleared in Application::Update() which is already executed for the frame.
 			 * This means there is effectively a 1 frame delay in processing enqueued commands, which is fine and intended. */
 
@@ -139,20 +138,28 @@ namespace Kakadu
 				Editor::RenderViewportScene( *renderer, editor_context->scene_camera.camera );
 			}
 
-			ImGuiSetup::BeginFrame();
 			{
-				ZoneScopedN( "Editor::Context::RenderUI" );
-				editor_context->RenderUI();
-			}
+				KAKADU_GL_DEBUG_GROUP( "Editor UI" );
+				renderer->ResetToDefaultFramebuffer(); // Render ImGui to default framebuffer.
+				ImGuiSetup::BeginFrame();
 
-			if( editor_context->show_imgui )
-			{
-				ZoneScopedN( "RenderToolsUI" ); // Is overridden in the client app. Makes sense to instrument here instead.
-				RenderToolsUI();
-			}
-			{
-				KAKADU_GL_DEBUG_GROUP( "ImGuiSetup::EndFrame()" );
-				ImGuiSetup::EndFrame();
+				/* Reminder: The rest of the rendering code (namely, ImGui) will be working in sRGB for the remainder of this frame,
+				 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the editor FBO). */
+
+				{
+					ZoneScopedN( "Editor::Context::RenderUI" );
+					editor_context->RenderUI();
+				}
+
+				if( editor_context->show_imgui )
+				{
+					ZoneScopedN( "RenderToolsUI" ); // Is overridden in the client app. Makes sense to instrument here instead.
+					RenderToolsUI();
+				}
+				{
+					KAKADU_GL_DEBUG_GROUP( "ImGuiSetup::EndFrame()" );
+					ImGuiSetup::EndFrame();
+				}
 			}
 #else
 			{
