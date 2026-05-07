@@ -45,10 +45,10 @@ namespace Kakadu
 				imgui_logger.AddLogFormatted( ImGuiLogger::EntryType::SUCCESS, "%s %s", ICON_FA_CIRCLE_CHECK, message.data() );
 				break;
 			case ImGuiLogger::EntryType::NORMAL:
-				imgui_logger.AddLogFormatted( ImGuiLogger::EntryType::NORMAL, "   %s", message.data() );
+				imgui_logger.AddLog( ImGuiLogger::EntryType::NORMAL, message.data() );
 				break;
 			case ImGuiLogger::EntryType::GROUP_SEPARATOR:
-				imgui_logger.AddLogFormatted( ImGuiLogger::EntryType::GROUP_SEPARATOR, "   %s", message.data() );
+				imgui_logger.AddLog( ImGuiLogger::EntryType::GROUP_SEPARATOR, message.data() );
 				break;
 			default:
 				break;
