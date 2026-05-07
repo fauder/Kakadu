@@ -43,7 +43,7 @@ namespace Kakadu
 			u16 unique_text_start; // This is filled when this unique entry is encountered for the first time and is added to the map.
 			u16 unique_text_end;   // This is filled when this unique entry is encountered for the first time and is added to the map.
 
-			u16 repeat_count = 1; // This is just used as a badge/number to display when grouping is on. Starts from 1.
+			u32 repeat_count = 1; // This is just used as a badge/number to display when grouping is on. Starts from 1.
 
 			EntryType type;
 
