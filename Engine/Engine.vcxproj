@@ -211,6 +211,7 @@
     <ClInclude Include="Engine\Graphics\RenderPass.h" />
     <ClInclude Include="Engine\Graphics\RHI\Buffer.h" />
     <ClInclude Include="Engine\Graphics\RHI\Capabilities.h" />
+    <ClInclude Include="Engine\Graphics\RHI\DataType.h" />
     <ClInclude Include="Engine\Graphics\RHI\DebugLabel.h" />
     <ClInclude Include="Engine\Graphics\RHI\Enums.h" />
     <ClInclude Include="Engine\Graphics\RHI\Framebuffer.h" />
@@ -227,7 +228,6 @@
     <ClInclude Include="Engine\Graphics\RHI\RHI.h" />
     <ClInclude Include="Engine\Graphics\RHI\Shader.hpp" />
     <ClInclude Include="Engine\Graphics\RHI\ShaderType.h" />
-    <ClInclude Include="Engine\Graphics\RHI\ShaderTypeInformation.h" />
     <ClInclude Include="Engine\Graphics\RHI\Texture.h" />
     <ClInclude Include="Engine\Graphics\RHI\Uniform.h" />
     <ClInclude Include="Engine\Graphics\RHI\Usage.h" />
@@ -318,6 +318,7 @@
     <ClInclude Include="Engine\Graphics\RHI\GLLabelPrefixes.h" />
     <ClCompile Include="Engine\Graphics\ModelInstance.cpp" />
     <ClCompile Include="Engine\Graphics\Renderable.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\DataType.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\GLDebugGroup.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\GLDebugOutput.cpp" />
     <ClCompile Include="Engine\Graphics\Material.cpp" />

@@ -1,6 +1,7 @@
 #pragma once
 
 // Engine Includes.
+#include "Math/Vector.hpp"
 #include "RHI/Primitive.h"
 #include "RHI/Usage.h"
 #include "RHI/VertexArray.h"
@@ -86,7 +87,6 @@ namespace Kakadu
 
 		const std::vector< u32 >&	Indices()		const { return indices; };
 		const u32*					Indices_Raw()	const { return indices.data(); };
-		constexpr GLenum			IndexType()		const { return GL_UNSIGNED_INT; }
 
 	/*
 	 * Vertex Data:

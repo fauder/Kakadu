@@ -1,8 +1,9 @@
 // Engine Includes.
 #include "Mesh.h"
 #include "MeshUtility.hpp"
-#include "Core/Log.h"
 #include "Asset/Shader/_Attributes.glsl"
+#include "Core/Log.h"
+#include "RHI/DataType.h"
 
 namespace Kakadu
 {
@@ -150,10 +151,10 @@ namespace Kakadu
 
 		return std::array< RHI::VertexAttribute, 4 >
 		( {
-			  RHI::VertexAttribute{ CountOf( positions ),	GL_FLOAT,	is_instanced, POSITION_LOCATION		},
-			  RHI::VertexAttribute{ CountOf( normals ),		GL_FLOAT,	is_instanced, NORMAL_LOCATION		},
-			  RHI::VertexAttribute{ CountOf( uvs ),			GL_FLOAT,	is_instanced, TEXCOORDS_LOCATION	},
-			  RHI::VertexAttribute{ CountOf( tangents ),	GL_FLOAT,	is_instanced, TANGENT_LOCATION		},
+			  RHI::VertexAttribute{ CountOf( positions ),	RHI::DataType::Float,	is_instanced, POSITION_LOCATION		},
+			  RHI::VertexAttribute{ CountOf( normals ),		RHI::DataType::Float,	is_instanced, NORMAL_LOCATION		},
+			  RHI::VertexAttribute{ CountOf( uvs ),			RHI::DataType::Float,	is_instanced, TEXCOORDS_LOCATION	},
+			  RHI::VertexAttribute{ CountOf( tangents ),	RHI::DataType::Float,	is_instanced, TANGENT_LOCATION		},
 		} );
 	}
 }

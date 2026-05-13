@@ -8,6 +8,7 @@
 #include "Graphics/Material.hpp"
 #include "Graphics/Renderer.h"
 #include "Graphics/UniformBufferManagement.hpp"
+#include "Graphics/RHI/DataType.h"
 #include "Math/Color.hpp"
 #include "Math/Polar.h"
 #include "Math/Quaternion.hpp"
@@ -54,8 +55,8 @@ namespace Kakadu::ImGuiDrawer
 			return "%.2lf";
 	}
 
-	bool Draw( const GLenum type,	    void* value_pointer, const char* name = "##hidden" );
-	void Draw( const GLenum type, const void* value_pointer, const char* name = "##hidden" );
+	bool Draw( const RHI::DataType type,       void* value_pointer, const char* name = "##hidden" );
+	void Draw( const RHI::DataType type, const void* value_pointer, const char* name = "##hidden" );
 
 	bool Draw( i32& scalar,				const char* name = "##scalar_i32" 	 );
 	bool Draw( i32& scalar,				const i32 min, const i32 max, const char* name = "##scalar_i32" );

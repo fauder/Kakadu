@@ -119,8 +119,8 @@ void HDR_DemoApplication::Initialize()
 
 	light_source_sphere_mesh = Kakadu::Mesh( sphere_mesh,
 											 {
-												 Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START },    // Transform.
-												 Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 } // Color.
+												 Kakadu::RHI::VertexInstanceAttribute{ 1, Kakadu::RHI::DataType::Float4x4,	INSTANCED_ATTRIBUTE_START },    // Transform.
+												 Kakadu::RHI::VertexInstanceAttribute{ 1, Kakadu::RHI::DataType::Float4,	INSTANCED_ATTRIBUTE_START + 4 } // Color.
 											 },
 											 reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
 											 LIGHT_POINT_COUNT,

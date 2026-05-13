@@ -1,6 +1,9 @@
 // Engine Includes.
+#include "RHI.h"
+#include "DataType.h"
 #include "VertexLayout.h"
 #include "Asset/Shader/_Attributes.glsl"
+#include "Core/Assertion.h"
 #include "Core/Types.h"
 
 // std Includes.
@@ -10,6 +13,36 @@
 
 namespace Kakadu::RHI
 {
+	/*
+	 * VertexAttribute:
+	 */
+
+	bool VertexAttribute::Empty() const
+	{
+		return count == 0;
+	}
+	u32 VertexAttribute::Size() const
+	{
+		return count * SizeOf( type );
+	}
+
+	/*
+	 * VertexInstanceAttribute:
+	 */
+
+	bool VertexInstanceAttribute::Empty() const
+	{
+		return count == 0;
+	}
+	u32 VertexInstanceAttribute::Size() const
+	{
+		return count * SizeOf( type );
+	}
+
+	/*
+	 * VertexLayout:
+	 */
+
 	VertexLayout::VertexLayout()
 	{}
 
@@ -54,20 +87,20 @@ namespace Kakadu::RHI
 		{
 			const auto& attribute = *iterator;
 
-			if( const auto underlying_count = RHI::Type::CountOf( attribute.type );
+			if( const auto underlying_count = CountOf( attribute.type );
 				underlying_count > 1 )
 			{
-				const auto underlying_type            = RHI::Type::ComponentTypeOf( attribute.type );
-				const auto underlying_type_size       = RHI::Type::SizeOf( underlying_type );
-				const auto& [ slot_count, slot_size ] = RHI::Type::RowAndColumnCountOf( attribute.type );
+				const auto underlying_type            = ComponentTypeOf( attribute.type );
+				const auto underlying_type_size       = SizeOf( underlying_type );
+				const auto& [ slot_count, slot_size ] = RowAndColumnCountOf( attribute.type );
 				const auto slot_stride                = slot_size * underlying_type_size;
 				
-				ASSERT_DEBUG_ONLY( underlying_type != GL_DOUBLE ); // DOUBLES ARE NOT IMPLEMENTED FOR CONVENIENCE.
+				ASSERT_DEBUG_ONLY( underlying_type != DataType::Double ); // DOUBLES ARE NOT IMPLEMENTED FOR CONVENIENCE.
 
 				for( auto slot_index = 0; slot_index < slot_count; slot_index++ )
 				{
 					const auto location = attribute.location + slot_index;
-					glVertexAttribPointer( location, slot_size, underlying_type, is_normalized, stride, BUFFER_OFFSET( offset ) );
+					glVertexAttribPointer( location, slot_size, DataTypeToGLEnum( underlying_type ), is_normalized, stride, BUFFER_OFFSET( offset ) );
 					glEnableVertexAttribArray( location );
 
 					offset += slot_stride;
@@ -75,7 +108,7 @@ namespace Kakadu::RHI
 			}
 			else
 			{
-				glVertexAttribPointer( attribute.location, attribute.count, attribute.type, is_normalized, stride, BUFFER_OFFSET( offset ) );
+				glVertexAttribPointer( attribute.location, attribute.count, DataTypeToGLEnum( attribute.type ), is_normalized, stride, BUFFER_OFFSET( offset ) );
 				glEnableVertexAttribArray( attribute.location );
 
 				offset += attribute.Size();
@@ -96,20 +129,20 @@ namespace Kakadu::RHI
 		{
 			const auto& attribute = *iterator;
 
-			if( const auto underlying_count = RHI::Type::CountOf( attribute.type );
+			if( const auto underlying_count = CountOf( attribute.type );
 				underlying_count > 1 )
 			{
-				const auto underlying_type            = RHI::Type::ComponentTypeOf( attribute.type );
-				const auto underlying_type_size       = RHI::Type::SizeOf( underlying_type );
-				const auto& [ slot_count, slot_size ] = RHI::Type::RowAndColumnCountOf( attribute.type );
+				const auto underlying_type            = ComponentTypeOf( attribute.type );
+				const auto underlying_type_size       = SizeOf( underlying_type );
+				const auto& [ slot_count, slot_size ] = RowAndColumnCountOf( attribute.type );
 				const auto slot_stride                = slot_size * underlying_type_size;
 				
-				ASSERT_DEBUG_ONLY( underlying_type != GL_DOUBLE ); // DOUBLES ARE NOT IMPLEMENTED FOR CONVENIENCE.
+				ASSERT_DEBUG_ONLY( underlying_type != DataType::Double ); // DOUBLES ARE NOT IMPLEMENTED FOR CONVENIENCE.
 
 				for( auto slot_index = 0; slot_index < slot_count; slot_index++ )
 				{
 					const auto location = attribute.location + slot_index;
-					glVertexAttribPointer( location, slot_size, underlying_type, is_normalized, stride, BUFFER_OFFSET( offset ) );
+					glVertexAttribPointer( location, slot_size, DataTypeToGLEnum( underlying_type ), is_normalized, stride, BUFFER_OFFSET( offset ) );
 					glEnableVertexAttribArray( location );
 
 					// Instancing:
@@ -120,7 +153,7 @@ namespace Kakadu::RHI
 			}
 			else
 			{
-				glVertexAttribPointer( attribute.location, attribute.count, attribute.type, is_normalized, stride, BUFFER_OFFSET( offset ) );
+				glVertexAttribPointer( attribute.location, attribute.count, DataTypeToGLEnum( attribute.type ), is_normalized, stride, BUFFER_OFFSET( offset ) );
 				glEnableVertexAttribArray( attribute.location );
 
 				// Instancing:
@@ -175,14 +208,14 @@ namespace Kakadu::RHI
 	 */
 
 	/* Currently unused. */
-	void VertexLayout::Push( const GLenum type, const i32 count, const bool is_instanced )
+	void VertexLayout::Push( const DataType type, const i32 count, const bool is_instanced )
 	{
 		if( attributes.empty() )
 			attributes.push_back( { count, type, is_instanced, 0 } );
 		else
 		{
 			const auto& previous_attribute = attributes.back();
-			const auto& [previous_attribute_occupied_slot_count, dont_care_slot_size] = RHI::Type::RowAndColumnCountOf( previous_attribute.type );
+			const auto& [ previous_attribute_occupied_slot_count, dont_care_slot_size ] = RowAndColumnCountOf( previous_attribute.type );
 			attributes.push_back(
 			{
 				.count        = count,

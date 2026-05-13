@@ -280,7 +280,7 @@ void SandboxApplication::Initialize()
 
 	cube_mesh_instanced = Kakadu::Mesh( cube_mesh,
 										{
-											Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
+											Kakadu::RHI::VertexInstanceAttribute{ 1, Kakadu::RHI::DataType::Float4x4, INSTANCED_ATTRIBUTE_START } // Transform.
 										},
 										reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 										CUBE_COUNT,
@@ -288,7 +288,7 @@ void SandboxApplication::Initialize()
 
 	cube_reflected_mesh_instanced = Kakadu::Mesh( cube_mesh,
 												  {
-													  Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }	// Transform.
+													  Kakadu::RHI::VertexInstanceAttribute{ 1, Kakadu::RHI::DataType::Float4x4, INSTANCED_ATTRIBUTE_START } // Transform.
 												  },
 												  reinterpret_cast< std::vector< float >& >( cube_reflected_instance_data_array ),
 												  CUBE_REFLECTED_COUNT,
@@ -321,8 +321,8 @@ void SandboxApplication::Initialize()
 
 	sphere_mesh_instanced_with_color = Kakadu::Mesh( sphere_mesh_lower_detail,
 													 {
-														 Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4, INSTANCED_ATTRIBUTE_START }, // Transform.
-														 Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_VEC4, INSTANCED_ATTRIBUTE_START + 4 }	// Color.
+														 Kakadu::RHI::VertexInstanceAttribute{ 1, Kakadu::RHI::DataType::Float4x4, INSTANCED_ATTRIBUTE_START },    // Transform.
+														 Kakadu::RHI::VertexInstanceAttribute{ 1, Kakadu::RHI::DataType::Float4,   INSTANCED_ATTRIBUTE_START + 4 } // Color.
 													 },
 													 reinterpret_cast< std::vector< float >& >( light_source_instance_data_array ),
 													 LIGHT_POINT_COUNT,
@@ -990,7 +990,7 @@ void SandboxApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorites
 		meteorite_renderable = &meteorite_model_info.model_instance.Renderables().front();
 		cube_mesh_instanced = Kakadu::Mesh( *meteorite_renderable->GetMesh(),
 											{
-												Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
+												Kakadu::RHI::VertexInstanceAttribute{ 1, Kakadu::RHI::DataType::Float4x4 } // Transform.
 											},
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,
@@ -1004,7 +1004,7 @@ void SandboxApplication::ReplaceMeteoriteAndCubeRenderables( bool use_meteorites
 		meteorite_renderable = nullptr;
 		cube_mesh_instanced = Kakadu::Mesh( cube_mesh,
 											{
-												Kakadu::RHI::VertexInstanceAttribute{ 1, GL_FLOAT_MAT4 }	// Transform.
+												Kakadu::RHI::VertexInstanceAttribute{ 1, Kakadu::RHI::DataType::Float4x4 } // Transform.
 											},
 											reinterpret_cast< std::vector< float >& >( cube_instance_data_array ),
 											CUBE_COUNT,

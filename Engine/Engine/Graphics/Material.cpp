@@ -228,7 +228,9 @@ namespace Kakadu
 	void Material::PopulateTextureMap()
 	{
 		for( const auto& [ uniform_name, uniform_info ] : *uniform_info_map )
-			if( uniform_info.type == GL_SAMPLER_2D || uniform_info.type == GL_SAMPLER_2D_MULTISAMPLE || uniform_info.type == GL_SAMPLER_CUBE )
+			if( uniform_info.type == RHI::DataType::Sampler2D ||
+				uniform_info.type == RHI::DataType::Sampler2DMS ||
+				uniform_info.type == RHI::DataType::SamplerCube )
 				texture_map.emplace( uniform_name, nullptr );
 	}
 
@@ -237,7 +239,9 @@ namespace Kakadu
 		std::erase_if( texture_map, [ & ]( const auto& name_texture_pair ) { return not uniform_info_map->contains( name_texture_pair.first ); } );
 
 		for( const auto& [ uniform_name, uniform_info ] : *uniform_info_map )
-			if( ( uniform_info.type == GL_SAMPLER_2D || uniform_info.type == GL_SAMPLER_2D_MULTISAMPLE || uniform_info.type == GL_SAMPLER_CUBE ) &&
+			if( ( uniform_info.type == RHI::DataType::Sampler2D ||
+				  uniform_info.type == RHI::DataType::Sampler2DMS ||
+				  uniform_info.type == RHI::DataType::SamplerCube ) &&
 				not texture_map.contains( uniform_name ) )
 				texture_map.emplace( uniform_name, nullptr );
 	}

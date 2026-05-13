@@ -982,7 +982,7 @@ namespace Kakadu
 
 	void Renderer::Draw_Indexed( const Mesh& mesh ) const
 	{
-		glDrawElements( ( GLint )mesh.Primitive(), mesh.IndexCount(), mesh.IndexType(), 0 );
+		glDrawElements( ( GLint )mesh.Primitive(), mesh.IndexCount(), GL_UNSIGNED_INT, 0 );
 	}
 
 	void Renderer::Draw_NonIndexed( const Mesh& mesh ) const
@@ -999,7 +999,7 @@ namespace Kakadu
 
 	void Renderer::DrawInstanced_Indexed( const Mesh& mesh ) const
 	{
-		glDrawElementsInstanced( ( GLint )mesh.Primitive(), mesh.IndexCount(), mesh.IndexType(), 0, mesh.InstanceCount() );
+		glDrawElementsInstanced( ( GLint )mesh.Primitive(), mesh.IndexCount(), GL_UNSIGNED_INT, 0, mesh.InstanceCount() );
 	}
 
 	void Renderer::DrawInstanced_NonIndexed( const Mesh& mesh ) const

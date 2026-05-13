@@ -1,8 +1,8 @@
 #pragma once
 
 // Engine Includes.
-#include "RHI.h"
-#include "ShaderTypeInformation.h"
+#include "DataType.h"
+#include "Core/Macros.h"
 #include "Core/Types.h"
 #include "Math/Concepts_Math.h"
 
@@ -15,36 +15,44 @@ namespace Kakadu::RHI
 	struct VertexAttribute
 	{
 		i32 count;
-		GLenum type;
+		DataType type;
 		bool is_instanced;
 		u32 location;
 
-		/* Comparison operators. */
+		/*
+		 * Comparison operators.
+		 */
+
 		constexpr bool operator ==( const VertexAttribute& other ) const = default;
 		constexpr bool operator !=( const VertexAttribute& other ) const = default;
 
-		bool Empty() const { return count == 0; }
+		/*
+		 * Queries.
+		 */
 
-		/* Comparison operators. */
-
-		u32 Size() const { return count * RHI::Type::SizeOf( type ); }
+		bool Empty() const;
+		u32 Size() const;
 	};
 
 	struct VertexInstanceAttribute
 	{
 		i32 count;
-		GLenum type;
+		DataType type;
 		u32 location;
 
-		/* Comparison operators. */
+		/*
+		 * Comparison operators.
+		 */
+		
 		constexpr bool operator ==( const VertexInstanceAttribute& other ) const = default;
 		constexpr bool operator !=( const VertexInstanceAttribute& other ) const = default;
 
-		bool Empty() const { return count == 0; }
+		/*
+		 * Queries.
+		 */
 
-		/* Comparison operators. */
-
-		u32 Size() const { return count * RHI::Type::SizeOf( type ); }
+		bool Empty() const;
+		u32 Size() const;
 	};
 
 	class VertexLayout
@@ -79,8 +87,7 @@ namespace Kakadu::RHI
 
 	private:
 		/* Currently unused. */
-		void Push( const GLenum type, const i32 count, const bool is_instanced = false );
-
+		void Push( const DataType type, const i32 count, const bool is_instanced = false );
 
 	private:
 		std::vector< VertexAttribute > attributes;

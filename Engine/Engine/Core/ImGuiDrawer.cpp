@@ -5,8 +5,8 @@
 #include "ImGuiCustomColors.h"
 #include "ImGuiDrawer.hpp"
 #include "ImGuiUtility.h"
+#include "Optimization.h"
 #include "Platform.h"
-#include "Graphics/RHI/ShaderTypeInformation.h"
 #include "Math/VectorConversion.hpp"
 
 // Vendor Includes.
@@ -41,94 +41,100 @@ namespace Kakadu::ImGuiDrawer
 		ImGui::End();
 	}
 
-	bool Draw( const GLenum type, void* value_pointer, const char* name )
+	bool Draw( const RHI::DataType type, void* value_pointer, const char* name )
 	{
 		switch( type )
 		{
 			/* Scalars & vectors: */
-			case GL_FLOAT					: return Draw( *reinterpret_cast< float*		>( value_pointer ), name );
-			case GL_FLOAT_VEC2				: return Draw( *reinterpret_cast< Vector2*		>( value_pointer ), name );
-			case GL_FLOAT_VEC3				: return Draw( *reinterpret_cast< Vector3*		>( value_pointer ), name );
-			case GL_FLOAT_VEC4				: return Draw( *reinterpret_cast< Vector4*		>( value_pointer ), name );
-			case GL_DOUBLE					: return Draw( *reinterpret_cast< double*		>( value_pointer ), name );
-			case GL_INT						: return Draw( *reinterpret_cast< i32*			>( value_pointer ), name );
-			case GL_INT_VEC2				: return Draw( *reinterpret_cast< Vector2I*		>( value_pointer ), name );
-			case GL_INT_VEC3				: return Draw( *reinterpret_cast< Vector3I*		>( value_pointer ), name );
-			case GL_INT_VEC4				: return Draw( *reinterpret_cast< Vector4I*		>( value_pointer ), name );
-			case GL_UNSIGNED_INT			: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
-			case GL_UNSIGNED_INT_VEC2		: return Draw( *reinterpret_cast< Vector2U*		>( value_pointer ), name );
-			case GL_UNSIGNED_INT_VEC3		: return Draw( *reinterpret_cast< Vector3U*		>( value_pointer ), name );
-			case GL_UNSIGNED_INT_VEC4		: return Draw( *reinterpret_cast< Vector4U*		>( value_pointer ), name );
-			case GL_BOOL					: return Draw( *reinterpret_cast< bool*			>( value_pointer ), name );
-			//case GL_BOOL_VEC2				: return Draw( *reinterpret_cast< NOT DEFINED	>( value_pointer ), name );
-			//case GL_BOOL_VEC3				: return Draw( *reinterpret_cast< NOT DEFINED	>( value_pointer ), name );
-			//case GL_BOOL_VEC4				: return Draw( *reinterpret_cast< NOT DEFINED	>( value_pointer ), name );
+			case RHI::DataType::Float			: return Draw( *reinterpret_cast< float*		>( value_pointer ), name );
+			case RHI::DataType::Float2			: return Draw( *reinterpret_cast< Vector2*		>( value_pointer ), name );
+			case RHI::DataType::Float3			: return Draw( *reinterpret_cast< Vector3*		>( value_pointer ), name );
+			case RHI::DataType::Float4			: return Draw( *reinterpret_cast< Vector4*		>( value_pointer ), name );
+			case RHI::DataType::Double			: return Draw( *reinterpret_cast< double*		>( value_pointer ), name );
+			case RHI::DataType::Int				: return Draw( *reinterpret_cast< i32*			>( value_pointer ), name );
+			case RHI::DataType::Int2			: return Draw( *reinterpret_cast< Vector2I*		>( value_pointer ), name );
+			case RHI::DataType::Int3			: return Draw( *reinterpret_cast< Vector3I*		>( value_pointer ), name );
+			case RHI::DataType::Int4			: return Draw( *reinterpret_cast< Vector4I*		>( value_pointer ), name );
+			case RHI::DataType::UnsignedInt		: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case RHI::DataType::UnsignedInt2	: return Draw( *reinterpret_cast< Vector2U*		>( value_pointer ), name );
+			case RHI::DataType::UnsignedInt3	: return Draw( *reinterpret_cast< Vector3U*		>( value_pointer ), name );
+			case RHI::DataType::UnsignedInt4	: return Draw( *reinterpret_cast< Vector4U*		>( value_pointer ), name );
+			case RHI::DataType::Bool			: return Draw( *reinterpret_cast< bool*			>( value_pointer ), name );
+			//case RHI::DataType::Bool2			: return Draw( *reinterpret_cast< NOT DEFINED	>( value_pointer ), name );
+			//case RHI::DataType::Bool3			: return Draw( *reinterpret_cast< NOT DEFINED	>( value_pointer ), name );
+			//case RHI::DataType::Bool4			: return Draw( *reinterpret_cast< NOT DEFINED	>( value_pointer ), name );
 			
 			/* Matrices: */
-			case GL_FLOAT_MAT2 				: return Draw( *reinterpret_cast< Matrix2x2*	>( value_pointer ), name );
-			case GL_FLOAT_MAT3 				: return Draw( *reinterpret_cast< Matrix3x3*	>( value_pointer ), name );
-			case GL_FLOAT_MAT4 				: return Draw( *reinterpret_cast< Matrix4x4*	>( value_pointer ), name );
-			case GL_FLOAT_MAT2x3 			: return Draw( *reinterpret_cast< Matrix2x3*	>( value_pointer ), name );
-			case GL_FLOAT_MAT2x4 			: return Draw( *reinterpret_cast< Matrix2x4*	>( value_pointer ), name );
-			case GL_FLOAT_MAT3x2 			: return Draw( *reinterpret_cast< Matrix3x2*	>( value_pointer ), name );
-			case GL_FLOAT_MAT3x4 			: return Draw( *reinterpret_cast< Matrix3x4*	>( value_pointer ), name );
-			case GL_FLOAT_MAT4x2 			: return Draw( *reinterpret_cast< Matrix4x2*	>( value_pointer ), name );
-			case GL_FLOAT_MAT4x3 			: return Draw( *reinterpret_cast< Matrix4x3*	>( value_pointer ), name );
+			case RHI::DataType::Float2x2 		: return Draw( *reinterpret_cast< Matrix2x2*	>( value_pointer ), name );
+			case RHI::DataType::Float3x3 		: return Draw( *reinterpret_cast< Matrix3x3*	>( value_pointer ), name );
+			case RHI::DataType::Float4x4 		: return Draw( *reinterpret_cast< Matrix4x4*	>( value_pointer ), name );
+			case RHI::DataType::Float2x3 		: return Draw( *reinterpret_cast< Matrix2x3*	>( value_pointer ), name );
+			case RHI::DataType::Float2x4 		: return Draw( *reinterpret_cast< Matrix2x4*	>( value_pointer ), name );
+			case RHI::DataType::Float3x2 		: return Draw( *reinterpret_cast< Matrix3x2*	>( value_pointer ), name );
+			case RHI::DataType::Float3x4 		: return Draw( *reinterpret_cast< Matrix3x4*	>( value_pointer ), name );
+			case RHI::DataType::Float4x2 		: return Draw( *reinterpret_cast< Matrix4x2*	>( value_pointer ), name );
+			case RHI::DataType::Float4x3 		: return Draw( *reinterpret_cast< Matrix4x3*	>( value_pointer ), name );
 
 			/* Other: */
-			case GL_SAMPLER_1D 				: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
-			case GL_SAMPLER_2D_MULTISAMPLE 	: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
-			case GL_SAMPLER_2D 				: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
-			case GL_SAMPLER_3D 				: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
-			case GL_SAMPLER_CUBE			: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case RHI::DataType::Sampler1D 		: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case RHI::DataType::Sampler2DMS 	: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case RHI::DataType::Sampler2D 		: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case RHI::DataType::Sampler3D 		: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+			case RHI::DataType::SamplerCube		: return Draw( *reinterpret_cast< u32*			>( value_pointer ), name );
+
+			default:
+				UNREACHABLE();
 		}
 
-		throw std::runtime_error( "ERROR::IMGUIDRAWER::DRAW( type, void* value_pointer ) called for an undefined GL type!" );
+		throw std::runtime_error( "ERROR::IMGUIDRAWER::DRAW( type, void* value_pointer ) called for an undefined data type!" );
 	}
 
-	void Draw( const GLenum type, const void* value_pointer, const char* name )
+	void Draw( const RHI::DataType type, const void* value_pointer, const char* name )
 	{
 		switch( type )
 		{
 			/* Scalars & vectors: */
-			case GL_FLOAT					: return Draw( *reinterpret_cast< const float*			>( value_pointer ), name );
-			case GL_FLOAT_VEC2				: return Draw( *reinterpret_cast< const Vector2*		>( value_pointer ), name );
-			case GL_FLOAT_VEC3				: return Draw( *reinterpret_cast< const Vector3*		>( value_pointer ), name );
-			case GL_FLOAT_VEC4				: return Draw( *reinterpret_cast< const Vector4*		>( value_pointer ), name );
-			case GL_DOUBLE					: return Draw( *reinterpret_cast< const double*			>( value_pointer ), name );
-			case GL_INT						: return Draw( *reinterpret_cast< const i32*			>( value_pointer ), name );
-			case GL_INT_VEC2				: return Draw( *reinterpret_cast< const Vector2I*		>( value_pointer ), name );
-			case GL_INT_VEC3				: return Draw( *reinterpret_cast< const Vector3I*		>( value_pointer ), name );
-			case GL_INT_VEC4				: return Draw( *reinterpret_cast< const Vector4I*		>( value_pointer ), name );
-			case GL_UNSIGNED_INT			: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
-			case GL_UNSIGNED_INT_VEC2		: return Draw( *reinterpret_cast< const Vector2U*		>( value_pointer ), name );
-			case GL_UNSIGNED_INT_VEC3		: return Draw( *reinterpret_cast< const Vector3U*		>( value_pointer ), name );
-			case GL_UNSIGNED_INT_VEC4		: return Draw( *reinterpret_cast< const Vector4U*		>( value_pointer ), name );
-			case GL_BOOL					: return Draw( *reinterpret_cast< const bool*			>( value_pointer ), name );
-			//case GL_BOOL_VEC2				: return Draw( *reinterpret_cast< const NOT DEFINED		>( value_pointer ), name );
-			//case GL_BOOL_VEC3				: return Draw( *reinterpret_cast< const NOT DEFINED		>( value_pointer ), name );
-			//case GL_BOOL_VEC4				: return Draw( *reinterpret_cast< const NOT DEFINED		>( value_pointer ), name );
+			case RHI::DataType::Float			: return Draw( *reinterpret_cast< const float*			>( value_pointer ), name );
+			case RHI::DataType::Float2			: return Draw( *reinterpret_cast< const Vector2*		>( value_pointer ), name );
+			case RHI::DataType::Float3			: return Draw( *reinterpret_cast< const Vector3*		>( value_pointer ), name );
+			case RHI::DataType::Float4			: return Draw( *reinterpret_cast< const Vector4*		>( value_pointer ), name );
+			case RHI::DataType::Double			: return Draw( *reinterpret_cast< const double*			>( value_pointer ), name );
+			case RHI::DataType::Int				: return Draw( *reinterpret_cast< const i32*			>( value_pointer ), name );
+			case RHI::DataType::Int2			: return Draw( *reinterpret_cast< const Vector2I*		>( value_pointer ), name );
+			case RHI::DataType::Int3			: return Draw( *reinterpret_cast< const Vector3I*		>( value_pointer ), name );
+			case RHI::DataType::Int4			: return Draw( *reinterpret_cast< const Vector4I*		>( value_pointer ), name );
+			case RHI::DataType::UnsignedInt		: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case RHI::DataType::UnsignedInt2	: return Draw( *reinterpret_cast< const Vector2U*		>( value_pointer ), name );
+			case RHI::DataType::UnsignedInt3	: return Draw( *reinterpret_cast< const Vector3U*		>( value_pointer ), name );
+			case RHI::DataType::UnsignedInt4	: return Draw( *reinterpret_cast< const Vector4U*		>( value_pointer ), name );
+			case RHI::DataType::Bool			: return Draw( *reinterpret_cast< const bool*			>( value_pointer ), name );
+			//case RHI::DataType::Bool2			: return Draw( *reinterpret_cast< const NOT DEFINED		>( value_pointer ), name );
+			//case RHI::DataType::Bool3			: return Draw( *reinterpret_cast< const NOT DEFINED		>( value_pointer ), name );
+			//case RHI::DataType::Bool4			: return Draw( *reinterpret_cast< const NOT DEFINED		>( value_pointer ), name );
 
 			/* Matrices: */
-			case GL_FLOAT_MAT2 				: return Draw( *reinterpret_cast< const Matrix2x2*		>( value_pointer ), name );
-			case GL_FLOAT_MAT3 				: return Draw( *reinterpret_cast< const Matrix3x3*		>( value_pointer ), name );
-			case GL_FLOAT_MAT4 				: return Draw( *reinterpret_cast< const Matrix4x4*		>( value_pointer ), name );
-			case GL_FLOAT_MAT2x3 			: return Draw( *reinterpret_cast< const Matrix2x3*		>( value_pointer ), name );
-			case GL_FLOAT_MAT2x4 			: return Draw( *reinterpret_cast< const Matrix2x4*		>( value_pointer ), name );
-			case GL_FLOAT_MAT3x2 			: return Draw( *reinterpret_cast< const Matrix3x2*		>( value_pointer ), name );
-			case GL_FLOAT_MAT3x4 			: return Draw( *reinterpret_cast< const Matrix3x4*		>( value_pointer ), name );
-			case GL_FLOAT_MAT4x2 			: return Draw( *reinterpret_cast< const Matrix4x2*		>( value_pointer ), name );
-			case GL_FLOAT_MAT4x3 			: return Draw( *reinterpret_cast< const Matrix4x3*		>( value_pointer ), name );
+			case RHI::DataType::Float2x2 		: return Draw( *reinterpret_cast< const Matrix2x2*		>( value_pointer ), name );
+			case RHI::DataType::Float3x3 		: return Draw( *reinterpret_cast< const Matrix3x3*		>( value_pointer ), name );
+			case RHI::DataType::Float4x4 		: return Draw( *reinterpret_cast< const Matrix4x4*		>( value_pointer ), name );
+			case RHI::DataType::Float2x3 		: return Draw( *reinterpret_cast< const Matrix2x3*		>( value_pointer ), name );
+			case RHI::DataType::Float2x4 		: return Draw( *reinterpret_cast< const Matrix2x4*		>( value_pointer ), name );
+			case RHI::DataType::Float3x2 		: return Draw( *reinterpret_cast< const Matrix3x2*		>( value_pointer ), name );
+			case RHI::DataType::Float3x4 		: return Draw( *reinterpret_cast< const Matrix3x4*		>( value_pointer ), name );
+			case RHI::DataType::Float4x2 		: return Draw( *reinterpret_cast< const Matrix4x2*		>( value_pointer ), name );
+			case RHI::DataType::Float4x3 		: return Draw( *reinterpret_cast< const Matrix4x3*		>( value_pointer ), name );
 
 			/* Other: */
-			case GL_SAMPLER_1D 				: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
-			case GL_SAMPLER_2D_MULTISAMPLE 	: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
-			case GL_SAMPLER_2D 				: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
-			case GL_SAMPLER_3D 				: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
-			case GL_SAMPLER_CUBE 			: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case RHI::DataType::Sampler1D 		: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case RHI::DataType::Sampler2DMS		: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case RHI::DataType::Sampler2D 		: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case RHI::DataType::Sampler3D 		: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+			case RHI::DataType::SamplerCube 	: return Draw( *reinterpret_cast< const u32*			>( value_pointer ), name );
+
+			default:
+				UNREACHABLE();
 		}
 
-		throw std::runtime_error( "ERROR::IMGUIDRAWER::DRAW( type, const void* value_pointer ) called for an undefined GL type!" );
+		throw std::runtime_error( "ERROR::IMGUIDRAWER::DRAW( type, const void* value_pointer ) called for an undefined data type!" );
 	}
 
 	bool Draw( i32& scalar, const char* name )
@@ -414,7 +420,7 @@ namespace Kakadu::ImGuiDrawer
 						selected_texture = &texture;
 					ImGui::PopID();
 					ImGui::SameLine();
-					Kakadu::ImGuiDrawer::Draw( &texture, texture_asset_name.c_str() );
+					Draw( &texture, texture_asset_name.c_str() );
 				}
 			}
 
@@ -505,7 +511,7 @@ namespace Kakadu::ImGuiDrawer
 						selected_texture = texture;
 					ImGui::PopID();
 					ImGui::SameLine();
-					Kakadu::ImGuiDrawer::Draw( texture, texture_asset_name.c_str() );
+					Draw( texture, texture_asset_name.c_str() );
 				}
 			}
 
@@ -674,7 +680,7 @@ namespace Kakadu::ImGuiDrawer
 
 					auto DrawUniformWithAnnotations = [ & ]( UniformAnnotation::Type annotation_type,
 															 u16 annotation_custom_format_string_id,
-															 GLenum type,
+															 RHI::DataType type,
 															 const std::array< u8, 16 >& annotation_meta_data,
 															 void* uniform_memory )
 					{
@@ -709,7 +715,7 @@ namespace Kakadu::ImGuiDrawer
 								{
 									for( i32 j = 0; j < array_dimensions[ 1 ]; j++ )
 									{
-										void* element_address = RHI::Type::AddressOf( type, address, +i * array_dimensions[ 1 ] + j );
+										void* element_address = RHI::AddressOf( type, address, +i * array_dimensions[ 1 ] + j );
 										ImGui::PushID( element_address );
 										is_modified |= Draw( type, element_address );
 										ImGui::PopID();
@@ -784,9 +790,9 @@ namespace Kakadu::ImGuiDrawer
 					for( const auto& [ uniform_name, uniform_info ] : uniform_info_map )
 					{
 						if( uniform_info.is_buffer_member || /* Skip uniform buffer members; They will be drawn under their parent uniform buffer instead. */
-							( not drawer_state.window_material_show_texture_slots && ( uniform_info.type == GL_SAMPLER_2D ||
-																					   uniform_info.type == GL_SAMPLER_2D_MULTISAMPLE ||
-																					   uniform_info.type == GL_SAMPLER_CUBE ) ) ||
+							( not drawer_state.window_material_show_texture_slots && ( uniform_info.type == RHI::DataType::Sampler2D ||
+																					   uniform_info.type == RHI::DataType::Sampler2DMS ||
+																					   uniform_info.type == RHI::DataType::SamplerCube ) ) ||
 							( not drawer_state.window_material_show_world_transforms && uniform_name == "uniform_transform_world" ) )
 							continue;
 
@@ -1080,7 +1086,7 @@ namespace Kakadu::ImGuiDrawer
 						ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info.location_or_block_index );
 						ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info.size );
 						ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info.offset );
-						ImGui::TableNextColumn(); ImGui::TextUnformatted( RHI::Type::NameOf( uniform_info.type ) );
+						ImGui::TableNextColumn(); ImGui::TextUnformatted( RHI::NameOf( uniform_info.type ) );
 					}
 
 					ImGui::PopStyleColor();
@@ -1128,7 +1134,7 @@ namespace Kakadu::ImGuiDrawer
 										ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info->location_or_block_index );
 										ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info->size );
 										ImGui::TableNextColumn(); ImGui::Text( "%d", uniform_info->offset );
-										ImGui::TableNextColumn(); ImGui::TextUnformatted( RHI::Type::NameOf( uniform_info->type ) );
+										ImGui::TableNextColumn(); ImGui::TextUnformatted( RHI::NameOf( uniform_info->type ) );
 									}
 								}
 

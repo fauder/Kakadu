@@ -1,7 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "RHI.h"
+#include "DataType.h"
 #include "Graphics/UniformAnnotation.h" // TODO: Dependency - wrong direction. Fix later by moving this out of both Uniform::Information and Shader and keep elsewhere.
 #include "Core/Blob.hpp"
 #include "Core/Types.h"
@@ -21,7 +21,7 @@ namespace Kakadu::RHI::Uniform
 		i32 offset;
 		i32 count_array; // Element count (>= 1) for arrays, 1 for non-arrays.
 
-		GLenum type;
+		DataType type;
 		bool is_buffer_member;
 
 		UniformAnnotation::Type annotation_type;
