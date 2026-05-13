@@ -2,6 +2,8 @@
 #include "RHI.h"
 #include "GLDebugOutput.h"
 #include "Core/Assertion.h"
+#include "Core/LogType.h"
+#include "Core/LogSink.h"
 
 // Vendor Includes.
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -63,46 +65,66 @@ namespace Kakadu::RHI
 		}
 	}
 
-	internal_function ImGuiLogger::EntryType ConvertGLMessageType( u32 value )
+	internal_function Log::Type ConvertGLMessageType( u32 value )
 	{
 		switch( value )
 		{
-			case GL_DEBUG_TYPE_ERROR:				return ImGuiLogger::EntryType::ERROR_;
-			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return ImGuiLogger::EntryType::WARNING;
-			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:	return ImGuiLogger::EntryType::WARNING;
-			case GL_DEBUG_TYPE_PORTABILITY:			return ImGuiLogger::EntryType::WARNING;
-			case GL_DEBUG_TYPE_PERFORMANCE:			return ImGuiLogger::EntryType::WARNING;
+			case GL_DEBUG_TYPE_ERROR:				return Log::Type::ERROR_;
+			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return Log::Type::WARNING;
+			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:	return Log::Type::WARNING;
+			case GL_DEBUG_TYPE_PORTABILITY:			return Log::Type::WARNING;
+			case GL_DEBUG_TYPE_PERFORMANCE:			return Log::Type::WARNING;
 
-			case GL_DEBUG_TYPE_MARKER:				return ImGuiLogger::EntryType::GROUP_SEPARATOR;
-			case GL_DEBUG_TYPE_PUSH_GROUP:			return ImGuiLogger::EntryType::GROUP_SEPARATOR;
-			case GL_DEBUG_TYPE_POP_GROUP:			return ImGuiLogger::EntryType::GROUP_SEPARATOR;
+			case GL_DEBUG_TYPE_MARKER:				return Log::Type::GROUP_SEPARATOR;
+			case GL_DEBUG_TYPE_PUSH_GROUP:			return Log::Type::GROUP_SEPARATOR;
+			case GL_DEBUG_TYPE_POP_GROUP:			return Log::Type::GROUP_SEPARATOR;
 
-			case GL_DEBUG_TYPE_OTHER:				return ImGuiLogger::EntryType::NORMAL;
+			case GL_DEBUG_TYPE_OTHER:				return Log::Type::NORMAL;
 
 			default:
 				std::cerr << "Invalid GL enum value passed to ConvertGLMessageType( u32 value )!\n";
-				return ImGuiLogger::EntryType::INVALID;
+				return Log::Type::INVALID;
 		}
 	}
 
-/*
- * GL Logger:
- */
+	internal_function void LogDebugOutput( u32 source, u32 type, u32 severity, i32 length, const char* message, const void* parameters )
+	{
+		constexpr std::size_t fixed_portion_length =
+			6 + 1 + 1 + 1 +	// Source ( max length = 6  ) + 1 space + 1 vertical line + 1 space.
+			11 + 1 + 1;		// Type   ( max length = 11 ) + 1 colon + 1 space.
 
-	GLDebugOutput::GLDebugOutput( Console& console )
-		:
-		console( console )
-	{
+		char buffer[ fixed_portion_length + 255 ];
+		ASSERT_EDITOR_ONLY( length <= 255 );
+
+		const auto source_string = ConvertGLMessageSourceString( source ); // Has a max length > 6 BUT most of those are rare.
+		const auto type_string = ConvertGLMessageTypeString( type ); // Has a max length of 11.
+
+		sprintf_s( buffer, sizeof( buffer ), "%-6s | %s: %s", source_string, type_string, message ); // Ignore severity; not that useful.
+		Log::Sink::Dispatch( ConvertGLMessageType( type ), buffer );
 	}
-		
-	GLDebugOutput::~GLDebugOutput()
+
+	internal_function void InternalDebugOutputCallback( u32 source, u32 type, u32 id /* ignored */, u32 severity, i32 length, const char* message,
+														const void* parameters /* ignored */ )
 	{
+		if( type == GL_DEBUG_TYPE_PUSH_GROUP ||
+			type == GL_DEBUG_TYPE_POP_GROUP )
+			return;
+
+		LogDebugOutput( source, type, severity, length, message, parameters );
 	}
+
+/*
+ * Marker:
+ */
 
 	void GLDebugOutput::Marker( const char* marker_label )
 	{
 		glDebugMessageInsert( GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, marker_label );
 	}
+
+/*
+ * Filtering IDs:
+ */
 
 	void GLDebugOutput::IgnoreID( const u32 id_to_ignore )
 	{
@@ -114,41 +136,15 @@ namespace Kakadu::RHI
 		glDebugMessageControl( GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 1, &id_to_restore, true );
 	}
 
+/*
+ * Queries:
+ */
+
 	GLDebugOutput::CallbackType GLDebugOutput::GetCallback()
 	{
 		return [ = ]( u32 source, u32 type, u32 id, u32 severity, i32 length, const char* message, const void* parameters )
 		{
-			this->InternalDebugOutputCallback( source, type, id, severity, length, message, parameters );
+			InternalDebugOutputCallback( source, type, id, severity, length, message, parameters );
 		};
-	}
-
-/* 
- * Private API:
- */
-
-	void GLDebugOutput::InternalDebugOutputCallback( u32 source, u32 type, u32 id /* ignored */, u32 severity, i32 length, const char* message, 
-													 const void* parameters /* ignored */ )
-	{
-		if( type == GL_DEBUG_TYPE_PUSH_GROUP ||
-			type == GL_DEBUG_TYPE_POP_GROUP )
-			return;
-
-		LogDebugOutput( source, type, severity, length, message, parameters );
-	}
-
-	void GLDebugOutput::LogDebugOutput( u32 source, u32 type, u32 severity, i32 length, const char* message, const void* parameters )
-	{
-		constexpr std::size_t fixed_portion_length =
-			6 + 1 + 1 + 1 +	// Source ( max length = 6  ) + 1 space + 1 vertical line + 1 space.
-			11 + 1 + 1;		// Type   ( max length = 11 ) + 1 colon + 1 space.
-
-		char buffer[ fixed_portion_length + 255 ];
-		ASSERT_EDITOR_ONLY( length <= 255 );
-
-		const auto source_string = ConvertGLMessageSourceString( source ); // Has a max length > 6 BUT most of those are rare.
-		const auto type_string   = ConvertGLMessageTypeString( type ); // Has a max length of 11.
-
-		sprintf_s( buffer, sizeof( buffer ), "%-6s | %s: %s", source_string, type_string, message ); // Ignore severity; not that useful.
-		console.Log( ConvertGLMessageType( type ), buffer );
 	}
 }

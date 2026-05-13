@@ -1,5 +1,5 @@
 // Engine Includes.
-#include "Core/Console.h"
+#include "Core/Log.h"
 #include "Core/ServiceLocator.h"
 #include "RHI/Texture.h"
 
@@ -41,7 +41,7 @@ namespace Kakadu
 		else
 		{
 			std::cerr << R"(Texture ")" << name << R"(": Could not load image data from file: ")" << file_path << "\"\n";
-			ServiceLocator< Console >::Get().LogError( R"(Texture ")" + std::string( name ) + R"(" Could not load image data from file: ")" + file_path + "\"\n" );
+			Log::Error( R"(Texture ")" + std::string( name ) + R"(" Could not load image data from file: ")" + file_path + "\"\n" );
 		}
 
 		stbi_image_free( image_data );
@@ -76,7 +76,7 @@ namespace Kakadu
 			if( image_data_array[ i ] == nullptr )
 			{
 				std::cerr << R"(Cubemap texture ")" << cubemap_name << R"(": Could not load image data from file: ")" << *file_path << "\"\n";
-				ServiceLocator< Console >::Get().LogError( R"(Cubemap texture ")" + std::string( cubemap_name ) + R"(": Could not load image data from file: ")" + *file_path + "\"\n" );
+				Log::Error( R"(Cubemap texture ")" + std::string( cubemap_name ) + R"(": Could not load image data from file: ")" + *file_path + "\"\n" );
 				stbi_image_free( image_data_array[ i ] );
 				error_encountered = true;
 			}
@@ -133,7 +133,7 @@ namespace Kakadu
 		else
 		{
 			std::cerr << R"(Texture ")" << name << R"(": Could not load image data from memory.")" << "\n";
-			ServiceLocator< Console >::Get().LogError( R"(Texture ")" + std::string(name) + R"(": Could not load image data from memory.)" "\n" );
+			Log::Error( R"(Texture ")" + std::string(name) + R"(": Could not load image data from memory.)" "\n" );
 		}
 
 		stbi_image_free( image_data );

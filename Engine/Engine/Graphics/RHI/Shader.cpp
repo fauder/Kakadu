@@ -14,7 +14,7 @@
 #include "ShaderTypeInformation.h"
 #include "UniformBlockBindingPointManager.h"
 #include "Core/BitFlags.hpp"
-#include "Core/Console.h"
+#include "Core/Log.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Utility.hpp"
 
@@ -1360,7 +1360,7 @@ namespace Kakadu::RHI
 		}
 		else
 		{
-			ServiceLocator< Console >::Get().LogWarning( R"(Shader::GetUniformInformation(): Shader ")" + name + R"(" does not define the uniform ")" + std::string( uniform_name ) + R"(" (may be optimized away).)" );
+			Log::Warning( R"(Shader::GetUniformInformation(): Shader ")" + name + R"(" does not define the uniform ")" + std::string( uniform_name ) + R"(" (may be optimized away).)" );
 			return nullptr;
 		}
 #else // STANDALONE:
@@ -1376,7 +1376,7 @@ namespace Kakadu::RHI
 			OutputDebugStringA( ( "\n" + error_string + "\n" ).c_str() );
 #endif // _WIN32 && _DEBUG
 
-		ServiceLocator< Console >::Get().LogError( error_string );
+		Log::Error( error_string );
 	}
 
 	void Shader::LogErrors_Compilation( const i32 shader_id,

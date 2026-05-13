@@ -37,7 +37,7 @@ namespace Kakadu
 				OutputDebugStringA( "Renderable construction attempt via uninitialized Mesh!" );
 		#endif // _WIN32 && _DEBUG
 
-			ServiceLocator< Console >::Get().LogError( "Renderable construction attempt via uninitialized Mesh!" );
+			Log::Error( "Renderable construction attempt via uninitialized Mesh!" );
 		}
 #endif // _DEBUG || _EDITOR
 	}

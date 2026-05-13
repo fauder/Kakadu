@@ -126,7 +126,7 @@
     <ClInclude Include="Engine\Core\ImGuiDrawer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\ImGuiLogger.h">
+    <ClInclude Include="Engine\Editor\LogPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\RHI\GLDebugOutput.h">
@@ -399,10 +399,16 @@
     <ClInclude Include="Engine\Graphics\RHI\DebugLabel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Console.h">
+    <ClInclude Include="Engine\Graphics\RHI\GLDebugGroup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\RHI\GLDebugGroup.h">
+    <ClInclude Include="Engine\Core\Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\LogSink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\LogType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -569,13 +575,16 @@
     <ClCompile Include="Engine\Graphics\RHI\DebugLabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Core\ImGuiLogger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Core\Console.cpp">
+    <ClCompile Include="Engine\Editor\LogPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\RHI\GLDebugGroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\LogSink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

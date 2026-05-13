@@ -5,6 +5,7 @@
 #include "ImGuiUtility.h"
 #include "Graphics/RHI/Enums.h"
 #include "Graphics/RHI/GLDebugGroup.h" // TODO: Enable only for non-standalone builds.
+#include "Graphics/RHI/GLDebugOutput.h"
 #include "Graphics/RHI/RHI.h"
 #include "Math/Math.hpp"
 
@@ -29,9 +30,7 @@ namespace Kakadu
 		:
 		is_running( true ),
 		vsync_is_enabled( false ),
-		msaa_sample_count( renderer_description.msaa_sample_count ),
-		console( logger ),
-		gl_debug_output( console )
+		msaa_sample_count( renderer_description.msaa_sample_count )
 	{
 		renderer_description.output_to_composite_framebuffer = true; // TODO: Remove this from here when editor becomes its own project & executable.
 
@@ -76,7 +75,7 @@ namespace Kakadu
 			editor_context->show_imgui_demo_window                   = false;
 			editor_context->show_frame_statistics_overlay            = true;
 			editor_context->show_mouse_screen_space_position_overlay = false;
-			editor_context->show_debug_console                       = true;
+			editor_context->show_log_panel							 = true;
 			editor_context->ui_interaction_enabled                   = true;
 
 			editor_context->Initialize();
@@ -182,8 +181,6 @@ namespace Kakadu
 
 	void Application::Initialize()
 	{
-		ServiceLocator< ImGuiLogger >::Register( &logger );
-		ServiceLocator< Console >::Register( &console );
 		ServiceLocator< AssetDatabase< RHI::Texture > >::Register( &asset_database_texture );
 		ServiceLocator< AssetDatabase_Tracked< RHI::Texture* > >::Register( &asset_database_texture_tracked );
 		ServiceLocator< AssetDatabase< Model > >::Register( &asset_database_model );
@@ -222,7 +219,7 @@ namespace Kakadu
 			} );
 
 #ifdef _EDITOR
-		Platform::SetGLDebugOutputCallback( gl_debug_output.GetCallback() );
+		Platform::SetGLDebugOutputCallback( RHI::GLDebugOutput::GetCallback() );
 #endif // _EDITOR
 	}
 

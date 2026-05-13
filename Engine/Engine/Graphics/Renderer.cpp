@@ -7,6 +7,7 @@
 #include "Core/ImGuiCustomColors.h"
 #include "Core/ImGuiDrawer.hpp"
 #include "Core/ImGuiUtility.h"
+#include "Core/Log.h"
 #include "Core/MorphSystem.h"
 #include "Primitive/Primitive_Quad_FullScreen.h"
 #include "Primitive/Primitive_Cube_FullScreen.h"
@@ -18,25 +19,25 @@
 #include <IconFontCppHeaders/IconsFontAwesome6.h>
 
 #ifdef _EDITOR
-#define CONSOLE_WARNING( message ) console.LogWarning( ICON_FA_DRAW_POLYGON " " message )
-#define CONSOLE_ERROR( message ) console.LogError( ICON_FA_DRAW_POLYGON " " message )
-#define CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id )\
+#define LOG_WARNING( message ) Log::Warning( ICON_FA_DRAW_POLYGON " " message )
+#define LOG_ERROR( message ) Log::Error( ICON_FA_DRAW_POLYGON " " message )
+#define LOG_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id )\
 if( not render_pass_map.contains( pass_id ) )\
 {\
-	console.LogError( ICON_FA_DRAW_POLYGON " " function_name "() called for non-existing pass." );\
+	Log::Error( ICON_FA_DRAW_POLYGON " " function_name "() called for non-existing pass." );\
 	return;\
 }
-#define CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id )\
+#define LOG_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id )\
 if( not render_queue_map.contains( queue_id ) )\
 {\
-	console.LogError( ICON_FA_DRAW_POLYGON " " function_name "() called for non-existing queue." );\
+	Log::Error( ICON_FA_DRAW_POLYGON " " function_name "() called for non-existing queue." );\
 	return;\
 }
 #else
-#define CONSOLE_WARNING( message )  do {} while( false )
-#define CONSOLE_ERROR( message ) do {} while( false )
-#define CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id ) do {} while( false )
-#define CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id ) do {} while( false )
+#define LOG_WARNING( message )  do {} while( false )
+#define LOG_ERROR( message ) do {} while( false )
+#define LOG_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( function_name, pass_id ) do {} while( false )
+#define LOG_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( function_name, queue_id ) do {} while( false )
 #endif // _EDITOR
 
 namespace Kakadu
@@ -45,7 +46,6 @@ namespace Kakadu
 		:
 		wireframe_thickness_in_pixels( 2.0f ),
 		wireframe_color( 0.29f, 0.75f, 0.67f, 1.0f ),
-		console( ServiceLocator< Console >::Get() ),
 		graphics_device_info( RHI::QueryDeviceInfo() ),
 		framebuffer_main_description(
 			RHI::Framebuffer::Description
@@ -75,7 +75,7 @@ namespace Kakadu
 		framebuffer_current_source      = &DefaultFramebuffer();
 		framebuffer_current_destination = &DefaultFramebuffer();
 
-		ServiceLocator< RHI::GLDebugOutput >::Get().IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
+		RHI::GLDebugOutput::IgnoreID( 131185 ); // "Buffer object will use VIDEO mem..." log.
 
 		ServiceLocator< RHI::DeviceInfo >::Register( &graphics_device_info );
 
@@ -115,7 +115,7 @@ namespace Kakadu
 	{
 #ifdef _EDITOR
 		if( not render_pass_map.contains( pass_id_to_update ) )
-			CONSOLE_ERROR( " UpdatePerPass() called for non-existing pass." );
+			LOG_ERROR( " UpdatePerPass() called for non-existing pass." );
 #endif // _EDITOR
 
 		auto& pass = render_pass_map[ pass_id_to_update ];
@@ -387,14 +387,14 @@ namespace Kakadu
 	void Renderer::AddPass( const RenderPass::ID new_pass_id, RenderPass&& new_pass )
 	{
 		if( not render_pass_map.try_emplace( new_pass_id, std::move( new_pass ) ).second )
-			CONSOLE_ERROR( "Attempting to add a new pass with the ID of an existing queue!" );
+			LOG_ERROR( "Attempting to add a new pass with the ID of an existing queue!" );
 	}
 
 	void Renderer::RemovePass( const RenderPass::ID pass_id_to_remove )
 	{
 		if( std::find( BUILTIN_RENDER_PASS_ID_LIST.cbegin(), BUILTIN_RENDER_PASS_ID_LIST.cend(), pass_id_to_remove ) != BUILTIN_RENDER_PASS_ID_LIST.cend() )
 		{
-			CONSOLE_ERROR( "Removing a built-in pass is not allowed! Please use TogglePass( id, false ) to disable unwanted passes instead." );
+			LOG_ERROR( "Removing a built-in pass is not allowed! Please use TogglePass( id, false ) to disable unwanted passes instead." );
 			return;
 		}
 
@@ -418,7 +418,7 @@ namespace Kakadu
 			iterator->second.is_enabled = enable;
 		}
 		else
-			CONSOLE_ERROR( "Attempting to toggle a non-existing pass!" );
+			LOG_ERROR( "Attempting to toggle a non-existing pass!" );
 #else
 		render_pass_map[ pass_id_to_toggle ].is_enabled = enable;
 #endif // EDITOR
@@ -440,14 +440,14 @@ namespace Kakadu
 	void Renderer::AddQueue( const RenderQueue::ID new_queue_id, RenderQueue&& new_queue )
 	{
 		if( not render_queue_map.try_emplace( new_queue_id, std::move( new_queue ) ).second )
-			CONSOLE_ERROR( "Attempting to add a new queue with the ID of an existing queue!" );
+			LOG_ERROR( "Attempting to add a new queue with the ID of an existing queue!" );
 	}
 
 	void Renderer::RemoveQueue( const RenderQueue::ID queue_id_to_remove )
 	{
 		if( std::find( BUILTIN_RENDER_QUEUE_ID_LIST.cbegin(), BUILTIN_RENDER_QUEUE_ID_LIST.cend(), queue_id_to_remove ) != BUILTIN_RENDER_QUEUE_ID_LIST.cend() )
 		{
-			CONSOLE_ERROR( "Removing a built-in queue is not allowed! Please use ToggleQueue( id, false ) to disable unwanted passes instead." );
+			LOG_ERROR( "Removing a built-in queue is not allowed! Please use ToggleQueue( id, false ) to disable unwanted passes instead." );
 			return;
 		}
 
@@ -471,7 +471,7 @@ namespace Kakadu
 			iterator->second.is_enabled = enable;
 		}
 		else
-			CONSOLE_ERROR( "Attempting to toggle a non-existing queue!" );
+			LOG_ERROR( "Attempting to toggle a non-existing queue!" );
 #else
 		render_queue_map[ queue_id_to_toggle ].is_enabled = enable;
 #endif // _EDITOR
@@ -489,21 +489,21 @@ namespace Kakadu
 
 	void Renderer::AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to )
 	{
-		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "AddQueueToPass", pass_to_add_to );
-		CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( "AddQueueToPass", queue_id_to_add );
+		LOG_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "AddQueueToPass", pass_to_add_to );
+		LOG_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( "AddQueueToPass", queue_id_to_add );
 
 		if( not render_pass_map[ pass_to_add_to ].queue_id_set.emplace( queue_id_to_add ).second )
-			CONSOLE_ERROR( "Attempting to add an already existing queue to a pass!" );
+			LOG_ERROR( "Attempting to add an already existing queue to a pass!" );
 
 	}
 
 	void Renderer::RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from )
 	{
-		CONSOLE_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "RemoveQueueFromPass", pass_to_remove_from );
-		CONSOLE_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( "RemoveQueueFromPass", queue_id_to_remove );
+		LOG_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "RemoveQueueFromPass", pass_to_remove_from );
+		LOG_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( "RemoveQueueFromPass", queue_id_to_remove );
 
 		if( not render_pass_map[ pass_to_remove_from ].queue_id_set.erase( queue_id_to_remove ) )
-			CONSOLE_ERROR( "Attempting to add a non-existing queue from a pass!" );
+			LOG_ERROR( "Attempting to add a non-existing queue from a pass!" );
 	}
 
 	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
@@ -579,7 +579,7 @@ namespace Kakadu
 				for( auto& renderable : queue.renderable_list )
 					if( renderable->material == material &&
 						not renderable->mesh->IsCompatibleWith( renderable->material->shader->GetSourceVertexLayout() ) )
-						console.LogWarning( "Mesh \"" + renderable->mesh->Name() + "\" is not compatible with its current shader \"" + material->shader->Name() + "\"." );
+						Log::Warning( "Mesh \"" + renderable->mesh->Name() + "\" is not compatible with its current shader \"" + material->shader->Name() + "\"." );
 			}
 		}
 	}
@@ -791,10 +791,10 @@ namespace Kakadu
 						if( material->shader == shader )
 							material->OnShaderHotReload();
 
-				console.Log( "Recompiled modified shader: \"" + shader->name + "\"" );
+				Log::Success( "Recompiled modified shader: \"" + shader->name + "\"" );
 			}
 			else
-				console.LogError( "Failed to recompile modified shader: \"" + shader->name + "\"" );
+				Log::Error( "Failed to recompile modified shader: \"" + shader->name + "\"" );
 		}
 	}
 
@@ -1579,7 +1579,7 @@ namespace Kakadu
 				break;
 
 			default:
-				CONSOLE_WARNING( "Not implemented shading mode selected." );
+				LOG_WARNING( "Not implemented shading mode selected." );
 				return;
 		}
 		

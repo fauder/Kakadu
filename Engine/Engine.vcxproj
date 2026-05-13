@@ -159,7 +159,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\Core\Console.h" />
+    <ClInclude Include="Engine\Core\Log.h" />
+    <ClInclude Include="Engine\Core\LogSink.h" />
+    <ClInclude Include="Engine\Core\LogType.h" />
     <ClInclude Include="Engine\Core\Types.h" />
     <ClInclude Include="Engine\Editor\FrameStatisticsOverlay.h" />
     <ClInclude Include="Engine.h" />
@@ -174,7 +176,7 @@
     <ClInclude Include="Engine\Core\Concepts.h" />
     <ClInclude Include="Engine\Core\ImGuiCustomColors.h" />
     <ClInclude Include="Engine\Core\ImGuiDrawer.hpp" />
-    <ClInclude Include="Engine\Core\ImGuiLogger.h" />
+    <ClInclude Include="Engine\Editor\LogPanel.h" />
     <ClInclude Include="Engine\Core\ImGuiUtility.h" />
     <ClInclude Include="Engine\Core\Initialization.h" />
     <ClInclude Include="Engine\Core\Blob.hpp" />
@@ -288,9 +290,10 @@
     <ClInclude Include="Engine\Graphics\RenderState.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Core\Console.cpp" />
     <ClCompile Include="Engine\Core\FrameTime.cpp" />
-    <ClCompile Include="Engine\Core\ImGuiLogger.cpp" />
+    <ClCompile Include="Engine\Editor\LogPanel.cpp" />
+    <ClCompile Include="Engine\Core\Log.cpp" />
+    <ClCompile Include="Engine\Core\LogSink.cpp" />
     <ClCompile Include="Engine\Editor\EditorContext.cpp" />
     <ClCompile Include="Engine\Core\Application.cpp" />
     <ClCompile Include="Engine\Core\Blob.cpp" />

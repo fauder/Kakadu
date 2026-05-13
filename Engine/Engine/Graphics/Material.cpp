@@ -136,7 +136,7 @@ namespace Kakadu
 		}
 		else
 		{
-			ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": Texture ")" + std::string( sampler_name_of_new_texture ) + R"(" can not be set; it does not exist!)" );
+			Log::Error( R"(Material ")" + name + R"(": Texture ")" + std::string( sampler_name_of_new_texture ) + R"(" can not be set; it does not exist!)" );
 		}
 #else
 		texture_map.at( sampler_name_of_new_texture ) = texture_to_be_set;
@@ -183,7 +183,7 @@ namespace Kakadu
 #ifdef _EDITOR
 			if( not uniform_info_map->contains( sampler_name ) )
 			{
-				ServiceLocator< Console >::Get().LogError( R"(Material ")" + name + R"(": Uniform ")" + std::string( sampler_name ) + R"(" can not be uploaded; it does not exist!)" );
+				Log::Error( R"(Material ")" + name + R"(": Uniform ")" + std::string( sampler_name ) + R"(" can not be uploaded; it does not exist!)" );
 				return;
 			}
 #endif // _EDITOR

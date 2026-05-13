@@ -1,6 +1,7 @@
 // Engine Includes.
 #include "EditorContext.h"
 #include "FrameStatisticsOverlay.h"
+#include "LogPanel.h"
 #include "ViewportControlsOverlay.h"
 #include "RendererPanel.h"
 #include "SceneCameraInspectorPanel.h"
@@ -8,6 +9,7 @@
 #include "Core/AssetDatabase_Tracked.hpp"
 #include "Core/ImGuiDrawer.hpp"
 #include "Core/ImGuiSetup.h"
+#include "Core/LogSink.h"
 #include "Core/MorphSystem.h"
 #include "Core/ServiceLocator.h"
 #include "Graphics/Renderer.h"
@@ -21,6 +23,7 @@ namespace Kakadu::Editor
 {
 	internal_variable FrameStatisticsOverlay	FRAME_STATS_OVERLAY;
 	internal_variable RendererPanel				RENDERER_PANEL;
+	internal_variable LogPanel					LOG_PANEL;
 
 	internal_function void EnableShaderHotReloading( Renderer* renderer )
 	{
@@ -34,6 +37,30 @@ namespace Kakadu::Editor
 													  .is_looping = true,
 													  .use_real_time = true
 												  } );
+	}
+
+	internal_function void DispatchLogs( Log::Type type, std::string_view message )
+	{
+		switch( type )
+		{
+			case Log::Type::ERROR_:
+				LOG_PANEL.AddLogFormatted( Log::Type::ERROR_, "%s %s", ICON_FA_CIRCLE_EXCLAMATION, message.data() );
+				break;
+			case Log::Type::WARNING:
+				LOG_PANEL.AddLogFormatted( Log::Type::WARNING, "%s %s", ICON_FA_TRIANGLE_EXCLAMATION, message.data() );
+				break;
+			case Log::Type::SUCCESS:
+				LOG_PANEL.AddLogFormatted( Log::Type::SUCCESS, "%s %s", ICON_FA_CIRCLE_CHECK, message.data() );
+				break;
+			case Log::Type::NORMAL:
+				LOG_PANEL.AddLog( Log::Type::NORMAL, message.data() );
+				break;
+			case Log::Type::GROUP_SEPARATOR:
+				LOG_PANEL.AddLog( Log::Type::GROUP_SEPARATOR, message.data() );
+				break;
+			default:
+				break;
+		}
 	}
 
 	void Context::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
@@ -96,6 +123,8 @@ namespace Kakadu::Editor
 	void Context::Initialize()
 	{
 		EnableShaderHotReloading( renderer );
+
+		Log::Sink::Register( &DispatchLogs );
 	}
 
 	void Context::Update( const FrameTime& frame_time )
@@ -140,8 +169,8 @@ namespace Kakadu::Editor
 
 		FRAME_STATS_OVERLAY.Render( *this );
 
-		if( show_debug_console )
-			ServiceLocator< ImGuiLogger >::Get().Draw( ICON_FA_BOOK " Console", &show_debug_console );
+		if( show_log_panel )
+			LOG_PANEL.Draw( ICON_FA_BOOK " Console", &show_log_panel );
 
 		RenderSceneCameraInspectorPanel( scene_camera, viewport_resolution );
 

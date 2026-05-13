@@ -1,7 +1,7 @@
 // Engine Includes.
 #include "Mesh.h"
 #include "RHI/Usage.h"
-#include "Core/Console.h"
+#include "Core/Log.h"
 #include "Core/ServiceLocator.h"
 #include "Asset/Shader/_Attributes.glsl"
 
@@ -33,7 +33,7 @@ namespace Kakadu
 	{
 #ifdef _EDITOR
 		if( normals.size() != tangents.size() )
-			ServiceLocator< Console >::Get().LogWarning( "Mesh \"" + name + "\": Tangent & Normal count does not match (maybe only one of them was provided?)\nThis is most likely a mistake." );
+			Log::Warning( "Mesh \"" + name + "\": Tangent & Normal count does not match (maybe only one of them was provided?)\nThis is most likely a mistake." );
 #endif // _EDITOR
 
 		u32 vertex_count_interleaved;

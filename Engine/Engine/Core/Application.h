@@ -4,8 +4,6 @@
 #include "AssetDatabase.hpp"
 #include "AssetDatabase_Tracked.hpp"
 #include "BitFlags.hpp"
-#include "Console.h"
-#include "ImGuiLogger.h"
 #include "MorphSystem.h"
 #include "Platform.h"
 #include "FrameTime.h"
@@ -13,7 +11,6 @@
 #include "Graphics/Model.h"
 #include "Graphics/Renderer.h"
 #include "Graphics/RHI/Texture.h"
-#include "Graphics/RHI/GLDebugOutput.h"
 
 #ifdef _EDITOR
 #include "Editor/EditorContext.h" 
@@ -77,10 +74,6 @@ namespace Kakadu
 
 #ifdef _EDITOR
 		std::unique_ptr< Editor::Context > editor_context;
-
-		ImGuiLogger logger; // TODO: Move completely inside the Console.
-		Console console;
-		RHI::GLDebugOutput gl_debug_output;
 #endif // _EDITOR
 
 		AssetDatabase< RHI::Texture > asset_database_texture;

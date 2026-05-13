@@ -49,7 +49,7 @@ namespace Kakadu::Editor
 		bool show_imgui_demo_window;
 		bool show_frame_statistics_overlay;
 		bool show_mouse_screen_space_position_overlay;
-		bool show_debug_console;
+		bool show_log_panel;
 
 		bool mouse_screen_space_position_overlay_is_active; // TODO: Code smell; Why 2 bools? Get rid of this.
 

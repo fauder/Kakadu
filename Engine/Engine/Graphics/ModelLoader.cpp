@@ -1,7 +1,7 @@
 // Engine Includes.
 #include "Model.h"
 #include "Core/AssetDatabase.hpp"
-#include "Core/Console.h"
+#include "Core/Log.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Types.h"
 #include "Math/Matrix.h"
@@ -439,7 +439,7 @@ namespace Kakadu
 			if( !bool( gltfFile ) )
             {
 				std::cerr << "ERROR::MODELLOADER::FASTGLTF::Failed to open glTF file: " << fastgltf::getErrorMessage( gltfFile.error() ) << '\n';
-				ServiceLocator< Console >::Get().LogError( R"(Error: Could not open glTF file ")" + file_path + "\"." );
+				Log::Error( R"(Error: Could not open glTF file ")" + file_path + "\"." );
 				return std::nullopt;
 			}
 
@@ -456,7 +456,7 @@ namespace Kakadu
             if( maybe_gltf_asset.error() != fastgltf::Error::None )
             {
                 std::cerr << "ERROR::MODELLOADER::FASTGLTF::Failed to load glTF: " << fastgltf::getErrorMessage( maybe_gltf_asset.error() ) << '\n';
-                ServiceLocator< Console >::Get().LogError( R"(Error: Could not load glTF file ")" + file_path + "\"." );
+                Log::Error( R"(Error: Could not load glTF file ")" + file_path + "\"." );
                 return std::nullopt;
 			}
 

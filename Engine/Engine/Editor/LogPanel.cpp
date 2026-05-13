@@ -1,14 +1,14 @@
 // Engine Includes.
-#include "ImGuiLogger.h"
-#include "Utility.hpp"
+#include "LogPanel.h"
+#include "Core/Utility.hpp"
 #include "Math/Math.hpp"
 
 // std Includes.
 #include <string_view>
 
-namespace Kakadu
+namespace Kakadu::Editor
 {
-	ImGuiLogger::ImGuiLogger()
+	LogPanel::LogPanel()
 		:
 		colors_by_type(
 			{
@@ -25,7 +25,7 @@ namespace Kakadu
 	{
 	}
 
-	void ImGuiLogger::Clear()
+	void LogPanel::Clear()
 	{
 		unique_text_buffer.clear();
 		unique_entry_map.clear();
@@ -36,7 +36,7 @@ namespace Kakadu
 		total_unique_line_count = 0;
 	}
 
-	void ImGuiLogger::AddLog( const EntryType type, const char* text )
+	void LogPanel::AddLog( const Log::Type type, const char* text )
 	{
 		std::string_view text_view( text );
 
@@ -101,12 +101,12 @@ namespace Kakadu
 		unique_entry_hashes_per_line.insert( unique_entry_hashes_per_line.end(), unique_entry_definitely_existing_now.LineCount(), entry_hash );
 	}
 
-	void ImGuiLogger::AddLog( const EntryType type, const std::string& text )
+	void LogPanel::AddLog( const Log::Type type, const std::string& text )
 	{
 		AddLog( type, text.c_str() );
 	}
 
-	void ImGuiLogger::AddLogFormatted( const EntryType type, const char* fmt, ... ) IM_FMTARGS( 2 )
+	void LogPanel::AddLogFormatted( const Log::Type type, const char* fmt, ... ) IM_FMTARGS( 2 )
 	{
 		char text[ 255 ];
 		va_list args;
@@ -117,7 +117,7 @@ namespace Kakadu
 		AddLog( type, text );
 	}
 
-	void ImGuiLogger::Draw( const char* title, bool* p_open )
+	void LogPanel::Draw( const char* title, bool* p_open )
 	{
 		if( !ImGui::Begin( title, p_open ) )
 		{
