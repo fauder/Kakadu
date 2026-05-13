@@ -1618,11 +1618,10 @@ namespace Kakadu
 					pass.target_framebuffer == &MainFramebuffer() &&
 					PassHasContentToRender( pass ) )
 				{
-					// TODO:
-					/*const auto log_group( console.TemporaryLogGroup( ( ( shader_index == 0
-																		? GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_PASS
-																		: GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_PASS "[INSTANCED] " )
-																	  + pass.name ).c_str() ) );*/
+					KAKADU_GL_DEBUG_GROUP( ( ( shader_index == 0
+												? GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_PASS
+												: GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_PASS "[INSTANCED] " )
+											 + pass.name ) );
 
 					const Vector3 camera_position( Matrix::CameraWorldPositionFromViewMatrix( current_camera_info.view_matrix ) );
 
@@ -1631,12 +1630,11 @@ namespace Kakadu
 						if( auto& queue = render_queue_map[ queue_id ];
 							QueueHasContentToRender( queue ) )
 						{
-							// TODO:
-							/*const auto log_group( console.TemporaryLogGroup( ( ( shader_index == 0
-																				? GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_QUEUE
-																				: GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_QUEUE "[INSTANCED] " )
-																			  + queue.name ).c_str() ) );*/
-
+							KAKADU_GL_DEBUG_GROUP( ( ( shader_index == 0
+													   ? GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_QUEUE
+													   : GL_LABEL_PREFIX_EDITOR GL_LABEL_PREFIX_RENDER_QUEUE "[INSTANCED] " )
+													 + queue.name ) );
+							
 							SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override->sorting_mode );
 
 							for( auto& renderable : queue.renderable_list )
