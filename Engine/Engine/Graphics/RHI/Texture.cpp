@@ -195,7 +195,7 @@ namespace Kakadu::RHI
 		Bind();
 		ASSERT_DEBUG_ONLY( type == TextureType::Texture2D );
 
-		glGenerateMipmap( ( GLenum )type );
+		glGenerateMipmap( TextureTypeToGLEnum( type ) );
 	}
 
 	i32 Texture::InternalFormat( const Texture::Format format )
@@ -335,11 +335,11 @@ namespace Kakadu::RHI
 
 	void Texture::Bind() const
 	{
-		glBindTexture( ( GLenum )type, id.id );
+		glBindTexture( TextureTypeToGLEnum( type ), id.id );
 	}
 
 	void Texture::Unbind() const
 	{
-		glBindTexture( ( GLenum )type, 0 );
+		glBindTexture( TextureTypeToGLEnum( type ), 0 );
 	}
 }

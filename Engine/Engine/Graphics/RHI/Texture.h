@@ -3,6 +3,7 @@
 // Engine Includes.
 #include "RHI.h"
 #include "MSAA.h"
+#include "TextureType.h"
 #include "Core/AssetLoader.Codegen.h"
 #include "Core/Concepts.h"
 #include "ID/TextureID.h"
@@ -21,15 +22,6 @@ namespace Kakadu
 
 namespace Kakadu::RHI
 {
-	enum class TextureType
-	{
-		None,
-
-		Texture2D             = GL_TEXTURE_2D,
-		Texture2D_MultiSample = GL_TEXTURE_2D_MULTISAMPLE,
-		Cubemap               = GL_TEXTURE_CUBE_MAP
-	};
-
 	class Texture
 	{
 		struct CubeMapConstructorTag {};
