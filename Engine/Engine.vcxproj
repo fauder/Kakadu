@@ -334,6 +334,7 @@
     <ClCompile Include="Engine\Graphics\RHI\DeviceInfo.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Primitive.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Shader.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\ShaderType.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Texture.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Usage.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Version.cpp" />
