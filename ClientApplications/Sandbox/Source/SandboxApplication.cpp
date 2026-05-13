@@ -95,15 +95,15 @@ void SandboxApplication::Initialize()
 																  AssetDir R"(bricks2.jpg)",
 																  Kakadu::RHI::Texture::ImportSettings
 																  {
-																	  .wrap_u = Kakadu::RHI::Texture::Wrapping::Repeat,
-																	  .wrap_v = Kakadu::RHI::Texture::Wrapping::Repeat
+																	  .wrap_u = Kakadu::RHI::TextureWrapping::Repeat,
+																	  .wrap_v = Kakadu::RHI::TextureWrapping::Repeat
 																  } );
 	brickwall_normal_map = texture_database.CreateAssetFromFile( "Brickwall (Normal) Map",
 																 AssetDir R"(bricks2_normal.jpg)",
 																 Kakadu::RHI::Texture::ImportSettings
 																 {
-																	 .wrap_u = Kakadu::RHI::Texture::Wrapping::Repeat,
-																	 .wrap_v = Kakadu::RHI::Texture::Wrapping::Repeat,
+																	 .wrap_u = Kakadu::RHI::TextureWrapping::Repeat,
+																	 .wrap_v = Kakadu::RHI::TextureWrapping::Repeat,
 																	 .format = Kakadu::RHI::Texture::Format::RGBA,
 																 } );
 
@@ -120,8 +120,8 @@ void SandboxApplication::Initialize()
 																	AssetDir R"(kenney_prototype/texture_09.png)",
 																	Kakadu::RHI::Texture::ImportSettings
 																	{
-																		.wrap_u = Kakadu::RHI::Texture::Wrapping::Repeat,
-																		.wrap_v = Kakadu::RHI::Texture::Wrapping::Repeat
+																		.wrap_u = Kakadu::RHI::TextureWrapping::Repeat,
+																		.wrap_v = Kakadu::RHI::TextureWrapping::Repeat
 																	} );
 
 /* Shaders: */

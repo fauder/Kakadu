@@ -63,8 +63,8 @@ void HDR_DemoApplication::Initialize()
 	wood_diffuse_map = Kakadu::ServiceLocator< Kakadu::AssetDatabase< Kakadu::RHI::Texture > >::Get().CreateAssetFromFile( "Wood (Diffuse) Map", AssetDir R"(wood.png)",
 																														   Kakadu::RHI::Texture::ImportSettings
 																														   {
-																															   .wrap_u = Kakadu::RHI::Texture::Wrapping::Repeat,
-																															   .wrap_v = Kakadu::RHI::Texture::Wrapping::Repeat
+																															   .wrap_u = Kakadu::RHI::TextureWrapping::Repeat,
+																															   .wrap_v = Kakadu::RHI::TextureWrapping::Repeat
 																														   } );
 
 /* Shaders: */

@@ -206,7 +206,7 @@ namespace Kakadu
 			  RHI::Framebuffer& OutputFramebuffer()			{ return framebuffers[ framebuffer_output_index ]; }
 		const RHI::Framebuffer& OutputFramebuffer() const	{ return framebuffers[ framebuffer_output_index ]; }
 
-		void Blit( RHI::Framebuffer& source, RHI::Framebuffer& destination, const RHI::Texture::Filtering filtering = RHI::Texture::Filtering::Nearest );
+		void Blit( RHI::Framebuffer& source, RHI::Framebuffer& destination, const RHI::TextureFiltering filtering = RHI::TextureFiltering::Nearest );
 
 		/*
 		 * MSAA:

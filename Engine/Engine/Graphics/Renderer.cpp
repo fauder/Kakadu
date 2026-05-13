@@ -301,8 +301,8 @@ namespace Kakadu
 																			.width_in_pixels  = new_width_in_pixels,
 																			.height_in_pixels = new_height_in_pixels,
 
-																			.minification_filter  = RHI::Texture::Filtering::Nearest,
-																			.magnification_filter = RHI::Texture::Filtering::Nearest,
+																			.minification_filter  = RHI::TextureFiltering::Nearest,
+																			.magnification_filter = RHI::TextureFiltering::Nearest,
 
 																			/* Default wrapping = clamp to border, with border = Color4{ 0,0,0,0 }. */
 
@@ -339,7 +339,7 @@ namespace Kakadu
 													   .width_in_pixels  = new_width_in_pixels,
 													   .height_in_pixels = new_height_in_pixels,
 
-													   .magnification_filter = RHI::Texture::Filtering::Nearest,
+													   .magnification_filter = RHI::TextureFiltering::Nearest,
 
 													   .color_format =
 														   IsOutputtingToCompositeFramebuffer() ||
@@ -651,7 +651,7 @@ namespace Kakadu
 																									 },
 																									 RHI::Texture::ImportSettings
 																									 {
-																										 .min_filter      = RHI::Texture::Filtering::Linear,
+																										 .min_filter      = RHI::TextureFiltering::Linear,
 																										 .flip_vertically = false,
 																									 } );
 		skybox_material.SetTexture( "uniform_tex", skybox_texture );
@@ -825,9 +825,9 @@ namespace Kakadu
 		framebuffer_output_index = BuiltinFramebufferIndex::Composite;
 	}
 
-	void Renderer::Blit( RHI::Framebuffer& source, RHI::Framebuffer& destination, const RHI::Texture::Filtering filtering )
+	void Renderer::Blit( RHI::Framebuffer& source, RHI::Framebuffer& destination, const RHI::TextureFiltering filtering )
 	{
-		ASSERT_EDITOR_ONLY( filtering == RHI::Texture::Filtering::Nearest || filtering == RHI::Texture::Filtering::Linear );
+		ASSERT_EDITOR_ONLY( filtering == RHI::TextureFiltering::Nearest || filtering == RHI::TextureFiltering::Linear );
 
 		framebuffer_current_source      = &source;
 		framebuffer_current_destination = &destination;
@@ -836,7 +836,7 @@ namespace Kakadu
 		framebuffer_current_destination->ActivateForWrite();
 		glBlitFramebuffer( 0, 0, source.size.X(), source.size.Y(),
 						   0, 0, destination.size.X(), destination.size.Y(),
-						   GL_COLOR_BUFFER_BIT, ( i32 )filtering );
+						   GL_COLOR_BUFFER_BIT, RHI::TextureFilteringToGLEnum( filtering ) );
 	}
 
 	RHI::MSAA Renderer::GetMSAAInfo() const

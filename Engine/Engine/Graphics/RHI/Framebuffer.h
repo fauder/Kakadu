@@ -33,13 +33,13 @@ namespace Kakadu::RHI
 			i32 width_in_pixels;
 			i32 height_in_pixels;
 
-			Texture::Filtering minification_filter  = Texture::Filtering::Linear;
-			Texture::Filtering magnification_filter = Texture::Filtering::Linear;
-			Texture::Wrapping  wrap_u               = Texture::Wrapping::ClampToEdge;
-			Texture::Wrapping  wrap_v               = Texture::Wrapping::ClampToEdge;
-			Color4 border_color                     = Color4::Black();
+			TextureFiltering minification_filter  = TextureFiltering::Linear;
+			TextureFiltering magnification_filter = TextureFiltering::Linear;
+			TextureWrapping  wrap_u               = TextureWrapping::ClampToEdge;
+			TextureWrapping  wrap_v               = TextureWrapping::ClampToEdge;
+			Color4 border_color                   = Color4::Black();
 
-			Texture::Format color_format            = Texture::Format::RGBA;
+			Texture::Format color_format          = Texture::Format::RGBA;
 			BitFlags< AttachmentType > attachment_bits;
 			MSAA msaa; // No MSAA by default.
 

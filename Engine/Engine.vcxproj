@@ -229,7 +229,9 @@
     <ClInclude Include="Engine\Graphics\RHI\Shader.hpp" />
     <ClInclude Include="Engine\Graphics\RHI\ShaderType.h" />
     <ClInclude Include="Engine\Graphics\RHI\Texture.h" />
+    <ClInclude Include="Engine\Graphics\RHI\TextureFiltering.h" />
     <ClInclude Include="Engine\Graphics\RHI\TextureType.h" />
+    <ClInclude Include="Engine\Graphics\RHI\TextureWrapping.h" />
     <ClInclude Include="Engine\Graphics\RHI\Uniform.h" />
     <ClInclude Include="Engine\Graphics\RHI\Usage.h" />
     <ClInclude Include="Engine\Graphics\RHI\Version.h" />
@@ -337,7 +339,9 @@
     <ClCompile Include="Engine\Graphics\RHI\Shader.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\ShaderType.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Texture.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\TextureFiltering.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\TextureType.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\TextureWrapping.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Usage.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Version.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\VertexArray.cpp" />

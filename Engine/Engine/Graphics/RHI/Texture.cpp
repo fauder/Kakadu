@@ -23,9 +23,9 @@ namespace Kakadu::RHI
 					  //const std::byte* data, This is omitted from this public constructor.
 					  const Format format,
 					  const i32 width, const i32 height,
-					  const Wrapping wrap_u, const Wrapping wrap_v,
+					  const TextureWrapping wrap_u, const TextureWrapping wrap_v,
 					  const Color4 border_color,
-					  const Filtering min_filter, Filtering mag_filter )
+					  const TextureFiltering min_filter, TextureFiltering mag_filter )
 		:
 		id( {} ),
 		size( width, height ),
@@ -49,12 +49,12 @@ namespace Kakadu::RHI
 			DebugLabel::Set( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	   ( GLenum )wrap_u );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	   ( GLenum )wrap_v );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TextureFilteringToGLEnum( min_filter ) );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TextureFilteringToGLEnum( mag_filter ) );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	   TextureWrappingToGLEnum( wrap_u ) );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	   TextureWrappingToGLEnum( wrap_v ) );
 
-		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder )
+		if( wrap_u == TextureWrapping::ClampToBorder || wrap_v == TextureWrapping::ClampToBorder )
 			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color.data );
 
 		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), nullptr );
@@ -107,7 +107,7 @@ namespace Kakadu::RHI
 					  const Format format,
 					  const i32 width, const i32 height,
 					  Color4 border_color,
-					  const Filtering min_filter, const Filtering mag_filter )
+					  const TextureFiltering min_filter, const TextureFiltering mag_filter )
 		:
 		id( {} ),
 		size( width, height ),
@@ -134,11 +134,11 @@ namespace Kakadu::RHI
 			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 						  0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), nullptr );
 
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	 ( GLenum )Wrapping::ClampToEdge );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	 ( GLenum )Wrapping::ClampToEdge );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 ( GLenum )Wrapping::ClampToEdge );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, TextureFilteringToGLEnum( min_filter ) );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, TextureFilteringToGLEnum( mag_filter ) );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	 TextureWrappingToGLEnum( TextureWrapping::ClampToEdge ) );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	 TextureWrappingToGLEnum( TextureWrapping::ClampToEdge ) );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 TextureWrappingToGLEnum( TextureWrapping::ClampToEdge ) );
 
 		Unbind();
 	}
@@ -234,9 +234,9 @@ namespace Kakadu::RHI
 					  const std::byte* data,
 					  const Format format, const i32 width, const i32 height,
 					  const bool generate_mipmaps,
-					  const Wrapping wrap_u, const Wrapping wrap_v,
+					  const TextureWrapping wrap_u, const TextureWrapping wrap_v,
 					  const Color4 border_color,
-					  const Filtering min_filter, const Filtering mag_filter )
+					  const TextureFiltering min_filter, const TextureFiltering mag_filter )
 		:
 		id( {} ),
 		size( width, height ),
@@ -261,12 +261,12 @@ namespace Kakadu::RHI
 			DebugLabel::Set( GL_TEXTURE, id.id, GL_LABEL_PREFIX_TEXTURE + this->name );
 #endif // _EDITOR
 
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	   ( GLenum )wrap_u );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	   ( GLenum )wrap_v );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TextureFilteringToGLEnum( min_filter ) );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TextureFilteringToGLEnum( mag_filter ) );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,	   TextureWrappingToGLEnum( wrap_u ) );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,	   TextureWrappingToGLEnum( wrap_v ) );
 
-		if( wrap_u == Wrapping::ClampToBorder || wrap_v == Wrapping::ClampToBorder )
+		if( wrap_u == TextureWrapping::ClampToBorder || wrap_v == TextureWrapping::ClampToBorder )
 			glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color.data );
 
 		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), data );
@@ -285,7 +285,7 @@ namespace Kakadu::RHI
 					  const Format format, 
 					  const i32 width, const i32 height,
 					  const Color4 border_color,
-					  const Filtering min_filter, const Filtering mag_filter )
+					  const TextureFiltering min_filter, const TextureFiltering mag_filter )
 		:
 		id( {} ),
 		size( width, height ),
@@ -311,11 +311,11 @@ namespace Kakadu::RHI
 			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 						  0, InternalFormat( format ), width, height, 0, PixelDataFormat( format ), PixelDataType( format ), cubemap_data_array[ i ] );
 
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, ( GLenum )min_filter );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, ( GLenum )mag_filter );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	 ( GLenum )Wrapping::ClampToEdge );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	 ( GLenum )Wrapping::ClampToEdge );
-		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 ( GLenum )Wrapping::ClampToEdge );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, TextureFilteringToGLEnum( min_filter ) );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, TextureFilteringToGLEnum( mag_filter ) );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,	 TextureWrappingToGLEnum( TextureWrapping::ClampToEdge ) );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,	 TextureWrappingToGLEnum( TextureWrapping::ClampToEdge ) );
+		glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,	 TextureWrappingToGLEnum( TextureWrapping::ClampToEdge ) );
 
 		Unbind();
 	}

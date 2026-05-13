@@ -39,10 +39,10 @@ namespace Kakadu
 		{
 			import_settings = RHI::Texture::ImportSettings
 			{
-				.wrap_u           = RHI::Texture::Wrapping::ClampToEdge,
-				.wrap_v           = RHI::Texture::Wrapping::ClampToEdge,
-				.min_filter       = RHI::Texture::Filtering::Nearest,
-				.mag_filter       = RHI::Texture::Filtering::Nearest,
+				.wrap_u           = RHI::TextureWrapping::ClampToEdge,
+				.wrap_v           = RHI::TextureWrapping::ClampToEdge,
+				.min_filter       = RHI::TextureFiltering::Nearest,
+				.mag_filter       = RHI::TextureFiltering::Nearest,
 				.flip_vertically  = false,
 				.generate_mipmaps = false
 			};
@@ -62,10 +62,10 @@ namespace Kakadu
 		TEXTURE_MAP.try_emplace( "Normal Map",	CreateSingleTexelTexture( std::array< unsigned char, 4 >{ 127, 127, 255, 255 }, "Default Normal Map",
 																		  RHI::Texture::ImportSettings
 																		  {
-																			  .wrap_u           = RHI::Texture::Wrapping::ClampToEdge,
-																			  .wrap_v           = RHI::Texture::Wrapping::ClampToEdge,
-																			  .min_filter       = RHI::Texture::Filtering::Nearest,
-																			  .mag_filter       = RHI::Texture::Filtering::Nearest,
+																			  .wrap_u           = RHI::TextureWrapping::ClampToEdge,
+																			  .wrap_v           = RHI::TextureWrapping::ClampToEdge,
+																			  .min_filter       = RHI::TextureFiltering::Nearest,
+																			  .mag_filter       = RHI::TextureFiltering::Nearest,
 
 																			  .flip_vertically  = false,
 																			  .generate_mipmaps = false,
@@ -88,37 +88,42 @@ namespace Kakadu
 			};
 
 			TEXTURE_MAP.try_emplace( "Bayer Dither",
-									 ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromRawBytes( "Bayer Dither",
-																													 reinterpret_cast< const std::byte* >( &bayer_dither_matrix ),
-																													 Vector2I{ 8, 8 },
-																													 RHI::Texture::ImportSettings
-																													 {
-																														 .wrap_u     = RHI::Texture::Wrapping::Repeat,
-																														 .wrap_v     = RHI::Texture::Wrapping::Repeat,
-																														 .min_filter = RHI::Texture::Filtering::Nearest,
-																														 .mag_filter = RHI::Texture::Filtering::Nearest,
+									 ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromRawBytes(
+										 "Bayer Dither",
+										 reinterpret_cast< const std::byte* >( &bayer_dither_matrix ),
+										 Vector2I{ 8, 8 },
+										 RHI::Texture::ImportSettings
+										 {
+											  .wrap_u     = RHI::TextureWrapping::Repeat,
+											  .wrap_v     = RHI::TextureWrapping::Repeat,
+											  .min_filter = RHI::TextureFiltering::Nearest,
+											  .mag_filter = RHI::TextureFiltering::Nearest,
 
-																														 .flip_vertically  = false,
-																														 .generate_mipmaps = false,
+											  .flip_vertically  = false,
+											  .generate_mipmaps = false,
 
-																														 .format = RHI::Texture::Format::R,
-																													 } ) );
+											  .format = RHI::Texture::Format::R,
+										 } ) );
 		}
 
-		TEXTURE_MAP.try_emplace( "Missing", ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromFile( "Missing",
-																														ENGINE_TEXTURE_PATH_ABSOLUTE( "missing_texture.jpg" ),
-																														RHI::Texture::ImportSettings
-																														{
-																															.wrap_u = RHI::Texture::Wrapping::Repeat,
-																															.wrap_v = RHI::Texture::Wrapping::Repeat
-																														} ) );
+		TEXTURE_MAP.try_emplace( "Missing",
+								 ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromFile(
+									 "Missing",
+									 ENGINE_TEXTURE_PATH_ABSOLUTE( "missing_texture.jpg" ),
+									 RHI::Texture::ImportSettings
+									 {
+										 .wrap_u = RHI::TextureWrapping::Repeat,
+										 .wrap_v = RHI::TextureWrapping::Repeat
+									 } ) );
 
-		TEXTURE_MAP.try_emplace( "UV Test", ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromFile( "UV Test",
-																														ENGINE_TEXTURE_PATH_ABSOLUTE( "uv_test.png" ),
-																														RHI::Texture::ImportSettings
-																														{
-																															.wrap_u = RHI::Texture::Wrapping::Repeat,
-																															.wrap_v = RHI::Texture::Wrapping::Repeat
-																														} ) );
+		TEXTURE_MAP.try_emplace( "UV Test",
+								 ServiceLocator< AssetDatabase< RHI::Texture > >::Get().CreateAssetFromFile(
+									 "UV Test",
+									 ENGINE_TEXTURE_PATH_ABSOLUTE( "uv_test.png" ),
+									 RHI::Texture::ImportSettings
+									 {
+										 .wrap_u = RHI::TextureWrapping::Repeat,
+										 .wrap_v = RHI::TextureWrapping::Repeat
+									 } ) );
 	}
 }

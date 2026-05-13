@@ -486,8 +486,8 @@ namespace Kakadu
 
             RHI::Texture::ImportSettings import_settings
             {
-                .wrap_u = RHI::Texture::Wrapping::Repeat,
-                .wrap_v = RHI::Texture::Wrapping::Repeat,
+                .wrap_u = RHI::TextureWrapping::Repeat,
+                .wrap_v = RHI::TextureWrapping::Repeat,
                 /* gltf spec dictates that V coordinates increase in downward direction (i.e., UV origin is top-left).
                  * This is compatible with how stb interprets/treats uvs, so no need to flip uvs coming from gltf. */
                 .flip_vertically = false
@@ -496,12 +496,12 @@ namespace Kakadu
             if( gltf_texture.samplerIndex.has_value() )
             {
                 const auto& sampler = gltf_asset.samplers[ *gltf_texture.samplerIndex ];
-                import_settings.wrap_u = RHI::Texture::Wrapping( sampler.wrapS );
-                import_settings.wrap_v = RHI::Texture::Wrapping( sampler.wrapT );
+                import_settings.wrap_u = RHI::TextureWrapping( sampler.wrapS );
+                import_settings.wrap_v = RHI::TextureWrapping( sampler.wrapT );
                 if( sampler.minFilter.has_value() )
-                    import_settings.min_filter = RHI::Texture::Filtering( *sampler.minFilter );
+                    import_settings.min_filter = RHI::TextureFiltering( *sampler.minFilter );
                 if( sampler.magFilter.has_value() )
-                    import_settings.mag_filter = RHI::Texture::Filtering( *sampler.magFilter );
+                    import_settings.mag_filter = RHI::TextureFiltering( *sampler.magFilter );
 
             }
 

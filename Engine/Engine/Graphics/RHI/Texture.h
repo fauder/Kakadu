@@ -3,7 +3,9 @@
 // Engine Includes.
 #include "RHI.h"
 #include "MSAA.h"
+#include "TextureFiltering.h"
 #include "TextureType.h"
+#include "TextureWrapping.h"
 #include "Core/AssetLoader.Codegen.h"
 #include "Core/Concepts.h"
 #include "ID/TextureID.h"
@@ -94,36 +96,17 @@ namespace Kakadu::RHI
 			}
 		}
 
-		enum class Wrapping // Has to be a default enum (4 bytes), because the GLenums are all over the place...
-		{
-			ClampToEdge       = GL_CLAMP_TO_EDGE,
-			ClampToBorder     = GL_CLAMP_TO_BORDER,
-			MirroredRepeat    = GL_MIRRORED_REPEAT,
-			Repeat            = GL_REPEAT,
-			MirrorClampToEdge = GL_MIRROR_CLAMP_TO_EDGE
-		};
-
-		enum class Filtering // Has to be a default enum (4 bytes), because the GLenums are all over the place...
-		{
-			Nearest				  = GL_NEAREST,
-			Linear			      = GL_LINEAR,
-			Nearest_MipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
-			Linear_MipmapNearest  = GL_LINEAR_MIPMAP_NEAREST,
-			Nearest_MipmapLinear  = GL_NEAREST_MIPMAP_LINEAR,
-			Linear_MipmapLinear	  = GL_LINEAR_MIPMAP_LINEAR
-		};
-		
 		using SizeType = Vector2I;
 
 		struct ImportSettings
 		{
-			Wrapping wrap_u = Wrapping::ClampToEdge;
-			Wrapping wrap_v = Wrapping::ClampToEdge;
+			TextureWrapping wrap_u = TextureWrapping::ClampToEdge;
+			TextureWrapping wrap_v = TextureWrapping::ClampToEdge;
 
 			Color4 border_color = Color4::Black();
 
-			Filtering min_filter = Filtering::Linear_MipmapLinear;
-			Filtering mag_filter = Filtering::Linear;
+			TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear;
+			TextureFiltering mag_filter = TextureFiltering::Linear;
 
 			bool flip_vertically  = true;
 			bool generate_mipmaps = true;
@@ -147,9 +130,9 @@ namespace Kakadu::RHI
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
 				 const i32 width, const i32 height,
-				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge,
+				 const TextureWrapping wrap_u = TextureWrapping::ClampToEdge, const TextureWrapping wrap_v = TextureWrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
-				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
+				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear, const TextureFiltering mag_filter = TextureFiltering::Linear );
 
 		/* Multi-sampled allocate-only constructor (no data). */
 		Texture( const std::string_view multi_sample_texture_name,
@@ -166,7 +149,7 @@ namespace Kakadu::RHI
 				 const Format format,
 				 const i32 width, const i32 height,
 				 const Color4 border_color = Color4::Black(),
-				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
+				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear, const TextureFiltering mag_filter = TextureFiltering::Linear );
 
 		DELETE_COPY_CONSTRUCTORS( Texture );
 
@@ -185,10 +168,10 @@ namespace Kakadu::RHI
 		i32					Height()					const { return size.Y(); }
 		TextureType			Type()						const { return type; }
 		const std::string&	Name()						const { return name; }
-		Wrapping			Wrapping_U()				const { return import_settings.wrap_u; }
-		Wrapping			Wrapping_V()				const { return import_settings.wrap_v; }
-		Filtering			MinificationFiltering()		const { return import_settings.min_filter; }
-		Filtering			MagnificationFiltering()	const { return import_settings.mag_filter; }
+		TextureWrapping		Wrapping_U()				const { return import_settings.wrap_u; }
+		TextureWrapping		Wrapping_V()				const { return import_settings.wrap_v; }
+		TextureFiltering	MinificationFiltering()		const { return import_settings.min_filter; }
+		TextureFiltering	MagnificationFiltering()	const { return import_settings.mag_filter; }
 		i32					SampleCount()				const { return import_settings.msaa.sample_count; }
 		bool				IsMultiSampled()			const { return import_settings.msaa.IsEnabled(); }
 		bool				Is_sRGB()					const { return import_settings.format == Format::SRGB || import_settings.format == Format::SRGBA; }
@@ -255,9 +238,9 @@ namespace Kakadu::RHI
 				 const Format format,
 				 const i32 width, const i32 height,
 				 const bool generate_mipmaps = true,
-				 const Wrapping wrap_u = Wrapping::ClampToEdge, const Wrapping wrap_v = Wrapping::ClampToEdge,
+				 const TextureWrapping wrap_u = TextureWrapping::ClampToEdge, const TextureWrapping wrap_v = TextureWrapping::ClampToEdge,
 				 const Color4 border_color = Color4::Black(),
-				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
+				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear, const TextureFiltering mag_filter = TextureFiltering::Linear );
 
 		/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data.
 		 * No wrapping options for cubemaps as all three axes will default to clamp-to-edge, which is the only sensible option. */
@@ -267,7 +250,7 @@ namespace Kakadu::RHI
 				 const Format format,
 				 const i32 width, const i32 height,
 				 const Color4 border_color = Color4::Black(),
-				 const Filtering min_filter = Filtering::Linear_MipmapLinear, const Filtering mag_filter = Filtering::Linear );
+				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear, const TextureFiltering mag_filter = TextureFiltering::Linear );
 
 		void Delete();
 
