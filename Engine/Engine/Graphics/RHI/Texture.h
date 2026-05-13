@@ -1,7 +1,6 @@
 #pragma once
 
 // Engine Includes.
-#include "RHI.h"
 #include "MSAA.h"
 #include "TextureFiltering.h"
 #include "TextureType.h"
@@ -129,17 +128,21 @@ namespace Kakadu::RHI
 		Texture( const std::string_view name,
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
-				 const i32 width, const i32 height,
-				 const TextureWrapping wrap_u = TextureWrapping::ClampToEdge, const TextureWrapping wrap_v = TextureWrapping::ClampToEdge,
-				 const Color4 border_color = Color4::Black(),
-				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear, const TextureFiltering mag_filter = TextureFiltering::Linear );
+				 const i32 width,
+				 const i32 height,
+				 const TextureWrapping wrap_u      = TextureWrapping::ClampToEdge,
+				 const TextureWrapping wrap_v      = TextureWrapping::ClampToEdge,
+				 const Color4 border_color         = Color4::Black(),
+				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear,
+				 const TextureFiltering mag_filter = TextureFiltering::Linear );
 
 		/* Multi-sampled allocate-only constructor (no data). */
 		Texture( const std::string_view multi_sample_texture_name,
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
 				 const u8 sample_count,
-				 const i32 width, const i32 height );
+				 const i32 width,
+				 const i32 height );
 
 		/* Cubemap allocate-only constructor (no data).
 		 * No wrapping options for cubemaps as all three axes will default to clamp-to-edge, which is the only sensible option. */
@@ -147,9 +150,11 @@ namespace Kakadu::RHI
 				 const std::string_view name,
 				 //const std::byte* data, This is omitted from this public constructor.
 				 const Format format,
-				 const i32 width, const i32 height,
-				 const Color4 border_color = Color4::Black(),
-				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear, const TextureFiltering mag_filter = TextureFiltering::Linear );
+				 const i32 width,
+				 const i32 height,
+				 const Color4 border_color         = Color4::Black(),
+				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear,
+				 const TextureFiltering mag_filter = TextureFiltering::Linear );
 
 		DELETE_COPY_CONSTRUCTORS( Texture );
 
@@ -187,60 +192,22 @@ namespace Kakadu::RHI
 		void GenerateMipmaps() const;
 
 		static i32 InternalFormat( const Texture::Format format );
-
-		constexpr static GLenum PixelDataFormat( const Texture::Format format )
-		{
-			switch( format )
-			{
-				case Format::R:				return GL_RED;
-				case Format::RG:			return GL_RG;
-				case Format::RGB:			return GL_RGB;
-				case Format::RGBA:			return GL_RGBA;
-
-				case Format::RGBA_16F:		return GL_RGBA;
-				case Format::RGBA_32F:		return GL_RGBA;
-
-				case Format::R11G11B10F:	return GL_RGB;
-
-				case Format::SRGB:			return GL_RGB;
-				case Format::SRGBA:			return GL_RGBA;
-
-				case Format::DEPTH_STENCIL:	return GL_DEPTH_STENCIL;
-				case Format::DEPTH:			return GL_DEPTH_COMPONENT;
-				case Format::STENCIL:		return GL_STENCIL_INDEX;
-
-				default:
-					throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
-					break;
-			}
-		}
-
-		constexpr static GLenum PixelDataType( const Texture::Format format )
-		{
-			switch( format )
-			{
-				default:					return GL_UNSIGNED_BYTE;
-
-				case Format::RGBA_16F:		return GL_HALF_FLOAT;
-				case Format::RGBA_32F:		return GL_FLOAT;
-				case Format::R11G11B10F:	return GL_FLOAT;
-
-				case Format::DEPTH_STENCIL:	return GL_UNSIGNED_INT_24_8;
-				case Format::DEPTH:			return GL_UNSIGNED_INT;
-				case Format::STENCIL:		return GL_UNSIGNED_BYTE;
-			}
-		}
+		static u32 PixelDataFormat( const Texture::Format format );
+		static u32 PixelDataType( const Texture::Format format );
 
 	private:
 		/* Private regular constructor: Only the AssetDatabase< Texture > should be able to construct a Texture with data. */
 		Texture( const std::string_view name,
 				 const std::byte* data,
 				 const Format format,
-				 const i32 width, const i32 height,
-				 const bool generate_mipmaps = true,
-				 const TextureWrapping wrap_u = TextureWrapping::ClampToEdge, const TextureWrapping wrap_v = TextureWrapping::ClampToEdge,
-				 const Color4 border_color = Color4::Black(),
-				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear, const TextureFiltering mag_filter = TextureFiltering::Linear );
+				 const i32 width,
+				 const i32 height,
+				 const bool generate_mipmaps       = true,
+				 const TextureWrapping wrap_u      = TextureWrapping::ClampToEdge,
+				 const TextureWrapping wrap_v      = TextureWrapping::ClampToEdge,
+				 const Color4 border_color         = Color4::Black(),
+				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear,
+				 const TextureFiltering mag_filter = TextureFiltering::Linear );
 
 		/* Private cubemap constructor: Only the AssetDatabase< Texture > should be able to construct a cubemap Texture with data.
 		 * No wrapping options for cubemaps as all three axes will default to clamp-to-edge, which is the only sensible option. */
@@ -248,9 +215,11 @@ namespace Kakadu::RHI
 				 const std::string_view name,
 				 const std::array< const std::byte*, 6 >& cubemap_data_array,
 				 const Format format,
-				 const i32 width, const i32 height,
-				 const Color4 border_color = Color4::Black(),
-				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear, const TextureFiltering mag_filter = TextureFiltering::Linear );
+				 const i32 width,
+				 const i32 height,
+				 const Color4 border_color         = Color4::Black(),
+				 const TextureFiltering min_filter = TextureFiltering::Linear_MipmapLinear,
+				 const TextureFiltering mag_filter = TextureFiltering::Linear );
 
 		void Delete();
 

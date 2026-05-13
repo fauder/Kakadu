@@ -1,4 +1,5 @@
 // Engine Includes.
+#include "RHI.h"
 #include "Capabilities.h"
 #include "DebugLabel.h"
 #include "GLLabelPrefixes.h"
@@ -223,6 +224,49 @@ namespace Kakadu::RHI
 				break;
 		}
 	};
+
+	GLenum Texture::PixelDataFormat( const Texture::Format format )
+	{
+		switch( format )
+		{
+			case Format::R:				return GL_RED;
+			case Format::RG:			return GL_RG;
+			case Format::RGB:			return GL_RGB;
+			case Format::RGBA:			return GL_RGBA;
+
+			case Format::RGBA_16F:		return GL_RGBA;
+			case Format::RGBA_32F:		return GL_RGBA;
+
+			case Format::R11G11B10F:	return GL_RGB;
+
+			case Format::SRGB:			return GL_RGB;
+			case Format::SRGBA:			return GL_RGBA;
+
+			case Format::DEPTH_STENCIL:	return GL_DEPTH_STENCIL;
+			case Format::DEPTH:			return GL_DEPTH_COMPONENT;
+			case Format::STENCIL:		return GL_STENCIL_INDEX;
+
+			default:
+				throw std::logic_error( "PixelDataFormat(): Unknown pixel data format encountered!" );
+				break;
+		}
+	}
+
+	GLenum Texture::PixelDataType( const Texture::Format format )
+	{
+		switch( format )
+		{
+			default:					return GL_UNSIGNED_BYTE;
+
+			case Format::RGBA_16F:		return GL_HALF_FLOAT;
+			case Format::RGBA_32F:		return GL_FLOAT;
+			case Format::R11G11B10F:	return GL_FLOAT;
+
+			case Format::DEPTH_STENCIL:	return GL_UNSIGNED_INT_24_8;
+			case Format::DEPTH:			return GL_UNSIGNED_INT;
+			case Format::STENCIL:		return GL_UNSIGNED_BYTE;
+		}
+	}
 
 /*
  * TEXTURE PRIVATE API

@@ -1,4 +1,5 @@
 // Engine Includes.
+#include "RHI.h"
 #include "Capabilities.h"
 
 // std Includes.
