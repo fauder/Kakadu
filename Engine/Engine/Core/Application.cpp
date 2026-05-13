@@ -7,6 +7,7 @@
 #include "Graphics/RHI/GLDebugGroup.h" // TODO: Enable only for non-standalone builds.
 #include "Graphics/RHI/GLDebugOutput.h"
 #include "Graphics/RHI/RHI.h"
+#include "Graphics/RHI/Version.h"
 #include "Math/Math.hpp"
 
 #ifdef _EDITOR
@@ -188,8 +189,7 @@ namespace Kakadu
 
 		Platform::InitializeAndCreateWindows( vsync_is_enabled );
 
-		const auto version = glGetString( GL_VERSION );
-		std::cout << version << "\n\n";
+		RHI::PrintVersionInfoToConsole();
 
 		ImGuiSetup::Initialize();
 		ImGuiDrawer::Initialize();

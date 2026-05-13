@@ -230,6 +230,7 @@
     <ClInclude Include="Engine\Graphics\RHI\Texture.h" />
     <ClInclude Include="Engine\Graphics\RHI\Uniform.h" />
     <ClInclude Include="Engine\Graphics\RHI\Usage.h" />
+    <ClInclude Include="Engine\Graphics\RHI\Version.h" />
     <ClInclude Include="Engine\Graphics\RHI\VertexArray.h" />
     <ClInclude Include="Engine\Graphics\RHI\VertexLayout.hpp" />
     <ClInclude Include="Engine\Graphics\RHI\ShaderIncludePreprocessing.h" />
@@ -332,6 +333,7 @@
     <ClCompile Include="Engine\Graphics\RHI\Shader.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Texture.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Usage.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\Version.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\VertexArray.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\VertexLayout.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\ShaderIncludePreprocessing.cpp" />
