@@ -1,5 +1,5 @@
 // Engine Includes.
-#include "VertexLayout.hpp"
+#include "VertexLayout.h"
 #include "Asset/Shader/_Attributes.glsl"
 #include "Core/Types.h"
 
@@ -12,6 +12,13 @@ namespace Kakadu::RHI
 {
 	VertexLayout::VertexLayout()
 	{}
+
+	VertexLayout::VertexLayout( std::span< const VertexAttribute > attribute_counts_and_types )
+	{
+		for( const auto& attribute : attribute_counts_and_types )
+			if( !attribute.Empty() )
+				attributes.push_back( attribute );
+	}
 
 	VertexLayout::~VertexLayout()
 	{}

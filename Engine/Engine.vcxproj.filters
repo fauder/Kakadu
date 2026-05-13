@@ -384,7 +384,7 @@
     <ClInclude Include="Engine\Graphics\RHI\VertexArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\RHI\VertexLayout.hpp">
+    <ClInclude Include="Engine\Graphics\RHI\VertexLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\SortingMode.h">

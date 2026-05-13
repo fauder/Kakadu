@@ -7,6 +7,7 @@
 #include "Math/Concepts_Math.h"
 
 // std Includes.
+#include <span>
 #include <vector>
 
 namespace Kakadu::RHI
@@ -51,12 +52,11 @@ namespace Kakadu::RHI
 	public:
 		VertexLayout();
 
-		DEFAULT_COPY_AND_MOVE_CONSTRUCTORS( VertexLayout );
+		/* This makes it possible to pass all attribute lists together in Mesh constructor, even though some of them may not be present.
+		 * Empty attributes (count == 0) are skipped, so callers can unconditionally pass the full attribute list. */
+		VertexLayout( std::span< const VertexAttribute > attribute_counts_and_types );
 
-		// This makes it possible to pass all attribute lists together in Mesh constructor, even though some of them may not be present.
-		template< typename Collection >
-		VertexLayout( Collection&& attribute_counts_and_types );
-		// Definition is just below the class definition because this constructor calls Push(), and therefore, has to be defined after the Push() declaration.
+		DEFAULT_COPY_AND_MOVE_CONSTRUCTORS( VertexLayout );
 
 		~VertexLayout();
 
@@ -85,13 +85,4 @@ namespace Kakadu::RHI
 	private:
 		std::vector< VertexAttribute > attributes;
 	};
-
-	// This makes it possible to pass all attribute lists together in Mesh constructor, even though some of them may not be present.
-	template< typename Collection >
-	VertexLayout::VertexLayout( Collection&& attribute_counts_and_types )
-	{
-		for( const auto& attribute : attribute_counts_and_types )
-			if( !attribute.Empty() )
-				attributes.push_back( attribute );
-	}
 }

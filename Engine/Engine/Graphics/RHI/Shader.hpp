@@ -5,7 +5,7 @@
 #include "ShaderSourcePath.hpp"
 #include "Std140StructTag.h"
 #include "Uniform.h"
-#include "VertexLayout.hpp"
+#include "VertexLayout.h"
 #include "ID/ShaderProgramID.h"
 #include "Math/Color.hpp"
 #include "Math/Concepts_Math.h"

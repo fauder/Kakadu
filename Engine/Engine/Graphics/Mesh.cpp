@@ -1,8 +1,7 @@
 // Engine Includes.
 #include "Mesh.h"
-#include "RHI/Usage.h"
+#include "MeshUtility.hpp"
 #include "Core/Log.h"
-#include "Core/ServiceLocator.h"
 #include "Asset/Shader/_Attributes.glsl"
 
 namespace Kakadu

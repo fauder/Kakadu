@@ -232,7 +232,7 @@
     <ClInclude Include="Engine\Graphics\RHI\Usage.h" />
     <ClInclude Include="Engine\Graphics\RHI\Version.h" />
     <ClInclude Include="Engine\Graphics\RHI\VertexArray.h" />
-    <ClInclude Include="Engine\Graphics\RHI\VertexLayout.hpp" />
+    <ClInclude Include="Engine\Graphics\RHI\VertexLayout.h" />
     <ClInclude Include="Engine\Graphics\RHI\ShaderIncludePreprocessing.h" />
     <ClInclude Include="Engine\Graphics\RHI\ShaderSourcePath.hpp" />
     <ClInclude Include="Engine\Graphics\SortingMode.h" />
