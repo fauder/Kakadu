@@ -1419,7 +1419,7 @@ namespace Kakadu
 
 	void Renderer::SetPolygonMode( const RHI::PolygonMode mode )
 	{
-		glPolygonMode( GL_FRONT_AND_BACK, ( GLenum )mode + GL_POINT );
+		glPolygonMode( GL_FRONT_AND_BACK, RHI::PolygonModeToGLEnum( mode ) + GL_POINT );
 	}
 
 	void Renderer::SetDestinationFramebuffer( RHI::Framebuffer* framebuffer )
@@ -1464,12 +1464,14 @@ namespace Kakadu
 
 	void Renderer::SetStencilTestResponses( const RHI::StencilTestResponse stencil_fail, const RHI::StencilTestResponse stencil_pass_depth_fail, const RHI::StencilTestResponse both_pass )
 	{
-		glStencilOp( ( GLenum )stencil_fail, ( GLenum )stencil_pass_depth_fail, ( GLenum )both_pass );
+		glStencilOp( RHI::StencilTestResponseToGLEnum( stencil_fail ),
+					 RHI::StencilTestResponseToGLEnum( stencil_pass_depth_fail ),
+					 RHI::StencilTestResponseToGLEnum( both_pass ) );
 	}
 
 	void Renderer::SetStencilComparisonFunction( const RHI::ComparisonFunction comparison_function, const i32 reference_value, const u32 mask )
 	{
-		glStencilFunc( ( GLenum )comparison_function, reference_value, mask );
+		glStencilFunc( RHI::ComparisonFunctionToGLEnum( comparison_function ), reference_value, mask );
 	}
 
 	void Renderer::EnableDepthTest()
@@ -1489,7 +1491,7 @@ namespace Kakadu
 
 	void Renderer::SetDepthComparisonFunction( const RHI::ComparisonFunction comparison_function )
 	{
-		glDepthFunc( ( GLenum )comparison_function );
+		glDepthFunc( RHI::ComparisonFunctionToGLEnum( comparison_function ) );
 	}
 
 	void Renderer::EnableBlending()
@@ -1505,12 +1507,15 @@ namespace Kakadu
 	void Renderer::SetBlendingFactors( const RHI::BlendingFactor source_color_factor, const RHI::BlendingFactor destination_color_factor,
 									   const RHI::BlendingFactor source_alpha_factor, const RHI::BlendingFactor destination_alpha_factor )
 	{
-		glBlendFuncSeparate( ( GLenum )source_color_factor, ( GLenum )destination_color_factor, ( GLenum )source_alpha_factor, ( GLenum )destination_alpha_factor );
+		glBlendFuncSeparate( RHI::BlendingFactorToGLEnum( source_color_factor ),
+							 RHI::BlendingFactorToGLEnum( destination_color_factor ),
+							 RHI::BlendingFactorToGLEnum( source_alpha_factor ),
+							 RHI::BlendingFactorToGLEnum( destination_alpha_factor ) );
 	}
 
 	void Renderer::SetBlendingFunction( const RHI::BlendingFunction function )
 	{
-		glBlendEquation( ( GLenum )function );
+		glBlendEquation( RHI::BlendingFunctionToGLEnum( function ) );
 	}
 
 	void Renderer::RenderOtherViewportShadingModes()
@@ -1770,12 +1775,12 @@ namespace Kakadu
 
 	void Renderer::SetCullFace( const RHI::Face face )
 	{
-		glCullFace( ( GLenum )face );
+		glCullFace( RHI::FaceToGLEnum( face ) );
 	}
 
 	void Renderer::SetFrontFaceConvention( const RHI::WindingOrder winding_order_of_front_faces )
 	{
-		glFrontFace( ( GLenum )winding_order_of_front_faces );
+		glFrontFace( RHI::WindingOrderToGLEnum( winding_order_of_front_faces ) );
 	}
 	
 	void Renderer::DetermineMSAASampleCountsPerFormat()

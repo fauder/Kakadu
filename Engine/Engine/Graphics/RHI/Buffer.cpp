@@ -34,7 +34,7 @@ namespace Kakadu::RHI
 			case BufferType::Uniform:	return GL_UNIFORM_BUFFER;
 
 			case BufferType::Invalid:
-				ASSERT( false && "Invalid buffer_type in TypeToGLEnum( BufferType )!" );
+				ASSERT( false && "Invalid buffer_type in Kakadu::RHI::TypeToGLEnum( BufferType )!" );
 				return GL_NONE;
 		}
 

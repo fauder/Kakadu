@@ -1,7 +1,7 @@
 #pragma once
 
 // Engine Includes.
-#include "Enums.h"
+#include "ClearTarget.h"
 #include "MSAA.h"
 #include "Texture.h"
 #include "ID/FramebufferID.h"
@@ -101,7 +101,6 @@ namespace Kakadu::RHI
 		void SetClearDepthValue( const float new_clear_depth_value );
 		void SetClearStencilValue( const i32 new_clear_stencil_value );
 
-		void SetClearTargets( const BitFlags< ClearTarget > targets );
 		void Clear() const;
 
 		void Destroy();

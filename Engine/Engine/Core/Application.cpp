@@ -3,7 +3,6 @@
 #include "ImGuiDrawer.hpp"
 #include "ImGuiSetup.h"
 #include "ImGuiUtility.h"
-#include "Graphics/RHI/Enums.h"
 #include "Graphics/RHI/GLDebugGroup.h" // TODO: Enable only for non-standalone builds.
 #include "Graphics/RHI/GLDebugOutput.h"
 #include "Graphics/RHI/RHI.h"

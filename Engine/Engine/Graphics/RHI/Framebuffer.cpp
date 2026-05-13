@@ -336,7 +336,7 @@ namespace Kakadu::RHI
 
 	void Framebuffer::Clear() const
 	{
-		glClear( ( GLbitfield )clear_targets.ToBits() );
+		glClear( ( GLbitfield )ClearTargetFlagsToGLEnum( clear_targets ) );
 	}
 
 	void Framebuffer::Destroy()

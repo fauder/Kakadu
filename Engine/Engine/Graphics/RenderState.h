@@ -2,7 +2,12 @@
 
 // Engine Includes.
 #include "SortingMode.h"
-#include "RHI/Enums.h"
+#include "RHI/BlendingFactor.h"
+#include "RHI/BlendingFunction.h"
+#include "RHI/ComparisonFunction.h"
+#include "RHI/Face.h"
+#include "RHI/StencilTestResponse.h"
+#include "RHI/WindingOrder.h"
 
 namespace Kakadu
 {

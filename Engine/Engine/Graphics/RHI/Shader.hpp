@@ -42,7 +42,8 @@ namespace Kakadu::RHI
 
 		/* Features can be:
 		 *		Declared in shaders, via "#pragma feature <feature_name>" syntax. 
-					These types of Features need to be set from the client side to be defined by the Shader class before compilation (i.e., source is modified to #define the Feature).
+		 *			These types of Features need to be set from the client side to be defined by the Shader class before
+		 *			compilation (i.e., source is modified to #define the Feature).
 		 *		Defined in shaders directly, via "#define <feature_name> <optional_value>" syntax.
 		 */
 		struct Feature

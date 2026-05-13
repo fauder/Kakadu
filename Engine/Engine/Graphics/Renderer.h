@@ -17,9 +17,9 @@
 #include "Lighting/SpotLight.h"
 #include "Math/OrthographicProjectionParameters.h"
 #include "Math/Percentage.hpp"
-#include "RHI/Enums.h"
 #include "RHI/Framebuffer.h"
 #include "RHI/DeviceInfo.h"
+#include "RHI/PolygonMode.h"
 #include "Scene/Camera.h"
 #include "UniformBufferManagement.hpp"
 
