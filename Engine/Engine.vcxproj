@@ -223,6 +223,7 @@
     <ClInclude Include="Engine\Graphics\RHI\ID\TextureID.h" />
     <ClInclude Include="Engine\Graphics\RHI\ID\VertexArrayID.h" />
     <ClInclude Include="Engine\Graphics\RHI\MSAA.h" />
+    <ClInclude Include="Engine\Graphics\RHI\Primitive.h" />
     <ClInclude Include="Engine\Graphics\RHI\RHI.h" />
     <ClInclude Include="Engine\Graphics\RHI\Shader.hpp" />
     <ClInclude Include="Engine\Graphics\RHI\ShaderType.h" />
@@ -330,6 +331,7 @@
     <ClCompile Include="Engine\Graphics\RHI\DebugLabel.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Framebuffer.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\DeviceInfo.cpp" />
+    <ClCompile Include="Engine\Graphics\RHI\Primitive.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Shader.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Texture.cpp" />
     <ClCompile Include="Engine\Graphics\RHI\Usage.cpp" />

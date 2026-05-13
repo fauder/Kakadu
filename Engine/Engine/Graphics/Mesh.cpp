@@ -8,7 +8,7 @@ namespace Kakadu
 {
 	Mesh::Mesh()
 		:
-		primitive_type( PrimitiveType::Triangles ),
+		primitive_type( RHI::Primitive::Triangles ),
 		instance_count( 0 )
 	{}
 
@@ -18,7 +18,7 @@ namespace Kakadu
 				const std::span< const Vector2	> uvs, 
 				const std::span< const u32		> indices, 
 				const std::span< const Vector3	> tangents, 
-				const PrimitiveType				  primitive_type, 
+				const RHI::Primitive			  primitive_type,
 				const RHI::Usage				  usage )
 		:
 		name( name ),
@@ -55,7 +55,7 @@ namespace Kakadu
 				std::vector< Vector2 >&&	uvs,
 				std::vector< u32	 >&&	indices,
 				std::vector< Vector3 >&&	tangents,
-				const PrimitiveType			primitive_type,
+				const RHI::Primitive		primitive_type,
 				const RHI::Usage			usage )
 		:
 		name( name ),

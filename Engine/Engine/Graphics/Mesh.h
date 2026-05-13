@@ -1,6 +1,7 @@
 #pragma once
 
 // Engine Includes.
+#include "RHI/Primitive.h"
 #include "RHI/Usage.h"
 #include "RHI/VertexArray.h"
 
@@ -11,19 +12,6 @@ namespace Kakadu
 {
 	class Mesh
 	{
-	public:
-		enum class PrimitiveType
-		{
-			Points			= GL_POINTS,
-			Lines			= GL_LINES,
-			Line_loop		= GL_LINE_LOOP,
-			Line_strip		= GL_LINE_STRIP,
-			Triangles		= GL_TRIANGLES,
-			Triangle_strip	= GL_TRIANGLE_STRIP,
-			Triangle_fan	= GL_TRIANGLE_FAN,
-			Quads			= GL_QUADS
-		};
-
 	public:
 		Mesh();
 
@@ -36,8 +24,8 @@ namespace Kakadu
 			  const std::span< const Vector2	> uvs			 = {},
 			  const std::span< const u32		> indices		 = {},
 			  const std::span< const Vector3	> tangents		 = {},
-			  const PrimitiveType				  primitive_type = PrimitiveType::Triangles,
-			  const RHI::Usage					  usage = RHI::Usage::StaticDraw );
+			  const RHI::Primitive				  primitive_type = RHI::Primitive::Triangles,
+			  const RHI::Usage					  usage          = RHI::Usage::StaticDraw );
 
 		Mesh( std::vector< Vector3	>&& positions,
 			  const std::string&		name		   = {},
@@ -45,7 +33,7 @@ namespace Kakadu
 			  std::vector< Vector2	>&& uvs			   = {},
 			  std::vector< u32		>&& indices		   = {},
 			  std::vector< Vector3	>&& tangents	   = {},
-			  const PrimitiveType		primitive_type = PrimitiveType::Triangles,
+			  const RHI::Primitive		primitive_type = RHI::Primitive::Triangles,
 			  const RHI::Usage			usage          = RHI::Usage::StaticDraw );
 
 		Mesh( const Mesh& other,
@@ -80,7 +68,7 @@ namespace Kakadu
 
 		const std::string& Name() const { return name; }
 
-		PrimitiveType Primitive() const { return primitive_type; }
+		RHI::Primitive Primitive() const { return primitive_type; }
 
 		i32 VertexCount() const { return vertex_buffer.count; }
 		i32 IndexCount()  const { return index_buffer.has_value() ? index_buffer->count : 0; }
@@ -130,7 +118,7 @@ namespace Kakadu
 		std::vector< Vector3 > tangents;
 		std::vector< Vector2 > uvs;
 
-		PrimitiveType primitive_type;
+		RHI::Primitive primitive_type;
 
 		i32 instance_count;
 
