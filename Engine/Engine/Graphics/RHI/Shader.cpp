@@ -1376,7 +1376,7 @@ namespace Kakadu::RHI
 			return nullptr;
 		}
 #else // STANDALONE:
-		return uniform_info_map[ uniform_name ];
+		return &uniform_info_map[ uniform_name ];
 #endif // _EDITOR
 	}
 
