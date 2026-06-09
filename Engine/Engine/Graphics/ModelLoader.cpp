@@ -68,6 +68,8 @@ namespace Kakadu
 			auto* position_iterator = submesh_iterator->findAttribute( "POSITION" );
 			ASSERT_DEBUG_ONLY( position_iterator != submesh_iterator->attributes.end() ); // A gltf mesh primitive is required to hold the POSITION attribute.
 
+            bool vertices_with_all_degenerate_triangles_detected = false;
+
             if( submesh_iterator->materialIndex.has_value() )
             {
                 material_index       = submesh_iterator->materialIndex.value();
@@ -303,10 +305,10 @@ namespace Kakadu
 
                     const float determinant = delta_uv_1.X() * delta_v_2 - delta_uv_2.X() * delta_v_1;
                     
-                    if( Math::IsZero( determinant ) )
-                        continue;
-
                     const float f = 1.0f / determinant;
+
+                    if( Math::IsInfinite( f ) )
+                        continue;
 
                     const Vector3 face_tangent( f * ( delta_v_2 * edge_1.X() - delta_v_1 * edge_2.X() ),
                                                 f * ( delta_v_2 * edge_1.Y() - delta_v_1 * edge_2.Y() ),
@@ -320,7 +322,14 @@ namespace Kakadu
                 // Normalize:
                 for( auto& tangent : tangents )
                 {
-                    tangent.XYZ().Normalize();
+                    if( Math::IsZero( tangent.MagnitudeSquared() ) )
+                    {
+                        vertices_with_all_degenerate_triangles_detected = true;
+                        tangent.XYZ() = Vector3::Right();
+                    }
+                    else
+                        tangent.XYZ().Normalize();
+
                     /* We stick to one handedness and recalculate proper tangents such that bitangents will always have the same handedness.
                      * Therefore, w = +1. */
                     tangent.SetW( +1.0f );
@@ -328,6 +337,11 @@ namespace Kakadu
             }
 
             std::string sub_mesh_name( mesh_group_to_load.name + "_" + std::to_string( std::distance( gltf_mesh.primitives.begin(), submesh_iterator ) ) );
+
+            if( vertices_with_all_degenerate_triangles_detected )
+                Log::Warning( "Mesh \"" + mesh_group_to_load.name + "\\" + sub_mesh_name +
+                              "\": 1 or more vertices with all degenerate UV triangle(s) found during tangent generation."
+                              "Tangents for those vertices are set to Vector3::Right()." );
 
             mesh_group_to_load.sub_meshes.emplace_back( sub_mesh_name,
                                                         /* Actual Mesh will be stored inside the meshes vector. SubMesh will have a reference to this Mesh. */

@@ -97,5 +97,8 @@ namespace Kakadu
 
 		template< std::floating_point Value >
 		bool IsZero( Value value, const float epsilon = TypeTraits< Value >::Epsilon() ) { return IsEqual( value, Value{ 0 }, epsilon ); }
+
+		template< std::floating_point Value >
+		bool IsInfinite( Value value ) { return std::isinf( value ); }
 	}
 }
