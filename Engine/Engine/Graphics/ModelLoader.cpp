@@ -276,8 +276,8 @@ namespace Kakadu
             if( tangents.empty() )
             {
                 const auto index_count = indices_u32.size();
-                const auto size = uvs_0.size();
-                tangents.reserve( size );
+                const auto size = positions.size();
+                tangents.resize( size );
                 for( auto base_index = 0; base_index < index_count; base_index += 3 )
                 {
                     const auto index_0 = indices_u32[ base_index     ];
@@ -303,12 +303,22 @@ namespace Kakadu
 
                     const auto f = 1.0f / ( delta_uv_1.X() * delta_v_2 - delta_uv_2.X() * delta_v_1 );
 
+                    const Vector3 face_tangent( f * ( delta_v_2 * edge_1.X() - delta_v_1 * edge_2.X() ),
+                                                f * ( delta_v_2 * edge_1.Y() - delta_v_1 * edge_2.Y() ),
+                                                f * ( delta_v_2 * edge_1.Z() - delta_v_1 * edge_2.Z() ) );
+
+                    tangents[ index_0 ].XYZ() += face_tangent;
+                    tangents[ index_1 ].XYZ() += face_tangent;
+                    tangents[ index_2 ].XYZ() += face_tangent;
+                }
+
+                // Normalize:
+                for( auto& tangent : tangents )
+                {
+                    tangent.XYZ().Normalize();
                     /* We stick to one handedness and recalculate proper tangents such that bitangents will always have the same handedness.
                      * Therefore, w = +1. */
-                    tangents.emplace_back( f * ( delta_v_2 * edge_1.X() - delta_v_1 * edge_2.X() ),
-                                           f * ( delta_v_2 * edge_1.Y() - delta_v_1 * edge_2.Y() ),
-                                           f * ( delta_v_2 * edge_1.Z() - delta_v_1 * edge_2.Z() ),
-                                           +1.0f );
+                    tangent.SetW( +1.0f );
                 }
             }
 
