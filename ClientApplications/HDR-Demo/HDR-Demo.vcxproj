@@ -123,6 +123,7 @@
     <ClInclude Include="Source\HDR_DemoApplication.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\EntryPoint.cpp" />
     <ClCompile Include="Source\HDR_DemoApplication.cpp" />
   </ItemGroup>
   <ItemGroup>

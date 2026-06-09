@@ -2,26 +2,27 @@
 
 // Engine Includes.
 #include "Application.h"
-#include "Types.h"
+#include "BitFlags.hpp"
 
-extern Kakadu::Application* Kakadu::CreateApplication( Kakadu::BitFlags< Kakadu::CreationFlags > );
+// std Includes.
+#include <cstring>
+#include <iostream>
 
-Kakadu::i32 main( Kakadu::i32 argc, char** argv )
-{
-	Kakadu::BitFlags< Kakadu::CreationFlags > flags;
-
-	if( argc > 1 )
-	{
-		if( strcmp( argv[ 1 ], "DISABLE_IMGUI" ) == 0 )
-			flags.Set( Kakadu::CreationFlags::OnStart_DisableImGui );
-	}
-
-	std::cout << "====== KAKADU ENGINE INITIALIZATION LOGS ======\n\n";
-	const auto begin = std::chrono::system_clock::now();
-	auto application = Kakadu::CreateApplication( flags );
-	const auto end = std::chrono::system_clock::now();
-	std::cout << "\nTotal initialization: " << std::chrono::duration_cast< std::chrono::milliseconds >( ( end - begin ) ).count() << " ms.\n\n";
-	std::cout << "===============================================\n\n";
-	application->Run();
-	delete application;
-}
+/* This macro is defined once per client project in a dedicated EntryPoint.cpp.
+ *
+ * Usage (EntryPoint.cpp):
+ *   #include "MyApplication.h"
+ *   #include "Engine/Core/EntryPoint.h"
+ *   KAKADU_APP( MyApplication )
+ */
+#define KAKADU_APP( AppType )                                                   \
+    int main( int argc, char** argv )                                           \
+    {                                                                           \
+        Kakadu::BitFlags< Kakadu::CreationFlags > flags;                        \
+        if( argc > 1 && strcmp( argv[ 1 ], "DISABLE_IMGUI" ) == 0 )             \
+            flags.Set( Kakadu::CreationFlags::OnStart_DisableImGui );           \
+        std::cout << "====== KAKADU ENGINE INITIALIZATION LOGS ======\n\n";     \
+        AppType app( flags );                                                   \
+        app.Run();                                                              \
+        std::cout << "\n===============================================\n\n";   \
+    }

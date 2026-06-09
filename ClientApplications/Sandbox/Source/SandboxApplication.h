@@ -28,21 +28,21 @@ class SandboxApplication : public Kakadu::Application
 
 public:
 	SandboxApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > );
-	virtual ~SandboxApplication();
+	~SandboxApplication();
 
-	virtual void Initialize() override;
-	virtual void Shutdown() override;
+	void Initialize();
+	void Shutdown();
 
-	virtual void Update() override;
+	void Update();
 
-	virtual void RenderFrame() override;
+	void RenderFrame();
 
-	virtual void RenderToolsUI() override;
+	void RenderToolsUI();
 
-	virtual void OnMouseButtonEvent( const Kakadu::Platform::MouseButton button, const Kakadu::Platform::MouseButtonAction button_action, const Kakadu::Platform::KeyMods key_mods ) override;
-	virtual void OnMouseScrollEvent( const float x_offset, const float y_offset ) override;
-	virtual void OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods ) override;
-	virtual void OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels ) override;
+	void OnMouseButtonEvent( const Kakadu::Platform::MouseButton button, const Kakadu::Platform::MouseButtonAction button_action, const Kakadu::Platform::KeyMods key_mods );
+	void OnMouseScrollEvent( const float x_offset, const float y_offset );
+	void OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods );
+	void OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels );
 	
 private:
 	void ResetLightingData();

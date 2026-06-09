@@ -120,6 +120,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\EntryPoint.cpp" />
     <ClCompile Include="Source\BloomDemoApplication.cpp" />
   </ItemGroup>
   <ItemGroup>

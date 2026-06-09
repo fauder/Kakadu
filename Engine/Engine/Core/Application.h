@@ -12,8 +12,11 @@
 #include "Graphics/Renderer.h"
 #include "Graphics/RHI/Texture.h"
 
+// std Includes.
+#include <functional>
+
 #ifdef _EDITOR
-#include "Editor/EditorContext.h" 
+#include "Editor/EditorContext.h"
 #endif // _EDITOR
 
 namespace Kakadu
@@ -24,30 +27,31 @@ namespace Kakadu
 		OnStart_DisableImGui = 1
 	};
 
+	struct ApplicationCallbacks
+	{
+		std::function< void() > on_initialize;
+		std::function< void() > on_shutdown;
+		std::function< void() > on_update;
+		std::function< void() > on_render_frame;    // This will be standalone only.
+		std::function< void() > on_render_tools_ui; // This will be editor only.
+
+		std::function< void( Platform::KeyCode, Platform::KeyAction, Platform::KeyMods ) >				on_keyboard_event;
+		std::function< void( Platform::MouseButton, Platform::MouseButtonAction, Platform::KeyMods ) >	on_mouse_button_event;
+		std::function< void( float, float ) >															on_mouse_scroll_event;
+		std::function< void( i32, i32 ) >																on_framebuffer_resize;
+	};
+
 	class Application
 	{
 	public:
-		Application( const BitFlags< CreationFlags > flags,
+		Application( ApplicationCallbacks&&,
+					 const BitFlags< CreationFlags > flags,
 					 Renderer::Description&& renderer_description );
-		virtual ~Application();
+		~Application();
 
 		void Run();
 
 	protected:
-		virtual void Initialize();
-		virtual void Shutdown();
-
-		virtual void Update();
-
-		virtual void RenderFrame();
-
-		virtual void RenderToolsUI() = 0;
-
-		virtual void OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
-		virtual void OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
-		virtual void OnMouseScrollEvent( const float x_offset, const float y_offset );
-		virtual void OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels ) = 0; // Application calls the internal one => this one is pure virtual.
-		
 		void Quit() { is_running = false; }
 
 		void FreezeTime()   { frame_time.FreezeTime(); }
@@ -57,13 +61,17 @@ namespace Kakadu
 		bool MSAAIsEnabled() { return msaa_sample_count.has_value(); }
 
 	private:
+		void Initialize();
+		void Update();
+		void Shutdown();
+
 		/*
 		 * Application-internal event handlers; These do processing and then relay the events to client applications.
 		 */
 
 		void HandleKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods );
 		void HandleMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods );
-		void HandleMouseScrollEvent( const float x_offset, const float y_offset  );
+		void HandleMouseScrollEvent( const float x_offset, const float y_offset );
 		void HandleFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels );
 
 #ifdef _EDITOR
@@ -93,8 +101,8 @@ namespace Kakadu
 		bool vsync_is_enabled;
 
 		/* 6 byte(s) of padding. */
-	};
 
-	/* Needs to be implemented by the CLIENT Application. */
-	Application* CreateApplication( const BitFlags< CreationFlags > );
+	private:
+		ApplicationCallbacks callbacks;
+	};
 }

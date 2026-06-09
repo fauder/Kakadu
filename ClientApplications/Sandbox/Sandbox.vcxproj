@@ -123,6 +123,7 @@
     <ClInclude Include="Source\SandboxApplication.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\EntryPoint.cpp" />
     <ClCompile Include="Source\SandboxApplication.cpp" />
   </ItemGroup>
   <ItemGroup>

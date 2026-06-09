@@ -34,19 +34,27 @@
 
 using namespace Kakadu::Math::Literals;
 
-Kakadu::Application* Kakadu::CreateApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
-{
-    return new SandboxApplication( flags );
-}
-
 SandboxApplication::SandboxApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
 	:
-	Kakadu::Application( flags,
-						 Kakadu::Renderer::Description
-						 {
-							 .main_framebuffer_color_format = Kakadu::RHI::Texture::Format::RGBA_16F,
-							 .msaa_sample_count             = 4
-						 } ),
+	Kakadu::Application(
+		Kakadu::ApplicationCallbacks
+		{
+			.on_initialize        = [ this ] { Initialize(); },
+			.on_shutdown          = [ this ] { Shutdown(); },
+			.on_update            = [ this ] { Update(); },
+			.on_render_frame      = [ this ] { RenderFrame(); },
+			.on_render_tools_ui   = [ this ] { RenderToolsUI(); },
+			.on_keyboard_event     = std::bind_front( &SandboxApplication::OnKeyboardEvent,				this ),
+			.on_mouse_button_event = std::bind_front( &SandboxApplication::OnMouseButtonEvent,			this ),
+			.on_mouse_scroll_event = std::bind_front( &SandboxApplication::OnMouseScrollEvent,			this ),
+			.on_framebuffer_resize = std::bind_front( &SandboxApplication::OnFramebufferResizeEvent,	this ),
+		},
+		flags,
+		Kakadu::Renderer::Description
+		{
+			.main_framebuffer_color_format = Kakadu::RHI::Texture::Format::RGBA_16F,
+			.msaa_sample_count             = 4
+		} ),
 	test_model_info
 	{
 		.model_instance          = {},
@@ -69,13 +77,9 @@ SandboxApplication::SandboxApplication( const Kakadu::BitFlags< Kakadu::Creation
 	cube_transform_array( CUBE_COUNT ),
 	cube_reflected_transform_array( CUBE_REFLECTED_COUNT )
 {
-	Initialize();
 }
 
-SandboxApplication::~SandboxApplication()	
-{
-	Shutdown();
-}
+SandboxApplication::~SandboxApplication() = default;
 
 void SandboxApplication::Initialize()
 {
@@ -428,8 +432,6 @@ void SandboxApplication::Shutdown()
 
 void SandboxApplication::Update()
 {
-	Application::Update();
-
 	KAKADU_GL_DEBUG_GROUP( "Sandbox Update()" );
 
 	current_time_as_angle = Radians( frame_time.time_current );
@@ -498,8 +500,6 @@ void SandboxApplication::Update()
 
 void SandboxApplication::RenderFrame()
 {
-	Kakadu::Application::RenderFrame();
-
 	// Scene-view Camera moved into Application.
 	
 	//// TODO: Outline pass.
@@ -755,12 +755,10 @@ void SandboxApplication::RenderToolsUI()
 
 void SandboxApplication::OnMouseButtonEvent( const Kakadu::Platform::MouseButton button, const Kakadu::Platform::MouseButtonAction button_action, const Kakadu::Platform::KeyMods key_mods )
 {
-	Application::OnMouseButtonEvent( button, button_action, key_mods );
 }
 
 void SandboxApplication::OnMouseScrollEvent( const float x_offset, const float y_offset )
 {
-	Application::OnMouseScrollEvent( x_offset, y_offset );
 }
 
 void SandboxApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods )
@@ -780,8 +778,6 @@ void SandboxApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_co
 		default:
 			break;
 	}
-
-	Application::OnKeyboardEvent( key_code, key_action, key_mods );
 }
 
 void SandboxApplication::OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels )

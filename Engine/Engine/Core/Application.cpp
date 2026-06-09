@@ -25,9 +25,11 @@
 
 namespace Kakadu
 {
-	Application::Application( const BitFlags< CreationFlags > flags,
+	Application::Application( ApplicationCallbacks&& callbacks,
+							  const BitFlags< CreationFlags > flags,
 							  Renderer::Description&& renderer_description )
 		:
+		callbacks( std::move( callbacks ) ),
 		is_running( true ),
 		vsync_is_enabled( false ),
 		msaa_sample_count( renderer_description.msaa_sample_count )
@@ -38,7 +40,7 @@ namespace Kakadu
 
 		const auto begin = std::chrono::system_clock::now();
 
-		// Application init.:
+		// Engine init.:
 		{
 			const auto begin = std::chrono::system_clock::now();
 			Initialize();
@@ -66,7 +68,7 @@ namespace Kakadu
 		}
 
 #ifdef _EDITOR
-		// Editor Context init.:  
+		// Editor Context init.:
 		{
 			const auto begin = std::chrono::system_clock::now();
 
@@ -102,6 +104,9 @@ namespace Kakadu
 
 		TracyGpuContext;
 
+		if( callbacks.on_initialize )
+			callbacks.on_initialize();
+
 		/* The main loop. */
 		while( is_running )
 		{
@@ -118,13 +123,13 @@ namespace Kakadu
 			}
 
 			{
-				ZoneScopedN( "Update" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
+				ZoneScopedN( "Update" );
 				Update();
 			}
 
 #ifdef _EDITOR
 			/* Editor, when rendering the UI, will not (and can not) modify Application state directly; It enqueues commands instead.
-			 * These commands are processed and cleared in Application::Update() which is already executed for the frame.
+			 * These commands are processed and cleared in Update() which is already executed for the frame.
 			 * This means there is effectively a 1 frame delay in processing enqueued commands, which is fine and intended. */
 
 			{
@@ -152,8 +157,9 @@ namespace Kakadu
 
 				if( editor_context->show_imgui )
 				{
-					ZoneScopedN( "RenderToolsUI" ); // Is overridden in the client app. Makes sense to instrument here instead.
-					RenderToolsUI();
+					ZoneScopedN( "RenderToolsUI" );
+					if( callbacks.on_render_tools_ui )
+						callbacks.on_render_tools_ui();
 				}
 				{
 					KAKADU_GL_DEBUG_GROUP( "ImGuiSetup::EndFrame()" );
@@ -162,8 +168,10 @@ namespace Kakadu
 			}
 #else
 			{
-				ZoneScopedN( "RenderFrame" ); // Is (most probably) overridden in the client app. Makes sense to instrument here instead.
-				RenderFrame();
+				ZoneScopedN( "RenderFrame" );
+				// TODO: Implement actual game camera rendering.
+				if( callbacks.on_render_frame )
+					callbacks.on_render_frame();
 			}
 #endif // _EDITOR
 
@@ -177,6 +185,9 @@ namespace Kakadu
 
 			is_running &= !Platform::ShouldClose();
 		}
+
+		if( callbacks.on_shutdown )
+			callbacks.on_shutdown();
 	}
 
 	void Application::Initialize()
@@ -194,39 +205,32 @@ namespace Kakadu
 		ImGuiDrawer::Initialize();
 
 		Platform::SetKeyboardEventCallback(
-			[ = ]( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
+			[ this ]( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 			{
-				this->HandleKeyboardEvent( key_code, key_action, key_mods );
+				HandleKeyboardEvent( key_code, key_action, key_mods );
 			} );
 
 		Platform::SetMouseButtonEventCallback(
-			[ = ]( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
+			[ this ]( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
 			{
-				this->HandleMouseButtonEvent( button, button_action, key_mods );
+				HandleMouseButtonEvent( button, button_action, key_mods );
 			} );
 
 		Platform::SetMouseScrollEventCallback(
-			[ = ]( const float x_offset, const float y_offset )
+			[ this ]( const float x_offset, const float y_offset )
 			{
-				this->HandleMouseScrollEvent( x_offset, y_offset );
+				HandleMouseScrollEvent( x_offset, y_offset );
 			} );
 
 		Platform::SetFramebufferResizeCallback(
-			[ = ]( const i32 width_new_pixels, const i32 height_new_pixels )
+			[ this ]( const i32 width_new_pixels, const i32 height_new_pixels )
 			{
-				this->HandleFramebufferResizeEvent( width_new_pixels, height_new_pixels );
+				HandleFramebufferResizeEvent( width_new_pixels, height_new_pixels );
 			} );
 
 #ifdef _EDITOR
 		Platform::SetGLDebugOutputCallback( RHI::GLDebugOutput::GetCallback() );
 #endif // _EDITOR
-	}
-
-	void Application::Shutdown()
-	{
-		ImGuiSetup::Shutdown();
-
-		Platform::Shutdown();
 	}
 
 	void Application::Update()
@@ -236,56 +240,53 @@ namespace Kakadu
 #endif // _EDITOR
 
 		morph_system.Execute( frame_time.time_delta, frame_time.time_delta_real );
-
 		renderer->Update();
+
+		if( callbacks.on_update )
+			callbacks.on_update();
 	}
 
-	void Application::RenderFrame()
+	void Application::Shutdown()
 	{
-		// Client App can override this to inject custom rendering code.
-		// TODO: Implement actual game camera rendering.
-	}
+		ImGuiSetup::Shutdown();
 
-	void Application::OnKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
-	{
-#ifdef _EDITOR
-		editor_context->OnKeyboardEvent( key_code, key_action, key_mods );
-#endif // _EDITOR
-	}
-
-	void Application::OnMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
-	{
-#ifdef _EDITOR
-		editor_context->OnMouseButtonEvent( button, button_action, key_mods );
-#endif // _EDITOR
-	}
-
-	void Application::OnMouseScrollEvent( const float x_offset, const float y_offset )
-	{
-#ifdef _EDITOR
-		editor_context->OnMouseScrollEvent( x_offset, y_offset );
-#endif // _EDITOR
+		Platform::Shutdown();
 	}
 
 	void Application::HandleKeyboardEvent( const Platform::KeyCode key_code, const Platform::KeyAction key_action, const Platform::KeyMods key_mods )
 	{
 		// No need to query ImGui::GetIO().WantCaptureKeyboard here because Platform already queries it before calling this function.
 
-		OnKeyboardEvent( key_code, key_action, key_mods );
+#ifdef _EDITOR
+		editor_context->OnKeyboardEvent( key_code, key_action, key_mods );
+#endif // _EDITOR
+
+		if( callbacks.on_keyboard_event )
+			callbacks.on_keyboard_event( key_code, key_action, key_mods );
 	}
 
 	void Application::HandleMouseButtonEvent( const Platform::MouseButton button, const Platform::MouseButtonAction button_action, const Platform::KeyMods key_mods )
 	{
 		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function.
 
-		OnMouseButtonEvent( button, button_action, key_mods );
+#ifdef _EDITOR
+		editor_context->OnMouseButtonEvent( button, button_action, key_mods );
+#endif // _EDITOR
+
+		if( callbacks.on_mouse_button_event )
+			callbacks.on_mouse_button_event( button, button_action, key_mods );
 	}
 
 	void Application::HandleMouseScrollEvent( const float x_offset, const float y_offset )
 	{
 		// No need to query ImGui::GetIO().WantCaptureMouse here because Platform already queries it before calling this function.
 
-		OnMouseScrollEvent( x_offset, y_offset );
+#ifdef _EDITOR
+		editor_context->OnMouseScrollEvent( x_offset, y_offset );
+#endif // _EDITOR
+
+		if( callbacks.on_mouse_scroll_event )
+			callbacks.on_mouse_scroll_event( x_offset, y_offset );
 	}
 
 	void Application::HandleFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels )
@@ -301,7 +302,8 @@ namespace Kakadu
 		editor_context->OnFramebufferResizeEvent( width_new_pixels, height_new_pixels );
 #endif // _EDITOR
 
-		OnFramebufferResizeEvent( width_new_pixels, height_new_pixels );
+		if( callbacks.on_framebuffer_resize )
+			callbacks.on_framebuffer_resize( width_new_pixels, height_new_pixels );
 	}
 
 #ifdef _EDITOR

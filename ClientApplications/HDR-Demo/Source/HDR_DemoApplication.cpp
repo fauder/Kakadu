@@ -28,28 +28,32 @@
 
 using namespace Kakadu::Math::Literals;
 
-Kakadu::Application* Kakadu::CreateApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
-{
-	return new HDR_DemoApplication( flags );
-}
-
 HDR_DemoApplication::HDR_DemoApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
 	:
-	Kakadu::Application( flags,
-						 Kakadu::Renderer::Description
-						 {
-							 .main_framebuffer_color_format = Kakadu::RHI::Texture::Format::RGBA_16F,
-							 .msaa_sample_count             = 4
-						 } ),
+	Kakadu::Application(
+		Kakadu::ApplicationCallbacks
+		{
+			.on_initialize         = [ this ] { Initialize(); },
+			.on_shutdown           = [ this ] { Shutdown(); },
+			.on_update             = [ this ] { Update(); },
+			.on_render_frame       = [ this ] { RenderFrame(); },
+			.on_render_tools_ui    = [ this ] { RenderToolsUI(); },
+			.on_keyboard_event     = std::bind_front( &HDR_DemoApplication::OnKeyboardEvent,			this ),
+			.on_mouse_button_event = std::bind_front( &HDR_DemoApplication::OnMouseButtonEvent,			this ),
+			.on_mouse_scroll_event = std::bind_front( &HDR_DemoApplication::OnMouseScrollEvent,			this ),
+			.on_framebuffer_resize = std::bind_front( &HDR_DemoApplication::OnFramebufferResizeEvent,	this ),
+		},
+		flags,
+		Kakadu::Renderer::Description
+		{
+			.main_framebuffer_color_format = Kakadu::RHI::Texture::Format::RGBA_16F,
+			.msaa_sample_count             = 4
+		} ),
 	light_point_transform_array( LIGHT_POINT_COUNT )
 {
-	Initialize();
 }
 
-HDR_DemoApplication::~HDR_DemoApplication()
-{
-	Shutdown();
-}
+HDR_DemoApplication::~HDR_DemoApplication() = default;
 
 void HDR_DemoApplication::Initialize()
 {
@@ -164,8 +168,6 @@ void HDR_DemoApplication::Shutdown()
 
 void HDR_DemoApplication::Update()
 {
-	Application::Update();
-
 	KAKADU_GL_DEBUG_GROUP( "HDR-Demo Update()" );
 
 	current_time_as_angle = Radians( frame_time.time_current );
@@ -174,8 +176,6 @@ void HDR_DemoApplication::Update()
 
 void HDR_DemoApplication::RenderFrame()
 {
-	Kakadu::Application::RenderFrame();
-
 	// Scene-view Camera moved into Application.
 
 	//renderer->Render();
@@ -250,12 +250,10 @@ void HDR_DemoApplication::RenderToolsUI()
 
 void HDR_DemoApplication::OnMouseButtonEvent( const Kakadu::Platform::MouseButton button, const Kakadu::Platform::MouseButtonAction button_action, const Kakadu::Platform::KeyMods key_mods )
 {
-	Application::OnMouseButtonEvent( button, button_action, key_mods );
 }
 
 void HDR_DemoApplication::OnMouseScrollEvent( const float x_offset, const float y_offset )
 {
-	Application::OnMouseScrollEvent( x_offset, y_offset );
 }
 
 void HDR_DemoApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods )
@@ -265,8 +263,6 @@ void HDR_DemoApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_c
 		default:
 			break;
 	}*/
-
-	Application::OnKeyboardEvent( key_code, key_action, key_mods );
 }
 
 void HDR_DemoApplication::OnFramebufferResizeEvent( const i32 width_new_pixels, const i32 height_new_pixels )

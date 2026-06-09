@@ -34,19 +34,27 @@
 
 using namespace Kakadu::Math::Literals;
 
-Kakadu::Application* Kakadu::CreateApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
-{
-    return new BloomDemoApplication( flags );
-}
-
 BloomDemoApplication::BloomDemoApplication( const Kakadu::BitFlags< Kakadu::CreationFlags > flags )
 	:
-	Kakadu::Application( flags,
-						 Kakadu::Renderer::Description
-						 {
-							 .main_framebuffer_color_format = Kakadu::RHI::Texture::Format::RGBA_16F,
-							 .msaa_sample_count             = 4
-						 } ),
+	Kakadu::Application(
+		Kakadu::ApplicationCallbacks
+		{
+			.on_initialize         = [ this ] { Initialize(); },
+			.on_shutdown           = [ this ] { Shutdown(); },
+			.on_update             = [ this ] { Update(); },
+			.on_render_frame       = [ this ] { RenderFrame(); },
+			.on_render_tools_ui    = [ this ] { RenderToolsUI(); },
+			.on_keyboard_event     = std::bind_front( &BloomDemoApplication::OnKeyboardEvent,			this ),
+			.on_mouse_button_event = std::bind_front( &BloomDemoApplication::OnMouseButtonEvent,		this ),
+			.on_mouse_scroll_event = std::bind_front( &BloomDemoApplication::OnMouseScrollEvent,		this ),
+			.on_framebuffer_resize = std::bind_front( &BloomDemoApplication::OnFramebufferResizeEvent,	this ),
+		},
+		flags,
+		Kakadu::Renderer::Description
+		{
+			.main_framebuffer_color_format = Kakadu::RHI::Texture::Format::RGBA_16F,
+			.msaa_sample_count             = 4
+		} ),
 	test_model_info
 	{
 		.model_instance          = {},
@@ -70,13 +78,9 @@ BloomDemoApplication::BloomDemoApplication( const Kakadu::BitFlags< Kakadu::Crea
 	cube_reflected_transform_array( CUBE_REFLECTED_COUNT ),
 	star_transform_array( STAR_COUNT )
 {
-	Initialize();
 }
 
-BloomDemoApplication::~BloomDemoApplication()	
-{
-	Shutdown();
-}
+BloomDemoApplication::~BloomDemoApplication() = default;
 
 void BloomDemoApplication::Initialize()
 {
@@ -475,8 +479,6 @@ void BloomDemoApplication::Shutdown()
 
 void BloomDemoApplication::Update()
 {
-	Application::Update();
-
 	KAKADU_GL_DEBUG_GROUP( "Bloom Demo Update()" );
 
 	current_time_as_angle = Radians( frame_time.time_current );
@@ -565,8 +567,6 @@ void BloomDemoApplication::Update()
 
 void BloomDemoApplication::RenderFrame()
 {
-	Kakadu::Application::RenderFrame();
-
 	// Scene-view Camera moved into Application.
 
 	//renderer->Render();
@@ -810,12 +810,10 @@ void BloomDemoApplication::RenderToolsUI()
 
 void BloomDemoApplication::OnMouseButtonEvent( const Kakadu::Platform::MouseButton button, const Kakadu::Platform::MouseButtonAction button_action, const Kakadu::Platform::KeyMods key_mods )
 {
-	Application::OnMouseButtonEvent( button, button_action, key_mods );
 }
 
 void BloomDemoApplication::OnMouseScrollEvent( const float x_offset, const float y_offset )
 {
-	Application::OnMouseScrollEvent( x_offset, y_offset );
 }
 
 void BloomDemoApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_code, const Kakadu::Platform::KeyAction key_action, const Kakadu::Platform::KeyMods key_mods )
@@ -833,7 +831,7 @@ void BloomDemoApplication::OnKeyboardEvent( const Kakadu::Platform::KeyCode key_
 				light_spot.data.cutoff_angle_inner = Kakadu::Math::Max( light_spot.data.cutoff_angle_inner - 0.33_deg, 0_deg );
 			break;
 		default:
-			Application::OnKeyboardEvent( key_code, key_action, key_mods );
+			break;
 	}
 }
 
