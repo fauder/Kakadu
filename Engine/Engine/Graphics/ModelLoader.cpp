@@ -280,28 +280,33 @@ namespace Kakadu
                 tangents.resize( size );
                 for( auto base_index = 0; base_index < index_count; base_index += 3 )
                 {
-                    const auto index_0 = indices_u32[ base_index     ];
-                    const auto index_1 = indices_u32[ base_index + 1 ];
-                    const auto index_2 = indices_u32[ base_index + 2 ];
+                    const u32 index_0 = indices_u32[ base_index     ];
+                    const u32 index_1 = indices_u32[ base_index + 1 ];
+                    const u32 index_2 = indices_u32[ base_index + 2 ];
 
-                    const auto position_0 = positions[ index_0 ];
-                    const auto position_1 = positions[ index_1 ];
-                    const auto position_2 = positions[ index_2 ];
+                    const Vector3 position_0 = positions[ index_0 ];
+                    const Vector3 position_1 = positions[ index_1 ];
+                    const Vector3 position_2 = positions[ index_2 ];
 
-                    const auto uv_0 = uvs_0[ index_0 ];
-                    const auto uv_1 = uvs_0[ index_1 ];
-                    const auto uv_2 = uvs_0[ index_2 ];
+                    const Vector2 uv_0 = uvs_0[ index_0 ];
+                    const Vector2 uv_1 = uvs_0[ index_1 ];
+                    const Vector2 uv_2 = uvs_0[ index_2 ];
 
-                    const auto edge_1 = position_1 - position_0;
-                    const auto edge_2 = position_2 - position_0;
+                    const Vector3 edge_1 = position_1 - position_0;
+                    const Vector3 edge_2 = position_2 - position_0;
 
-                    const auto delta_uv_1 = uv_1 - uv_0;
-                    const auto delta_uv_2 = uv_2 - uv_0;
+                    const Vector2 delta_uv_1 = uv_1 - uv_0;
+                    const Vector2 delta_uv_2 = uv_2 - uv_0;
 
-                    const auto delta_v_1 = delta_uv_1.Y();
-                    const auto delta_v_2 = delta_uv_2.Y();
+                    const float delta_v_1 = delta_uv_1.Y();
+                    const float delta_v_2 = delta_uv_2.Y();
 
-                    const auto f = 1.0f / ( delta_uv_1.X() * delta_v_2 - delta_uv_2.X() * delta_v_1 );
+                    const float determinant = delta_uv_1.X() * delta_v_2 - delta_uv_2.X() * delta_v_1;
+                    
+                    if( Math::IsZero( determinant ) )
+                        continue;
+
+                    const float f = 1.0f / determinant;
 
                     const Vector3 face_tangent( f * ( delta_v_2 * edge_1.X() - delta_v_1 * edge_2.X() ),
                                                 f * ( delta_v_2 * edge_1.Y() - delta_v_1 * edge_2.Y() ),
