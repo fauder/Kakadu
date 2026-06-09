@@ -273,7 +273,7 @@ namespace Kakadu
             } );
 
             /* Calculate tangents if the model did not have them. */
-            if( tangents.empty() )
+            if( not uvs_0.empty() && tangents.empty() )
             {
                 const auto index_count = indices_u32.size();
                 const auto size = positions.size();
