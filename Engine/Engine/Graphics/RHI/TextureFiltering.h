@@ -16,4 +16,5 @@ namespace Kakadu::RHI
 	};
 
 	u32 TextureFilteringToGLEnum( TextureFiltering );
+	TextureFiltering TextureFilteringFromGLEnum( u32 );
 };

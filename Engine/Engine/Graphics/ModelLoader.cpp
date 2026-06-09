@@ -514,13 +514,12 @@ namespace Kakadu
             if( gltf_texture.samplerIndex.has_value() )
             {
                 const auto& sampler = gltf_asset.samplers[ *gltf_texture.samplerIndex ];
-                import_settings.wrap_u = RHI::TextureWrapping( sampler.wrapS );
-                import_settings.wrap_v = RHI::TextureWrapping( sampler.wrapT );
+                import_settings.wrap_u = RHI::TextureWrappingFromGLEnum( ( u32 )sampler.wrapS );
+                import_settings.wrap_v = RHI::TextureWrappingFromGLEnum( ( u32 )sampler.wrapT );
                 if( sampler.minFilter.has_value() )
-                    import_settings.min_filter = RHI::TextureFiltering( *sampler.minFilter );
+                    import_settings.min_filter = RHI::TextureFilteringFromGLEnum( ( u32 )*sampler.minFilter );
                 if( sampler.magFilter.has_value() )
-                    import_settings.mag_filter = RHI::TextureFiltering( *sampler.magFilter );
-
+                    import_settings.mag_filter = RHI::TextureFilteringFromGLEnum( ( u32 )*sampler.magFilter );
             }
 
             /* Turn off sRGB status for linear textures: */

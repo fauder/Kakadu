@@ -20,4 +20,20 @@ namespace Kakadu::RHI
 		ASSERT( false && "Invalid filtering_mode in Kakadu::RHI::TextureFilteringToGLEnum( filtering_mode )!" );
 		return GL_NONE;
 	}
+
+	TextureFiltering TextureFilteringFromGLEnum( u32 gl_enum )
+	{
+		switch( gl_enum )
+		{
+			case GL_NEAREST                : return TextureFiltering::Nearest;
+			case GL_LINEAR                 : return TextureFiltering::Linear;
+			case GL_NEAREST_MIPMAP_NEAREST : return TextureFiltering::Nearest_MipmapNearest;
+			case GL_LINEAR_MIPMAP_NEAREST  : return TextureFiltering::Linear_MipmapNearest;
+			case GL_NEAREST_MIPMAP_LINEAR  : return TextureFiltering::Nearest_MipmapLinear;
+			case GL_LINEAR_MIPMAP_LINEAR   : return TextureFiltering::Linear_MipmapLinear;
+		}
+
+		ASSERT( false && "Invalid gl_enum in Kakadu::RHI::TextureFilteringFromGLEnum( gl_enum )!" );
+		return TextureFiltering::Linear;
+	}
 }

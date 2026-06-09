@@ -15,4 +15,5 @@ namespace Kakadu::RHI
 	};
 
 	u32 TextureWrappingToGLEnum( TextureWrapping );
+	TextureWrapping TextureWrappingFromGLEnum( u32 );
 };
