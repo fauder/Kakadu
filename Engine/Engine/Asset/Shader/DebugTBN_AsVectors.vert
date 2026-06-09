@@ -6,7 +6,7 @@
 
 POSITION vec3 position;
 NORMAL   vec3 normal;
-TANGENT  vec3 tangent;
+TANGENT  vec4 tangent;
 #ifdef INSTANCING_ENABLED
 INSTANCE_WORLD_TRANSFORM mat4 world_transform;
 #endif
@@ -35,7 +35,7 @@ void main()
 
     vs_out.varying_normal_view_space = vec4( normalize( normal * world_view_transform_for_normals ), 0.0 );
 
-    vs_out.varying_tangent_view_space = vec4( normalize( tangent * mat3x3( world_view_transform ) ), 0.0 );
+    vs_out.varying_tangent_view_space = vec4( normalize( tangent.xyz * mat3x3( world_view_transform ) ), 0.0 );
     
     gl_Position = vec4( position, 1.0 ) * world_view_transform;
 }

@@ -101,11 +101,12 @@ namespace Kakadu::Primitive::Indexed::CircleTemplate
 		return normals;
 	};
 
+	// W components are set to +1.0f. Handedness doesn't change for primitive meshes constructed in-engine.
 	template< u8 VertexCount = 20 > requires( VertexCount >= 3 )
-	constexpr std::array< Vector3, VertexCount > Tangents()
+	constexpr std::array< Vector4, VertexCount > Tangents()
 	{
-		std::array< Vector3, VertexCount > tangents;
-		tangents.fill( Vector3::Left() );
+		std::array< Vector4, VertexCount > tangents;
+		tangents.fill( Vector4( Vector3::Left(), +1.0f ) );
 		return tangents;
 	};
 

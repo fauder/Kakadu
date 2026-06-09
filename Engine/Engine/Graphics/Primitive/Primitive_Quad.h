@@ -38,14 +38,15 @@ namespace Kakadu::Primitive::NonIndexed::Quad
 		{  0.0f,  0.0f, -1.0f }
 	} );
 
-	constexpr std::array< Vector3, 6 > Tangents
+	// W components are set to +1.0f. Handedness doesn't change for primitive meshes constructed in-engine.
+	constexpr std::array< Vector4, 6 > Tangents
 	( {
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f }
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f }
 	} );
 }
 
@@ -81,11 +82,12 @@ namespace Kakadu::Primitive::Indexed::Quad
 		{  0.0f,  0.0f, -1.0f }
 	} );
 
-	constexpr std::array< Vector3, 4 > Tangents
+	// W components are set to +1.0f. Handedness doesn't change for primitive meshes constructed in-engine.
+	constexpr std::array< Vector4, 4 > Tangents
 	( {
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f }
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f }
 	} );
 }

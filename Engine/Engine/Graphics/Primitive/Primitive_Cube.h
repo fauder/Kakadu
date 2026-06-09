@@ -143,49 +143,50 @@ namespace Kakadu::Primitive::NonIndexed::Cube
 		{  0.0f, +1.0f,  0.0f }  // TOP
 	} );
 
-	constexpr std::array< Vector3, 36 > Tangents
+	// W components are set to +1.0f. Handedness doesn't change for primitive meshes constructed in-engine.
+	constexpr std::array< Vector4, 36 > Tangents
 	( {
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
 
-		{ +1.0f,  0.0f,  0.0f }, // BACK
-		{ +1.0f,  0.0f,  0.0f }, // BACK
-		{ +1.0f,  0.0f,  0.0f }, // BACK
-		{ +1.0f,  0.0f,  0.0f }, // BACK
-		{ +1.0f,  0.0f,  0.0f }, // BACK
-		{ +1.0f,  0.0f,  0.0f }, // BACK
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BACK
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BACK
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BACK
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BACK
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BACK
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BACK
 
-		{  0.0f,  0.0f, -1.0f }, // LEFT
-		{  0.0f,  0.0f, -1.0f }, // LEFT
-		{  0.0f,  0.0f, -1.0f }, // LEFT
-		{  0.0f,  0.0f, -1.0f }, // LEFT
-		{  0.0f,  0.0f, -1.0f }, // LEFT
-		{  0.0f,  0.0f, -1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
 
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
 
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
 
-		{ +1.0f,  0.0f,  0.0f }, // TOP
-		{ +1.0f,  0.0f,  0.0f }, // TOP
-		{ +1.0f,  0.0f,  0.0f }, // TOP
-		{ +1.0f,  0.0f,  0.0f }, // TOP
-		{ +1.0f,  0.0f,  0.0f }, // TOP
-		{ +1.0f,  0.0f,  0.0f }  // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }  // TOP
 	} );
 
 	constexpr std::array< Vector3, 36 > Bitangents
@@ -403,37 +404,38 @@ namespace Kakadu::Primitive::Indexed::Cube
 		{  0.0f, +1.0f,  0.0f }  // TOP
 	} );
 
-	constexpr std::array< Vector3, 24 > Tangents
+	// W components are set to +1.0f. Handedness doesn't change for primitive meshes constructed in-engine.
+	constexpr std::array< Vector4, 24 > Tangents
 	( {
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
-		{ +1.0f,  0.0f,  0.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // FRONT
 
-		{ -1.0f,  0.0f,  0.0f }, // BACK
-		{ -1.0f,  0.0f,  0.0f }, // BACK
-		{ -1.0f,  0.0f,  0.0f }, // BACK
-		{ -1.0f,  0.0f,  0.0f }, // BACK
+		{ -1.0f,  0.0f,  0.0f, +1.0f }, // BACK
+		{ -1.0f,  0.0f,  0.0f, +1.0f }, // BACK
+		{ -1.0f,  0.0f,  0.0f, +1.0f }, // BACK
+		{ -1.0f,  0.0f,  0.0f, +1.0f }, // BACK
 
-		{  0.0f,  0.0f, -1.0f }, // LEFT
-		{  0.0f,  0.0f, -1.0f }, // LEFT
-		{  0.0f,  0.0f, -1.0f }, // LEFT
-		{  0.0f,  0.0f, -1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
+		{  0.0f,  0.0f, -1.0f, +1.0f }, // LEFT
 
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
-		{  0.0f,  0.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
+		{  0.0f,  0.0f, +1.0f, +1.0f }, // RIGHT
 
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
-		{ +1.0f,  0.0f,  0.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // BOTTOM
 
-		{ +1.0f,  0.0f,  0.0f }, // TOP
-		{ +1.0f,  0.0f,  0.0f }, // TOP
-		{ +1.0f,  0.0f,  0.0f }, // TOP
-		{ +1.0f,  0.0f,  0.0f }  // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }, // TOP
+		{ +1.0f,  0.0f,  0.0f, +1.0f }  // TOP
 	} );
 
 	constexpr std::array< Vector3, 24 > Bitangents

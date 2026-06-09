@@ -207,7 +207,7 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 		constexpr u8 ring_vertex_count   = LongitudeCount + 1; // +1 to include the u = 1 vertex, which shares the same position as the u = 0 vertex.
 
 		constexpr u16 vertex_count = LongitudeCount * ring_vertex_count; // Poles also need as many as ring_vertex_count vertices for uvs & other attribs.
-		std::array< Vector3, vertex_count > tangents;
+		std::array< Vector4, vertex_count > tangents;
 
 		const auto normals( Normals< LongitudeCount >() );
 
@@ -230,7 +230,7 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 
 			const auto& normal( normals[ index_of_vertex_in_first_non_pole_ring ] );
 			const auto normal_projected_to_xz( Vector3( normal ).SetY( 0.0f ).Normalized() );
-			tangents[ index ] = Math::Cross( normal_projected_to_xz, normal ).Normalized();
+			tangents[ index ] = Vector4( Math::Cross( normal_projected_to_xz, normal ).Normalized(), +1.0f );
 		}
 
 		/* Now copy the tangents to other rings: */
@@ -267,7 +267,8 @@ namespace Kakadu::Primitive::Indexed::UVSphereTemplate
 			const auto index_of_vertex_in_first_non_pole_ring( ring_vertex_count + index );
 
 			const auto& normal( normals[ index_of_vertex_in_first_non_pole_ring ] );
-			bitangents[ index ] = Math::Cross( tangents[ index_of_vertex_in_first_non_pole_ring ], normals[ index_of_vertex_in_first_non_pole_ring ] ).Normalized();
+			bitangents[ index ] = Math::Cross( tangents[ index_of_vertex_in_first_non_pole_ring ].XYZ(),
+											   normals[ index_of_vertex_in_first_non_pole_ring ] ).Normalized();
 		}
 
 		/* Now copy the bitangents to other rings: */

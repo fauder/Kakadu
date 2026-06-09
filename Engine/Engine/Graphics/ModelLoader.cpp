@@ -222,7 +222,7 @@ namespace Kakadu
              * Tangents:
              */
 
-            std::vector< Vector3 > tangents;
+            std::vector< Vector4 > tangents;
 
             if( auto* tangent_iterator = submesh_iterator->findAttribute( "TANGENT" );
                 tangent_iterator != submesh_iterator->attributes.cend() )
@@ -236,7 +236,7 @@ namespace Kakadu
                 fastgltf::iterateAccessorWithIndex< Vector4 >( gltf_asset, tangent_accessor,
                                                                [ & ]( Vector4 tangent, std::size_t index )
                 {
-                    tangents[ index ] = tangent.XYZ() * coordinate_system_transform;
+                    tangents[ index ] = Vector4( tangent.XYZ() * coordinate_system_transform, tangent.W() );
                 } );
             }
 
@@ -303,9 +303,12 @@ namespace Kakadu
 
                     const auto f = 1.0f / ( delta_uv_1.X() * delta_v_2 - delta_uv_2.X() * delta_v_1 );
 
+                    /* We stick to one handedness and recalculate proper tangents such that bitangents will always have the same handedness.
+                     * Therefore, w = +1. */
                     tangents.emplace_back( f * ( delta_v_2 * edge_1.X() - delta_v_1 * edge_2.X() ),
                                            f * ( delta_v_2 * edge_1.Y() - delta_v_1 * edge_2.Y() ),
-                                           f * ( delta_v_2 * edge_1.Z() - delta_v_1 * edge_2.Z() ) );
+                                           f * ( delta_v_2 * edge_1.Z() - delta_v_1 * edge_2.Z() ),
+                                           +1.0f );
                 }
             }
 

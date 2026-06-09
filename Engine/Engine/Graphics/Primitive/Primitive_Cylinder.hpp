@@ -208,7 +208,8 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 		return normals;
 	}
 
-	/* Check Positions() for vertex ordering. */
+	/* Check Positions() for vertex ordering.
+	 * W components are set to +1.0f. Handedness doesn't change for primitive meshes constructed in-engine. */
 	template< u8 LongitudeCount = 20 > requires( LongitudeCount >= 3 )
 	constexpr auto Tangents()
 	{
@@ -218,10 +219,10 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 
 		constexpr Radians delta_angle = Constants< Radians >::Two_Pi() / LongitudeCount;
 
-		std::array< Vector3, vertex_count > tangents;
+		std::array< Vector4, vertex_count > tangents;
 
 		/* Top cap: */
-		std::fill_n( tangents.begin(), cap_vertex_count, Vector3::Right() );
+		std::fill_n( tangents.begin(), cap_vertex_count, Vector4( Vector3::Right(), +1.0f ) );
 
 		/* Side vertices: */
 
@@ -233,17 +234,17 @@ namespace Kakadu::Primitive::Indexed::CylinderTemplate
 			for( u8 i = 0; i < LongitudeCount; i++ )
 			{
 				const auto angle = delta_angle * i;
-				/* v0 */ tangents[ index++ ] = Vector3( -Math::Sin( angle ), 0.0f, Math::Cos( angle ) );
-				/* v1 */ tangents[ index++ ] = Vector3( -Math::Sin( angle ), 0.0f, Math::Cos( angle ) );
+				/* v0 */ tangents[ index++ ] = Vector4( -Math::Sin( angle ), 0.0f, Math::Cos( angle ), +1.0f );
+				/* v1 */ tangents[ index++ ] = Vector4( -Math::Sin( angle ), 0.0f, Math::Cos( angle ), +1.0f );
 			}
 
 			/* Duplicate the starting vertices (u=0) to allow u=1. */
-			/* v0 */ tangents[ index++ ] = Vector3::Right();
-			/* v1 */ tangents[ index++ ] = Vector3::Right();
+			/* v0 */ tangents[ index++ ] = Vector4( Vector3::Right(), +1.0f );
+			/* v1 */ tangents[ index++ ] = Vector4( Vector3::Right(), +1.0f );
 		}
 
 		/* Bottom cap: */
-		std::fill_n( tangents.begin() + cap_vertex_count + side_vertex_count, cap_vertex_count, Vector3::Left() );
+		std::fill_n( tangents.begin() + cap_vertex_count + side_vertex_count, cap_vertex_count, Vector4( Vector3::Left(), +1.0f ) );
 
 		return tangents;
 	}

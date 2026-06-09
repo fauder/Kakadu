@@ -29,10 +29,11 @@ namespace Kakadu::Primitive::NonIndexed::Triangle
 		{  0.0f,  0.0f, -1.0f }
 	} );
 
-	constexpr std::array< Vector3, 3 > Tangents
+	// W components are set to +1.0f. Handedness doesn't change for primitive meshes constructed in-engine.
+	constexpr std::array< Vector4, 3 > Tangents
 	( {
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f },
-		{ +1.0f,  0.0f,  0.0f }
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f },
+		{ +1.0f,  0.0f,  0.0f, +1.0f }
 	} );
 }

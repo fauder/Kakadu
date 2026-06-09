@@ -18,7 +18,7 @@ namespace Kakadu
 				const std::span< const Vector3	> normals,
 				const std::span< const Vector2	> uvs, 
 				const std::span< const u32		> indices, 
-				const std::span< const Vector3	> tangents, 
+				const std::span< const Vector4	> tangents, 
 				const RHI::Primitive			  primitive_type,
 				const RHI::Usage				  usage )
 		:
@@ -55,7 +55,7 @@ namespace Kakadu
 				std::vector< Vector3 >&&	normals,
 				std::vector< Vector2 >&&	uvs,
 				std::vector< u32	 >&&	indices,
-				std::vector< Vector3 >&&	tangents,
+				std::vector< Vector4 >&&	tangents,
 				const RHI::Primitive		primitive_type,
 				const RHI::Usage			usage )
 		:
@@ -143,7 +143,7 @@ namespace Kakadu
 	std::array< RHI::VertexAttribute, 4 > Mesh::GatherAttributes( const std::span< const Vector3 >& positions,
 																  const std::span< const Vector3 >& normals,
 																  const std::span< const Vector2 >& uvs,
-																  const std::span< const Vector3 >& tangents )
+																  const std::span< const Vector4 >& tangents )
 	{
 		auto CountOf = []( auto&& attribute_container ) { return attribute_container.empty() ? 0 : i32( sizeof( attribute_container.front() ) / sizeof( float ) ); };
 

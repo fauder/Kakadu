@@ -24,7 +24,7 @@ namespace Kakadu
 			  const std::span< const Vector3	> normals		 = {},
 			  const std::span< const Vector2	> uvs			 = {},
 			  const std::span< const u32		> indices		 = {},
-			  const std::span< const Vector3	> tangents		 = {},
+			  const std::span< const Vector4	> tangents		 = {},
 			  const RHI::Primitive				  primitive_type = RHI::Primitive::Triangles,
 			  const RHI::Usage					  usage          = RHI::Usage::StaticDraw );
 
@@ -33,7 +33,7 @@ namespace Kakadu
 			  std::vector< Vector3	>&& normals		   = {},
 			  std::vector< Vector2	>&& uvs			   = {},
 			  std::vector< u32		>&& indices		   = {},
-			  std::vector< Vector3	>&& tangents	   = {},
+			  std::vector< Vector4	>&& tangents	   = {},
 			  const RHI::Primitive		primitive_type = RHI::Primitive::Triangles,
 			  const RHI::Usage			usage          = RHI::Usage::StaticDraw );
 
@@ -94,7 +94,7 @@ namespace Kakadu
 
 		const std::vector< Vector3 >& Positions()	const { return positions;	};
 		const std::vector< Vector3 >& Normals()		const { return normals;		};
-		const std::vector< Vector3 >& Tangents()	const { return tangents;	};
+		const std::vector< Vector4 >& Tangents()	const { return tangents;	};
 		const std::vector< Vector2 >& Uvs()			const { return uvs;		};
 
 		const float* Positions_Raw()	const { return reinterpret_cast< const float* >( positions.data()	); };
@@ -106,7 +106,7 @@ namespace Kakadu
 		static std::array< RHI::VertexAttribute, 4 > GatherAttributes( const std::span< const Vector3 >& positions,
 																	   const std::span< const Vector3 >& normals,
 																	   const std::span< const Vector2 >& uvs,
-																	   const std::span< const Vector3 >& tangents );
+																	   const std::span< const Vector4 >& tangents );
 
  	private:
 		std::string name;
@@ -115,7 +115,7 @@ namespace Kakadu
 
 		std::vector< Vector3 > positions;
 		std::vector< Vector3 > normals;
-		std::vector< Vector3 > tangents;
+		std::vector< Vector4 > tangents;
 		std::vector< Vector2 > uvs;
 
 		RHI::Primitive primitive_type;
