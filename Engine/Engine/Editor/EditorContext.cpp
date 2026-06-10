@@ -146,18 +146,18 @@ namespace Kakadu::Editor
 		FRAME_STATS_OVERLAY.Update( frame_time.time_delta_real );
 	}
 
-	void Context::RenderUI()
+	void Context::PrepareUI()
 	{
-		if( not show_imgui )
-			return;
-
 		if( show_imgui_demo_window )
 			ImGui::ShowDemoWindow();
 
 		ImGui::DockSpaceOverViewport();
 
 		ImGuiDrawer::Update();
+	}
 
+	void Context::RenderUI()
+	{
 		RENDERER_PANEL.Render( *renderer, renderer_introspection_surface );
 
 		{

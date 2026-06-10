@@ -150,16 +150,20 @@ namespace Kakadu
 				/* Reminder: The rest of the rendering code (namely, ImGui) will be working in sRGB for the remainder of this frame,
 				 * as the last step in the application's rendering was to enable sRGB encoding for the final framebuffer (default framebuffer or the editor FBO). */
 
-				{
-					ZoneScopedN( "Editor::Context::RenderUI" );
-					editor_context->RenderUI();
-				}
-
 				if( editor_context->show_imgui )
 				{
-					ZoneScopedN( "RenderToolsUI" );
-					if( callbacks.on_render_tools_ui )
-						callbacks.on_render_tools_ui();
+					editor_context->PrepareUI();
+
+					{
+						ZoneScopedN( "RenderToolsUI" );
+						if( callbacks.on_render_tools_ui )
+							callbacks.on_render_tools_ui();
+					}
+
+					{
+						ZoneScopedN( "Editor::Context::RenderUI" );
+						editor_context->RenderUI();
+					}
 				}
 				{
 					KAKADU_GL_DEBUG_GROUP( "ImGuiSetup::EndFrame()" );

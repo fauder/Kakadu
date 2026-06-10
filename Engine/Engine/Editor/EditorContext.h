@@ -30,6 +30,7 @@ namespace Kakadu::Editor
 
 		void Initialize();
 		void Update( const FrameTime& frame_time );
+		void PrepareUI();
 		void RenderUI();
 
 		FrameTime& frame_time;
