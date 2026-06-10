@@ -613,9 +613,13 @@ namespace Kakadu
 
             if( node.sub_mesh_group )
             {
-                if( not LoadMesh( gltf_asset, gltf_asset.meshes[ *gltf_node.meshIndex ],
-								  *node.sub_mesh_group, model.meshes, model.textures ) )
-                    return std::nullopt;
+                // Multiple nodes can point to the same sub-mesh group. The group should only be loaded once.
+                if( node.sub_mesh_group->sub_meshes.empty() )
+                {
+                    if( not LoadMesh( gltf_asset, gltf_asset.meshes[ *gltf_node.meshIndex ],
+								      *node.sub_mesh_group, model.meshes, model.textures ) )
+                        return std::nullopt;
+                }
 
                 model.mesh_instance_count += ( i32 )node.sub_mesh_group->sub_meshes.size();
             }
