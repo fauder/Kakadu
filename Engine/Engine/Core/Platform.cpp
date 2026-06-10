@@ -902,18 +902,36 @@ namespace Kakadu::Platform
 #ifdef _WIN32
 				HWND hwnd = GetConsoleWindow();
 
-				RECT rect{};
-				GetWindowRect( hwnd, &rect );
+				if( hwnd )
+				{
+					i32 x_pos, y_pos, width, height;
 
-				i32 x_pos  = rect.left;
-				i32 y_pos  = rect.top;
-				i32 width  = rect.right - rect.left;
-				i32 height = rect.bottom - rect.top;
+					if( IsIconic( hwnd ) )
+					{
+						/* Use the restored size from the normal position rect, but reset pos. to (0,0)
+						 * so the console does not get restored off-screen (i.e., invisible) on next launch. */
+						WINDOWPLACEMENT placement{ sizeof( WINDOWPLACEMENT ) };
+						GetWindowPlacement( hwnd, &placement );
+						x_pos  = 0;
+						y_pos  = 0;
+						width  = placement.rcNormalPosition.right  - placement.rcNormalPosition.left;
+						height = placement.rcNormalPosition.bottom - placement.rcNormalPosition.top;
+					}
+					else
+					{
+						RECT rect{};
+						GetWindowRect( hwnd, &rect );
+						x_pos  = rect.left;
+						y_pos  = rect.top;
+						width  = rect.right  - rect.left;
+						height = rect.bottom - rect.top;
+					}
 
-				output_file << "console_x_pos = " << x_pos << "\n";
-				output_file << "console_y_pos = " << y_pos << "\n";
-				output_file << "console_width = " << width << "\n";
-				output_file << "console_height = " << height << "\n";
+					output_file << "console_x_pos = "  << x_pos << "\n";
+					output_file << "console_y_pos = "  << y_pos << "\n";
+					output_file << "console_width = "  << width << "\n";
+					output_file << "console_height = " << height << "\n";
+				}
 #endif // _WIN32
 			}
 		}
