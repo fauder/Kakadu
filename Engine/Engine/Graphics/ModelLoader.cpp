@@ -280,6 +280,7 @@ namespace Kakadu
                 const auto index_count = indices_u32.size();
                 const auto size = positions.size();
                 tangents.resize( size );
+                std::vector< Vector3 > bitangents( size ); // This is solely for determining the sign of the W component.
                 for( auto base_index = 0; base_index < index_count; base_index += 3 )
                 {
                     const u32 index_0 = indices_u32[ base_index     ];
@@ -300,11 +301,13 @@ namespace Kakadu
                     const Vector2 delta_uv_1 = uv_1 - uv_0;
                     const Vector2 delta_uv_2 = uv_2 - uv_0;
 
+                    const float delta_u_1 = delta_uv_1.X();
+                    const float delta_u_2 = delta_uv_2.X();
                     const float delta_v_1 = delta_uv_1.Y();
                     const float delta_v_2 = delta_uv_2.Y();
 
-                    const float determinant = delta_uv_1.X() * delta_v_2 - delta_uv_2.X() * delta_v_1;
-                    
+                    const float determinant = delta_u_1 * delta_v_2 - delta_u_2 * delta_v_1;
+
                     const float f = 1.0f / determinant;
 
                     if( Math::IsInfinite( f ) )
@@ -313,26 +316,34 @@ namespace Kakadu
                     const Vector3 face_tangent( f * ( delta_v_2 * edge_1.X() - delta_v_1 * edge_2.X() ),
                                                 f * ( delta_v_2 * edge_1.Y() - delta_v_1 * edge_2.Y() ),
                                                 f * ( delta_v_2 * edge_1.Z() - delta_v_1 * edge_2.Z() ) );
+                    const Vector3 face_bitangent( f * ( delta_u_1 * edge_2.X() - delta_u_2 * edge_1.X() ),
+                                                  f * ( delta_u_1 * edge_2.Y() - delta_u_2 * edge_1.Y() ),
+                                                  f * ( delta_u_1 * edge_2.Z() - delta_u_2 * edge_1.Z() ) );
 
                     tangents[ index_0 ].XYZ() += face_tangent;
                     tangents[ index_1 ].XYZ() += face_tangent;
                     tangents[ index_2 ].XYZ() += face_tangent;
+                    bitangents[ index_0 ]     += face_bitangent;
+                    bitangents[ index_1 ]     += face_bitangent;
+                    bitangents[ index_2 ]     += face_bitangent;
                 }
 
                 // Normalize:
-                for( auto& tangent : tangents )
+                for( std::size_t i = 0; i < tangents.size(); i++ )
                 {
+                    auto& tangent = tangents[ i ];
                     if( Math::IsZero( tangent.MagnitudeSquared() ) )
                     {
                         vertices_with_all_degenerate_triangles_detected = true;
-                        tangent.XYZ() = Vector3::Right();
+                        tangent = Vector4( Vector3::Right(), +1.0f );
                     }
                     else
-                        tangent.XYZ().Normalize();
-
-                    /* We stick to one handedness and recalculate proper tangents such that bitangents will always have the same handedness.
-                     * Therefore, w = +1. */
-                    tangent.SetW( +1.0f );
+                    {
+                        const Vector3 t = tangent.XYZ().Normalized();
+                        // This accounts for TBN handedness flips caused by mirrored UVs at mesh seams:
+                        const float   w = Math::Dot( Math::Cross( normals[ i ], t ), bitangents[ i ] ) < 0.0f ? -1.0f : +1.0f;
+                        tangent = Vector4( t, w );
+                    }
                 }
             }
 
