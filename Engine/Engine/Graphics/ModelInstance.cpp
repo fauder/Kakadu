@@ -52,12 +52,12 @@ namespace Kakadu
 			for( auto& child_index : node.children )
 				ProcessNode( child_index, transform_so_far );
 
-			if( node.sub_mesh_group )
+			if( node.mesh_group )
 			{
-				for( auto& sub_mesh : node.sub_mesh_group->sub_meshes )
+				for( auto& mesh_info : node.mesh_group->mesh_infos )
 				{
 					node_transform_array[ mesh_index ].SetFromSRTMatrix( transform_so_far );
-					node_renderable_array[ mesh_index ] = Renderable( &sub_mesh.mesh, ( material ? material : &node_material_array[ mesh_index ] ),
+					node_renderable_array[ mesh_index ] = Renderable( &mesh_info.mesh, ( material ? material : &node_material_array[ mesh_index ] ),
 																	  node_material_array[ mesh_index ].HasUniform( "uniform_transform_world" )
 																		? &node_transform_array[ mesh_index ]
 																		: nullptr,
@@ -89,14 +89,14 @@ namespace Kakadu
 
 		for( auto& node : nodes )
 		{
-			if( node.sub_mesh_group ) // Only process Nodes with Meshes.
+			if( node.mesh_group ) // Only process Nodes with Meshes.
 			{
-				for( auto& sub_mesh : node.sub_mesh_group->sub_meshes )
+				for( auto& mesh_info : node.mesh_group->mesh_infos )
 				{
-					auto& material = node_material_array[ material_index ] = Material( model->Name() + "_" + sub_mesh.name + "_" + std::to_string( material_index ),
+					auto& material = node_material_array[ material_index ] = Material( model->Name() + "_" + mesh_info.name + "_" + std::to_string( material_index ),
 																					   shader );
 
-					if( sub_mesh.texture_albedo )
+					if( mesh_info.texture_albedo )
 					{
 						blinn_phong_material_data_array[ material_index ] =
 						{
@@ -105,13 +105,13 @@ namespace Kakadu
 							.shininess           = 32.0f
 						};
 
-						material.SetTexture( "uniform_tex_diffuse", sub_mesh.texture_albedo );
+						material.SetTexture( "uniform_tex_diffuse", mesh_info.texture_albedo );
 					}
-					else if( sub_mesh.color_albedo )
+					else if( mesh_info.color_albedo )
 					{
 						blinn_phong_material_data_array[ material_index ] =
 						{
-							.color_diffuse       = *sub_mesh.color_albedo,
+							.color_diffuse       = *mesh_info.color_albedo,
 							.has_texture_diffuse = 0,
 							.shininess           = 32.0f
 						};
@@ -120,7 +120,7 @@ namespace Kakadu
 					const RHI::Texture* default_normal_map_texture = BuiltinTextures::Get( "Normal Map" );
 					const RHI::Texture* white_texture              = BuiltinTextures::Get( "White" );
 
-					material.SetTexture( "uniform_tex_normal", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
+					material.SetTexture( "uniform_tex_normal", mesh_info.texture_normal ? mesh_info.texture_normal : default_normal_map_texture );
 					material.SetTexture( "uniform_tex_specular", white_texture );
 
 					material.Set( "uniform_texture_scale_and_offset", texture_scale_and_offset );
@@ -155,14 +155,14 @@ namespace Kakadu
 	
 		for( auto& node : nodes )
 		{
-			if( node.sub_mesh_group ) // Only process Nodes with Meshes.
+			if( node.mesh_group ) // Only process Nodes with Meshes.
 			{
-				for( auto& sub_mesh : node.sub_mesh_group->sub_meshes )
+				for( auto& mesh_info : node.mesh_group->mesh_infos )
 				{
 					auto& material = node_material_array[ material_index ];
 					material.SetShader( shader_to_set );
 
-					if( sub_mesh.texture_albedo )
+					if( mesh_info.texture_albedo )
 					{
 						blinn_phong_material_data_array[ material_index ] =
 						{
@@ -171,13 +171,13 @@ namespace Kakadu
 							.shininess           = 32.0f
 						};
 
-						material.SetTexture( "uniform_tex_diffuse", sub_mesh.texture_albedo );
+						material.SetTexture( "uniform_tex_diffuse", mesh_info.texture_albedo );
 					}
-					else if( sub_mesh.color_albedo )
+					else if( mesh_info.color_albedo )
 					{
 						blinn_phong_material_data_array[ material_index ] =
 						{
-							.color_diffuse       = *sub_mesh.color_albedo,
+							.color_diffuse       = *mesh_info.color_albedo,
 							.has_texture_diffuse = 0,
 							.shininess           = 32.0f
 						};
@@ -186,7 +186,7 @@ namespace Kakadu
 					const RHI::Texture* default_normal_map_texture = BuiltinTextures::Get( "Normal Map" );
 					const RHI::Texture* white_texture              = BuiltinTextures::Get( "White" );
 
-					material.SetTexture( "uniform_tex_normal", sub_mesh.texture_normal ? sub_mesh.texture_normal : default_normal_map_texture );
+					material.SetTexture( "uniform_tex_normal", mesh_info.texture_normal ? mesh_info.texture_normal : default_normal_map_texture );
 					material.SetTexture( "uniform_tex_specular", white_texture );
 
 					material.Set( "uniform_texture_scale_and_offset", texture_scale_and_offset );

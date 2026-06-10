@@ -45,51 +45,51 @@ struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase
 namespace Kakadu
 {
 	bool LoadMesh( const fastgltf::Asset& gltf_asset, const fastgltf::Mesh& gltf_mesh,
-                   Model::SubMeshGroup& sub_mesh_group_to_load, std::vector< Mesh >& meshes, const std::vector< RHI::Texture* >& textures )
+                   Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes, const std::vector< RHI::Texture* >& textures )
     {
-		/* Naming variables sub-mesh instead of gltf's "primitive" for better readibility. */
+		/* Naming variables mesh-info instead of gltf's "primitive" for better readability. */
 
-        sub_mesh_group_to_load.sub_meshes.reserve( gltf_mesh.primitives.size() );
-        sub_mesh_group_to_load.name = gltf_mesh.name;
+        mesh_group_to_load.mesh_infos.reserve( gltf_mesh.primitives.size() );
+        mesh_group_to_load.name = gltf_mesh.name;
 
         auto& texture_database = ServiceLocator< AssetDatabase< RHI::Texture > >::Get();
 
-		for( auto submesh_iterator = gltf_mesh.primitives.begin(); submesh_iterator != gltf_mesh.primitives.end(); ++submesh_iterator )
+		for( auto mesh_info_iterator = gltf_mesh.primitives.begin(); mesh_info_iterator != gltf_mesh.primitives.end(); ++mesh_info_iterator )
         {
             std::size_t base_color_uv_index = 0;
             std::size_t material_index      = -1;
 
-            RHI::Texture* sub_mesh_albedo_texture    = nullptr;
-            RHI::Texture* sub_mesh_normal_texture    = nullptr;
+            RHI::Texture* mesh_info_albedo_texture   = nullptr;
+            RHI::Texture* mesh_info_normal_texture   = nullptr;
             RHI::Texture* metallic_roughness_texture = nullptr;
             RHI::Texture* occlusion_texture          = nullptr;
-            std::optional< Color3 > sub_mesh_albedo_color;
+            std::optional< Color3 > mesh_info_albedo_color;
 
-			auto* position_iterator = submesh_iterator->findAttribute( "POSITION" );
-			ASSERT_DEBUG_ONLY( position_iterator != submesh_iterator->attributes.end() ); // A gltf mesh primitive is required to hold the POSITION attribute.
+			auto* position_iterator = mesh_info_iterator->findAttribute( "POSITION" );
+			ASSERT_DEBUG_ONLY( position_iterator != mesh_info_iterator->attributes.end() ); // A gltf mesh primitive is required to hold the POSITION attribute.
 
             bool vertices_with_all_degenerate_triangles_detected = false;
 
-            if( submesh_iterator->materialIndex.has_value() )
+            if( mesh_info_iterator->materialIndex.has_value() )
             {
-                material_index       = submesh_iterator->materialIndex.value();
+                material_index       = mesh_info_iterator->materialIndex.value();
                 const auto& material = gltf_asset.materials[ material_index ];
-                
-                if( const auto& base_color_texture_info = material.pbrData.baseColorTexture; 
+
+                if( const auto& base_color_texture_info = material.pbrData.baseColorTexture;
                     base_color_texture_info.has_value() )
                 {
                     const auto& fastgltf_texture = gltf_asset.textures[ base_color_texture_info->textureIndex ];
                     if( !fastgltf_texture.imageIndex.has_value() )
                         return false;
 
-                    sub_mesh_albedo_texture = textures[ fastgltf_texture.imageIndex.value() ];
-                    if( sub_mesh_albedo_texture->Name().front() == '<' ) // <unnamed>.
+                    mesh_info_albedo_texture = textures[ fastgltf_texture.imageIndex.value() ];
+                    if( mesh_info_albedo_texture->Name().front() == '<' ) // <unnamed>.
                     {
-                        std::string old_name( sub_mesh_albedo_texture->Name() );
-                        sub_mesh_albedo_texture->SetName( gltf_mesh.name.empty()
-														    ? ( "Unnamed Model " + sub_mesh_albedo_texture->Name().substr( 10 ) + " (Albedo)" ).c_str()
+                        std::string old_name( mesh_info_albedo_texture->Name() );
+                        mesh_info_albedo_texture->SetName( gltf_mesh.name.empty()
+                                                            ? ( "Unnamed Model " + mesh_info_albedo_texture->Name().substr( 10 ) + " (Albedo)" ).c_str()
                                                             : ( gltf_mesh.name + " (Albedo)" ).c_str() );
-                        texture_database.RenameAsset( std::move( old_name ), sub_mesh_albedo_texture->Name() );
+                        texture_database.RenameAsset( std::move( old_name ), mesh_info_albedo_texture->Name() );
                     }
 
                     if( base_color_texture_info->transform && base_color_texture_info->transform->texCoordIndex.has_value() )
@@ -100,7 +100,7 @@ namespace Kakadu
                 else
                 {
                     // Use Albedo color.
-                    sub_mesh_albedo_color = reinterpret_cast< const Color3& /* Omit alpha */ >( material.pbrData.baseColorFactor );
+                    mesh_info_albedo_color = reinterpret_cast< const Color3& /* Omit alpha */ >( material.pbrData.baseColorFactor );
                 }
 
                 if( const auto& normal_texture_info = material.normalTexture;
@@ -110,14 +110,14 @@ namespace Kakadu
                     if( !fastgltf_texture.imageIndex.has_value() )
                         return false;
 
-                    sub_mesh_normal_texture = textures[ fastgltf_texture.imageIndex.value() ];
-                    if( sub_mesh_normal_texture->Name().front() == '<' ) // <unnamed>.
+                    mesh_info_normal_texture = textures[ fastgltf_texture.imageIndex.value() ];
+                    if( mesh_info_normal_texture->Name().front() == '<' ) // <unnamed>.
                     {
-                        std::string old_name( sub_mesh_normal_texture->Name() );
-                        sub_mesh_normal_texture->SetName( gltf_mesh.name.empty()
-                                                            ? ( "Unnamed Model " + sub_mesh_normal_texture->Name().substr( 10 ) + " (Normal)" ).c_str()
+                        std::string old_name( mesh_info_normal_texture->Name() );
+                        mesh_info_normal_texture->SetName( gltf_mesh.name.empty()
+                                                            ? ( "Unnamed Model " + mesh_info_normal_texture->Name().substr( 10 ) + " (Normal)" ).c_str()
                                                             : ( gltf_mesh.name + " (Normal)" ).c_str() );
-                        texture_database.RenameAsset( std::move( old_name ), sub_mesh_normal_texture->Name() );
+                        texture_database.RenameAsset( std::move( old_name ), mesh_info_normal_texture->Name() );
                     }
                 }
 
@@ -186,8 +186,8 @@ namespace Kakadu
 
             std::vector< Vector3 > normals;
 
-            if( auto* normal_iterator = submesh_iterator->findAttribute( "NORMAL" );
-                normal_iterator != submesh_iterator->attributes.end() )
+            if( auto* normal_iterator = mesh_info_iterator->findAttribute( "NORMAL" );
+                normal_iterator != mesh_info_iterator->attributes.end() )
             {
                 const auto& normal_accessor = gltf_asset.accessors[ normal_iterator->accessorIndex ];
                 if( !normal_accessor.bufferViewIndex.has_value() )
@@ -208,8 +208,8 @@ namespace Kakadu
 
             std::vector< Vector2 > uvs_0;
 
-            if( auto* uvs_0_iterator = submesh_iterator->findAttribute( "TEXCOORD_0" );
-                uvs_0_iterator != submesh_iterator->attributes.end() )
+            if( auto* uvs_0_iterator = mesh_info_iterator->findAttribute( "TEXCOORD_0" );
+                uvs_0_iterator != mesh_info_iterator->attributes.end() )
             {
                 const auto& uvs_0_accessor = gltf_asset.accessors[ uvs_0_iterator->accessorIndex ];
                 if( !uvs_0_accessor.bufferViewIndex.has_value() )
@@ -226,8 +226,8 @@ namespace Kakadu
 
             std::vector< Vector4 > tangents;
 
-            if( auto* tangent_iterator = submesh_iterator->findAttribute( "TANGENT" );
-                tangent_iterator != submesh_iterator->attributes.cend() )
+            if( auto* tangent_iterator = mesh_info_iterator->findAttribute( "TANGENT" );
+                tangent_iterator != mesh_info_iterator->attributes.cend() )
             {
                 const auto& tangent_accessor = gltf_asset.accessors[ tangent_iterator->accessorIndex ];
                 if( !tangent_accessor.bufferViewIndex.has_value() )
@@ -246,9 +246,9 @@ namespace Kakadu
              * Indices:
              */
 
-            ASSERT_DEBUG_ONLY( submesh_iterator->indicesAccessor.has_value() ); // We specify GenerateMeshIndices, so we should always have indices.
+            ASSERT_DEBUG_ONLY( mesh_info_iterator->indicesAccessor.has_value() ); // We specify GenerateMeshIndices, so we should always have indices.
 
-            const auto& index_accessor = gltf_asset.accessors[ submesh_iterator->indicesAccessor.value() ];
+            const auto& index_accessor = gltf_asset.accessors[ mesh_info_iterator->indicesAccessor.value() ];
             if( !index_accessor.bufferViewIndex.has_value() )
                 return false;
             const u32 index_count = static_cast< u32 >( index_accessor.count );
@@ -347,24 +347,24 @@ namespace Kakadu
                 }
             }
 
-            std::string sub_mesh_name( sub_mesh_group_to_load.name + "_" + std::to_string( std::distance( gltf_mesh.primitives.begin(), submesh_iterator ) ) );
+            std::string mesh_info_name( mesh_group_to_load.name + "_" + std::to_string( std::distance( gltf_mesh.primitives.begin(), mesh_info_iterator ) ) );
 
             if( vertices_with_all_degenerate_triangles_detected )
-                Log::Warning( "Mesh \"" + sub_mesh_group_to_load.name + "\\" + sub_mesh_name +
+                Log::Warning( "Mesh \"" + mesh_group_to_load.name + "\\" + mesh_info_name +
                               "\": 1 or more vertices with all degenerate UV triangle(s) found during tangent generation."
                               "Tangents for those vertices are set to Vector3::Right()." );
 
-            sub_mesh_group_to_load.sub_meshes.emplace_back( sub_mesh_name,
-                                                        /* Actual Mesh will be stored inside the meshes vector. SubMesh will have a reference to this Mesh. */
-                                                        meshes.emplace_back( Mesh( std::move( positions ),
-                                                                                   sub_mesh_name,
-                                                                                   std::move( normals ),
-                                                                                   std::move( uvs_0 ),
-                                                                                   std::move( indices_u32 ),
-                                                                                   std::move( tangents ) ) ),
-                                                        sub_mesh_albedo_texture,
-                                                        sub_mesh_normal_texture,
-                                                        std::move( sub_mesh_albedo_color ) );
+            mesh_group_to_load.mesh_infos.emplace_back( mesh_info_name,
+                                                     /* Actual Mesh will be stored inside the meshes vector. MeshInfo will have a reference to this Mesh. */
+                                                     meshes.emplace_back( Mesh( std::move( positions ),
+                                                                                mesh_info_name,
+                                                                                std::move( normals ),
+                                                                                std::move( uvs_0 ),
+                                                                                std::move( indices_u32 ),
+                                                                                std::move( tangents ) ) ),
+                                                     mesh_info_albedo_texture,
+                                                     mesh_info_normal_texture,
+                                                     std::move( mesh_info_albedo_color ) );
         }
 
         return true;
@@ -424,7 +424,7 @@ namespace Kakadu
     }
 
     bool LoadNode( const fastgltf::Node& gltf_node,
-                   std::vector< Model::SubMeshGroup >& sub_mesh_groups, Model::Node& node_to_load )
+                   std::vector< Model::MeshGroup >& mesh_groups, Model::Node& node_to_load )
     {
         /* glTF uses a right-handed coordinate system where x points to right, y points to up & z points from the screen to the user.
          * Compared to the coordinate system used in this engine, only the Z component is the inverse, x & y are the same. 
@@ -454,7 +454,7 @@ namespace Kakadu
                                                          }
                                                      }, gltf_node.transform );
         
-        node_to_load = Model::Node( std::string( gltf_node.name ), node_transform, gltf_node.meshIndex ? &sub_mesh_groups[ *gltf_node.meshIndex ] : nullptr );
+        node_to_load = Model::Node( std::string( gltf_node.name ), node_transform, gltf_node.meshIndex ? &mesh_groups[ *gltf_node.meshIndex ] : nullptr );
 
         return true;
     }
@@ -572,20 +572,20 @@ namespace Kakadu
         }
 
         /*
-         * Mapping between the glTF & this engine: 
+         * Mapping between the glTF & this engine:
          * scene        -> ~Model (Default scene is assumed, multiple scenes are not supported).
          * node         -> Node
-         * mesh         -> SubMeshGroup (Node has a SubMeshGroup pointer)
-         * primitive    -> SubMesh (SubMeshGroup has a vector of SubMeshes).
+         * mesh         -> MeshGroup (Node has a MeshGroup pointer)
+         * primitive    -> MeshInfo (MeshGroup has a vector of MeshInfos).
          */
 
-        // Node points to an optional SubMeshGroup => SubMeshGroup vector has to be provided at this time.
-        model.sub_mesh_groups.resize( gltf_asset.meshes.size() );
+        // Node points to an optional MeshGroup => MeshGroup vector has to be provided at this time.
+        model.mesh_groups.resize( gltf_asset.meshes.size() );
 
         model.nodes.reserve( gltf_asset.nodes.size() );
 
         /* Weird gltf terminology; A "mesh" in glTF is actually just a *group*, whereas the "primitive" is the actual mesh, nested inside a "mesh".
-         * A better name for a primitive would be sub-mesh.
+         * In Kakadu, these are called MeshGroup and MeshInfo respectively.
          */
 
         const auto sub_mesh_count = std::accumulate( gltf_asset.meshes.cbegin(), gltf_asset.meshes.cend(), 0,
@@ -604,24 +604,24 @@ namespace Kakadu
             auto& node            = model.nodes.emplace_back();
 
             if( not LoadNode( gltf_node,
-							  model.sub_mesh_groups, node ) )
+							  model.mesh_groups, node ) )
                 return std::nullopt;
 
             node.children.reserve( gltf_node.children.size() );
             for( auto& child_index : gltf_node.children )
                 node.children.push_back( ( i32 )child_index );
 
-            if( node.sub_mesh_group )
+            if( node.mesh_group )
             {
-                // Multiple nodes can point to the same sub-mesh group. The group should only be loaded once.
-                if( node.sub_mesh_group->sub_meshes.empty() )
+                // Multiple nodes can point to the same mesh group. The group should only be loaded once.
+                if( node.mesh_group->mesh_infos.empty() )
                 {
                     if( not LoadMesh( gltf_asset, gltf_asset.meshes[ *gltf_node.meshIndex ],
-								      *node.sub_mesh_group, model.meshes, model.textures ) )
+								      *node.mesh_group, model.meshes, model.textures ) )
                         return std::nullopt;
                 }
 
-                model.mesh_instance_count += ( i32 )node.sub_mesh_group->sub_meshes.size();
+                model.mesh_instance_count += ( i32 )node.mesh_group->mesh_infos.size();
             }
         }
 
