@@ -40,13 +40,6 @@ namespace Kakadu
 		node_transform_array.resize( mesh_instance_count );
 		node_renderable_array.resize( mesh_instance_count );
 
-		for( auto i = 0; i < mesh_instance_count; i++ )
-		{
-			node_renderable_array[ i ] = Renderable( &meshes[ i ], ( material ? material : &node_material_array[ i ] ),
-													 node_material_array[ i ].HasUniform( "uniform_transform_world" ) ? &node_transform_array[ i ] : nullptr,
-													 receives_shadows, casts_shadows );
-		}
-
 		/* Apply scene-graph transformations: */
 
 		i32 mesh_index = 0;
@@ -60,8 +53,19 @@ namespace Kakadu
 				ProcessNode( child_index, transform_so_far );
 
 			if( node.sub_mesh_group )
+			{
 				for( auto& sub_mesh : node.sub_mesh_group->sub_meshes )
-					node_transform_array[ mesh_index++ ].SetFromSRTMatrix( transform_so_far );
+				{
+					node_transform_array[ mesh_index ].SetFromSRTMatrix( transform_so_far );
+					node_renderable_array[ mesh_index ] = Renderable( &sub_mesh.mesh, ( material ? material : &node_material_array[ mesh_index ] ),
+																	  node_material_array[ mesh_index ].HasUniform( "uniform_transform_world" )
+																		? &node_transform_array[ mesh_index ]
+																		: nullptr,
+																	  receives_shadows, casts_shadows );
+
+					mesh_index++;
+				}
+			}
 		};
 
 		for( auto top_level_node_index : model->TopLevelNodeIndices() )
@@ -89,7 +93,8 @@ namespace Kakadu
 			{
 				for( auto& sub_mesh : node.sub_mesh_group->sub_meshes )
 				{
-					auto& material = node_material_array[ material_index ] = Material( model->Name() + "_" + sub_mesh.name, shader );
+					auto& material = node_material_array[ material_index ] = Material( model->Name() + "_" + sub_mesh.name + "_" + std::to_string( material_index ),
+																					   shader );
 
 					if( sub_mesh.texture_albedo )
 					{
