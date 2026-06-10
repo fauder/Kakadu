@@ -398,6 +398,19 @@ namespace Kakadu::ImGuiDrawer
 	{
 		local_persist const RHI::Texture* selected_texture = nullptr;
 
+		/* Reset selection if the texture was deleted (e.g. model unload). Without this, selected_texture
+		 * becomes a dangling pointer and ImGui queues a bind texture command with the stale, now-invalid GL ID. */
+		if( selected_texture )
+		{
+			bool still_exists = false;
+			for( const auto& [ texture_asset_name, texture ] : texture_map )
+				if( &texture == selected_texture )
+					{ still_exists = true; break; }
+
+			if( not still_exists )
+				selected_texture = nullptr;
+		}
+
 		ImGui::SetNextWindowSize( reinterpret_cast< const ImVec2& >( window_size ) );
 		if( ImGui::Begin( ICON_FA_IMAGE " Textures" ) )
 		{
@@ -488,6 +501,19 @@ namespace Kakadu::ImGuiDrawer
 	void Draw( const std::map< std::string, RHI::Texture* >& internal_texture_map, const Vector2& window_size )
 	{
 		local_persist const RHI::Texture* selected_texture = nullptr;
+
+		/* Reset selection if the texture was deleted (e.g. model unload). Without this, selected_texture
+		 * becomes a dangling pointer and ImGui queues a bind texture command with the stale, now-invalid GL ID. */
+		if( selected_texture )
+		{
+			bool still_exists = false;
+			for( const auto& [ texture_asset_name, texture_pointer ] : internal_texture_map )
+				if( texture_pointer == selected_texture )
+					{ still_exists = true; break; }
+
+			if( not still_exists )
+				selected_texture = nullptr;
+		}
 
 		ImGui::SetNextWindowSize( reinterpret_cast< const ImVec2& >( window_size ) );
 		if( ImGui::Begin( ICON_FA_IMAGE " Textures (Internal)" ) )
