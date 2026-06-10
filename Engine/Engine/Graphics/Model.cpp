@@ -5,11 +5,11 @@
 
 namespace Kakadu
 {
-	Model::Node::Node( const std::string& name, const Matrix4x4& transform_local, MeshGroup* mesh_group )
+	Model::Node::Node( const std::string& name, const Matrix4x4& transform_local, SubMeshGroup* sub_mesh_group )
 		:
 		name( name ),
 		transform_local( transform_local ),
-		mesh_group( mesh_group )
+		sub_mesh_group( sub_mesh_group )
 	{
 	}
 
@@ -18,7 +18,7 @@ namespace Kakadu
 		children( std::move( donor.children ) ),
 		name( std::move( donor.name ) ),
 		transform_local( std::move( donor.transform_local ) ),
-		mesh_group( std::exchange( donor.mesh_group, nullptr ) )
+		sub_mesh_group( std::exchange( donor.sub_mesh_group, nullptr ) )
 	{
 	}
 
@@ -27,7 +27,7 @@ namespace Kakadu
 		children        = std::move( donor.children );
 		name            = std::move( donor.name );
 		transform_local = std::move( donor.transform_local );
-		mesh_group      = std::exchange( donor.mesh_group, nullptr );
+		sub_mesh_group      = std::exchange( donor.sub_mesh_group, nullptr );
 
 		return *this;
 	}

@@ -45,12 +45,12 @@ struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase
 namespace Kakadu
 {
 	bool LoadMesh( const fastgltf::Asset& gltf_asset, const fastgltf::Mesh& gltf_mesh,
-                   Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes, const std::vector< RHI::Texture* >& textures )
+                   Model::SubMeshGroup& sub_mesh_group_to_load, std::vector< Mesh >& meshes, const std::vector< RHI::Texture* >& textures )
     {
 		/* Naming variables sub-mesh instead of gltf's "primitive" for better readibility. */
 
-        mesh_group_to_load.sub_meshes.reserve( gltf_mesh.primitives.size() );
-        mesh_group_to_load.name = gltf_mesh.name;
+        sub_mesh_group_to_load.sub_meshes.reserve( gltf_mesh.primitives.size() );
+        sub_mesh_group_to_load.name = gltf_mesh.name;
 
         auto& texture_database = ServiceLocator< AssetDatabase< RHI::Texture > >::Get();
 
@@ -347,14 +347,14 @@ namespace Kakadu
                 }
             }
 
-            std::string sub_mesh_name( mesh_group_to_load.name + "_" + std::to_string( std::distance( gltf_mesh.primitives.begin(), submesh_iterator ) ) );
+            std::string sub_mesh_name( sub_mesh_group_to_load.name + "_" + std::to_string( std::distance( gltf_mesh.primitives.begin(), submesh_iterator ) ) );
 
             if( vertices_with_all_degenerate_triangles_detected )
-                Log::Warning( "Mesh \"" + mesh_group_to_load.name + "\\" + sub_mesh_name +
+                Log::Warning( "Mesh \"" + sub_mesh_group_to_load.name + "\\" + sub_mesh_name +
                               "\": 1 or more vertices with all degenerate UV triangle(s) found during tangent generation."
                               "Tangents for those vertices are set to Vector3::Right()." );
 
-            mesh_group_to_load.sub_meshes.emplace_back( sub_mesh_name,
+            sub_mesh_group_to_load.sub_meshes.emplace_back( sub_mesh_name,
                                                         /* Actual Mesh will be stored inside the meshes vector. SubMesh will have a reference to this Mesh. */
                                                         meshes.emplace_back( Mesh( std::move( positions ),
                                                                                    sub_mesh_name,
@@ -424,7 +424,7 @@ namespace Kakadu
     }
 
     bool LoadNode( const fastgltf::Node& gltf_node,
-                   std::vector< Model::MeshGroup >& mesh_groups, Model::Node& node_to_load )
+                   std::vector< Model::SubMeshGroup >& sub_mesh_groups, Model::Node& node_to_load )
     {
         /* glTF uses a right-handed coordinate system where x points to right, y points to up & z points from the screen to the user.
          * Compared to the coordinate system used in this engine, only the Z component is the inverse, x & y are the same. 
@@ -454,7 +454,7 @@ namespace Kakadu
                                                          }
                                                      }, gltf_node.transform );
         
-        node_to_load = Model::Node( std::string( gltf_node.name ), node_transform, gltf_node.meshIndex ? &mesh_groups[ *gltf_node.meshIndex ] : nullptr );
+        node_to_load = Model::Node( std::string( gltf_node.name ), node_transform, gltf_node.meshIndex ? &sub_mesh_groups[ *gltf_node.meshIndex ] : nullptr );
 
         return true;
     }
@@ -511,8 +511,8 @@ namespace Kakadu
         model.textures.reserve( gltf_asset.images.size() );
 
         /* For the LoadMesh() to work properly, textures in Model need to be ordered based on gltf_asset.images, NOT gltf_asset.textures (they can have different orderings). 
-         * While it would be more convenient to loop of gltf_asset.textures here since it has an imageIndex into the gltf_asset.images array, we can't,
-         * as we need to create textures in the order of gltf_asset.images.
+         * While it would be more convenient to loop the gltf_asset.textures here since it has an imageIndex into the gltf_asset.images array,
+         * we can't, as we need to create textures in the order of gltf_asset.images.
          *
          * Therefore, we first cache the mapping between the two arrays: */
         std::unordered_map< std::size_t, std::size_t > gltf_texture_index_from_image_index;
@@ -575,11 +575,12 @@ namespace Kakadu
          * Mapping between the glTF & this engine: 
          * scene        -> ~Model (Default scene is assumed, multiple scenes are not supported).
          * node         -> Node
-         * mesh         -> MeshGroup (Node has a MeshGroup pointer)
-         * primitive    -> SubMesh (MeshGroup has a vector of SubMeshes).
+         * mesh         -> SubMeshGroup (Node has a SubMeshGroup pointer)
+         * primitive    -> SubMesh (SubMeshGroup has a vector of SubMeshes).
          */
 
-        model.mesh_groups.resize( gltf_asset.meshes.size() ); // Node points to an optional MeshGroup, MeshGroup vector has to be provided at this time.
+        // Node points to an optional SubMeshGroup => SubMeshGroup vector has to be provided at this time.
+        model.sub_mesh_groups.resize( gltf_asset.meshes.size() );
 
         model.nodes.reserve( gltf_asset.nodes.size() );
 
@@ -603,20 +604,20 @@ namespace Kakadu
             auto& node            = model.nodes.emplace_back();
 
             if( not LoadNode( gltf_node,
-							  model.mesh_groups, node ) )
+							  model.sub_mesh_groups, node ) )
                 return std::nullopt;
 
             node.children.reserve( gltf_node.children.size() );
             for( auto& child_index : gltf_node.children )
                 node.children.push_back( ( i32 )child_index );
 
-            if( node.mesh_group )
+            if( node.sub_mesh_group )
             {
                 if( not LoadMesh( gltf_asset, gltf_asset.meshes[ *gltf_node.meshIndex ],
-								  *node.mesh_group, model.meshes, model.textures ) )
+								  *node.sub_mesh_group, model.meshes, model.textures ) )
                     return std::nullopt;
 
-                model.mesh_instance_count += ( i32 )node.mesh_group->sub_meshes.size();
+                model.mesh_instance_count += ( i32 )node.sub_mesh_group->sub_meshes.size();
             }
         }
 

@@ -28,7 +28,7 @@ namespace Kakadu
 		static constexpr ImportSettings DEFAULT_IMPORT_SETTINGS = {};
 
 		/* Maps to a glTF "primitive".
-		 * It is a mesh with a unique material, i.e., a distinct draw call (unique in local MeshGroup, or glTF "mesh", not the whole model). */
+		 * It is a mesh with a unique material, i.e., a distinct draw call (unique in local SubMeshGroup, or glTF "mesh", not the whole model). */
 		struct SubMesh
 		{
 			std::string name;
@@ -42,7 +42,7 @@ namespace Kakadu
 		/* Maps to a glTF "mesh". 
 		 * Does not containt a mesh directly; SubMeshes contained inside contain the actual Meshes.
 		 * So basically, this is just a group. */
-		struct MeshGroup
+		struct SubMeshGroup
 		{
 			std::string name;
 			std::vector< SubMesh > sub_meshes;
@@ -52,7 +52,7 @@ namespace Kakadu
 		struct Node
 		{
 			Node() = default;
-			Node( const std::string& name, const Matrix4x4& transform_local, MeshGroup* mesh_group );
+			Node( const std::string& name, const Matrix4x4& transform_local, SubMeshGroup* sub_mesh_group );
 
 			DELETE_COPY_CONSTRUCTORS( Node );
 
@@ -63,7 +63,7 @@ namespace Kakadu
 
 			std::string name;
 			Matrix4x4 transform_local;
-			MeshGroup* mesh_group;
+			SubMeshGroup* sub_mesh_group;
 		};
 
 	private:
@@ -87,7 +87,7 @@ namespace Kakadu
 		i32 NodeCount()			const { return ( i32 )nodes.size(); }
 		i32 MeshCount()			const { return ( i32 )meshes.size(); }
 		i32 MeshInstanceCount()	const { return mesh_instance_count; }
-		i32 MeshGroupCount()	const { return ( i32 )mesh_groups.size(); }
+		i32 SubMeshGroupCount()	const { return ( i32 )sub_mesh_groups.size(); }
 		
 		const std::vector< std::size_t >& TopLevelNodeIndices() const { return node_indices_top_level; }
 
@@ -99,7 +99,7 @@ namespace Kakadu
 		std::string name;
 
 		std::vector< Node			> nodes;
-		std::vector< MeshGroup		> mesh_groups;
+		std::vector< SubMeshGroup	> sub_mesh_groups;
 		std::vector< Mesh			> meshes;
 		std::vector< RHI::Texture*	> textures; // Storage of textures is kept by the AssetDatabase< Texture >.
 

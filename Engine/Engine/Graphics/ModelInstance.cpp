@@ -59,8 +59,8 @@ namespace Kakadu
 			for( auto& child_index : node.children )
 				ProcessNode( child_index, transform_so_far );
 
-			if( node.mesh_group )
-				for( auto& sub_mesh : node.mesh_group->sub_meshes )
+			if( node.sub_mesh_group )
+				for( auto& sub_mesh : node.sub_mesh_group->sub_meshes )
 					node_transform_array[ mesh_index++ ].SetFromSRTMatrix( transform_so_far );
 		};
 
@@ -85,9 +85,9 @@ namespace Kakadu
 
 		for( auto& node : nodes )
 		{
-			if( node.mesh_group ) // Only process Nodes with Meshes.
+			if( node.sub_mesh_group ) // Only process Nodes with Meshes.
 			{
-				for( auto& sub_mesh : node.mesh_group->sub_meshes )
+				for( auto& sub_mesh : node.sub_mesh_group->sub_meshes )
 				{
 					auto& material = node_material_array[ material_index ] = Material( model->Name() + "_" + sub_mesh.name, shader );
 
@@ -150,9 +150,9 @@ namespace Kakadu
 	
 		for( auto& node : nodes )
 		{
-			if( node.mesh_group ) // Only process Nodes with Meshes.
+			if( node.sub_mesh_group ) // Only process Nodes with Meshes.
 			{
-				for( auto& sub_mesh : node.mesh_group->sub_meshes )
+				for( auto& sub_mesh : node.sub_mesh_group->sub_meshes )
 				{
 					auto& material = node_material_array[ material_index ];
 					material.SetShader( shader_to_set );
