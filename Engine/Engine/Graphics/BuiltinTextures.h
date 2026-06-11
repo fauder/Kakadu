@@ -4,6 +4,8 @@
 #include "RHI/Texture.h"
 
 // std Includes.
+#include <optional>
+#include <string>
 #include <unordered_map>
 
 namespace Kakadu

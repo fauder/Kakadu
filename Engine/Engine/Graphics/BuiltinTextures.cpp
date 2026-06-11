@@ -1,8 +1,8 @@
 // Engine Includes.
 #include "BuiltinTextures.h"
-#include "Renderer.h"
 #include "Asset/Paths.h"
 #include "Core/AssetDatabase.hpp"
+#include "Core/ServiceLocator.h"
 #include "Core/Utility.hpp"
 
 namespace Kakadu

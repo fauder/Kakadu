@@ -2,6 +2,7 @@
 #include "RendererPanel.h"
 
 // Engine Includes.
+#include "Graphics/BuiltinMaterials.h"
 #include "Core/ImGuiDrawer.hpp"
 #include "Core/ImGuiUtility.h"
 #include "Core/ImGuiCustomColors.h"
@@ -375,6 +376,9 @@ namespace Kakadu::Editor
 		for( auto& [ effect_name, effect ] : *introspection_surface.post_processing_effect_map )
 			ImGuiDrawer::Draw( effect->material, renderer );
 		ImGuiDrawer::Draw( introspection_surface.tone_mapping->material, renderer );
+
+		ImGuiDrawer::Draw( *BuiltinMaterials::Get( "Default" ), renderer );
+		ImGuiDrawer::Draw( *BuiltinMaterials::Get( "Default (Shadowed)" ), renderer );
 
 		/* Uniforms Buffers: */
 		ImGuiDrawer::Draw( *introspection_surface.uniform_buffer_management_intrinsic, "Shader Intrinsics" );

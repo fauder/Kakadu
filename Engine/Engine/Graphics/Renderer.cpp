@@ -1,5 +1,6 @@
 // Engine Includes.
 #include "Renderer.h"
+#include "BuiltinMaterials.h"
 #include "BuiltinShaders.h"
 #include "BuiltinTextures.h"
 #include "Core/AssetDatabase.hpp"
@@ -1217,13 +1218,15 @@ namespace Kakadu
 		snprintf( buffer, 48, "MSAA Resolve %dx (HDR-Aware)", ( i32 )framebuffer_main_description.msaa.sample_count );
 		msaa_resolve.material = Material( "[Renderer] MSAA Resolve", BuiltinShaders::Get( buffer ) );
 
-		skybox_material       = Material( "[Renderer] Skybox", BuiltinShaders::Get( "Skybox" ) );
+		skybox_material       = Material( "[Renderer] Skybox",		BuiltinShaders::Get( "Skybox" ) );
 		tone_mapping.material = Material( "[Renderer] Tonemapping", BuiltinShaders::Get( "Tonemapping (Bloom)" ) );
 
 		using namespace Math::Literals;
 
 		SetTonemappingExposure( 0.0f );
 		SetTonemappingBloomIntensity( 5_percent );
+
+		BuiltinMaterials::Initialize();
 	}
 
 	void Renderer::InitializeBuiltinRenderables()

@@ -195,6 +195,7 @@
     <ClInclude Include="Engine\Editor\ViewportControlsOverlay.h" />
     <ClInclude Include="Engine\Editor\ViewportPanel.h" />
     <ClInclude Include="Engine\Editor\ViewportScene.h" />
+    <ClInclude Include="Engine\Graphics\BuiltinMaterials.h" />
     <ClInclude Include="Engine\Graphics\FullscreenEffect.h" />
     <ClInclude Include="Engine\Graphics\BuiltinTextures.h" />
     <ClInclude Include="Engine\Graphics\BuiltinShaders.h" />
@@ -323,6 +324,7 @@
     <ClCompile Include="Engine\Editor\ViewportControlsOverlay.cpp" />
     <ClCompile Include="Engine\Editor\ViewportPanel.cpp" />
     <ClCompile Include="Engine\Editor\ViewportScene.cpp" />
+    <ClCompile Include="Engine\Graphics\BuiltinMaterials.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinShaders.cpp" />
     <ClCompile Include="Engine\Graphics\BuiltinTextures.cpp" />
     <ClInclude Include="Engine\Graphics\RHI\GLLabelPrefixes.h" />
