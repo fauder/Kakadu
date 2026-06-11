@@ -44,9 +44,9 @@ struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase
 
 namespace Kakadu
 {
-	bool LoadMaterials( const fastgltf::Asset& gltf_asset,
-	                    std::vector< Model::MaterialInfo >& material_infos,
-	                    const std::vector< RHI::Texture* >& textures )
+	internal_function bool LoadMaterials( const fastgltf::Asset& gltf_asset,
+										  std::vector< Model::MaterialInfo >& material_infos,
+										  const std::vector< RHI::Texture* >& textures )
 	{
 		auto& texture_database = ServiceLocator< AssetDatabase< RHI::Texture > >::Get();
 
@@ -131,9 +131,9 @@ namespace Kakadu
 		return true;
 	}
 
-	bool LoadMesh( const fastgltf::Asset& gltf_asset, const fastgltf::Mesh& gltf_mesh,
-                   Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes )
-    {
+	internal_function bool LoadMesh( const fastgltf::Asset& gltf_asset, const fastgltf::Mesh& gltf_mesh,
+									 Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes )
+	{
 		/* Naming variables mesh-info instead of gltf's "primitive" for better readability. */
 
         mesh_group_to_load.mesh_infos.reserve( gltf_mesh.primitives.size() );
@@ -360,8 +360,8 @@ namespace Kakadu
         return true;
     }
 
-    bool LoadTexture( const fastgltf::Asset& gltf_asset, const fastgltf::Image& gltf_image,
-                      RHI::Texture*& texture_to_load, const RHI::Texture::ImportSettings& import_settings )
+    internal_function bool LoadTexture( const fastgltf::Asset& gltf_asset, const fastgltf::Image& gltf_image,
+										RHI::Texture*& texture_to_load, const RHI::Texture::ImportSettings& import_settings )
     {
         auto& texture_database = ServiceLocator< AssetDatabase< RHI::Texture > >::Get();
 
@@ -413,8 +413,8 @@ namespace Kakadu
         return texture_to_load;
     }
 
-    bool LoadNode( const fastgltf::Node& gltf_node,
-                   std::vector< Model::MeshGroup >& mesh_groups, Model::Node& node_to_load )
+    internal_function bool LoadNode( const fastgltf::Node& gltf_node,
+									 std::vector< Model::MeshGroup >& mesh_groups, Model::Node& node_to_load )
     {
         /* glTF uses a right-handed coordinate system where x points to right, y points to up & z points from the screen to the user.
          * Compared to the coordinate system used in this engine, only the Z component is the inverse, x & y are the same. 
