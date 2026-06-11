@@ -12,6 +12,7 @@ namespace Kakadu
 		shader_shadow_receiving( nullptr )
 	{}
 
+	// TODO: Pass name here and use that name as the Renderable name. Currently, Material name becomes the Renderable name.
 	ModelInstance::ModelInstance( const Model* model, 
 								  RHI::Shader* const shader,
 								  RHI::Shader* const shader_shadow_receiving,
@@ -123,8 +124,9 @@ namespace Kakadu
 
 		for( i32 i = 0; i < ( i32 )material_infos.size(); i++ )
 		{
-			auto& material = node_material_array[ i ] = Material( model->Name() + "_" + std::to_string( i ), shader );
-			PopulateMaterial( material, material_infos[ i ], blinn_phong_material_data_array[ i ], texture_scale_and_offset );
+			const auto& material_info = material_infos[ i ];
+			auto& material = node_material_array[ i ] = Material( material_info.name, shader );
+			PopulateMaterial( material, material_info, blinn_phong_material_data_array[ i ], texture_scale_and_offset );
 		}
 
 		for( i32 i = 0; i < ( i32 )blinn_phong_material_data_array.size(); i++ )

@@ -44,7 +44,8 @@ struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase
 
 namespace Kakadu
 {
-	internal_function bool LoadMaterials( const fastgltf::Asset& gltf_asset,
+	internal_function bool LoadMaterials( const std::string& file_name,
+                                          const fastgltf::Asset& gltf_asset,
 										  std::vector< Model::MaterialInfo >& material_infos,
 										  const std::vector< RHI::Texture* >& textures )
 	{
@@ -52,12 +53,22 @@ namespace Kakadu
 
 		material_infos.resize( gltf_asset.materials.size() );
 
+        // Prevent name collisions: Keep a tab of name occurences across all materials and add suffix when duplicates are encountered.
+        std::unordered_map< std::string, u32 > name_occurrences;
+        for( std::size_t i = 0; i < gltf_asset.materials.size(); i++ )
+        {
+            const std::string base_name = gltf_asset.materials[ i ].name.empty()
+                ? file_name
+                : std::string( gltf_asset.materials[ i ].name );
+
+            const u32 count = ++name_occurrences[ base_name ];
+            material_infos[ i ].name = count > 1 ? base_name + "_" + std::to_string( count ) : base_name;
+        }
+
 		for( std::size_t i = 0; i < gltf_asset.materials.size(); i++ )
 		{
 			const auto& gltf_material = gltf_asset.materials[ i ];
 			auto&       material_info = material_infos[ i ];
-
-			material_info.name = gltf_material.name;
 
 			if( const auto& base_color_texture_info = gltf_material.pbrData.baseColorTexture;
 			    base_color_texture_info.has_value() )
@@ -70,7 +81,7 @@ namespace Kakadu
 				if( material_info.texture_albedo->Name().front() == '<' ) // <unnamed>.
 				{
 					std::string old_name( material_info.texture_albedo->Name() );
-					material_info.texture_albedo->SetName( ( std::string( gltf_material.name ) + " (Albedo)" ).c_str() );
+					material_info.texture_albedo->SetName( ( std::string( material_info.name ) + " (Albedo)" ).c_str() );
 					texture_database.RenameAsset( std::move( old_name ), material_info.texture_albedo->Name() );
 				}
 			}
@@ -90,7 +101,7 @@ namespace Kakadu
 				if( material_info.texture_normal->Name().front() == '<' ) // <unnamed>.
 				{
 					std::string old_name( material_info.texture_normal->Name() );
-					material_info.texture_normal->SetName( ( std::string( gltf_material.name ) + " (Normal)" ).c_str() );
+					material_info.texture_normal->SetName( ( std::string( material_info.name ) + " (Normal)" ).c_str() );
 					texture_database.RenameAsset( std::move( old_name ), material_info.texture_normal->Name() );
 				}
 			}
@@ -106,7 +117,7 @@ namespace Kakadu
 				if( metallic_roughness_texture->Name().front() == '<' ) // <unnamed>.
 				{
 					std::string old_name( metallic_roughness_texture->Name() );
-					metallic_roughness_texture->SetName( ( std::string( gltf_material.name ) + " (Metallic-Roughness)" ).c_str() );
+					metallic_roughness_texture->SetName( ( std::string( material_info.name ) + " (Metallic-Roughness)" ).c_str() );
 					texture_database.RenameAsset( std::move( old_name ), metallic_roughness_texture->Name() );
 				}
 			}
@@ -122,7 +133,7 @@ namespace Kakadu
 				if( occlusion_texture->Name().front() == '<' ) // <unnamed>.
 				{
 					std::string old_name( occlusion_texture->Name() );
-					occlusion_texture->SetName( ( std::string( gltf_material.name ) + " (Occlusion)" ).c_str() );
+					occlusion_texture->SetName( ( std::string( material_info.name ) + " (Occlusion)" ).c_str() );
 					texture_database.RenameAsset( std::move( old_name ), occlusion_texture->Name() );
 				}
 			}
@@ -449,9 +460,12 @@ namespace Kakadu
         return true;
     }
 
+    // TODO: Remove name parameter from this function AND from all Loaders as the file name is THE name here, no need for a custom name.
     std::optional< Model > Model::Loader::FromFile( const std::string_view name, const std::string& file_path, const ImportSettings& import_settings )
 	{
         fastgltf::Asset gltf_asset;
+
+        std::filesystem::path path( file_path ); // TODO: Why not take std::filesystem::path in all loaders?
 
         // Parse the glTF file and get the constructed asset:
         {
@@ -476,8 +490,6 @@ namespace Kakadu
 				return std::nullopt;
 			}
 
-            std::filesystem::path path( file_path );
-
             fastgltf::Expected< fastgltf::Asset > maybe_gltf_asset( fastgltf::Error::None );
              
             if( const auto gltf_type = fastgltf::determineGltfFileType( gltfFile.get() );
@@ -496,7 +508,8 @@ namespace Kakadu
             gltf_asset = std::move( maybe_gltf_asset.get() );
         }
 
-        Model model( std::string{ name } );
+        const std::string& file_name = path.stem().string();
+        Model model( file_name );
         
         model.textures.reserve( gltf_asset.images.size() );
 
@@ -561,7 +574,7 @@ namespace Kakadu
                 return std::nullopt;
         }
 
-        if( not LoadMaterials( gltf_asset, model.material_infos, model.textures ) )
+        if( not LoadMaterials( file_name, gltf_asset, model.material_infos, model.textures ) )
             return std::nullopt;
 
         /*
