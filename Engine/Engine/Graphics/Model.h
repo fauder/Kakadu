@@ -27,20 +27,27 @@ namespace Kakadu
 
 		static constexpr ImportSettings DEFAULT_IMPORT_SETTINGS = {};
 
-		/* Maps to a glTF "primitive".
-		 * It is a mesh with a unique material, i.e., a distinct draw call (unique in local MeshGroup, or glTF "mesh", not the whole model). */
-		struct MeshInfo
+		/* Maps to a glTF material entry. Holds surface properties used to construct a Material in ModelInstance. */
+		struct MaterialInfo
 		{
 			std::string name;
-			Mesh& mesh; // Actual mesh storage is kept in the Model class.
 
-			RHI::Texture* texture_albedo;
-			RHI::Texture* texture_normal;
+			RHI::Texture*           texture_albedo = nullptr;
+			RHI::Texture*           texture_normal = nullptr;
 			std::optional< Color3 > color_albedo;
 		};
 
+		/* Maps to a glTF "primitive".
+		 * It is a single draw call: a Mesh paired with a MaterialInfo index. */
+		struct MeshInfo
+		{
+			std::string name;
+			Mesh&       mesh; // Actual mesh storage is kept in the Model class.
+			i32         material_info_index; // Index into the material_infos array. -1 if the primitive has no material.
+		};
+
 		/* Maps to a glTF "mesh".
-		 * Does not contain a mesh directly; MeshInfos contained inside contain the actual Meshes.
+		 * Does not contain a mesh directly; Contains MeshInfos, which themselves reference the actual Meshes.
 		 * So basically, this is just a group. */
 		struct MeshGroup
 		{
@@ -88,18 +95,21 @@ namespace Kakadu
 		i32 MeshCount()			const { return ( i32 )meshes.size(); }
 		i32 MeshInstanceCount()	const { return mesh_instance_count; }
 		i32 MeshGroupCount()	const { return ( i32 )mesh_groups.size(); }
-		
+		i32 MaterialInfoCount()	const { return ( i32 )material_infos.size(); }
+
 		const std::vector< std::size_t >& TopLevelNodeIndices() const { return node_indices_top_level; }
 
-		const std::vector< Node				>& Nodes()		const { return nodes; }
-		const std::vector< Mesh				>& Meshes()		const { return meshes; }
-		const std::vector< RHI::Texture*	>& Textures()	const { return textures; }
+		const std::vector< Node			>& Nodes()			const { return nodes; }
+		const std::vector< Mesh			>& Meshes()			const { return meshes; }
+		const std::vector< RHI::Texture*>& Textures()		const { return textures; }
+		const std::vector< MaterialInfo	>& MaterialInfos()	const { return material_infos; }
 
 	private:
 		std::string name;
 
 		std::vector< Node			> nodes;
 		std::vector< MeshGroup		> mesh_groups;
+		std::vector< MaterialInfo	> material_infos;
 		std::vector< Mesh			> meshes;
 		std::vector< RHI::Texture*	> textures; // Storage of textures is kept by the AssetDatabase< Texture >.
 

@@ -1,5 +1,6 @@
 // Engine Includes.
 #include "ModelInstance.h"
+#include "Graphics/BuiltinMaterials.h"
 #include "Graphics/BuiltinTextures.h"
 
 namespace Kakadu
@@ -57,11 +58,17 @@ namespace Kakadu
 				for( auto& mesh_info : node.mesh_group->mesh_infos )
 				{
 					node_transform_array[ mesh_index ].SetFromSRTMatrix( transform_so_far );
-					node_renderable_array[ mesh_index ] = Renderable( &mesh_info.mesh, ( material ? material : &node_material_array[ mesh_index ] ),
-																	  node_material_array[ mesh_index ].HasUniform( "uniform_transform_world" )
-																		? &node_transform_array[ mesh_index ]
-																		: nullptr,
-																	  receives_shadows, casts_shadows );
+
+					Material* const mat = material ? material
+					                    : ( mesh_info.material_info_index >= 0
+											? &node_material_array[ mesh_info.material_info_index ]
+											: receives_shadows ? BuiltinMaterials::Get( "Default (Shadowed)" ) : BuiltinMaterials::Get( "Default" ) );
+
+					node_renderable_array[ mesh_index ] = Renderable( &mesh_info.mesh, mat,
+					                                                  mat && mat->HasUniform( "uniform_transform_world" )
+					                                                    ? &node_transform_array[ mesh_index ]
+					                                                    : nullptr,
+					                                                  receives_shadows, casts_shadows );
 
 					mesh_index++;
 				}
@@ -75,62 +82,52 @@ namespace Kakadu
 	ModelInstance::~ModelInstance()
 	{}
 
-	void ModelInstance::SetMaterialData( RHI::Shader* const shader, const Vector4 texture_scale_and_offset )
+	internal_function void PopulateMaterial( Material& material, const Model::MaterialInfo& material_info,
+	                                         MaterialData::BlinnPhongMaterialData& blinn_phong_data,
+	                                         const Vector4& texture_scale_and_offset )
 	{
-		i32 material_index = 0;
-
-		ASSERT_EDITOR_ONLY( shader && "Shader passed to ModelInstance::SetMaterialData is nullptr." );
-
-		node_material_array.resize( model->MeshInstanceCount() );
-		blinn_phong_material_data_array.resize( model->MeshInstanceCount() );
-
-		const auto  node_count = model->NodeCount();
-		const auto& nodes      = model->Nodes();
-
-		for( auto& node : nodes )
+		if( material_info.texture_albedo )
 		{
-			if( node.mesh_group ) // Only process Nodes with Meshes.
+			blinn_phong_data =
 			{
-				for( auto& mesh_info : node.mesh_group->mesh_infos )
-				{
-					auto& material = node_material_array[ material_index ] = Material( model->Name() + "_" + mesh_info.name + "_" + std::to_string( material_index ),
-																					   shader );
+				.color_diffuse       = {},
+				.has_texture_diffuse = 1,
+				.shininess           = 32.0f
+			};
 
-					if( mesh_info.texture_albedo )
-					{
-						blinn_phong_material_data_array[ material_index ] =
-						{
-							.color_diffuse       = {},
-							.has_texture_diffuse = 1,
-							.shininess           = 32.0f
-						};
-
-						material.SetTexture( "uniform_tex_diffuse", mesh_info.texture_albedo );
-					}
-					else if( mesh_info.color_albedo )
-					{
-						blinn_phong_material_data_array[ material_index ] =
-						{
-							.color_diffuse       = *mesh_info.color_albedo,
-							.has_texture_diffuse = 0,
-							.shininess           = 32.0f
-						};
-					}
-
-					const RHI::Texture* default_normal_map_texture = BuiltinTextures::Get( "Normal Map" );
-					const RHI::Texture* white_texture              = BuiltinTextures::Get( "White" );
-
-					material.SetTexture( "uniform_tex_normal", mesh_info.texture_normal ? mesh_info.texture_normal : default_normal_map_texture );
-					material.SetTexture( "uniform_tex_specular", white_texture );
-
-					material.Set( "uniform_texture_scale_and_offset", texture_scale_and_offset );
-
-					material_index++;
-				}
-			}
+			material.SetTexture( "uniform_tex_diffuse", material_info.texture_albedo );
+		}
+		else if( material_info.color_albedo )
+		{
+			blinn_phong_data =
+			{
+				.color_diffuse       = *material_info.color_albedo,
+				.has_texture_diffuse = 0,
+				.shininess           = 32.0f
+			};
 		}
 
-		for( auto i = 0; i < blinn_phong_material_data_array.size(); i++ )
+		material.SetTexture( "uniform_tex_normal", material_info.texture_normal ? material_info.texture_normal : BuiltinTextures::Get( "Normal Map" ) );
+		material.SetTexture( "uniform_tex_specular", BuiltinTextures::Get( "White" ) );
+		material.Set( "uniform_texture_scale_and_offset", texture_scale_and_offset );
+	}
+
+	void ModelInstance::SetMaterialData( RHI::Shader* const shader, const Vector4 texture_scale_and_offset )
+	{
+		ASSERT_EDITOR_ONLY( shader && "Shader passed to ModelInstance::SetMaterialData is nullptr." );
+
+		const auto& material_infos = model->MaterialInfos();
+
+		node_material_array.resize( model->MaterialInfoCount() );
+		blinn_phong_material_data_array.resize( model->MaterialInfoCount() );
+
+		for( i32 i = 0; i < ( i32 )material_infos.size(); i++ )
+		{
+			auto& material = node_material_array[ i ] = Material( model->Name() + "_" + std::to_string( i ), shader );
+			PopulateMaterial( material, material_infos[ i ], blinn_phong_material_data_array[ i ], texture_scale_and_offset );
+		}
+
+		for( i32 i = 0; i < ( i32 )blinn_phong_material_data_array.size(); i++ )
 			node_material_array[ i ].Set( "BlinnPhongMaterialData", blinn_phong_material_data_array[ i ] );
 	}
 
@@ -142,61 +139,17 @@ namespace Kakadu
 		ASSERT_EDITOR_ONLY( shader && "Shader of the model instance is nullptr." );
 		ASSERT_EDITOR_ONLY( shader_shadow_receiving && "Shader (shadow receiving) of the model instance is nullptr." );
 
-		i32 material_index = 0;
+		const auto& material_infos = model->MaterialInfos();
+		const auto  shader_to_set  = receive_shadows ? shader_shadow_receiving : shader;
 
-		ASSERT_EDITOR_ONLY( shader && "Shader passed to ModelInstance::SetMaterialData is nullptr." );
-
-		node_material_array.resize( model->MeshInstanceCount() );
-		blinn_phong_material_data_array.resize( model->MeshInstanceCount() );
-
-		const auto& nodes = model->Nodes();
-
-		const auto shader_to_set = receive_shadows ? shader_shadow_receiving : shader;
-	
-		for( auto& node : nodes )
+		for( i32 i = 0; i < ( i32 )material_infos.size(); i++ )
 		{
-			if( node.mesh_group ) // Only process Nodes with Meshes.
-			{
-				for( auto& mesh_info : node.mesh_group->mesh_infos )
-				{
-					auto& material = node_material_array[ material_index ];
-					material.SetShader( shader_to_set );
-
-					if( mesh_info.texture_albedo )
-					{
-						blinn_phong_material_data_array[ material_index ] =
-						{
-							.color_diffuse       = {},
-							.has_texture_diffuse = 1,
-							.shininess           = 32.0f
-						};
-
-						material.SetTexture( "uniform_tex_diffuse", mesh_info.texture_albedo );
-					}
-					else if( mesh_info.color_albedo )
-					{
-						blinn_phong_material_data_array[ material_index ] =
-						{
-							.color_diffuse       = *mesh_info.color_albedo,
-							.has_texture_diffuse = 0,
-							.shininess           = 32.0f
-						};
-					}
-
-					const RHI::Texture* default_normal_map_texture = BuiltinTextures::Get( "Normal Map" );
-					const RHI::Texture* white_texture              = BuiltinTextures::Get( "White" );
-
-					material.SetTexture( "uniform_tex_normal", mesh_info.texture_normal ? mesh_info.texture_normal : default_normal_map_texture );
-					material.SetTexture( "uniform_tex_specular", white_texture );
-
-					material.Set( "uniform_texture_scale_and_offset", texture_scale_and_offset );
-
-					material_index++;
-				}
-			}
+			auto& material = node_material_array[ i ];
+			material.SetShader( shader_to_set );
+			PopulateMaterial( material, material_infos[ i ], blinn_phong_material_data_array[ i ], texture_scale_and_offset );
 		}
 
-		for( auto i = 0; i < blinn_phong_material_data_array.size(); i++ )
+		for( i32 i = 0; i < ( i32 )blinn_phong_material_data_array.size(); i++ )
 			node_material_array[ i ].Set( "BlinnPhongMaterialData", blinn_phong_material_data_array[ i ] );
 
 		for( auto& renderable : node_renderable_array )

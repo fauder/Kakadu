@@ -44,119 +44,111 @@ struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase
 
 namespace Kakadu
 {
+	bool LoadMaterials( const fastgltf::Asset& gltf_asset,
+	                    std::vector< Model::MaterialInfo >& material_infos,
+	                    const std::vector< RHI::Texture* >& textures )
+	{
+		auto& texture_database = ServiceLocator< AssetDatabase< RHI::Texture > >::Get();
+
+		material_infos.resize( gltf_asset.materials.size() );
+
+		for( std::size_t i = 0; i < gltf_asset.materials.size(); i++ )
+		{
+			const auto& gltf_material = gltf_asset.materials[ i ];
+			auto&       material_info = material_infos[ i ];
+
+			material_info.name = gltf_material.name;
+
+			if( const auto& base_color_texture_info = gltf_material.pbrData.baseColorTexture;
+			    base_color_texture_info.has_value() )
+			{
+				const auto& fastgltf_texture = gltf_asset.textures[ base_color_texture_info->textureIndex ];
+				if( !fastgltf_texture.imageIndex.has_value() )
+					return false;
+
+				material_info.texture_albedo = textures[ fastgltf_texture.imageIndex.value() ];
+				if( material_info.texture_albedo->Name().front() == '<' ) // <unnamed>.
+				{
+					std::string old_name( material_info.texture_albedo->Name() );
+					material_info.texture_albedo->SetName( ( std::string( gltf_material.name ) + " (Albedo)" ).c_str() );
+					texture_database.RenameAsset( std::move( old_name ), material_info.texture_albedo->Name() );
+				}
+			}
+			else
+			{
+				material_info.color_albedo = reinterpret_cast< const Color3& /* Omit alpha */ >( gltf_material.pbrData.baseColorFactor );
+			}
+
+			if( const auto& normal_texture_info = gltf_material.normalTexture;
+			    normal_texture_info.has_value() )
+			{
+				const auto& fastgltf_texture = gltf_asset.textures[ normal_texture_info->textureIndex ];
+				if( !fastgltf_texture.imageIndex.has_value() )
+					return false;
+
+				material_info.texture_normal = textures[ fastgltf_texture.imageIndex.value() ];
+				if( material_info.texture_normal->Name().front() == '<' ) // <unnamed>.
+				{
+					std::string old_name( material_info.texture_normal->Name() );
+					material_info.texture_normal->SetName( ( std::string( gltf_material.name ) + " (Normal)" ).c_str() );
+					texture_database.RenameAsset( std::move( old_name ), material_info.texture_normal->Name() );
+				}
+			}
+
+			if( const auto& metallic_roughness_texture_info = gltf_material.pbrData.metallicRoughnessTexture;
+			    metallic_roughness_texture_info.has_value() )
+			{
+				const auto& fastgltf_texture = gltf_asset.textures[ metallic_roughness_texture_info->textureIndex ];
+				if( !fastgltf_texture.imageIndex.has_value() )
+					return false;
+
+				RHI::Texture* metallic_roughness_texture = textures[ fastgltf_texture.imageIndex.value() ];
+				if( metallic_roughness_texture->Name().front() == '<' ) // <unnamed>.
+				{
+					std::string old_name( metallic_roughness_texture->Name() );
+					metallic_roughness_texture->SetName( ( std::string( gltf_material.name ) + " (Metallic-Roughness)" ).c_str() );
+					texture_database.RenameAsset( std::move( old_name ), metallic_roughness_texture->Name() );
+				}
+			}
+
+			if( const auto& occlusion_texture_info = gltf_material.occlusionTexture;
+			    occlusion_texture_info.has_value() )
+			{
+				const auto& fastgltf_texture = gltf_asset.textures[ occlusion_texture_info->textureIndex ];
+				if( !fastgltf_texture.imageIndex.has_value() )
+					return false;
+
+				RHI::Texture* occlusion_texture = textures[ fastgltf_texture.imageIndex.value() ];
+				if( occlusion_texture->Name().front() == '<' ) // <unnamed>.
+				{
+					std::string old_name( occlusion_texture->Name() );
+					occlusion_texture->SetName( ( std::string( gltf_material.name ) + " (Occlusion)" ).c_str() );
+					texture_database.RenameAsset( std::move( old_name ), occlusion_texture->Name() );
+				}
+			}
+		}
+
+		return true;
+	}
+
 	bool LoadMesh( const fastgltf::Asset& gltf_asset, const fastgltf::Mesh& gltf_mesh,
-                   Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes, const std::vector< RHI::Texture* >& textures )
+                   Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes )
     {
 		/* Naming variables mesh-info instead of gltf's "primitive" for better readability. */
 
         mesh_group_to_load.mesh_infos.reserve( gltf_mesh.primitives.size() );
         mesh_group_to_load.name = gltf_mesh.name;
 
-        auto& texture_database = ServiceLocator< AssetDatabase< RHI::Texture > >::Get();
-
 		for( auto mesh_info_iterator = gltf_mesh.primitives.begin(); mesh_info_iterator != gltf_mesh.primitives.end(); ++mesh_info_iterator )
         {
-            std::size_t base_color_uv_index = 0;
-            std::size_t material_index      = -1;
-
-            RHI::Texture* mesh_info_albedo_texture   = nullptr;
-            RHI::Texture* mesh_info_normal_texture   = nullptr;
-            RHI::Texture* metallic_roughness_texture = nullptr;
-            RHI::Texture* occlusion_texture          = nullptr;
-            std::optional< Color3 > mesh_info_albedo_color;
-
 			auto* position_iterator = mesh_info_iterator->findAttribute( "POSITION" );
 			ASSERT_DEBUG_ONLY( position_iterator != mesh_info_iterator->attributes.end() ); // A gltf mesh primitive is required to hold the POSITION attribute.
 
             bool vertices_with_all_degenerate_triangles_detected = false;
 
-            if( mesh_info_iterator->materialIndex.has_value() )
-            {
-                material_index       = mesh_info_iterator->materialIndex.value();
-                const auto& material = gltf_asset.materials[ material_index ];
-
-                if( const auto& base_color_texture_info = material.pbrData.baseColorTexture;
-                    base_color_texture_info.has_value() )
-                {
-                    const auto& fastgltf_texture = gltf_asset.textures[ base_color_texture_info->textureIndex ];
-                    if( !fastgltf_texture.imageIndex.has_value() )
-                        return false;
-
-                    mesh_info_albedo_texture = textures[ fastgltf_texture.imageIndex.value() ];
-                    if( mesh_info_albedo_texture->Name().front() == '<' ) // <unnamed>.
-                    {
-                        std::string old_name( mesh_info_albedo_texture->Name() );
-                        mesh_info_albedo_texture->SetName( gltf_mesh.name.empty()
-                                                            ? ( "Unnamed Model " + mesh_info_albedo_texture->Name().substr( 10 ) + " (Albedo)" ).c_str()
-                                                            : ( gltf_mesh.name + " (Albedo)" ).c_str() );
-                        texture_database.RenameAsset( std::move( old_name ), mesh_info_albedo_texture->Name() );
-                    }
-
-                    if( base_color_texture_info->transform && base_color_texture_info->transform->texCoordIndex.has_value() )
-                        base_color_uv_index = base_color_texture_info->transform->texCoordIndex.value();
-                    else
-                        base_color_uv_index = material.pbrData.baseColorTexture->texCoordIndex;
-                }
-                else
-                {
-                    // Use Albedo color.
-                    mesh_info_albedo_color = reinterpret_cast< const Color3& /* Omit alpha */ >( material.pbrData.baseColorFactor );
-                }
-
-                if( const auto& normal_texture_info = material.normalTexture;
-                    normal_texture_info.has_value() )
-                {
-                    const auto& fastgltf_texture = gltf_asset.textures[ normal_texture_info->textureIndex ];
-                    if( !fastgltf_texture.imageIndex.has_value() )
-                        return false;
-
-                    mesh_info_normal_texture = textures[ fastgltf_texture.imageIndex.value() ];
-                    if( mesh_info_normal_texture->Name().front() == '<' ) // <unnamed>.
-                    {
-                        std::string old_name( mesh_info_normal_texture->Name() );
-                        mesh_info_normal_texture->SetName( gltf_mesh.name.empty()
-                                                            ? ( "Unnamed Model " + mesh_info_normal_texture->Name().substr( 10 ) + " (Normal)" ).c_str()
-                                                            : ( gltf_mesh.name + " (Normal)" ).c_str() );
-                        texture_database.RenameAsset( std::move( old_name ), mesh_info_normal_texture->Name() );
-                    }
-                }
-
-                if( const auto& metallic_rougness_texture_info = material.pbrData.metallicRoughnessTexture;
-                    metallic_rougness_texture_info.has_value() )
-                {
-                    const auto& fastgltf_texture = gltf_asset.textures[ metallic_rougness_texture_info->textureIndex ];
-                    if( !fastgltf_texture.imageIndex.has_value() )
-                        return false;
-
-                    metallic_roughness_texture = textures[ fastgltf_texture.imageIndex.value() ];
-                    if( metallic_roughness_texture->Name().front() == '<' ) // <unnamed>.
-                    {
-                        std::string old_name( metallic_roughness_texture->Name() );
-                        metallic_roughness_texture->SetName( gltf_mesh.name.empty()
-                                                                ? ( "Unnamed Model " + metallic_roughness_texture->Name().substr( 10 ) + " (Metallic-Roughness)" ).c_str()
-                                                                : ( gltf_mesh.name + " (Metallic-Roughness)" ).c_str() );
-                        texture_database.RenameAsset( std::move( old_name ), metallic_roughness_texture->Name() );
-                    }
-                }
-
-                if( const auto& occlusion_texture_info = material.occlusionTexture;
-                    occlusion_texture_info.has_value() )
-                {
-                    const auto& fastgltf_texture = gltf_asset.textures[ occlusion_texture_info->textureIndex ];
-                    if( !fastgltf_texture.imageIndex.has_value() )
-                        return false;
-
-                    occlusion_texture = textures[ fastgltf_texture.imageIndex.value() ];
-                    if( occlusion_texture->Name().front() == '<' ) // <unnamed>.
-                    {
-                        std::string old_name( occlusion_texture->Name() );
-                        occlusion_texture->SetName( gltf_mesh.name.empty()
-                                                        ? ( "Unnamed Model " + occlusion_texture->Name().substr( 10 ) + " (Occlusion)" ).c_str()
-                                                        : ( gltf_mesh.name + " (Occlusion)" ).c_str() );
-                        texture_database.RenameAsset( std::move( old_name ), occlusion_texture->Name() );
-                    }
-                }
-            }
+            const i32 material_info_index = mesh_info_iterator->materialIndex.has_value()
+                                            ? ( i32 )mesh_info_iterator->materialIndex.value()
+                                            : -1;
 
             /*
              * Positions:
@@ -269,7 +261,7 @@ namespace Kakadu
             };
 
             fastgltf::iterateAccessorWithIndex< u32 >( gltf_asset, index_accessor,
-                                                                 [ & ]( u32 actual_index, std::size_t array_index )
+													   [ & ]( u32 actual_index, std::size_t array_index )
             {
                 indices_u32[ EffectiveIndex( array_index ) ] = actual_index;
             } );
@@ -362,9 +354,7 @@ namespace Kakadu
                                                                                 std::move( uvs_0 ),
                                                                                 std::move( indices_u32 ),
                                                                                 std::move( tangents ) ) ),
-                                                     mesh_info_albedo_texture,
-                                                     mesh_info_normal_texture,
-                                                     std::move( mesh_info_albedo_color ) );
+                                                     material_info_index );
         }
 
         return true;
@@ -571,6 +561,9 @@ namespace Kakadu
                 return std::nullopt;
         }
 
+        if( not LoadMaterials( gltf_asset, model.material_infos, model.textures ) )
+            return std::nullopt;
+
         /*
          * Mapping between the glTF & this engine:
          * scene        -> ~Model (Default scene is assumed, multiple scenes are not supported).
@@ -617,7 +610,7 @@ namespace Kakadu
                 if( node.mesh_group->mesh_infos.empty() )
                 {
                     if( not LoadMesh( gltf_asset, gltf_asset.meshes[ *gltf_node.meshIndex ],
-								      *node.mesh_group, model.meshes, model.textures ) )
+								      *node.mesh_group, model.meshes ) )
                         return std::nullopt;
                 }
 
