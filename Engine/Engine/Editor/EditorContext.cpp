@@ -11,7 +11,7 @@
 #include "Core/ImGuiSetup.h"
 #include "Core/LogSink.h"
 #include "Core/MorphSystem.h"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 #include "Graphics/Renderer.h"
 
 // Vendor Includes.

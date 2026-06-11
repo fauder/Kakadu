@@ -16,7 +16,7 @@
 #include "Core/BitFlags.hpp"
 #include "Core/Log.h"
 #include "Core/Optimization.h"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 #include "Core/Utility.hpp"
 
 // std Includes.

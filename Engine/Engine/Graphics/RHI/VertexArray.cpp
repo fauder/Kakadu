@@ -3,7 +3,7 @@
 #include "DebugLabel.h"
 #include "GLLabelPrefixes.h"
 #include "VertexArray.h"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 
 // std Includes.
 #include <utility>

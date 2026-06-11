@@ -6,7 +6,7 @@
 #include "Core/Assertion.h"
 #include "Core/Macros.h"
 #include "Core/Optimization.h"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 
 // std Includes.
 #include <map>

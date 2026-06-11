@@ -1,6 +1,6 @@
 // Engine Includes.
 #include "Core/Log.h"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 #include "RHI/Texture.h"
 
 // Vendor/stb Includes.

@@ -1,7 +1,7 @@
 // Engine Includes.
 #include "Model.h"
 #include "Core/AssetDatabase.hpp"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 
 namespace Kakadu
 {

@@ -6,7 +6,7 @@
 #include "Core/Assertion.h"
 #include "Core/AssetDatabase_Tracked.hpp"
 #include "Core/Platform.h"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 #include "Core/MorphSystem.h"
 
 namespace Kakadu::RHI

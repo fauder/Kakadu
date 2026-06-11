@@ -255,7 +255,7 @@
     <ClInclude Include="Engine\Math\VectorConversion.hpp" />
     <ClInclude Include="Engine\Natvis\NatVis.h" />
     <ClInclude Include="Engine\Core\Optimization.h" />
-    <ClInclude Include="Engine\Core\ServiceLocator.h" />
+    <ClInclude Include="Engine\Core\ServiceLocator.hpp" />
     <ClInclude Include="Engine\Core\DirtyBlob.h" />
     <ClInclude Include="Engine\Graphics\Renderable.h" />
     <ClInclude Include="Engine\Graphics\RHI\GLDebugOutput.h" />

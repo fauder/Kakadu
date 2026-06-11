@@ -4,7 +4,7 @@
 #include "DebugLabel.h"
 #include "GLLabelPrefixes.h"
 #include "Texture.h"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 #include "Core/Assertion.h"
 
 namespace Kakadu::RHI

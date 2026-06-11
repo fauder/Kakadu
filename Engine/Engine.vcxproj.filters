@@ -135,7 +135,7 @@
     <ClInclude Include="Engine\Core\AssetLoader.Codegen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\ServiceLocator.h">
+    <ClInclude Include="Engine\Core\ServiceLocator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Core\Blob.hpp">

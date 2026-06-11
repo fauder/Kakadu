@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "Core/AssetDatabase.hpp"
 #include "Core/Log.h"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 #include "Core/Types.h"
 #include "Math/Matrix.h"
 #include "Math/Quaternion.hpp"

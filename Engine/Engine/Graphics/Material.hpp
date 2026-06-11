@@ -4,7 +4,7 @@
 #include "UniformBufferManagement.hpp"
 #include "Core/Blob.hpp"
 #include "Core/Log.h"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 #include "RHI/Shader.hpp"
 #include "RHI/Texture.h"
 

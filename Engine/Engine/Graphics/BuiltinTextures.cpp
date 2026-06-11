@@ -2,7 +2,7 @@
 #include "BuiltinTextures.h"
 #include "Asset/Paths.h"
 #include "Core/AssetDatabase.hpp"
-#include "Core/ServiceLocator.h"
+#include "Core/ServiceLocator.hpp"
 #include "Core/Utility.hpp"
 
 namespace Kakadu

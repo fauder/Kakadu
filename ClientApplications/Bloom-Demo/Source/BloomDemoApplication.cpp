@@ -9,7 +9,7 @@
 #include "Engine/Core/ImGuiDrawer.hpp"
 #include "Engine/Core/ImGuiUtility.h"
 #include "Engine/Core/Platform.h"
-#include "Engine/Core/ServiceLocator.h"
+#include "Engine/Core/ServiceLocator.hpp"
 #include "Engine/Graphics/BuiltinShaders.h"
 #include "Engine/Graphics/BuiltinTextures.h"
 #include "Engine/Graphics/Primitive/Primitive_Cube.h"
