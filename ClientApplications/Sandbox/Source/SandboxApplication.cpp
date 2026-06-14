@@ -538,9 +538,11 @@ void SandboxApplication::RenderToolsUI()
 
 			if( not model_info.file_path.empty() )
 			{
-				static char buffer[ 260 ];
-				strncpy_s( buffer, model_info.file_path.c_str(), model_info.file_path.size() );
-				ImGui::TextDisabled( "Loaded Model Path", buffer, ( i32 )model_info.file_path.size(), ImGuiInputTextFlags_ReadOnly );
+				ImGui::TextUnformatted( "Loaded Model Path:" );
+				if( ImGui::BeginChild( "##loaded_model_path", ImVec2( -1, 0 ), ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeY ) )
+					ImGui::TextWrapped( "%s", model_info.file_path.c_str() );
+				ImGui::EndChild();
+
 				if( ImGui::Checkbox( "Receives Shadows", &model_info.is_receiving_shadows ) )
 				{
 					for( auto& renderable : model_info.model_instance.Renderables() )
