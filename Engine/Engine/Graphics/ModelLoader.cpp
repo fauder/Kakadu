@@ -501,7 +501,7 @@ namespace Kakadu
             if( maybe_gltf_asset.error() != fastgltf::Error::None )
             {
                 std::cerr << "ERROR::MODELLOADER::FASTGLTF::Failed to load glTF: " << fastgltf::getErrorMessage( maybe_gltf_asset.error() ) << '\n';
-                Log::Error( R"(Error: Could not load glTF file ")" + file_path + "\"." );
+				Log::Error( std::string( R"(Error: Could not load glTF file ()" ) + fastgltf::getErrorMessage( maybe_gltf_asset.error() ).data() + ") \"" + file_path + "\"." );
                 return std::nullopt;
 			}
 
