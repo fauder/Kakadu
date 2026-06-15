@@ -1030,6 +1030,8 @@ bool BloomDemoApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, cons
 
 		return true;
 	}
+	else
+		UnloadModel( model_info_to_be_loaded, name );
 
 	return false;
 }
