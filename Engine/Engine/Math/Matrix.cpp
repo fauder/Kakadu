@@ -64,7 +64,7 @@ namespace Kakadu::Matrix
 		);
 	}
 
-	/* In row-major form. Counter-clockwise rotation. */
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
 	Matrix4x4 RotationAroundX( Radians pitch )
 	{
 		const auto cosine_term = Math::Cos( pitch );
@@ -81,7 +81,7 @@ namespace Kakadu::Matrix
 		);
 	}
 
-	/* In row-major form. Counter-clockwise rotation. */
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
 	Matrix4x4 RotationAroundY( Radians heading )
 	{
 		const auto cosine_term = Math::Cos( heading );
@@ -98,7 +98,7 @@ namespace Kakadu::Matrix
 		);
 	}
 
-	/* In row-major form. Counter-clockwise rotation. */
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
 	Matrix4x4 RotationAroundZ( Radians bank )
 	{
 		const auto cosine_term = Math::Cos( bank );
@@ -115,7 +115,7 @@ namespace Kakadu::Matrix
 		);
 	}
 
-	/* In row-major form. Counter-clockwise rotation. */
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
 	Matrix4x4 RotationAroundAxis( Radians angle, Vector3 vector )
 	{
 		vector.Normalize();
@@ -147,7 +147,7 @@ namespace Kakadu::Matrix
 	}
 
 	/* In-place modification of the upper-left 3x3 portion. */
-	/* In row-major form. Counter-clockwise rotation. */
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
 	void RotationAroundAxis( Matrix4x4& matrix, Radians angle, Vector3 vector )
 	{
 		vector.Normalize();

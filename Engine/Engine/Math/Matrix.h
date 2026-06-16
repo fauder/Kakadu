@@ -120,11 +120,16 @@ namespace Kakadu::Matrix
 		);
 	}
 
-	/* In row-major form. Counter-clockwise rotation. */ Matrix4x4 RotationAroundX( Radians pitch );
-	/* In row-major form. Counter-clockwise rotation. */ Matrix4x4 RotationAroundY( Radians heading );
-	/* In row-major form. Counter-clockwise rotation. */ Matrix4x4 RotationAroundZ( Radians bank );
-	/* In row-major form. Counter-clockwise rotation. */ Matrix4x4 RotationAroundAxis( Radians angle, Vector3 vector );
-	/* In row-major form. Counter-clockwise rotation. */ void RotationAroundAxis( Matrix4x4& matrix, Radians angle, Vector3 vector );
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
+	Matrix4x4 RotationAroundX( Radians pitch );
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
+	Matrix4x4 RotationAroundY( Radians heading );
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
+	Matrix4x4 RotationAroundZ( Radians bank );
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
+	Matrix4x4 RotationAroundAxis( Radians angle, Vector3 vector );
+	/* In row-major form. CW when viewed looking from the positive rotation axis toward the negative (left-handed convention); CCW from the opposite side. */
+	void RotationAroundAxis( Matrix4x4& matrix, Radians angle, Vector3 vector );
 
 	/* In row-major form. */ constexpr Matrix4x4 TranslationOnX( const float delta )
 	{
