@@ -14,8 +14,7 @@ namespace Kakadu
 		scaling_needsUpdate( true ),
 		rotation_needsUpdate( true ),
 		translation_needsUpdate( true ),
-		final_matrix_needsUpdate( true ),
-		is_dirty( false )
+		final_matrix_needsUpdate( true )
 	{
 	}
 
@@ -27,8 +26,7 @@ namespace Kakadu
 		scaling_needsUpdate( true ),
 		rotation_needsUpdate( true ),
 		translation_needsUpdate( true ),
-		final_matrix_needsUpdate( true ),
-		is_dirty( false )
+		final_matrix_needsUpdate( true )
 	{
 	}
 
@@ -40,8 +38,7 @@ namespace Kakadu
 		scaling_needsUpdate( true ),
 		rotation_needsUpdate( true ),
 		translation_needsUpdate( true ),
-		final_matrix_needsUpdate( true ),
-		is_dirty( false )
+		final_matrix_needsUpdate( true )
 	{
 	}
 
@@ -53,8 +50,7 @@ namespace Kakadu
 		scaling_needsUpdate( true ),
 		rotation_needsUpdate( true ),
 		translation_needsUpdate( true ),
-		final_matrix_needsUpdate( true ),
-		is_dirty( false )
+		final_matrix_needsUpdate( true )
 	{
 	}
 
@@ -70,7 +66,7 @@ namespace Kakadu
 	Transform& Transform::SetScaling( const Vector3& new_scale )
 	{
 		this->scale = new_scale;
-		scaling_needsUpdate = final_matrix_needsUpdate = is_dirty = true;
+		scaling_needsUpdate = final_matrix_needsUpdate = true;
 
 		return *this;
 	}
@@ -78,7 +74,7 @@ namespace Kakadu
 	Transform& Transform::SetScaling( const float new_x_scale, const float new_y_scale, const float new_z_scale )
 	{
 		this->scale.Set( new_x_scale, new_y_scale, new_z_scale );
-		scaling_needsUpdate = final_matrix_needsUpdate = is_dirty = true;
+		scaling_needsUpdate = final_matrix_needsUpdate = true;
 
 		return *this;
 	}
@@ -108,7 +104,7 @@ namespace Kakadu
 		ASSERT_DEBUG_ONLY( new_rotation.IsNormalized() && R"(Transform::SetRotation(): The quaternion "new_rotation" is not normalized!)" );
 
 		this->rotation = new_rotation;
-		rotation_needsUpdate = final_matrix_needsUpdate = is_dirty = true;
+		rotation_needsUpdate = final_matrix_needsUpdate = true;
 
 		return *this;
 	}
@@ -146,7 +142,7 @@ namespace Kakadu
 	Transform& Transform::SetTranslation( const Vector3& new_translation )
 	{
 		this->translation = new_translation;
-		translation_needsUpdate = final_matrix_needsUpdate = is_dirty = true;
+		translation_needsUpdate = final_matrix_needsUpdate = true;
 
 		return *this;
 	}
@@ -154,7 +150,7 @@ namespace Kakadu
 	Transform& Transform::SetTranslation( const float new_x, const float new_y, const float new_z )
 	{
 		this->translation.Set( new_x, new_y, new_z );
-		translation_needsUpdate = final_matrix_needsUpdate = is_dirty = true;
+		translation_needsUpdate = final_matrix_needsUpdate = true;
 
 		return *this;
 	}
@@ -185,9 +181,9 @@ namespace Kakadu
 		Matrix::DecomposeSRT( srt_matrix, scale, rotation, translation );
 
 		/* Test if the reconstructed matrix matches the input matrix: */
-		ASSERT_DEBUG_ONLY( Matrix::SRT( scale, rotation, translation ) == srt_matrix )
+		ASSERT_DEBUG_ONLY( Matrix::SRT( scale, rotation, translation ) == srt_matrix );
 
-		final_matrix_needsUpdate = scaling_needsUpdate = rotation_needsUpdate = translation_needsUpdate = is_dirty = true;
+		final_matrix_needsUpdate = scaling_needsUpdate = rotation_needsUpdate = translation_needsUpdate = true;
 
 		return *this;
 	}

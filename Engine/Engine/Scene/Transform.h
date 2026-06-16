@@ -80,12 +80,6 @@ namespace Kakadu
 		const Vector3& Up();
 		const Vector3& Forward();
 
-	/* Dirty Flags: */
-
-		/* This must be reset via ResetDirtyFlag() at the beginning of every frame, IF is_dirty flag/behaviour is desired. */
-		bool IsDirty() const { return is_dirty; }
-		bool ResetDirtyFlag() { return is_dirty = false; }
-
 	private:
 		void UpdateScalingMatrixIfDirty();
 		void UpdateRotationPartOfMatrixIfDirty();
@@ -111,12 +105,5 @@ namespace Kakadu
 		bool translation_needsUpdate;
 
 		bool final_matrix_needsUpdate;
-
-		/* This flag is for external (clients) use & is opt-in. Calls to GetXXXMatrix() APIs may clear the above 'needsUpdate' flags but this flag may still be set.
-		 * It can only be reset by the ResetDirtyFlag().
-		 * Once set, it remains set until ResetDirtyFlag() is called (which is ideally at the beginning of every frame). 
-		 * Thus, it reliably tells if the Transform was modified this frame (assuming again, the client opts-in by calling ResetDirtyFlag() at the beginning of every frame). */
-		bool is_dirty;
-		//bool padding[ 3 ];
 	};
 }

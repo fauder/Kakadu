@@ -19,8 +19,7 @@ namespace Kakadu
 
 	const Matrix4x4& Camera::GetViewMatrix()
 	{
-		if( transform->IsDirty() )
-			view_matrix = transform->GetInverseOfFinalMatrix_NoScale();
+		view_matrix = transform->GetInverseOfFinalMatrix_NoScale();
 
 		return view_matrix;
 	}
@@ -40,11 +39,7 @@ namespace Kakadu
 	
 	const Matrix4x4& Camera::GetViewProjectionMatrix()
 	{
-		if( view_projection_matrix_needs_update || transform->IsDirty() )
-		{
-			view_projection_matrix              = GetViewMatrix() * GetProjectionMatrix();
-			view_projection_matrix_needs_update = false;
-		}
+		view_projection_matrix = GetViewMatrix() * GetProjectionMatrix();
 
 		return view_projection_matrix;
 	}
