@@ -71,6 +71,13 @@ namespace Kakadu::ImGuiUtility
 	/* https://github.com/ocornut/imgui/issues/1496#issuecomment-655048353 */
 	void EndGroupPanel( bool* is_enabled = nullptr );
 
+	/* Opens/draws the context-menu popup attached to the title row (label or checkbox) of the group panel most recently
+	 * begun via BeginGroupPanel(), which is currently active (i.e. has not yet been ended via EndGroupPanel()).
+	 * Needed because BeginGroupPanel() submits further layout items after the title, so the title is no longer ImGui's
+	 * "last item" by the time it returns and BeginPopupContextItem() can not be used directly.
+	 * Call BeginPopup()/EndPopup() conventions apply: if this returns true, fill the popup then call ImGui::EndPopup(). */
+	bool BeginGroupPanelTitleContextPopup( const char* popup_id );
+
 	void BeginDisabledButInteractable();
 	void EndDisabledButInteractable();
 

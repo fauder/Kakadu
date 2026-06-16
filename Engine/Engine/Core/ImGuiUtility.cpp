@@ -594,6 +594,16 @@ namespace Kakadu::ImGuiUtility
         ImGui::EndGroup();
     }
 
+    bool BeginGroupPanelTitleContextPopup( const char* popup_id )
+    {
+        const ImRect& title_rect = GROUP_PANEL_LABEL_STACK.back();
+
+        if( ImGui::IsMouseHoveringRect( title_rect.Min, title_rect.Max ) && ImGui::IsMouseReleased( ImGuiMouseButton_Right ) )
+            ImGui::OpenPopup( popup_id );
+
+        return ImGui::BeginPopup( popup_id );
+    }
+
     void BeginDisabledButInteractable()
     {
          ImGui::PushStyleColor( ImGuiCol_Text, ImGui::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
