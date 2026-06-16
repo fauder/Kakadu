@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <!-- Vector2< float > -->
-  <Type Name="Engine::Math::Vector&lt;float,2&gt;">
+  <Type Name="Kakadu::Math::Vector&lt;float,2&gt;">
     <Intrinsic Name="Dot" Expression="data[0]*data[0]+data[1]*data[1]"></Intrinsic>
     <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
     <DisplayString IncludeView="simple">&lt;{data[0],g}, {data[1],g}&gt;</DisplayString>
@@ -10,7 +10,7 @@
   </Type>
 
   <!-- Vector2< double > -->
-  <Type Name="Engine::Math::Vector&lt;double,2&gt;">
+  <Type Name="Kakadu::Math::Vector&lt;double,2&gt;">
     <Intrinsic Name="Dot" Expression="data[0]*data[0]+data[1]*data[1]"></Intrinsic>
     <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
     <DisplayString IncludeView="simple">&lt;{data[0],h}, {data[1],h}&gt;</DisplayString>
@@ -19,13 +19,13 @@
   </Type>
 
   <!-- Vector2< int > -->
-  <Type Name="Engine::Math::Vector&lt;int,2&gt;">
+  <Type Name="Kakadu::Math::Vector&lt;int,2&gt;">
     <DisplayString IncludeView="simple">&lt;{data[0],d}, {data[1],d}&gt;</DisplayString>
     <DisplayString ExcludeView="simple">[x]: {data[0],d} [y]: {data[1],d}</DisplayString>
   </Type>
   
   <!-- Vector3< float > -->
-  <Type Name="Engine::Math::Vector&lt;float,3&gt;">
+  <Type Name="Kakadu::Math::Vector&lt;float,3&gt;">
     <Intrinsic Name="Dot" Expression="data[0]*data[0]+data[1]*data[1]+data[2]*data[2]"></Intrinsic>
     <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
     <DisplayString IncludeView="simple">&lt;[x]: {data[0],g} [y]: {data[1],g} [z]: {data[2],g} &gt;</DisplayString>
@@ -34,7 +34,7 @@
   </Type>
 
   <!-- Vector3< double > -->
-  <Type Name="Engine::Math::Vector&lt;double,3&gt;">
+  <Type Name="Kakadu::Math::Vector&lt;double,3&gt;">
     <Intrinsic Name="Dot" Expression="data[0]*data[0]+data[1]*data[1]+data[2]*data[2]"></Intrinsic>
     <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
     <DisplayString IncludeView="simple">&lt;[x]: {data[0],h} [y]: {data[1],h} [z]: {data[2],h} &gt;</DisplayString>
@@ -43,13 +43,13 @@
   </Type>
 
   <!-- Vector3< int > -->
-  <Type Name="Engine::Math::Vector&lt;int,3&gt;">
+  <Type Name="Kakadu::Math::Vector&lt;int,3&gt;">
     <DisplayString IncludeView="simple">&lt;{data[0],d}, {data[1],d} {data[2],d}&gt;</DisplayString>
     <DisplayString ExcludeView="simple">[x]: {data[0],d} [y]: {data[1],d} [z]: {data[2],d}</DisplayString>
   </Type>
   
   <!-- Vector4< float > -->
-  <Type Name="Engine::Math::Vector&lt;float,4&gt;">
+  <Type Name="Kakadu::Math::Vector&lt;float,4&gt;">
     <Intrinsic Name="Dot" Expression="data[0]*data[0]+data[1]*data[1]+data[2]*data[2]+data[3]*data[3]"></Intrinsic>
     <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
     <DisplayString IncludeView="simple">&lt;{data[0],g}, {data[1],g}, {data[2],g}, {data[3],g}&gt;</DisplayString>
@@ -58,7 +58,7 @@
   </Type>
 
   <!-- Vector4< double > -->
-  <Type Name="Engine::Math::Vector&lt;double,4&gt;">
+  <Type Name="Kakadu::Math::Vector&lt;double,4&gt;">
     <Intrinsic Name="Dot" Expression="data[0]*data[0]+data[1]*data[1]+data[2]*data[2]+data[3]*data[3]"></Intrinsic>
     <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
     <DisplayString IncludeView="simple">&lt;{data[0],h}, {data[1],h}, {data[2],h}, {data[3],h}&gt;</DisplayString>
@@ -67,37 +67,37 @@
   </Type>
 
   <!-- Vector4< int > -->
-  <Type Name="Engine::Math::Vector&lt;int,4&gt;">
+  <Type Name="Kakadu::Math::Vector&lt;int,4&gt;">
     <DisplayString IncludeView="simple">&lt;{data[0],d}, {data[1],d} {data[2],d} {data[3],d}&gt;</DisplayString>
     <DisplayString ExcludeView="simple">[x]: {data[0],d} [y]: {data[1],d} [z]: {data[2],d} [w]: {data[3],d}</DisplayString>
   </Type>
     
   <!-- Degrees< float > -->
-  <Type Name="Engine::Math::Degrees&lt;float&gt;">
+  <Type Name="Kakadu::Math::Degrees&lt;float&gt;">
     <DisplayString IncludeView="simple">{value,g}° ({value * 3.14159274f / 180.0f,g} radians)</DisplayString>
     <DisplayString ExcludeView="simple">{value,g}° ({value * 3.14159274f / 180.0f,g} radians)</DisplayString>
   </Type>
   
   <!-- Degrees< double > -->
-  <Type Name="Engine::Math::Degrees&lt;double&gt;">
+  <Type Name="Kakadu::Math::Degrees&lt;double&gt;">
     <DisplayString IncludeView="simple">{value,h}° ({value * 3.1415926535897931 / 180.0,h} radians)</DisplayString>
     <DisplayString ExcludeView="simple">{value,h}° ({value * 3.1415926535897931 / 180.0,h} radians)</DisplayString>
   </Type>
   
   <!--Radians< float > -->
-  <Type Name="Engine::Math::Radians&lt;float&gt;">
+  <Type Name="Kakadu::Math::Radians&lt;float&gt;">
     <DisplayString IncludeView="simple">{value,g} radians ({180.0f * value / 3.14159274f,g}°)</DisplayString>
     <DisplayString ExcludeView="simple">{value,g} radians ({180.0f * value / 3.14159274f,g}°)</DisplayString>
   </Type>
   
   <!--Radians< double > -->
-  <Type Name="Engine::Math::Radians&lt;double&gt;">
+  <Type Name="Kakadu::Math::Radians&lt;double&gt;">
     <DisplayString IncludeView="simple">{value,h} radians ({180.0 * value / 3.1415926535897931,h}°)</DisplayString>
     <DisplayString ExcludeView="simple">{value,h} radians ({180.0 * value / 3.1415926535897931,h}°)</DisplayString>
   </Type>
   
   <!-- Quaternion< float > -->
-  <Type Name="Engine::Math::Quaternion&lt;float&gt;">
+  <Type Name="Kakadu::Math::Quaternion&lt;float&gt;">
     <Intrinsic Name="Dot"           Expression="w*w+xyz.data[0]*xyz.data[0]+xyz.data[1]*xyz.data[1]+xyz.data[2]*xyz.data[2]"></Intrinsic>
     <Intrinsic Name="IsNormalized"  Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
     <Intrinsic Name="Is0"           Expression="val&gt;-0.0001999999950000&amp;val&lt;0.0001999999950000">
@@ -113,7 +113,7 @@
   </Type>
 
   <!-- Quaternion< double > -->
-  <Type Name="Engine::Math::Quaternion&lt;double&gt;">
+  <Type Name="Kakadu::Math::Quaternion&lt;double&gt;">
     <Intrinsic Name="Dot"           Expression="w*w+xyz.data[0]*xyz.data[0]+xyz.data[1]*xyz.data[1]+xyz.data[2]*xyz.data[2]"></Intrinsic>
     <Intrinsic Name="IsNormalized"  Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
     <Intrinsic Name="Is0"           Expression="val&gt;-0.0000000000000200&amp;val&lt;0.0000000000000200">
@@ -129,7 +129,7 @@
   </Type>
 
   <!-- Matrix<float,3,3>-->
-  <Type Name="Engine::Math::Matrix&lt;float,3,3&gt;">
+  <Type Name="Kakadu::Math::Matrix&lt;float,3,3&gt;">
     <Intrinsic Name="Is0" Expression="data[i][j]&gt;-0.0001999999950000&amp;data[i][j]&lt;0.0001999999950000">
       <Parameter Name="i" Type="int"/>
       <Parameter Name="j" Type="int"/>
@@ -205,7 +205,7 @@
   </Type>
   
   <!-- Matrix<float,4,4>-->
-  <Type Name="Engine::Math::Matrix&lt;float,4,4&gt;">
+  <Type Name="Kakadu::Math::Matrix&lt;float,4,4&gt;">
     <Intrinsic Name="Is0" Expression="data[i][j]&gt;-0.0001999999950000&amp;data[i][j]&lt;0.0001999999950000">
       <Parameter Name="i" Type="int"/>
       <Parameter Name="j" Type="int"/>
@@ -303,7 +303,7 @@
   </Type>
 
   <!-- Matrix<Type,RowSize,ColumnSize> -->
-  <Type Name="Engine::Math::Matrix&lt;*&gt;">
+  <Type Name="Kakadu::Math::Matrix&lt;*&gt;">
     <Expand>
       <CustomListItems>
         <Variable Name="i" InitialValue="0"/>
@@ -315,22 +315,17 @@
     </Expand>
   </Type>
 
-  <!-- ID<Type> -->
-  <Type Name="Engine::ID&lt;*&gt;">
-    <DisplayString>{id}</DisplayString>
-  </Type>
-
   <!-- Texture -->
-  <Type Name="Engine::Texture">
+  <Type Name="Kakadu::RHI::Texture">
     <!-- Basic information -->
     <!-- Sampled Texture - Add specific handling for MSAA, color format, and attachment types -->
-    <Intrinsic Name="Is_sRGB" Expression="format == Engine::Texture::Format::SRGB || format == Engine::Texture::Format::SRGBA"></Intrinsic>
-    <Intrinsic Name="Is_HDR" Expression="format == Engine::Texture::Format::RGBA_16F || format == Engine::Texture::Format::RGBA_32F || format == Engine::Texture::Format::R11G11B10F"></Intrinsic>
-    <Intrinsic Name="Has_MSAA" Expression="msaa.sample_count > 1"></Intrinsic>
+    <Intrinsic Name="Is_sRGB" Expression="import_settings.format == Kakadu::RHI::Texture::Format::SRGB || import_settings.format == Kakadu::RHI::Texture::Format::SRGBA"></Intrinsic>
+    <Intrinsic Name="Is_HDR" Expression="import_settings.format == Kakadu::RHI::Texture::Format::RGBA_16F || import_settings.format == Kakadu::RHI::Texture::Format::RGBA_32F || import_settings.format == Kakadu::RHI::Texture::Format::R11G11B10F"></Intrinsic>
+    <Intrinsic Name="Has_MSAA" Expression="import_settings.msaa.sample_count > 1"></Intrinsic>
 
     <!-- sRGB, HDR, and MSAA -->
     <DisplayString Condition="Is_sRGB() &amp;&amp; Is_HDR() &amp;&amp; Has_MSAA()">
-      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)msaa.sample_count}x | sRGB HDR | ID: {id}
+      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)import_settings.msaa.sample_count}x | sRGB HDR | ID: {id}
     </DisplayString>
 
     <!-- sRGB and HDR -->
@@ -340,12 +335,12 @@
 
     <!-- sRGB and MSAA -->
     <DisplayString Condition="Is_sRGB() &amp;&amp; Has_MSAA()">
-      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)msaa.sample_count}x | sRGB | ID: {id}
+      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)import_settings.msaa.sample_count}x | sRGB | ID: {id}
     </DisplayString>
 
     <!-- HDR and MSAA -->
     <DisplayString Condition="Is_HDR() &amp;&amp; Has_MSAA()">
-      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)msaa.sample_count}x | HDR | ID: {id}
+      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)import_settings.msaa.sample_count}x | HDR | ID: {id}
     </DisplayString>
 
     <!-- Only sRGB -->
@@ -360,7 +355,7 @@
 
     <!-- Only MSAA -->
     <DisplayString Condition="Has_MSAA()">
-      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)msaa.sample_count}x | ID: {id}
+      {name} | {size.data[0]}x{size.data[1]} | {type} | MSAA {(int)import_settings.msaa.sample_count}x | ID: {id}
     </DisplayString>
 
     <!-- Default case -->
@@ -373,26 +368,26 @@
       <Item Name="ID">id</Item>
       <Item Name="Width">size.data[0]</Item>
       <Item Name="Height">size.data[1]</Item>
-      <Item Name="Type" Condition="type == Engine::TextureType::Texture2D">"2D"</Item>
-      <Item Name="Type" Condition="type == Engine::TextureType::Texture2D_MultiSample">"2D MultiSample"</Item>
-      <Item Name="Type" Condition="type == Engine::TextureType::Cubemap">"Cubemap"</Item>
-      <Item Name="MSAA Samples" Condition="Has_MSAA()">msaa.sample_count</Item>
+      <Item Name="Type" Condition="type == Kakadu::RHI::TextureType::Texture2D">"2D"</Item>
+      <Item Name="Type" Condition="type == Kakadu::RHI::TextureType::Texture2D_MultiSample">"2D MultiSample"</Item>
+      <Item Name="Type" Condition="type == Kakadu::RHI::TextureType::Cubemap">"Cubemap"</Item>
+      <Item Name="MSAA Samples" Condition="Has_MSAA()">import_settings.msaa.sample_count</Item>
       <Item Name="sRGB">Is_sRGB()</Item>
       <Item Name="HDR">Is_HDR()</Item>
     </Expand>
   </Type>
 
   <!-- Framebuffer -->
-  <Type Name="Engine::Framebuffer">
+  <Type Name="Kakadu::RHI::Framebuffer">
     <Intrinsic Name="Is_Default_FB" Expression="id.id == 0"></Intrinsic>
     <Intrinsic Name="HasColorAttachment" Expression="color_attachment.id.id > 0"></Intrinsic>
     <Intrinsic Name="HasDepthStencilAttachment" Expression="depth_stencil_attachment.id.id > 0"></Intrinsic>
     <Intrinsic Name="HasDepthAttachment" Expression="depth_attachment.id.id > 0"></Intrinsic>
     <Intrinsic Name="HasStencilAttachment" Expression="stencil_attachment.id.id > 0"></Intrinsic>
     <Intrinsic Name="Has_MSAA" Expression="msaa.sample_count > 1"></Intrinsic>
-    <Intrinsic Name="Is_sRGB" Expression="Is_Default_FB &amp;&amp; HasColorAttachment &amp;&amp; ( color_attachment.format == Engine::Texture::Format::SRGB || color_attachment.format == Engine::Texture::Format::SRGBA )"></Intrinsic>
-    <Intrinsic Name="Is_HDR" Expression="HasColorAttachment &amp;&amp; ( color_attachment.format == Engine::Texture::Format::RGBA_16F || 
-      color_attachment.format == Engine::Texture::Format::RGBA_32F || color_attachment.format == Engine::Texture::Format::R11G11B10F )"></Intrinsic>
+    <Intrinsic Name="Is_sRGB" Expression="Is_Default_FB &amp;&amp; HasColorAttachment &amp;&amp; ( color_attachment.import_settings.format == Kakadu::RHI::Texture::Format::SRGB || color_attachment.import_settings.format == Kakadu::RHI::Texture::Format::SRGBA )"></Intrinsic>
+    <Intrinsic Name="Is_HDR" Expression="HasColorAttachment &amp;&amp; ( color_attachment.import_settings.format == Kakadu::RHI::Texture::Format::RGBA_16F ||
+      color_attachment.import_settings.format == Kakadu::RHI::Texture::Format::RGBA_32F || color_attachment.import_settings.format == Kakadu::RHI::Texture::Format::R11G11B10F )"></Intrinsic>
 
     <!-- sRGB, HDR, and MSAA -->
     <DisplayString Condition="Is_sRGB() &amp;&amp; Is_HDR() &amp;&amp; Has_MSAA()">
