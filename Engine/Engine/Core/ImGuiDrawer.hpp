@@ -332,8 +332,8 @@ namespace Kakadu::ImGuiDrawer
 	bool Draw(		 Camera& camera, const char* name = "##camera", const bool disable_aspect_ratio_and_fov = false );
 	void Draw( const Camera& camera, const char* name = "##camera" );
 
-	bool Draw(		 Transform& transform, const BitFlags< Transform::Mask > = Transform::Mask::All, const char* name = "##transform" );
-	void Draw( const Transform& transform, const BitFlags< Transform::Mask > = Transform::Mask::All, const char* name = "##transform" );
+	bool Draw(		 Transform& transform, const BitFlags< Transform::Mask > = Transform::Mask::All, const char* name = "Transform" );
+	void Draw( const Transform& transform, const BitFlags< Transform::Mask > = Transform::Mask::All, const char* name = "Transform" );
 
 	bool Draw( Material& material, Renderer& renderer, ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoFocusOnAppearing );
 	/* const version of Material is nearly the same as the non-const and it was getting annoying having to update a huge and mostly unused function, so it is removed. */
