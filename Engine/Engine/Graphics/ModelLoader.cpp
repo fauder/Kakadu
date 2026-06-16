@@ -472,7 +472,21 @@ namespace Kakadu
             constexpr auto supported_extensions =
                 fastgltf::Extensions::KHR_mesh_quantization |
                 fastgltf::Extensions::KHR_texture_transform |
-                fastgltf::Extensions::KHR_materials_variants;
+                fastgltf::Extensions::KHR_materials_variants |
+                fastgltf::Extensions::KHR_materials_anisotropy |
+                fastgltf::Extensions::KHR_materials_clearcoat |
+                fastgltf::Extensions::KHR_materials_diffuse_transmission |
+                fastgltf::Extensions::KHR_materials_dispersion |
+                fastgltf::Extensions::KHR_materials_emissive_strength |
+                fastgltf::Extensions::KHR_materials_ior |
+                fastgltf::Extensions::KHR_materials_iridescence |
+                fastgltf::Extensions::KHR_materials_pbrSpecularGlossiness |
+                fastgltf::Extensions::KHR_materials_sheen |
+                fastgltf::Extensions::KHR_materials_specular |
+                fastgltf::Extensions::KHR_materials_transmission |
+                fastgltf::Extensions::KHR_materials_unlit |
+                fastgltf::Extensions::KHR_materials_variants |
+                fastgltf::Extensions::KHR_materials_volume;
 
             fastgltf::Parser parser( supported_extensions );
 
