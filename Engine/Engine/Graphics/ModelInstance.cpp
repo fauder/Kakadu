@@ -83,6 +83,33 @@ namespace Kakadu
 	ModelInstance::~ModelInstance()
 	{}
 
+	void ModelInstance::SetTransform( const Vector3& scale, const Quaternion& rotation, const Vector3& translation )
+	{
+		i32 mesh_index = 0;
+		std::function< void( const std::size_t, const Matrix4x4& ) > ProcessNode = [ & ]( const std::size_t node_index, const Matrix4x4& parent_transform )
+		{
+			const auto& node = model->Nodes()[ node_index ];
+
+			auto transform_so_far = node.transform_local * parent_transform;
+
+			for( auto& child_index : node.children )
+				ProcessNode( child_index, transform_so_far );
+
+			if( node.mesh_group )
+			{
+				for( auto& mesh_info : node.mesh_group->mesh_infos )
+				{
+					node_transform_array[ mesh_index ].SetFromSRTMatrix( transform_so_far );
+
+					mesh_index++;
+				}
+			}
+		};
+
+		for( auto top_level_node_index : model->TopLevelNodeIndices() )
+			ProcessNode( top_level_node_index, Matrix::Scaling( scale ) * Math::QuaternionToMatrix( rotation ) * Matrix::Translation( translation ) );
+	}
+
 	internal_function void PopulateMaterial( Material& material, const Model::MaterialInfo& material_info,
 	                                         MaterialData::BlinnPhongMaterialData& blinn_phong_data,
 	                                         const Vector4& texture_scale_and_offset )

@@ -29,6 +29,12 @@ namespace Kakadu
 		~ModelInstance();
 
 		/*
+		 * Usage: 
+		 */
+
+		void SetTransform( const Vector3& scale, const Quaternion& rotation, const Vector3& translation );
+
+		/*
 		 * Queries:
 		 */
 
@@ -40,7 +46,6 @@ namespace Kakadu
 		void ToggleShadowReceivingStatus( const bool receive_shadows );
 		void ToggleShadowCastingStatus( const bool cast_shadows );
 
-	/* Queries: */
 			  std::vector< Renderable >& Renderables()		 { return node_renderable_array; }
 		const std::vector< Material	  >& Materials()   const { return node_material_array; }
 
