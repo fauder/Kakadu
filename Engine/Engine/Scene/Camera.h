@@ -58,7 +58,6 @@ namespace Kakadu
 
 	private:
 		void SetProjectionMatrixDirty();
-		void SetViewProjectionMatrixDirty();
 		void SetCustomProjectionMatrixDirty();
 
 	private:
@@ -73,16 +72,14 @@ namespace Kakadu
 		float aspect_ratio;
 		Radians vertical_field_of_view;
 
+		/* There are intentionally no view_matrix_needs_update / view_projection_matrix_needs_update flags:
+		 * GetViewMatrix() and GetViewProjectionMatrix() always recompute. The only way to know the view had changed used to be
+		 * Transform's is_dirty, which was an artefact => removed. With no way left to detect a transform change, a
+		 * projection-only dirty flag would leave the view-projection matrix stale whenever the camera moves, so it can not
+		 * be cached safely. projection_matrix_needs_update is kept because the projection changes only through explicit
+		 * setters, which it fully captures. To bring view-projection caching back in the future, a monotonic version
+		 * counter (bumped on mutation) could be added to Transform and the observes can cache the last-seen version and check that. */
 		bool projection_matrix_needs_update;
-		bool view_projection_matrix_needs_update; // This is needed because access to View/Projection matrices causes their dirty flag to be reset.
-		/* Do not need a "view_matrix_needs_update" flag; Transform's data is the only data needed to update the view matrix and it has the IsDirty() query already. */
-
-		// TODO: The comment above is not correct:
-		/* Transform's dirty flag is opt-in.
-		 * Besides, Renderer can not use that flag to optimize Camera UBO uploads, since there may be multiple updates to the Camera transform in a frame.
-		 */
-		// TODO: Given these limitations of the Transform's dirty flag. Figure out how to tackle that in a more robust way.
-
-		/* [6 bytes of padding remaining.] */
+		/* 7 bytes of padding. */
 	};
 }

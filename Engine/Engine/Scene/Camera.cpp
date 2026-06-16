@@ -11,8 +11,7 @@ namespace Kakadu
 		plane_far( far_plane ),
 		aspect_ratio( aspect_ratio ),
 		vertical_field_of_view( vertical_field_of_view ),
-		projection_matrix_needs_update( true ),
-		view_projection_matrix_needs_update( true )
+		projection_matrix_needs_update( true )
 	{}
 
 /* Matrix Getters: */
@@ -151,17 +150,10 @@ namespace Kakadu
 	void Camera::SetProjectionMatrixDirty()
 	{
 		projection_matrix_needs_update = true;
-		SetViewProjectionMatrixDirty();
-	}
-
-	void Camera::SetViewProjectionMatrixDirty()
-	{
-		view_projection_matrix_needs_update = true;
 	}
 
 	void Camera::SetCustomProjectionMatrixDirty()
 	{
 		projection_matrix_needs_update = false;
-		SetViewProjectionMatrixDirty();
 	}
 }
