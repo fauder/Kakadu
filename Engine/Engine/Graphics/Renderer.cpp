@@ -189,8 +189,8 @@ namespace Kakadu
 									{
 										renderable->mesh->Bind();
 
-										if( renderable->transform )
-											shadow_map_write_shader.SetUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
+										if( renderable->HasWorldTransform() )
+											shadow_map_write_shader.SetUniform( "uniform_transform_world", *renderable->WorldMatrix() );
 
 										DrawMesh( *renderable->mesh );
 									}
@@ -228,8 +228,8 @@ namespace Kakadu
 												{
 													renderable->mesh->Bind();
 
-													if( renderable->transform )
-														material->SetAndUploadUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
+													if( renderable->HasWorldTransform() )
+														material->SetAndUploadUniform( "uniform_transform_world", *renderable->WorldMatrix() );
 
 													DrawMesh( *renderable->mesh );
 												}
@@ -1651,8 +1651,8 @@ namespace Kakadu
 								{
 									renderable->mesh->Bind();
 
-									if( renderable->transform )
-										shader->SetUniform( "uniform_transform_world", renderable->transform->GetFinalMatrix() );
+									if( renderable->HasWorldTransform() )
+										shader->SetUniform( "uniform_transform_world", *renderable->WorldMatrix() );
 
 									DrawMesh( *renderable->mesh );
 								}
@@ -1740,9 +1740,9 @@ namespace Kakadu
 				std::sort( renderable_array_to_sort.begin(), renderable_array_to_sort.end(),
 						   [ &camera_position ]( Renderable* renderable_1, Renderable* renderable_2 )
 							{
-								if( renderable_1->GetTransform() && renderable_2->GetTransform() )
-									return Math::DistanceSquared( camera_position, renderable_1->GetTransform()->GetTranslation() ) <
-										   Math::DistanceSquared( camera_position, renderable_2->GetTransform()->GetTranslation() );
+								if( renderable_1->HasWorldTransform() && renderable_2->HasWorldTransform() )
+									return Math::DistanceSquared( camera_position, renderable_1->WorldPosition() ) <
+										   Math::DistanceSquared( camera_position, renderable_2->WorldPosition() );
 
 								return false; // Does not matter;
 							} );
@@ -1752,9 +1752,9 @@ namespace Kakadu
 				std::sort( renderable_array_to_sort.begin(), renderable_array_to_sort.end(),
 						   [ &camera_position ]( Renderable* renderable_1, Renderable* renderable_2 )
 							{
-								if( renderable_1->GetTransform() && renderable_2->GetTransform() )
-									return Math::DistanceSquared( camera_position, renderable_1->GetTransform()->GetTranslation() ) >
-										   Math::DistanceSquared( camera_position, renderable_2->GetTransform()->GetTranslation() );
+								if( renderable_1->HasWorldTransform() && renderable_2->HasWorldTransform() )
+									return Math::DistanceSquared( camera_position, renderable_1->WorldPosition() ) >
+										   Math::DistanceSquared( camera_position, renderable_2->WorldPosition() );
 							
 								return false; // Does not matter;
 							} );

@@ -57,7 +57,7 @@ namespace Kakadu
 
 		std::vector< Renderable > node_renderable_array;
 		std::vector< Material	> node_material_array;
-		std::vector< Transform	> node_transform_array;
+		std::vector< Matrix4x4	> node_world_matrix_array;
 		std::vector< MaterialData::BlinnPhongMaterialData > blinn_phong_material_data_array;
 		
 		Vector4 texture_scale_and_offset;

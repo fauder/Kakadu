@@ -39,7 +39,7 @@ namespace Kakadu
 		const auto& meshes              = model->Meshes();
 		const auto& nodes               = model->Nodes();
 
-		node_transform_array.resize( mesh_instance_count );
+		node_world_matrix_array.resize( mesh_instance_count );
 		node_renderable_array.resize( mesh_instance_count );
 
 		/* Apply scene-graph transformations: */
@@ -58,18 +58,17 @@ namespace Kakadu
 			{
 				for( auto& mesh_info : node.mesh_group->mesh_infos )
 				{
-					node_transform_array[ mesh_index ].SetFromSRTMatrix( transform_so_far );
+					node_world_matrix_array[ mesh_index ] = transform_so_far;
 
 					Material* const mat = material ? material
 					                    : ( mesh_info.material_info_index >= 0
 											? &node_material_array[ mesh_info.material_info_index ]
 											: receives_shadows ? BuiltinMaterials::Get( "Default (Shadowed)" ) : BuiltinMaterials::Get( "Default" ) );
 
-					node_renderable_array[ mesh_index ] = Renderable( &mesh_info.mesh, mat,
+					node_renderable_array[ mesh_index ] = Renderable( &mesh_info.mesh, mat, nullptr, receives_shadows, casts_shadows,
 					                                                  mat && mat->HasUniform( "uniform_transform_world" )
-					                                                    ? &node_transform_array[ mesh_index ]
-					                                                    : nullptr,
-					                                                  receives_shadows, casts_shadows );
+					                                                    ? &node_world_matrix_array[ mesh_index ]
+					                                                    : nullptr );
 
 					mesh_index++;
 				}
@@ -99,7 +98,7 @@ namespace Kakadu
 			{
 				for( auto& mesh_info : node.mesh_group->mesh_infos )
 				{
-					node_transform_array[ mesh_index ].SetFromSRTMatrix( transform_so_far );
+					node_world_matrix_array[ mesh_index ] = transform_so_far;
 
 					mesh_index++;
 				}
