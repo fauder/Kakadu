@@ -51,8 +51,6 @@ namespace Kakadu::Editor
 					/* Row 5: */
 					if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Custom (1)" ) )
 						scene_camera.SwitchView( SceneCamera::View::CUSTOM_1 );
-					if( ImGui::Button( ICON_FA_ARROWS_ROTATE " Reset##Camera" ) )
-						scene_camera.Reset();
 
 					ImGui::Checkbox( "Animate (Rotate) Camera", &scene_camera.animation_is_enabled );
 					if( scene_camera.animation_is_enabled )
