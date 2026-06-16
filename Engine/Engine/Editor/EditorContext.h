@@ -38,8 +38,6 @@ namespace Kakadu::Editor
 
 		SceneCamera scene_camera;
 
-		Vector2I viewport_resolution;
-
 		ViewportPanel viewport_panel;
 
 		RendererIntrospectionSurface renderer_introspection_surface;

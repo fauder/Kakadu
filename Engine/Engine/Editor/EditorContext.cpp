@@ -160,10 +160,8 @@ namespace Kakadu::Editor
 	{
 		RENDERER_PANEL.Render( *renderer, renderer_introspection_surface );
 
-		{
-			const auto& framebuffer_color_attachment = renderer->OutputFramebuffer().color_attachment;
-			viewport_panel.Render( *this, framebuffer_color_attachment.Id().id, framebuffer_color_attachment.Size() );
-		}
+		const auto& framebuffer_color_attachment = renderer->OutputFramebuffer().color_attachment;
+		viewport_panel.Render( *this, framebuffer_color_attachment.Id().id, framebuffer_color_attachment.Size() );
 
 		RenderViewportControlsOverlay( *this, *renderer );
 
@@ -172,7 +170,7 @@ namespace Kakadu::Editor
 		if( show_log_panel )
 			LOG_PANEL.Draw( ICON_FA_BOOK " Console", &show_log_panel );
 
-		RenderSceneCameraInspectorPanel( scene_camera, viewport_resolution );
+		RenderSceneCameraInspectorPanel( scene_camera, framebuffer_color_attachment.Size() );
 
 		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase< RHI::Texture > >::Get().Assets() );
 		ImGuiDrawer::Draw( ServiceLocator< AssetDatabase_Tracked< RHI::Texture* > >::Get().Assets() );
