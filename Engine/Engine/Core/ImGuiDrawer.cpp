@@ -271,9 +271,29 @@ namespace Kakadu::ImGuiDrawer
 	{
 		bool is_modified = false;
 
+		/* Pushed before BeginGroupPanel() so the context-menu IDs below stay unique per Transform instance, not just per field. */
+		ImGui::PushID( name );
+
 		ImGuiUtility::BeginGroupPanel( name );
 
-		ImGui::PushID( name );
+		/* BeginPopupContextItem() can not be used here: BeginGroupPanel() submits further layout items after the title,
+		 * so the title is no longer ImGui's "last item" once it returns. */
+		if( ImGuiUtility::BeginGroupPanelTitleContextPopup( "##reset_all" ) )
+		{
+			if( ImGui::MenuItem( "Reset" ) )
+			{
+				if( flags.IsSet( Transform::Mask::Translation ) )
+					transform.SetTranslation( Vector3::Zero() );
+				if( flags.IsSet( Transform::Mask::Rotation ) )
+					transform.SetRotation( Quaternion::Identity() );
+				if( flags.IsSet( Transform::Mask::Scale ) )
+					transform.SetScaling( Vector3::One() );
+
+				is_modified = true;
+			}
+
+			ImGui::EndPopup();
+		}
 
 		if( flags.IsSet( Transform::Mask::Translation ) )
 		{
@@ -282,6 +302,17 @@ namespace Kakadu::ImGuiDrawer
 			{
 				is_modified = true;
 				transform.SetTranslation( translation );
+			}
+
+			if( ImGui::BeginPopupContextItem( "##reset_position" ) )
+			{
+				if( ImGui::MenuItem( "Reset" ) )
+				{
+					transform.SetTranslation( Vector3::Zero() );
+					is_modified = true;
+				}
+
+				ImGui::EndPopup();
 			}
 		}
 
@@ -293,6 +324,17 @@ namespace Kakadu::ImGuiDrawer
 				is_modified = true;
 				transform.SetRotation( rotation );
 			}
+
+			if( ImGui::BeginPopupContextItem( "##reset_rotation" ) )
+			{
+				if( ImGui::MenuItem( "Reset" ) )
+				{
+					transform.SetRotation( Quaternion::Identity() );
+					is_modified = true;
+				}
+
+				ImGui::EndPopup();
+			}
 		}
 
 		if( flags.IsSet( Transform::Mask::Scale ) )
@@ -303,11 +345,22 @@ namespace Kakadu::ImGuiDrawer
 				is_modified = true;
 				transform.SetScaling( scale );
 			}
+
+			if( ImGui::BeginPopupContextItem( "##reset_scale" ) )
+			{
+				if( ImGui::MenuItem( "Reset" ) )
+				{
+					transform.SetScaling( Vector3::One() );
+					is_modified = true;
+				}
+
+				ImGui::EndPopup();
+			}
 		}
 
-		ImGui::PopID();
-
 		ImGuiUtility::EndGroupPanel();
+
+		ImGui::PopID();
 
 		return is_modified;
 	}
