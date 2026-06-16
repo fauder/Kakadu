@@ -450,8 +450,8 @@ namespace Kakadu
                                                          },
                                                          [ & ]( const fastgltf::math::fmat4x4& matrix ) -> Matrix4x4
                                                          {
-                                                             // Need to transpose because fastgltf has column-major matrices.
-                                                             return coordinate_system_transform * reinterpret_cast< const Matrix4x4& >( matrix ).Transposed() * coordinate_system_transform;
+                                                             // fastgltf uses column-major matrices BUT the memory layout for both are the same. No transpose needed.
+                                                             return coordinate_system_transform * reinterpret_cast< const Matrix4x4& >( matrix ) * coordinate_system_transform;
                                                          }
                                                      }, gltf_node.transform );
         
