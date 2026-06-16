@@ -208,15 +208,15 @@ namespace Kakadu::Matrix
 
 		Matrix3x3 rotation_matrix( ( row_0 / scale.X() ).Normalized(), ( row_1 / scale.Y() ).Normalized(), ( row_2 / scale.Z() ).Normalized() );
 
-		/*if( not Math::IsEqual( scale.X(), scale.Y() ) || not Math::IsEqual( scale.Y(), scale.Z() ) )
-		{
-			// TODO: How to handle non-uniform scale here?
-		}*/
-
 		if( rotation_matrix.Determinant() < 0.0f ) // "Weed out" the reflection.
 		{
-			scale[ 0 ]                *= -1.0f;
+			// Invert an axis (x is chosen arbitrarily) to remove reflection from this improper rotation matrix to make it a proper rotation matrix.
 			rotation_matrix[ 0 ][ 0 ] *= -1.0f;
+			rotation_matrix[ 0 ][ 1 ] *= -1.0f;
+			rotation_matrix[ 0 ][ 2 ] *= -1.0f;
+
+			// Also negate the scale so the overall SRT matrix is preserved.
+			scale[ 0 ] *= -1.0f;
 		}
 
 		rotation = Math::MatrixToQuaternion( rotation_matrix ).Normalized();
