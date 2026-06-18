@@ -1,6 +1,7 @@
 // Engine Includes.
 #include "Model.h"
 #include "Core/AssetDatabase.hpp"
+#include "Core/BitFlags.hpp"
 #include "Core/Log.h"
 #include "Core/ServiceLocator.hpp"
 #include "Core/Types.h"
@@ -44,6 +45,14 @@ struct fastgltf::ElementTraits< Kakadu::Vector4I > : fastgltf::ElementTraitsBase
 
 namespace Kakadu
 {
+    enum class MeshLoadIssues : u8
+    {
+        None = 0,
+
+        PrimitiveType_NonTriangleDetected                 = 1,
+        TangentGen_VertsWithAllDegenerateUVTrianglesFound = 2,
+    };
+
 	internal_function bool LoadMaterials( const std::string& file_name,
                                           const fastgltf::Asset& gltf_asset,
 										  std::vector< Model::MaterialInfo >& material_infos,
@@ -142,8 +151,11 @@ namespace Kakadu
 		return true;
 	}
 
-	internal_function bool LoadMesh( const fastgltf::Asset& gltf_asset, const fastgltf::Mesh& gltf_mesh,
-									 Model::MeshGroup& mesh_group_to_load, std::vector< Mesh >& meshes )
+	internal_function bool LoadMesh( const fastgltf::Asset& gltf_asset,
+                                     const fastgltf::Mesh& gltf_mesh,
+									 Model::MeshGroup& mesh_group_to_load,
+                                     std::vector< Mesh >& meshes,
+                                     BitFlags< MeshLoadIssues >& issues )
 	{
 		/* Naming variables mesh-info instead of gltf's "primitive" for better readability. */
 
@@ -152,6 +164,12 @@ namespace Kakadu
 
 		for( auto mesh_info_iterator = gltf_mesh.primitives.begin(); mesh_info_iterator != gltf_mesh.primitives.end(); ++mesh_info_iterator )
         {
+            if( mesh_info_iterator->type != fastgltf::PrimitiveType::Triangles )
+            {
+                issues.Set( MeshLoadIssues::PrimitiveType_NonTriangleDetected );
+                continue;
+            }
+
 			auto* position_iterator = mesh_info_iterator->findAttribute( "POSITION" );
 			ASSERT_DEBUG_ONLY( position_iterator != mesh_info_iterator->attributes.end() ); // A gltf mesh primitive is required to hold the POSITION attribute.
 
@@ -337,7 +355,7 @@ namespace Kakadu
                     auto& tangent = tangents[ i ];
                     if( Math::IsZero( tangent.MagnitudeSquared() ) )
                     {
-                        vertices_with_all_degenerate_triangles_detected = true;
+                        issues.Set( MeshLoadIssues::TangentGen_VertsWithAllDegenerateUVTrianglesFound );
                         tangent = Vector4( Vector3::Right(), +1.0f );
                     }
                     else
@@ -351,11 +369,6 @@ namespace Kakadu
             }
 
             std::string mesh_info_name( mesh_group_to_load.name + "_" + std::to_string( std::distance( gltf_mesh.primitives.begin(), mesh_info_iterator ) ) );
-
-            if( vertices_with_all_degenerate_triangles_detected )
-                Log::Warning( "Mesh \"" + mesh_group_to_load.name + "\\" + mesh_info_name +
-                              "\": 1 or more vertices with all degenerate UV triangle(s) found during tangent generation."
-                              "Tangents for those vertices are set to Vector3::Right()." );
 
             mesh_group_to_load.mesh_infos.emplace_back( mesh_info_name,
                                                      /* Actual Mesh will be stored inside the meshes vector. MeshInfo will have a reference to this Mesh. */
@@ -618,6 +631,8 @@ namespace Kakadu
 
         std::copy( gltf_asset.scenes.front().nodeIndices.cbegin(), gltf_asset.scenes.front().nodeIndices.cend(), std::back_inserter( model.node_indices_top_level ) );
 
+        BitFlags< MeshLoadIssues > issues;
+
         for( auto index = 0; index < gltf_asset.nodes.size(); index++ )
         {
             const auto& gltf_node = gltf_asset.nodes[ index ];
@@ -637,13 +652,20 @@ namespace Kakadu
                 if( node.mesh_group->mesh_infos.empty() )
                 {
                     if( not LoadMesh( gltf_asset, gltf_asset.meshes[ *gltf_node.meshIndex ],
-								      *node.mesh_group, model.meshes ) )
+								      *node.mesh_group, model.meshes, issues ) )
                         return std::nullopt;
                 }
 
                 model.mesh_instance_count += ( i32 )node.mesh_group->mesh_infos.size();
             }
         }
+
+        if( issues.IsSet( MeshLoadIssues::PrimitiveType_NonTriangleDetected ) )
+            Log::Warning( "Model loading warning for \"" + file_name + "\": Detected & skipped non-triangle list pritimives." );
+
+        if( issues.IsSet( MeshLoadIssues::TangentGen_VertsWithAllDegenerateUVTrianglesFound ) )
+            Log::Warning( "Model loading warning for \"" + file_name + "\": Tangent generation found vertices where every connected UV triangle is degenerate. "
+                          "Defaulted tangents to Vector3::Right()." );
 
         return model;
 	}
