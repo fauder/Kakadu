@@ -45,8 +45,8 @@ namespace Kakadu
 {
 	Renderer::Renderer( Description&& description, RendererIntrospectionSurface* introspection_surface )
 		:
-		wireframe_thickness_in_pixels( 2.0f ),
-		wireframe_color( 0.29f, 0.75f, 0.67f, 1.0f ),
+		wireframe_thickness_in_pixels( 1.0f ),
+		wireframe_color( Color4::Black() ),
 		graphics_device_info( RHI::QueryDeviceInfo() ),
 		framebuffer_main_description(
 			RHI::Framebuffer::Description
