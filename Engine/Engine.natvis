@@ -106,7 +106,7 @@
     <Intrinsic Name="Is1" Expression="val&gt;0.99980000000500002&amp;val&lt;1.0001999999950000">
       <Parameter Name="val" Type="float"/>
     </Intrinsic>
-    <Intrinsic Name="IsIdentity" Expression="IsNormalized()&amp;(Is0(x)&amp;Is0(y)&amp;Is0(z))||Is1(w)"></Intrinsic>
+    <Intrinsic Name="IsIdentity" Expression="Is0(x)&amp;Is0(y)&amp;Is0(z)&amp;Is1(w)"></Intrinsic>
     <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(NatVis::Acos(w)*2),g}° | Axis: &lt;{(x/NatVis::SinFromCos(w)),g},{(y/NatVis::SinFromCos(w)),g},{(z/NatVis::SinFromCos(w)),g}&gt;</DisplayString>
     <DisplayString Condition="IsIdentity()                     ">Identity Rotation</DisplayString>
     <DisplayString Condition="!IsNormalized()                  ">UNNORMALIZED->NOT A ROTATION x: {xyz.data[0],g} y: {xyz.data[1],g} z: {xyz.data[2],g} w: {w,g}</DisplayString>
@@ -122,7 +122,7 @@
     <Intrinsic Name="Is1" Expression="val&gt;0.99999999999998002&amp;val&lt;1.0000000000000200">
       <Parameter Name="val" Type="float"/>
     </Intrinsic>
-    <Intrinsic Name="IsIdentity" Expression="IsNormalized()&amp;(Is0(x)&amp;Is0(y)&amp;Is0(z))||Is1(w)"></Intrinsic>
+    <Intrinsic Name="IsIdentity" Expression="Is0(x)&amp;Is0(y)&amp;Is0(z)&amp;Is1(w)"></Intrinsic>
     <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(NatVis::Acos(w)*2),g}° | Axis: &lt;{(x/NatVis::SinFromCos(w)),g},{(y/NatVis::SinFromCos(w)),g},{(z/NatVis::SinFromCos(w)),g}&gt;</DisplayString>
     <DisplayString Condition="IsIdentity()                     ">Identity Rotation</DisplayString>
     <DisplayString Condition="!IsNormalized()                  ">UNNORMALIZED->NOT A ROTATION x: {xyz.data[0],g} y: {xyz.data[1],g} z: {xyz.data[2],g} w: {w,g}</DisplayString>
