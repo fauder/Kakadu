@@ -367,12 +367,12 @@ namespace Kakadu
 
 	void Renderer::SetClearColor( const Color3& new_clear_color )
 	{
-		MainFramebuffer().SetClearColor(new_clear_color);
+		MainFramebuffer().SetClearColor( new_clear_color );
 	}
 
 	void Renderer::SetClearColor( const Color4& new_clear_color )
 	{
-		MainFramebuffer().SetClearColor(new_clear_color);
+		MainFramebuffer().SetClearColor( new_clear_color );
 	}
 
 	void Renderer::SetViewportShadingMode( const ViewportShadingMode new_viewport_shading_mode )
@@ -1559,10 +1559,15 @@ namespace Kakadu
 		switch( viewport_shading_mode )
 		{
 			case ViewportShadingMode::Wireframe:
+			{
 				shader_not_instanced = BuiltinShaders::Get( "Wireframe" );
-				shader_instanced     = BuiltinShaders::Get( "Wireframe (Instanced)" );
+				shader_instanced = BuiltinShaders::Get( "Wireframe (Instanced)" );
+				const auto main_framebuffer_clear_color = MainFramebuffer().clear_color;
+				MainFramebuffer().SetClearColor( Color4::Gray() );
 				SetRenderState( render_state_wireframe, &MainFramebuffer(), true );
+				MainFramebuffer().SetClearColor( main_framebuffer_clear_color );
 				break;
+			}
 			case ViewportShadingMode::ShadedWireframe:
 				shader_not_instanced = BuiltinShaders::Get( "Wireframe Overlay" );
 				shader_instanced     = BuiltinShaders::Get( "Wireframe Overlay (Instanced)" );
