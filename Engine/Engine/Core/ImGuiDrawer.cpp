@@ -349,35 +349,63 @@ namespace Kakadu::ImGuiDrawer
 		if( flags.IsSet( Transform::Mask::Scale ) )
 		{
 			ImGuiStorage* storage = ImGui::GetStateStorage();
-			const ImGuiID chain_id = ImGui::GetID( "##chain_scale" );
-			bool proportional_scale = storage->GetBool( chain_id, false );
-			ImGui::PushStyleColor( ImGuiCol_Button, ImGui::GetStyleColorVec4( proportional_scale ? ImGuiCol_ButtonActive : ImGuiCol_TextDisabled ) );
-			if( ImGui::SmallButton( proportional_scale ? ICON_FA_LINK "##chain_scale" : ICON_FA_LINK_SLASH "##chain_scale" ) )
+
+			const ImGuiID chain_mode_id    = ImGui::GetID( "##chain_scaling_mode" );
+			const ImGuiID chain_value_x_id = ImGui::GetID( "##chain_scaling_x" );
+			const ImGuiID chain_value_y_id = ImGui::GetID( "##chain_scaling_y" );
+			const ImGuiID chain_value_z_id = ImGui::GetID( "##chain_scaling_z" );
+
+			bool enable_proportional_scaling = storage->GetBool( chain_mode_id, false );
+			Vector3 scale_when_button_was_enabled( storage->GetFloat( chain_value_x_id, 1.0f ),
+												   storage->GetFloat( chain_value_y_id, 1.0f ),
+												   storage->GetFloat( chain_value_z_id, 1.0f ) );
+
+			Vector3 scale = transform.GetScaling();
+
+			ImGui::PushStyleColor( ImGuiCol_Button, ImGui::GetStyleColorVec4( enable_proportional_scaling ? ImGuiCol_ButtonActive : ImGuiCol_TextDisabled ) );
+			if( ImGui::SmallButton( enable_proportional_scaling ? ICON_FA_LINK "##chain_scale" : ICON_FA_LINK_SLASH "##chain_scale" ) )
 			{
-				proportional_scale = !proportional_scale;
-				storage->SetBool( chain_id, proportional_scale );
+				enable_proportional_scaling = !enable_proportional_scaling;
+				storage->SetBool( chain_mode_id, enable_proportional_scaling );
+
+				if( enable_proportional_scaling )
+				{
+					storage->SetFloat( chain_value_x_id, scale.X() );
+					storage->SetFloat( chain_value_y_id, scale.Y() );
+					storage->SetFloat( chain_value_z_id, scale.Z() );
+				}
 			}
 			ImGui::PopStyleColor();
 			ImGui::SameLine();
 
-			Vector3 scale = transform.GetScaling();
 			const Vector3 scale_before = scale;
 			if( Draw( scale, " " ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER " Scale" ) )
 			{
-				if( proportional_scale )
+				// TODO: Disable the field UI if it is 0 in scale_when_button_was_enabled.
+
+				if( enable_proportional_scaling )
 				{
 					for( std::size_t i = 0; i < 3; i++ )
 					{
-						if( scale[ i ] != scale_before[ i ] && scale_before[ i ] != 0.0f )
+						if( scale[ i ] != scale_before[ i ] && not Math::IsZero( scale_when_button_was_enabled[ i ] ) )
 						{
-							scale = scale_before * ( scale[ i ] / scale_before[ i ] );
+							float scale_by = scale[ i ] / scale_when_button_was_enabled[ i ];
+
+							scale[ ( i + 1 ) % 3 ] = scale_when_button_was_enabled[ ( i + 1 ) % 3 ] * scale_by;
+							scale[ ( i + 2 ) % 3 ] = scale_when_button_was_enabled[ ( i + 2 ) % 3 ] * scale_by;
+
+							is_modified = true;
+							transform.SetScaling( scale );
+						
 							break;
 						}
 					}
 				}
-
-				is_modified = true;
-				transform.SetScaling( scale );
+				else
+				{
+					is_modified = true;
+					transform.SetScaling( scale );
+				}
 			}
 
 			if( ImGui::BeginPopupContextItem( "##reset_scale" ) )
