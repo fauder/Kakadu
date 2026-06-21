@@ -324,20 +324,61 @@ namespace Kakadu::ImGuiDrawer
 
 		if( flags.IsSet( Transform::Mask::Rotation ) )
 		{
+			/* Use ImGuiStorage to keep a per-inspector euler angle representation so that dragging
+			 * past 90 degrees and gimbal-lock-adjacent decompositions do not snap values around.
+			 * The stored euler is the source of truth for display and editing; the quaternion is
+			 * only used to seed storage on the first frame and to apply the result back to the Transform. */
+			ImGuiStorage* storage = ImGui::GetStateStorage();
+
+			const ImGuiID euler_init_id = ImGui::GetID( "##euler_init" );
+			const ImGuiID euler_x_id    = ImGui::GetID( "##euler_x" );
+			const ImGuiID euler_y_id    = ImGui::GetID( "##euler_y" );
+			const ImGuiID euler_z_id    = ImGui::GetID( "##euler_z" );
+
+			Math::Vector< Math::Degrees< float >, 3 > euler;
+
+			if( !storage->GetBool( euler_init_id, false ) )
+			{
+				Math::QuaternionToEuler( transform.GetRotation(), euler );
+				storage->SetFloat( euler_x_id, ( float )euler.data[ 0 ] );
+				storage->SetFloat( euler_y_id, ( float )euler.data[ 1 ] );
+				storage->SetFloat( euler_z_id, ( float )euler.data[ 2 ] );
+				storage->SetBool( euler_init_id, true );
+			}
+			else
+			{
+				euler.data[ 0 ] = Degrees( storage->GetFloat( euler_x_id ) );
+				euler.data[ 1 ] = Degrees( storage->GetFloat( euler_y_id ) );
+				euler.data[ 2 ] = Degrees( storage->GetFloat( euler_z_id ) );
+			}
+
 			ImGui::Dummy( ImVec2( chain_button_width, 0.0f ) );
 			ImGui::SameLine();
 
-			Quaternion rotation = transform.GetRotation();
-			if( Draw( rotation, " " ICON_FA_ARROW_ROTATE_RIGHT " Rotation" ) )
+			const auto& style = ImGui::GetStyle();
+			ImGui::PushItemWidth( 3.0f * ImGui::CalcTextSize( ".-999.99" ).x + 2.0f * style.ItemInnerSpacing.x );
+			const bool is_rotation_modified = ImGui::DragScalarN( " " ICON_FA_ARROW_ROTATE_RIGHT " Rotation",
+																  ImGuiDataType_Float,
+																  euler.data, euler.Dimension(),
+																  1.0f, NULL, NULL, "%.2f" );
+			ImGui::PopItemWidth();
+
+			if( is_rotation_modified )
 			{
+				storage->SetFloat( euler_x_id, ( float )euler.data[ 0 ] );
+				storage->SetFloat( euler_y_id, ( float )euler.data[ 1 ] );
+				storage->SetFloat( euler_z_id, ( float )euler.data[ 2 ] );
+				transform.SetRotation( Math::EulerToQuaternion( euler ) );
 				is_modified = true;
-				transform.SetRotation( rotation );
 			}
 
 			if( ImGui::BeginPopupContextItem( "##reset_rotation" ) )
 			{
 				if( ImGui::MenuItem( "Reset" ) )
 				{
+					storage->SetFloat( euler_x_id, 0.0f );
+					storage->SetFloat( euler_y_id, 0.0f );
+					storage->SetFloat( euler_z_id, 0.0f );
 					transform.SetRotation( Quaternion::Identity() );
 					is_modified = true;
 				}
