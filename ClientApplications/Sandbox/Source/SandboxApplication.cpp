@@ -575,6 +575,11 @@ void SandboxApplication::RenderToolsUI()
 					UnloadModel( model_info, model_name );
 					action = ModelLoadActionResult::Unloaded;
 				}
+
+				if( Kakadu::ImGuiDrawer::Draw( model_info.transform ) )
+				{
+					model_info.model_instance.SetTransformation( model_info.transform.GetFinalMatrix() );
+				}
 			}
 			else
 			{
@@ -949,12 +954,14 @@ bool SandboxApplication::ReloadModel( ModelInfo& model_info_to_be_loaded, const 
 		for( auto& renderable_to_remove : model_instance_to_load_into.Renderables() )
 			renderer->RemoveRenderable( &renderable_to_remove );
 
+		model_info_to_be_loaded.transform.Reset().SetTranslation( Vector3::Up() * 8.0f );
+
 		model_instance_to_load_into = Kakadu::ModelInstance( new_model,
 															 model_info_to_be_loaded.shader,
 															 model_info_to_be_loaded.shader_shadow_receiving,
-															 Vector3::One(),
-															 Quaternion(),
-															 Vector3::Up() * 8.0f,
+															 model_info_to_be_loaded.transform.GetScaling(),
+															 model_info_to_be_loaded.transform.GetRotation(),
+															 model_info_to_be_loaded.transform.GetTranslation(),
 															 nullptr,
 															 model_info_to_be_loaded.is_receiving_shadows,
 															 model_info_to_be_loaded.is_casting_shadows,
