@@ -294,9 +294,15 @@ namespace Kakadu::ImGuiDrawer
 
 			ImGui::EndPopup();
 		}
+		
+		// Since Scale fields have a button for uniform scaling, offset the other two so they have the same start vertically.
+		const float chain_button_width = ImGui::CalcTextSize( ICON_FA_LINK_SLASH ).x + ImGui::GetStyle().FramePadding.x * 2.0f;
 
 		if( flags.IsSet( Transform::Mask::Translation ) )
 		{
+			ImGui::Dummy( ImVec2( chain_button_width, 0.0f ) );
+			ImGui::SameLine();
+
 			Vector3 translation = transform.GetTranslation();
 			if( Draw( translation, " " ICON_FA_ARROWS_UP_DOWN_LEFT_RIGHT " Position") )
 			{
@@ -318,6 +324,9 @@ namespace Kakadu::ImGuiDrawer
 
 		if( flags.IsSet( Transform::Mask::Rotation ) )
 		{
+			ImGui::Dummy( ImVec2( chain_button_width, 0.0f ) );
+			ImGui::SameLine();
+
 			Quaternion rotation = transform.GetRotation();
 			if( Draw( rotation, " " ICON_FA_ARROW_ROTATE_RIGHT " Rotation" ) )
 			{
@@ -339,9 +348,34 @@ namespace Kakadu::ImGuiDrawer
 
 		if( flags.IsSet( Transform::Mask::Scale ) )
 		{
+			ImGuiStorage* storage = ImGui::GetStateStorage();
+			const ImGuiID chain_id = ImGui::GetID( "##chain_scale" );
+			bool proportional_scale = storage->GetBool( chain_id, false );
+			ImGui::PushStyleColor( ImGuiCol_Button, ImGui::GetStyleColorVec4( proportional_scale ? ImGuiCol_ButtonActive : ImGuiCol_TextDisabled ) );
+			if( ImGui::SmallButton( proportional_scale ? ICON_FA_LINK "##chain_scale" : ICON_FA_LINK_SLASH "##chain_scale" ) )
+			{
+				proportional_scale = !proportional_scale;
+				storage->SetBool( chain_id, proportional_scale );
+			}
+			ImGui::PopStyleColor();
+			ImGui::SameLine();
+
 			Vector3 scale = transform.GetScaling();
+			const Vector3 scale_before = scale;
 			if( Draw( scale, " " ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER " Scale" ) )
 			{
+				if( proportional_scale )
+				{
+					for( std::size_t i = 0; i < 3; i++ )
+					{
+						if( scale[ i ] != scale_before[ i ] && scale_before[ i ] != 0.0f )
+						{
+							scale = scale_before * ( scale[ i ] / scale_before[ i ] );
+							break;
+						}
+					}
+				}
+
 				is_modified = true;
 				transform.SetScaling( scale );
 			}
