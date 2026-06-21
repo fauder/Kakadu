@@ -23,6 +23,7 @@ class BloomDemoApplication : public Kakadu::Application
 		Kakadu::RHI::Shader* shader;
 		Kakadu::RHI::Shader* shader_shadow_receiving;
 		std::string file_path;
+		Kakadu::Transform transform;
 		bool is_receiving_shadows;
 		bool is_casting_shadows;
 	};
