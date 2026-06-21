@@ -37,6 +37,12 @@ namespace Kakadu
 
 	/* Modification: */
 
+		Transform& Reset();
+
+		Transform& ResetScaling();
+		Transform& ResetRotation();
+		Transform& ResetTranslation();
+
 		Transform& SetScaling( const float& new_uniform_scale );
 		Transform& SetScaling( const Vector3& new_scale );
 		Transform& SetScaling( const float new_x_scale, const float new_y_scale, const float new_z_scale );

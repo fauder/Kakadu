@@ -58,6 +58,26 @@ namespace Kakadu
 	{
 	}
 
+	Transform& Transform::Reset()
+	{
+		return ResetScaling().ResetRotation().ResetTranslation();
+	}
+
+	Transform& Transform::ResetScaling()
+	{
+		return SetScaling( 1.0f );
+	}
+
+	Transform& Transform::ResetRotation()
+	{
+		return SetRotation( Quaternion::Identity() );
+	}
+
+	Transform& Transform::ResetTranslation()
+	{
+		return SetTranslation( Vector3::Zero() );
+	}
+
 	Transform& Transform::SetScaling( const float& new_uniform_scale )
 	{
 		return SetScaling( new_uniform_scale, new_uniform_scale, new_uniform_scale );
