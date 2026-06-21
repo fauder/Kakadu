@@ -82,7 +82,7 @@ namespace Kakadu
 	ModelInstance::~ModelInstance()
 	{}
 
-	void ModelInstance::SetTransform( const Vector3& scale, const Quaternion& rotation, const Vector3& translation )
+	void ModelInstance::SetTransformation( const Matrix4x4& transformation )
 	{
 		i32 mesh_index = 0;
 		std::function< void( const std::size_t, const Matrix4x4& ) > ProcessNode = [ & ]( const std::size_t node_index, const Matrix4x4& parent_transform )
@@ -106,7 +106,7 @@ namespace Kakadu
 		};
 
 		for( auto top_level_node_index : model->TopLevelNodeIndices() )
-			ProcessNode( top_level_node_index, Matrix::Scaling( scale ) * Math::QuaternionToMatrix( rotation ) * Matrix::Translation( translation ) );
+			ProcessNode( top_level_node_index, transformation );
 	}
 
 	internal_function void PopulateMaterial( Material& material, const Model::MaterialInfo& material_info,

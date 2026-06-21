@@ -32,7 +32,7 @@ namespace Kakadu
 		 * Usage: 
 		 */
 
-		void SetTransform( const Vector3& scale, const Quaternion& rotation, const Vector3& translation );
+		void SetTransformation( const Matrix4x4& transformation );
 
 		/*
 		 * Queries:
