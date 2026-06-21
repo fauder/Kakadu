@@ -378,11 +378,30 @@ namespace Kakadu::ImGuiDrawer
 			ImGui::PopStyleColor();
 			ImGui::SameLine();
 
-			const Vector3 scale_before = scale;
-			if( Draw( scale, " " ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER " Scale" ) )
-			{
-				// TODO: Disable the field UI if it is 0 in scale_when_button_was_enabled.
+			const float  component_width = ImGui::CalcTextSize( ".-999.99" ).x;
+			const float  inner_spacing   = ImGui::GetStyle().ItemInnerSpacing.x;
+			const Vector3 scale_before   = scale;
+			bool scale_is_modified       = false;
 
+			for( std::size_t i = 0; i < 3; i++ )
+			{
+				if( i > 0 )
+					ImGui::SameLine( 0.0f, inner_spacing );
+
+				/* Use individual DragFloat()s instead of Draw(vector) here,
+				 * because we want to conditionally disable fields in proportional scaling mode when they start with 0 scale. */
+				ImGui::BeginDisabled( enable_proportional_scaling && Math::IsZero( scale_when_button_was_enabled[ i ] ) );
+				ImGui::PushID( static_cast< i32 >( i ) );
+				ImGui::PushItemWidth( component_width );
+				scale_is_modified |= ImGui::DragFloat( i == 2 ? " " ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER " Scale" : "##",
+													   &scale[ i ], 1.0f, 0.0f, 0.0f, GetFormat< float >() );
+				ImGui::PopItemWidth();
+				ImGui::PopID();
+				ImGui::EndDisabled();
+			}
+
+			if( scale_is_modified )
+			{
 				if( enable_proportional_scaling )
 				{
 					for( std::size_t i = 0; i < 3; i++ )
@@ -394,18 +413,13 @@ namespace Kakadu::ImGuiDrawer
 							scale[ ( i + 1 ) % 3 ] = scale_when_button_was_enabled[ ( i + 1 ) % 3 ] * scale_by;
 							scale[ ( i + 2 ) % 3 ] = scale_when_button_was_enabled[ ( i + 2 ) % 3 ] * scale_by;
 
-							is_modified = true;
-							transform.SetScaling( scale );
-						
 							break;
 						}
 					}
 				}
-				else
-				{
-					is_modified = true;
-					transform.SetScaling( scale );
-				}
+
+				is_modified = true;
+				transform.SetScaling( scale );
 			}
 
 			if( ImGui::BeginPopupContextItem( "##reset_scale" ) )
