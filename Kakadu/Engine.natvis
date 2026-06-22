@@ -44,7 +44,7 @@
 
   <!-- Vector3< int > -->
   <Type Name="Kakadu::Math::Vector&lt;int,3&gt;">
-    <DisplayString IncludeView="simple">&lt;{data[0],d}, {data[1],d} {data[2],d}&gt;</DisplayString>
+    <DisplayString IncludeView="simple">&lt;{data[0],d}, {data[1],d}, {data[2],d}&gt;</DisplayString>
     <DisplayString ExcludeView="simple">[x]: {data[0],d} [y]: {data[1],d} [z]: {data[2],d}</DisplayString>
   </Type>
   
@@ -68,7 +68,7 @@
 
   <!-- Vector4< int > -->
   <Type Name="Kakadu::Math::Vector&lt;int,4&gt;">
-    <DisplayString IncludeView="simple">&lt;{data[0],d}, {data[1],d} {data[2],d} {data[3],d}&gt;</DisplayString>
+    <DisplayString IncludeView="simple">&lt;{data[0],d}, {data[1],d}, {data[2],d}, {data[3],d}&gt;</DisplayString>
     <DisplayString ExcludeView="simple">[x]: {data[0],d} [y]: {data[1],d} [z]: {data[2],d} [w]: {data[3],d}</DisplayString>
   </Type>
     
