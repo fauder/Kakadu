@@ -12,7 +12,7 @@
   <!-- Vector2< double > -->
   <Type Name="Kakadu::Math::Vector&lt;double,2&gt;">
     <Intrinsic Name="Dot" Expression="data[0]*data[0]+data[1]*data[1]"></Intrinsic>
-    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
     <DisplayString IncludeView="simple">&lt;{data[0],h}, {data[1],h}&gt;</DisplayString>
     <DisplayString ExcludeView="simple" Condition="IsNormalized()">[x]: {data[0],h} [y]: {data[1],h} (normalized)</DisplayString>
     <DisplayString ExcludeView="simple" Condition="!IsNormalized()">[x]: {data[0],h} [y]: {data[1],h}</DisplayString>
@@ -36,7 +36,7 @@
   <!-- Vector3< double > -->
   <Type Name="Kakadu::Math::Vector&lt;double,3&gt;">
     <Intrinsic Name="Dot" Expression="data[0]*data[0]+data[1]*data[1]+data[2]*data[2]"></Intrinsic>
-    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
     <DisplayString IncludeView="simple">&lt;[x]: {data[0],h} [y]: {data[1],h} [z]: {data[2],h} &gt;</DisplayString>
     <DisplayString ExcludeView="simple" Condition="IsNormalized()">[x]: {data[0],h} [y]: {data[1],h} [z]: {data[2],h} (normalized)</DisplayString>
     <DisplayString ExcludeView="simple" Condition="!IsNormalized()">[x]: {data[0],h} [y]: {data[1],h} [z]: {data[2],h}</DisplayString>
@@ -60,7 +60,7 @@
   <!-- Vector4< double > -->
   <Type Name="Kakadu::Math::Vector&lt;double,4&gt;">
     <Intrinsic Name="Dot" Expression="data[0]*data[0]+data[1]*data[1]+data[2]*data[2]+data[3]*data[3]"></Intrinsic>
-    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
     <DisplayString IncludeView="simple">&lt;{data[0],h}, {data[1],h}, {data[2],h}, {data[3],h}&gt;</DisplayString>
     <DisplayString ExcludeView="simple" Condition="IsNormalized()">[x]: {data[0],h} [y]: {data[1],h} [z]: {data[2],h} [w]: {data[3],h} (normalized)</DisplayString>
     <DisplayString ExcludeView="simple" Condition="!IsNormalized()">[x]: {data[0],h} [y]: {data[1],h} [z]: {data[2],h} [w]: {data[3],h}</DisplayString>
