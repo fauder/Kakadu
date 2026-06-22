@@ -179,19 +179,22 @@
        Is1(0,0)&amp; Is0(0,1)&amp; Is0(0,2)&amp;
        Is0(1,0)&amp;
        Is0(2,0)&amp;
-      IsEqual(1,2)">
+      IsEqual(1,2)&amp;
+      ValIs1(data[1][1]*data[1][1]+data[1][2]*data[1][2])">
     </Intrinsic>
     <Intrinsic Name="IsYRotationOnly" Expression="
                      Is0(0,1)&amp;
        Is0(1,0)&amp; Is1(1,1)&amp; Is0(1,2)&amp;
                      Is0(2,1)&amp;
-      IsEqual(0,2)">
+      IsEqual(0,2)&amp;
+      ValIs1(data[0][0]*data[0][0]+data[0][2]*data[0][2])">
     </Intrinsic>
     <Intrinsic Name="IsZRotationOnly" Expression="
                                    Is0(0,2)&amp;
                                    Is0(1,2)&amp;
        Is0(2,0)&amp; Is0(2,1)&amp; Is1(2,2)&amp;
-      IsEqual(0,1)">
+      IsEqual(0,1)&amp;
+      ValIs1(data[0][0]*data[0][0]+data[0][1]*data[0][1])">
     </Intrinsic>
     <!-- Generic (non-axis-aligned) rotation fallback: any orthonormal matrix is some rotation, even if it isn't one of the axis-aligned shapes above. -->
     <Intrinsic Name="RowNormSquared" Expression="data[i][0]*data[i][0]+data[i][1]*data[i][1]+data[i][2]*data[i][2]">
@@ -219,6 +222,7 @@
     <DisplayString Condition="IsXRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[1][2],data[1][1])),g}° around X | Matrix3x3</DisplayString>
     <DisplayString Condition="IsYRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[2][0],data[0][0])),g}° around Y | Matrix3x3</DisplayString>
     <DisplayString Condition="IsZRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[0][1],data[0][0])),g}° around Z | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsUniformScale()                          ">Scales by {data[0][0],g} | Matrix3x3</DisplayString>
     <DisplayString Condition="IsNonUniformScale()                       ">Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix3x3</DisplayString>
     <DisplayString Condition="IsDiagonalOnly()                          ">Diagonal ({data[0][0],g},{data[1][1],g},{data[2][2],g}) | Matrix3x3</DisplayString>
     <DisplayString Condition="IsOrthonormal()                           ">Rotates by {(Natvis::RotationAngleDegrees3x3(data[0][0]+data[1][1]+data[2][2])),g}° around &lt;{(Natvis::RotationAxisX3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(Natvis::RotationAxisY3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(Natvis::RotationAxisZ3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}&gt; | Matrix3x3</DisplayString>
@@ -293,21 +297,24 @@
        Is0(1,0)&amp;                             Is0(1,3)&amp;
        Is0(2,0)&amp;                             Is0(2,3)&amp;
        Is0(3,0)&amp; Is0(3,1)&amp; Is0(3,2)&amp; Is1(3,3)&amp;
-      IsEqual(1,2)">
+      IsEqual(1,2)&amp;
+      ValIs1(data[1][1]*data[1][1]+data[1][2]*data[1][2])">
     </Intrinsic>
     <Intrinsic Name="IsYRotationOnly" Expression="
                      Is0(0,1)&amp;               Is0(0,3)&amp;
        Is0(1,0)&amp; Is1(1,1)&amp; Is0(1,2)&amp; Is0(1,3)&amp;
                      Is0(2,1)&amp;               Is0(2,3)&amp;
        Is0(3,0)&amp; Is0(3,1)&amp; Is0(3,2)&amp; Is1(3,3)&amp;
-      IsEqual(0,2)">
+      IsEqual(0,2)&amp;
+      ValIs1(data[0][0]*data[0][0]+data[0][2]*data[0][2])">
     </Intrinsic>
     <Intrinsic Name="IsZRotationOnly" Expression="
                                    Is0(0,2)&amp; Is0(0,3)&amp;
                                    Is0(1,2)&amp; Is0(1,3)&amp;
        Is0(2,0)&amp; Is0(2,1)&amp; Is1(2,2)&amp; Is0(2,3)&amp;
        Is0(3,0)&amp; Is0(3,1)&amp; Is0(3,2)&amp; Is1(3,3)&amp;
-      IsEqual(0,1)">
+      IsEqual(0,1)&amp;
+      ValIs1(data[0][0]*data[0][0]+data[0][1]*data[0][1])">
     </Intrinsic>
     <!-- Generic (non-axis-aligned) rotation fallback, on the upper-left 3x3 block: any orthonormal block is some rotation, even if it isn't one of the axis-aligned shapes above. -->
     <Intrinsic Name="IsAffine" Expression="
@@ -338,11 +345,8 @@
     </Intrinsic>
     <DisplayString Condition="IsIdentity()                              ">Identity | Matrix4x4</DisplayString>
     <DisplayString Condition="IsTranslationOnly()                       ">Translates by x: {data[3][0],g} | y: {data[3][1],g} | z: {data[3][2],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsXRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Natvis::Atan2(data[1][2],data[1][1])),g}° around X OR Scales by y: {data[1][1],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
     <DisplayString Condition="IsXRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[1][2],data[1][1])),g}° around X | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsYRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Natvis::Atan2(data[2][0],data[0][0])),g}° around Y OR Scales by x: {data[0][0],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
     <DisplayString Condition="IsYRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[2][0],data[0][0])),g}° around Y | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsZRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Natvis::Atan2(data[0][1],data[0][0])),g}° around Z OR Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix4x4</DisplayString>
     <DisplayString Condition="IsZRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[0][1],data[0][0])),g}° around Z | Matrix4x4</DisplayString>
     <DisplayString Condition="IsUniformScale()                          ">Scales by {data[0][0],g} | Matrix4x4</DisplayString>
     <DisplayString Condition="IsNonUniformScale()                       ">Scales by x: {data[0][0],g} | y: {data[1][1],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
