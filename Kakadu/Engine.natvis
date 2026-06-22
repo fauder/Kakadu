@@ -117,10 +117,10 @@
     <Intrinsic Name="Dot"           Expression="w*w+xyz.data[0]*xyz.data[0]+xyz.data[1]*xyz.data[1]+xyz.data[2]*xyz.data[2]"></Intrinsic>
     <Intrinsic Name="IsNormalized"  Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
     <Intrinsic Name="Is0"           Expression="val&gt;-0.0000000000000200&amp;val&lt;0.0000000000000200">
-      <Parameter Name="val" Type="float"/>
+      <Parameter Name="val" Type="double"/>
     </Intrinsic>
     <Intrinsic Name="Is1" Expression="val&gt;0.99999999999998002&amp;val&lt;1.0000000000000200">
-      <Parameter Name="val" Type="float"/>
+      <Parameter Name="val" Type="double"/>
     </Intrinsic>
     <Intrinsic Name="IsIdentity" Expression="Is0(x)&amp;Is0(y)&amp;Is0(z)&amp;Is1(w)"></Intrinsic>
     <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(Natvis::Acos(w)*2),g}° | Axis: &lt;{(x/Natvis::SinFromCos(w)),g},{(y/Natvis::SinFromCos(w)),g},{(z/Natvis::SinFromCos(w)),g}&gt;</DisplayString>
