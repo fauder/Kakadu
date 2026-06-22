@@ -172,7 +172,6 @@
     <Intrinsic Name="IsDiagonalOnly" Expression="
       IsDiagonal()&amp;
       !IsScale()&amp;
-      !IsUniformScale()&amp;
       !IsIdentity()">
     </Intrinsic>
     <Intrinsic Name="IsXRotationOnly" Expression="
@@ -283,7 +282,6 @@
     <Intrinsic Name="IsDiagonalOnly" Expression="
       IsDiagonal()&amp;
       !IsScale()&amp;
-      !IsUniformScale()&amp;
       !IsIdentity()">
     </Intrinsic>
     <Intrinsic Name="IsTranslationOnly" Expression="
