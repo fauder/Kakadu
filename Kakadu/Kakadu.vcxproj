@@ -14,7 +14,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{35612cbb-e2e9-4a89-a930-90f11a8b584d}</ProjectGuid>
-    <RootNamespace>Engine</RootNamespace>
+    <RootNamespace>Kakadu</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -50,14 +50,14 @@
     <OutDir>$(SolutionDir)Bin\$(Platform)-$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Bin-Int\$(Platform)-$(Configuration)\$(ProjectName)\</IntDir>
     <LibraryPath>$(SolutionDir)Bin\$(Platform)-$(Configuration)\Vendor;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
-    <IncludePath>$(SolutionDir)Vendor\;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Engine\Engine;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Vendor\;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Kakadu\Engine;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Bin\$(Platform)-$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Bin-Int\$(Platform)-$(Configuration)\$(ProjectName)\</IntDir>
     <LibraryPath>$(SolutionDir)Bin\$(Platform)-$(Configuration)\Vendor;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
-    <IncludePath>$(SolutionDir)Vendor\;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Engine\Engine;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Vendor\;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Kakadu\Engine;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>false</VcpkgEnabled>
@@ -105,7 +105,7 @@
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Kakadu\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,7 +155,7 @@
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir "$(SolutionDir)Kakadu\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

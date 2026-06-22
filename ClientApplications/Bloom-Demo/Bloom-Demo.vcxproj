@@ -38,27 +38,27 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Engine\PropertySheet.props" />
+    <Import Project="..\..\Kakadu\PropertySheet.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Engine\PropertySheet.props" />
+    <Import Project="..\..\Kakadu\PropertySheet.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Bin\$(Platform)-$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Bin-Int\$(Platform)-$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir)Vendor;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Engine;$(SolutionDir)Engine\Engine;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Bin\$(Platform)-$(Configuration)\Engine;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(SolutionDir)Vendor;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Kakadu;$(SolutionDir)Kakadu\Engine;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Bin\$(Platform)-$(Configuration)\Kakadu;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Bin\$(Platform)-$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Bin-Int\$(Platform)-$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir)Vendor;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Engine;$(SolutionDir)Engine\Engine;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Bin\$(Platform)-$(Configuration)\Engine;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(SolutionDir)Vendor;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Kakadu;$(SolutionDir)Kakadu\Engine;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Bin\$(Platform)-$(Configuration)\Kakadu;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
@@ -79,7 +79,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Kakadu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -87,7 +87,7 @@
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir $(ProjectDir)Asset\Shader --include-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir $(ProjectDir)Asset\Shader --include-dir "$(SolutionDir)Kakadu\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -108,7 +108,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Kakadu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -116,7 +116,7 @@
       <Path />
     </BuildLog>
     <PostBuildEvent>
-      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir $(ProjectDir)Asset\Shader --include-dir "$(SolutionDir)Engine\Engine\Asset\Shader"</Command>
+      <Command>python $(SolutionDir)PostBuild_ValidateShaders.py --scan-dir $(ProjectDir)Asset\Shader --include-dir "$(SolutionDir)Kakadu\Engine\Asset\Shader"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -124,12 +124,12 @@
     <ClCompile Include="Source\BloomDemoApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Engine\Engine.vcxproj">
+    <ProjectReference Include="..\..\Kakadu\Kakadu.vcxproj">
       <Project>{35612cbb-e2e9-4a89-a930-90f11a8b584d}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\Engine\Engine\Asset\Resource\app_icon.rc" />
+    <ResourceCompile Include="..\..\Kakadu\Engine\Asset\Resource\app_icon.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\BloomDemoApplication.h" />

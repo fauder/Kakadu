@@ -8,7 +8,7 @@
   <ItemDefinitionGroup>
     <ClCompile />
     <ClCompile>
-      <ForcedIncludeFiles>$(SolutionDir)Engine\Engine\Config\Profiling.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>$(SolutionDir)Kakadu\Engine\Config\Profiling.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

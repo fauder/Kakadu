@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "ClientApplications\Sandbox\Sandbox.vcxproj", "{76D08951-C1EE-4856-8F1C-4131D2643141}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{35612CBB-E2E9-4A89-A930-90F11A8B584D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kakadu", "Kakadu\Kakadu.vcxproj", "{35612CBB-E2E9-4A89-A930-90F11A8B584D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vendor", "Vendor\Vendor.vcxproj", "{26C05E65-89CA-4B25-9FB4-04D445372431}"
 EndProject

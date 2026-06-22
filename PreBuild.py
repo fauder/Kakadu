@@ -43,7 +43,7 @@ def main():
     
     # 1) Always execute: GenerateEngineAbsoluteAssetPath
     gen_script       = sol / "PreBuild_GenerateEngineAbsoluteAssetPath.py"
-    engine_asset_dir = sol / "Engine" / "Engine" / "Asset"
+    engine_asset_dir = sol / "Kakadu" / "Engine" / "Asset"
     
     print()
     

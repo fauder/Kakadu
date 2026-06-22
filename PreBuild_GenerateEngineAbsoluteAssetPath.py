@@ -1,6 +1,6 @@
 # PreBuild_GenerateEngineAbsoluteAssetPath.py
 #
-# Generates: <Engine/Engine>/Generated/EngineAssetAbsolutePath.h
+# Generates: <Kakadu/Engine>/Generated/EngineAssetAbsolutePath.h
 # Contains:  absolute path to Engine/Asset as ENGINE_ASSET_PATH_ABSOLUTE
 
 import argparse
@@ -10,7 +10,7 @@ import sys
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Generate EngineAssetAbsolutePath.h with absolute Engine asset path.")
-    ap.add_argument("--engine", required=True, help="Path to Engine/Engine/Asset (VS macros are expanded by MSBuild).")
+    ap.add_argument("--engine", required=True, help="Path to Kakadu/Engine/Asset (VS macros are expanded by MSBuild).")
     args = ap.parse_args()
 
     engine_dir = pathlib.Path(os.path.expandvars(os.path.expanduser(args.engine))).resolve()
@@ -18,8 +18,8 @@ def main() -> int:
         print(f"ERROR: Engine asset dir not found: {engine_dir}", file=sys.stderr)
         return 1
 
-    # project_dir = .../Engine/Engine
-    # engine_dir  = .../Engine/Engine/Asset  
+    # project_dir = .../Kakadu/Engine
+    # engine_dir  = .../Kakadu/Engine/Asset
     try:
         project_dir = engine_dir.parents[1]
     except IndexError:
