@@ -1,7 +1,7 @@
 // Engine Includes.
 #include "Math/Math.hpp"
 
-namespace NatVis
+namespace Natvis
 {
 /* Float: */
 	header_function float SinFromCos( const float value )

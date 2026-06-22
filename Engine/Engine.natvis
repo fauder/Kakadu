@@ -107,7 +107,7 @@
       <Parameter Name="val" Type="float"/>
     </Intrinsic>
     <Intrinsic Name="IsIdentity" Expression="Is0(x)&amp;Is0(y)&amp;Is0(z)&amp;Is1(w)"></Intrinsic>
-    <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(NatVis::Acos(w)*2),g}° | Axis: &lt;{(x/NatVis::SinFromCos(w)),g},{(y/NatVis::SinFromCos(w)),g},{(z/NatVis::SinFromCos(w)),g}&gt;</DisplayString>
+    <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(Natvis::Acos(w)*2),g}° | Axis: &lt;{(x/Natvis::SinFromCos(w)),g},{(y/Natvis::SinFromCos(w)),g},{(z/Natvis::SinFromCos(w)),g}&gt;</DisplayString>
     <DisplayString Condition="IsIdentity()                     ">Identity Rotation</DisplayString>
     <DisplayString Condition="!IsNormalized()                  ">UNNORMALIZED->NOT A ROTATION x: {xyz.data[0],g} y: {xyz.data[1],g} z: {xyz.data[2],g} w: {w,g}</DisplayString>
   </Type>
@@ -123,7 +123,7 @@
       <Parameter Name="val" Type="float"/>
     </Intrinsic>
     <Intrinsic Name="IsIdentity" Expression="Is0(x)&amp;Is0(y)&amp;Is0(z)&amp;Is1(w)"></Intrinsic>
-    <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(NatVis::Acos(w)*2),g}° | Axis: &lt;{(x/NatVis::SinFromCos(w)),g},{(y/NatVis::SinFromCos(w)),g},{(z/NatVis::SinFromCos(w)),g}&gt;</DisplayString>
+    <DisplayString Condition="IsNormalized()&amp;!IsIdentity() ">Rotation Angle: {(Natvis::Acos(w)*2),g}° | Axis: &lt;{(x/Natvis::SinFromCos(w)),g},{(y/Natvis::SinFromCos(w)),g},{(z/Natvis::SinFromCos(w)),g}&gt;</DisplayString>
     <DisplayString Condition="IsIdentity()                     ">Identity Rotation</DisplayString>
     <DisplayString Condition="!IsNormalized()                  ">UNNORMALIZED->NOT A ROTATION x: {xyz.data[0],g} y: {xyz.data[1],g} z: {xyz.data[2],g} w: {w,g}</DisplayString>
   </Type>
@@ -216,16 +216,16 @@
       ValIs0(RowDot(1,2))">
     </Intrinsic>
     <DisplayString Condition="IsIdentity()                              ">Identity | Matrix3x3</DisplayString>
-    <DisplayString Condition="IsXRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(NatVis::Atan2(data[1][2],data[1][1])),g}° around X OR Scales by y: {data[1][1],g} | z: {data[2][2],g} | Matrix3x3</DisplayString>
-    <DisplayString Condition="IsXRotationOnly()                         ">Rotates by {(NatVis::Atan2(data[1][2],data[1][1])),g}° around X | Matrix3x3</DisplayString>
-    <DisplayString Condition="IsYRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(NatVis::Atan2(data[2][0],data[0][0])),g}° around Y OR Scales by x: {data[0][0],g} | z: {data[2][2],g} | Matrix3x3</DisplayString>
-    <DisplayString Condition="IsYRotationOnly()                         ">Rotates by {(NatVis::Atan2(data[2][0],data[0][0])),g}° around Y | Matrix3x3</DisplayString>
-    <DisplayString Condition="IsZRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(NatVis::Atan2(data[0][1],data[0][0])),g}° around Z OR Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix3x3</DisplayString>
-    <DisplayString Condition="IsZRotationOnly()                         ">Rotates by {(NatVis::Atan2(data[0][1],data[0][0])),g}° around Z | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsXRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Natvis::Atan2(data[1][2],data[1][1])),g}° around X OR Scales by y: {data[1][1],g} | z: {data[2][2],g} | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsXRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[1][2],data[1][1])),g}° around X | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsYRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Natvis::Atan2(data[2][0],data[0][0])),g}° around Y OR Scales by x: {data[0][0],g} | z: {data[2][2],g} | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsYRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[2][0],data[0][0])),g}° around Y | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsZRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Natvis::Atan2(data[0][1],data[0][0])),g}° around Z OR Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsZRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[0][1],data[0][0])),g}° around Z | Matrix3x3</DisplayString>
     <DisplayString Condition="IsUniformScale()                          ">Scales by {data[0][0],g} | Matrix3x3</DisplayString>
     <DisplayString Condition="IsNonUniformScale()                       ">Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix3x3</DisplayString>
     <DisplayString Condition="IsDiagonalOnly()                          ">Diagonal ({data[0][0],g},{data[1][1],g},{data[2][2],g}) | Matrix3x3</DisplayString>
-    <DisplayString Condition="IsOrthonormal()                           ">Rotates by {(NatVis::RotationAngleDegrees3x3(data[0][0]+data[1][1]+data[2][2])),g}° around &lt;{(NatVis::RotationAxisX3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(NatVis::RotationAxisY3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(NatVis::RotationAxisZ3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}&gt; | Matrix3x3</DisplayString>
+    <DisplayString Condition="IsOrthonormal()                           ">Rotates by {(Natvis::RotationAngleDegrees3x3(data[0][0]+data[1][1]+data[2][2])),g}° around &lt;{(Natvis::RotationAxisX3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(Natvis::RotationAxisY3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(Natvis::RotationAxisZ3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}&gt; | Matrix3x3</DisplayString>
     <Expand>
       <CustomListItems>
         <Variable Name="i" InitialValue="0"/>
@@ -342,17 +342,17 @@
     </Intrinsic>
     <DisplayString Condition="IsIdentity()                              ">Identity | Matrix4x4</DisplayString>
     <DisplayString Condition="IsTranslationOnly()                       ">Translates by x: {data[3][0],g} | y: {data[3][1],g} | z: {data[3][2],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsXRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(NatVis::Atan2(data[1][2],data[1][1])),g}° around X OR Scales by y: {data[1][1],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsXRotationOnly()                         ">Rotates by {(NatVis::Atan2(data[1][2],data[1][1])),g}° around X | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsYRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(NatVis::Atan2(data[2][0],data[0][0])),g}° around Y OR Scales by x: {data[0][0],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsYRotationOnly()                         ">Rotates by {(NatVis::Atan2(data[2][0],data[0][0])),g}° around Y | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsZRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(NatVis::Atan2(data[0][1],data[0][0])),g}° around Z OR Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsZRotationOnly()                         ">Rotates by {(NatVis::Atan2(data[0][1],data[0][0])),g}° around Z | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsXRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Natvis::Atan2(data[1][2],data[1][1])),g}° around X OR Scales by y: {data[1][1],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsXRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[1][2],data[1][1])),g}° around X | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsYRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Natvis::Atan2(data[2][0],data[0][0])),g}° around Y OR Scales by x: {data[0][0],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsYRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[2][0],data[0][0])),g}° around Y | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsZRotationOnly()&amp;IsNonUniformScale() ">Rotates by {(Natvis::Atan2(data[0][1],data[0][0])),g}° around Z OR Scales by x: {data[0][0],g} | y: {data[1][1],g} | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsZRotationOnly()                         ">Rotates by {(Natvis::Atan2(data[0][1],data[0][0])),g}° around Z | Matrix4x4</DisplayString>
     <DisplayString Condition="IsUniformScale()                          ">Scales by {data[0][0],g} | Matrix4x4</DisplayString>
     <DisplayString Condition="IsNonUniformScale()                       ">Scales by x: {data[0][0],g} | y: {data[1][1],g} | z: {data[2][2],g} | Matrix4x4</DisplayString>
     <DisplayString Condition="IsDiagonalOnly()                          ">Diagonal ({data[0][0],g},{data[1][1],g},{data[2][2],g},{data[3][3],g}) | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsOrthonormal()&amp;HasTranslation()        ">Rotates by {(NatVis::RotationAngleDegrees3x3(data[0][0]+data[1][1]+data[2][2])),g}° around &lt;{(NatVis::RotationAxisX3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(NatVis::RotationAxisY3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(NatVis::RotationAxisZ3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}&gt; + Translates by x: {data[3][0],g} | y: {data[3][1],g} | z: {data[3][2],g} | Matrix4x4</DisplayString>
-    <DisplayString Condition="IsOrthonormal()                           ">Rotates by {(NatVis::RotationAngleDegrees3x3(data[0][0]+data[1][1]+data[2][2])),g}° around &lt;{(NatVis::RotationAxisX3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(NatVis::RotationAxisY3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(NatVis::RotationAxisZ3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}&gt; | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsOrthonormal()&amp;HasTranslation()        ">Rotates by {(Natvis::RotationAngleDegrees3x3(data[0][0]+data[1][1]+data[2][2])),g}° around &lt;{(Natvis::RotationAxisX3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(Natvis::RotationAxisY3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(Natvis::RotationAxisZ3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}&gt; + Translates by x: {data[3][0],g} | y: {data[3][1],g} | z: {data[3][2],g} | Matrix4x4</DisplayString>
+    <DisplayString Condition="IsOrthonormal()                           ">Rotates by {(Natvis::RotationAngleDegrees3x3(data[0][0]+data[1][1]+data[2][2])),g}° around &lt;{(Natvis::RotationAxisX3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(Natvis::RotationAxisY3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}, {(Natvis::RotationAxisZ3x3(data[0][1],data[0][2],data[1][0],data[1][2],data[2][0],data[2][1])),g}&gt; | Matrix4x4</DisplayString>
     <Expand>
       <CustomListItems>
         <Variable Name="i" InitialValue="0"/>

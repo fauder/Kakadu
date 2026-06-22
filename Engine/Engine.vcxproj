@@ -253,7 +253,7 @@
     <ClInclude Include="Engine\Math\OrthographicProjectionParameters.h" />
     <ClInclude Include="Engine\Math\Rect.h" />
     <ClInclude Include="Engine\Math\VectorConversion.hpp" />
-    <ClInclude Include="Engine\Natvis\NatVis.h" />
+    <ClInclude Include="Engine\Natvis\Natvis.h" />
     <ClInclude Include="Engine\Core\Optimization.h" />
     <ClInclude Include="Engine\Core\ServiceLocator.hpp" />
     <ClInclude Include="Engine\Core\DirtyBlob.h" />

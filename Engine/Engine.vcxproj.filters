@@ -180,7 +180,7 @@
     <ClInclude Include="Engine\Core\BitFlags.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Natvis\NatVis.h">
+    <ClInclude Include="Engine\Natvis\Natvis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\Primitive\Primitive_Quad.h">

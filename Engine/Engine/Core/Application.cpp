@@ -36,7 +36,7 @@ namespace Kakadu
 	{
 		renderer_description.output_to_composite_framebuffer = true; // TODO: Remove this from here when editor becomes its own project & executable.
 
-		NatVis::ForceIncludeInBuild();
+		Natvis::ForceIncludeInBuild();
 
 		const auto begin = std::chrono::system_clock::now();
 
