@@ -18,7 +18,7 @@
     <ClInclude Include="Engine\Core\EntryPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
+    <ClInclude Include="Kakadu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Core\Application.h">
@@ -676,7 +676,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="Engine.natvis" />
+    <Natvis Include="Kakadu.natvis" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\Asset\Shader\_Depth.glsl" />
@@ -715,7 +715,7 @@
     <None Include="Engine\Asset\Shader\Wireframe.frag" />
     <None Include="Engine\Asset\Shader\DebugUVs_AsColors.frag" />
     <None Include="Engine\Asset\Shader\DebugUVs_AsColors.vert" />
-    <None Include="Engine.natstepfilter" />
+    <None Include="Kakadu.natstepfilter" />
     <None Include="Engine\Asset\Shader\_Math.glsl" />
     <None Include="Engine\Asset\Shader\BloomDownsample.frag" />
     <None Include="Engine\Asset\Shader\BloomUpsample.frag" />
