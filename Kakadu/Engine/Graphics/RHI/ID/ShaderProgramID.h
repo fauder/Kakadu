@@ -1,11 +1,11 @@
 #pragma once
 
 // Engine Includes.
-#include "ID.codegen.h"
+#include "Core/ID.codegen.h"
 
 namespace Kakadu::RHI
 {
-	DEFINE_RHI_ID( ShaderProgram );
+	DEFINE_ID( ShaderProgram );
 }
 
-#undef DEFINE_RHI_ID
+#undef DEFINE_ID
