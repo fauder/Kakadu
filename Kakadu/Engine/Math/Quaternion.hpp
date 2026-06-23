@@ -255,27 +255,31 @@ namespace Kakadu::Math
 			return *this;
 		}
 
-		constexpr Quaternion Inverse() const
+		/* General inverse for non-unit quaternions: inverse = conjugate / magnitude^2.
+		 * Prefer Inverse() in all rotation contexts, as rotation quaternions are always unit quaternions. */
+		constexpr Quaternion Inverse_Naive() const
 		{
 			return Conjugate() / Dot();
 		}
 
-		/* Assumes *this is a unit quaternion. Faster than Inverse().
+		/* Assumes *this is a unit quaternion, which is always true for rotation quaternions.
 		 * Simply returns the conjugate since inverse = conjugate / magnitude, where magnitude = 1 for a unit quaternion. */
-		constexpr Quaternion Inverse_Normalized() const
+		constexpr Quaternion Inverse() const
 		{
-			ASSERT_DEBUG_ONLY( IsNormalized() && R"(Quaternion::Inverse_Normalized() : The quaternion "*this" is not normalized!)" );
+			ASSERT_DEBUG_ONLY( IsNormalized() && R"(Quaternion::Inverse() : The quaternion "*this" is not normalized!)" );
 
 			return Conjugate();
 		}
 
-		constexpr Quaternion& Invert()
+		/* General in-place inverse for non-unit quaternions.
+		 * Prefer Invert() in all rotation contexts, as rotation quaternions are always unit quaternions. */
+		constexpr Quaternion& Invert_Naive()
 		{
-			return *this = Inverse();
+			return *this = Inverse_Naive();
 		}
 
-		/* Sets this quaternion equal to its inverse, which is its conjugate since a unit quaternion is assumed. (i.e, [w -x -y -z]). */
-		constexpr Quaternion& Invert_Normalized()
+		/* Sets this quaternion equal to its inverse, which is its conjugate since a unit quaternion is assumed. (i.e, [-x -y -z w]). */
+		constexpr Quaternion& Invert()
 		{
 			return SetToConjugate();
 		}
