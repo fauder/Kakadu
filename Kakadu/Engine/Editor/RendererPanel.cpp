@@ -43,7 +43,7 @@ namespace Kakadu::Editor
 						for( auto& [ pass_id, pass ] : *introspection_surface.render_pass_map )
 						{
 							ImGui::TableNextColumn();
-							ImGui::PushID( ( i32 )pass_id );
+							ImGui::PushID( ( i32 )pass_id.id );
 
 							const bool pass_has_content_to_render = renderer.PassHasContentToRender( pass );
 
@@ -54,7 +54,7 @@ namespace Kakadu::Editor
 
 							ImGui::PopID();
 							ImGui::SameLine();
-							if( ImGui::TreeNodeEx( pass.name.c_str(), 0, ICON_FA_FLAG_CHECKERED " #%d %s", ( i32 )pass_id, pass.name.c_str() ) )
+							if( ImGui::TreeNodeEx( pass.name.c_str(), 0, ICON_FA_FLAG_CHECKERED " #%d %s", ( i32 )pass_id.id, pass.name.c_str() ) )
 							{
 								// TODO: Display RenderState info as a collapsible header.
 								for( auto& queue_id : pass.queue_id_set )
@@ -63,7 +63,7 @@ namespace Kakadu::Editor
 
 									if( queue.renderable_list.empty() )
 									{
-										ImGui::TextDisabled( ICON_FA_BARS " Empty #%d %s", ( i32 )queue_id, queue.name.c_str() );
+										ImGui::TextDisabled( ICON_FA_BARS " Empty #%d %s", ( i32 )queue_id.id, queue.name.c_str() );
 										continue;
 									}
 
@@ -72,11 +72,11 @@ namespace Kakadu::Editor
 									if( not queue_has_content_to_render )
 										ImGuiUtility::BeginDisabledButInteractable();
 
-									ImGui::PushID( ( i32 )queue_id );
+									ImGui::PushID( ( i32 )queue_id.id );
 									ImGuiUtility::EyeCheckbox( "", &queue.is_enabled );
 									ImGui::PopID();
 									ImGui::SameLine();
-									if( ImGui::TreeNodeEx( queue.name.c_str(), 0, ICON_FA_BARS " #%d %s", ( i32 )queue_id, queue.name.c_str() ) )
+									if( ImGui::TreeNodeEx( queue.name.c_str(), 0, ICON_FA_BARS " #%d %s", ( i32 )queue_id.id, queue.name.c_str() ) )
 									{
 										ImGui::BeginDisabled( not queue.is_enabled );
 

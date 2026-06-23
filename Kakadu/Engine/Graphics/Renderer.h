@@ -69,7 +69,7 @@ namespace Kakadu
 		 */
 
 		void Update();
-		void UpdatePerPass( const RenderPass::ID pass_id_to_update, Camera& camera );
+		void UpdatePerPass( const RenderPassID pass_id_to_update, Camera& camera );
 		void RenderFrame();
 		void DrawMesh( const Mesh& mesh ) const;
 		void DrawPostProcessingEffectStep() const;
@@ -93,24 +93,24 @@ namespace Kakadu
 		 * Pass, Queue & Renderable:
 		 */
 
-		RenderState& GetRenderState( const RenderPass::ID pass_id_to_fetch );
+		RenderState& GetRenderState( const RenderPassID pass_id_to_fetch );
 
-		void AddPass( const RenderPass::ID new_pass_id, RenderPass&& new_pass );
-		void RemovePass( const RenderPass::ID pass_id_to_remove );
-		void TogglePass( const RenderPass::ID pass_id_to_toggle, const bool enable );
+		void AddPass( const RenderPassID new_pass_id, RenderPass&& new_pass );
+		void RemovePass( const RenderPassID pass_id_to_remove );
+		void TogglePass( const RenderPassID pass_id_to_toggle, const bool enable );
 
 		bool PassHasContentToRender( const RenderPass& pass_to_query ) const;
 
-		void AddQueue( const RenderQueue::ID new_queue_id, RenderQueue&& new_queue );
-		void RemoveQueue( const RenderQueue::ID queue_id_to_remove );
-		void ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable );
+		void AddQueue( const RenderQueueID new_queue_id, RenderQueue&& new_queue );
+		void RemoveQueue( const RenderQueueID queue_id_to_remove );
+		void ToggleQueue( const RenderQueueID queue_id_to_toggle, const bool enable );
 
 		bool QueueHasContentToRender( const RenderQueue& queue_to_query ) const;
 
-		void AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to );
-		void RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from );
+		void AddQueueToPass( const RenderQueueID queue_id_to_add, const RenderPassID pass_to_add_to );
+		void RemoveQueueFromPass( const RenderQueueID queue_id_to_remove, const RenderPassID pass_to_remove_from );
 
-		void AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id );
+		void AddRenderable( Renderable* renderable_to_add, const RenderQueueID queue_id );
 		// TODO: Switch to unsigned map of "Component" UUIDs when Component class is implemented.
 		void RemoveRenderable( Renderable* renderable_to_remove );
 
@@ -369,10 +369,10 @@ namespace Kakadu
 		
 		/* Built-in Pass IDs: */
 
-		static constexpr RenderPass::ID RENDER_PASS_ID_SHADOW_MAPPING = RenderPass::ID( 10u );
-		static constexpr RenderPass::ID RENDER_PASS_ID_LIGHTING       = RenderPass::ID( 50u );
+		static constexpr RenderPassID RENDER_PASS_ID_SHADOW_MAPPING = { 10u };
+		static constexpr RenderPassID RENDER_PASS_ID_LIGHTING       = { 50u };
 
-		static constexpr std::array< RenderPass::ID, 2 > BUILTIN_RENDER_PASS_ID_LIST =
+		static constexpr std::array< RenderPassID, 2 > BUILTIN_RENDER_PASS_ID_LIST =
 		{
 			RENDER_PASS_ID_SHADOW_MAPPING,
 			RENDER_PASS_ID_LIGHTING,
@@ -382,11 +382,11 @@ namespace Kakadu
 
 		/* Using Unity defaults: Background is 1000, Geometry is 2000, AlphaTest is 2450, Transparent is 3000 and Overlay is 4000 */
 
-		static constexpr RenderQueue::ID RENDER_QUEUE_ID_GEOMETRY              = RenderQueue::ID( 2'000u );
-		static constexpr RenderQueue::ID RENDER_QUEUE_ID_TRANSPARENT           = RenderQueue::ID( 2'450u );
-		static constexpr RenderQueue::ID RENDER_QUEUE_ID_SKYBOX                = RenderQueue::ID( 2'900u );
+		static constexpr RenderQueueID RENDER_QUEUE_ID_GEOMETRY    = { 2'000u };
+		static constexpr RenderQueueID RENDER_QUEUE_ID_TRANSPARENT = { 2'450u };
+		static constexpr RenderQueueID RENDER_QUEUE_ID_SKYBOX      = { 2'900u };
 
-		static constexpr std::array< RenderQueue::ID, 3 > BUILTIN_RENDER_QUEUE_ID_LIST =
+		static constexpr std::array< RenderQueueID, 3 > BUILTIN_RENDER_QUEUE_ID_LIST =
 		{
 			RENDER_QUEUE_ID_GEOMETRY,
 			RENDER_QUEUE_ID_TRANSPARENT,
@@ -449,8 +449,8 @@ namespace Kakadu
 		 * Rendering:
 		 */
 
-		std::map< RenderPass::ID,  RenderPass  > render_pass_map;
-		std::map< RenderQueue::ID, RenderQueue > render_queue_map;
+		std::map< RenderPassID,  RenderPass  > render_pass_map;
+		std::map< RenderQueueID, RenderQueue > render_queue_map;
 
 		std::unordered_set< RHI::Shader* > shaders_registered;
 		std::unordered_map< RHI::Shader*, RHI::Shader::ReferenceCount > shaders_registered_reference_count_map;

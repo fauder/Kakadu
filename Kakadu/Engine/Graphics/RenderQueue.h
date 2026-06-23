@@ -2,6 +2,7 @@
 
 // Engine Includes.
 #include "Renderable.h"
+#include "RenderQueueID.h"
 #include "RenderState.h"
 
 // std Includes.
@@ -19,8 +20,6 @@ namespace Kakadu
 	struct RenderQueue
 	{
 		using ReferenceCount = u32;
-
-		enum class ID : u16 {};
 
 		std::string name = "<unnamed-queue>";
 

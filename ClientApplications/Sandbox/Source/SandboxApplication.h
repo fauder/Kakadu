@@ -81,7 +81,7 @@ private:
 	const static constexpr i32 WINDOW_COUNT = 5;
 	std::array< Kakadu::Renderable, WINDOW_COUNT > window_renderable_array;
 
-	static constexpr Kakadu::RenderPass::ID RENDER_PASS_ID_LIGHTING_REAR_VIEW = Kakadu::RenderPass::ID( ( u32 )Kakadu::Renderer::RENDER_PASS_ID_LIGHTING - 1 );
+	static constexpr Kakadu::RenderPassID RENDER_PASS_ID_LIGHTING_REAR_VIEW = { u8( Kakadu::Renderer::RENDER_PASS_ID_LIGHTING.id - 1 ) };
 
 /* Textures: */
 	Kakadu::RHI::Texture* container_texture_diffuse_map;

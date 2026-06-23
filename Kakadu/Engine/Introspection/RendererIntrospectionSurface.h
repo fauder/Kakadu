@@ -16,8 +16,8 @@ namespace Kakadu
 	{
 		std::vector< RHI::Framebuffer >* framebuffers;
 
-		std::map< RenderPass::ID,  RenderPass  >* render_pass_map;
-		std::map< RenderQueue::ID, RenderQueue >* render_queue_map;
+		std::map< RenderPassID,  RenderPass  >* render_pass_map;
+		std::map< RenderQueueID, RenderQueue >* render_queue_map;
 
 		FullscreenEffect* msaa_resolve;
 		std::map< std::string, FullscreenEffect* >* post_processing_effect_map;

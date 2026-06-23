@@ -112,7 +112,7 @@ namespace Kakadu
 		CalculateShadowMappingInformation();
 	}
 
-	void Renderer::UpdatePerPass( const RenderPass::ID pass_id_to_update, Camera& camera )
+	void Renderer::UpdatePerPass( const RenderPassID pass_id_to_update, Camera& camera )
 	{
 #ifdef _EDITOR
 		if( not render_pass_map.contains( pass_id_to_update ) )
@@ -174,9 +174,9 @@ namespace Kakadu
 							SortRenderablesInQueue( camera_position, queue.renderable_list, queue.render_state_override->sorting_mode );
 						}
 
-						switch( pass_id )
+						switch( pass_id.id )
 						{
-							case RENDER_PASS_ID_SHADOW_MAPPING:
+							case RENDER_PASS_ID_SHADOW_MAPPING.id:
 							{
 								RHI::Shader& shadow_map_write_shader           = *BuiltinShaders::Get( "Shadow-map Write" );
 								RHI::Shader& shadow_map_write_instanced_shader = *BuiltinShaders::Get( "Shadow-map Write (Instanced)" );
@@ -380,18 +380,18 @@ namespace Kakadu
 		viewport_shading_mode = new_viewport_shading_mode;
 	}
 	
-	RenderState& Renderer::GetRenderState( const RenderPass::ID pass_id_to_fetch )
+	RenderState& Renderer::GetRenderState( const RenderPassID pass_id_to_fetch )
 	{
 		return render_pass_map[ pass_id_to_fetch ].render_state;
 	}
 
-	void Renderer::AddPass( const RenderPass::ID new_pass_id, RenderPass&& new_pass )
+	void Renderer::AddPass( const RenderPassID new_pass_id, RenderPass&& new_pass )
 	{
 		if( not render_pass_map.try_emplace( new_pass_id, std::move( new_pass ) ).second )
 			LOG_ERROR( "Attempting to add a new pass with the ID of an existing queue!" );
 	}
 
-	void Renderer::RemovePass( const RenderPass::ID pass_id_to_remove )
+	void Renderer::RemovePass( const RenderPassID pass_id_to_remove )
 	{
 		if( std::find( BUILTIN_RENDER_PASS_ID_LIST.cbegin(), BUILTIN_RENDER_PASS_ID_LIST.cend(), pass_id_to_remove ) != BUILTIN_RENDER_PASS_ID_LIST.cend() )
 		{
@@ -410,7 +410,7 @@ namespace Kakadu
 #endif // _DEBUG
 	}
 
-	void Renderer::TogglePass( const RenderPass::ID pass_id_to_toggle, const bool enable )
+	void Renderer::TogglePass( const RenderPassID pass_id_to_toggle, const bool enable )
 	{
 #ifdef _EDITOR
 		if( auto iterator = render_pass_map.find( pass_id_to_toggle );
@@ -438,13 +438,13 @@ namespace Kakadu
 		return false;
 	}
 
-	void Renderer::AddQueue( const RenderQueue::ID new_queue_id, RenderQueue&& new_queue )
+	void Renderer::AddQueue( const RenderQueueID new_queue_id, RenderQueue&& new_queue )
 	{
 		if( not render_queue_map.try_emplace( new_queue_id, std::move( new_queue ) ).second )
 			LOG_ERROR( "Attempting to add a new queue with the ID of an existing queue!" );
 	}
 
-	void Renderer::RemoveQueue( const RenderQueue::ID queue_id_to_remove )
+	void Renderer::RemoveQueue( const RenderQueueID queue_id_to_remove )
 	{
 		if( std::find( BUILTIN_RENDER_QUEUE_ID_LIST.cbegin(), BUILTIN_RENDER_QUEUE_ID_LIST.cend(), queue_id_to_remove ) != BUILTIN_RENDER_QUEUE_ID_LIST.cend() )
 		{
@@ -463,7 +463,7 @@ namespace Kakadu
 #endif // _DEBUG
 	}
 
-	void Renderer::ToggleQueue( const RenderQueue::ID queue_id_to_toggle, const bool enable )
+	void Renderer::ToggleQueue( const RenderQueueID queue_id_to_toggle, const bool enable )
 	{
 #ifdef _EDITOR
 		if( auto iterator = render_queue_map.find( queue_id_to_toggle );
@@ -488,7 +488,7 @@ namespace Kakadu
 		return false;
 	}
 
-	void Renderer::AddQueueToPass( const RenderQueue::ID queue_id_to_add, const RenderPass::ID pass_to_add_to )
+	void Renderer::AddQueueToPass( const RenderQueueID queue_id_to_add, const RenderPassID pass_to_add_to )
 	{
 		LOG_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "AddQueueToPass", pass_to_add_to );
 		LOG_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( "AddQueueToPass", queue_id_to_add );
@@ -498,7 +498,7 @@ namespace Kakadu
 
 	}
 
-	void Renderer::RemoveQueueFromPass( const RenderQueue::ID queue_id_to_remove, const RenderPass::ID pass_to_remove_from )
+	void Renderer::RemoveQueueFromPass( const RenderQueueID queue_id_to_remove, const RenderPassID pass_to_remove_from )
 	{
 		LOG_ERROR_AND_RETURN_IF_PASS_DOES_NOT_EXIST( "RemoveQueueFromPass", pass_to_remove_from );
 		LOG_ERROR_AND_RETURN_IF_QUEUE_DOES_NOT_EXIST( "RemoveQueueFromPass", queue_id_to_remove );
@@ -507,7 +507,7 @@ namespace Kakadu
 			LOG_ERROR( "Attempting to add a non-existing queue from a pass!" );
 	}
 
-	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueue::ID queue_id )
+	void Renderer::AddRenderable( Renderable* renderable_to_add, const RenderQueueID queue_id )
 	{
 		auto& queue = render_queue_map[ queue_id ];
 

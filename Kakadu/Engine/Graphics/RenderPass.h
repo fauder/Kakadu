@@ -1,6 +1,7 @@
 #pragma once
 
 // Engine Includes.
+#include "RenderPassID.h"
 #include "RenderQueue.h"
 #include "RHI/Framebuffer.h"
 
@@ -15,13 +16,11 @@ namespace Kakadu
 
 	struct RenderPass
 	{
-		enum class ID : u8 {};
-
 		std::string name = "<unnamed-pass>";
 
 		RHI::Framebuffer* target_framebuffer;
 
-		std::set< RenderQueue::ID > queue_id_set;
+		std::set< RenderQueueID > queue_id_set;
 
 		std::optional< Matrix4x4 > view_matrix;
 		std::optional< Matrix4x4 > projection_matrix;
